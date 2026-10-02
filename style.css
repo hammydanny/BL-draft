@@ -1,27 +1,34 @@
-/* ===============================
-   GENERAL
-================================ */
+/* ==================================================
+   GLOBAL
+================================================== */
 
 * {
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
 
-    font-family: Arial, sans-serif;
+    min-height: 100vh;
 
-    background: #080808;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #17202b 0%,
+            #080b10 45%,
+            #030405 100%
+        );
+
     color: white;
-}
-
-h1 {
-    font-size: 48px;
-    margin-bottom: 5px;
-}
-
-p {
-    color: #aaa;
 }
 
 .hidden {
@@ -29,306 +36,810 @@ p {
 }
 
 
-/* ===============================
-   SETUP SCREEN
-================================ */
+/* ==================================================
+   TEXT
+================================================== */
+
+h1 {
+    margin: 0 0 8px;
+
+    font-size: 48px;
+
+    letter-spacing: 2px;
+}
+
+p {
+    color: #aeb7c2;
+}
+
+
+/* ==================================================
+   SETUP
+================================================== */
 
 #setup-screen {
     min-height: 100vh;
 
     display: flex;
+
     flex-direction: column;
 
-    align-items: center;
     justify-content: center;
 
-    padding: 30px;
-}
-
-.setup-box {
-    width: 400px;
-    max-width: 100%;
-
-    margin-top: 30px;
-    padding: 30px;
-
-    background: #151515;
-
-    border: 1px solid #333;
-    border-radius: 10px;
-}
-
-label {
-    display: block;
-
-    margin-top: 18px;
-    margin-bottom: 6px;
-
-    font-size: 13px;
-    font-weight: bold;
-}
-
-input {
-    width: 100%;
-
-    padding: 12px;
-
-    background: #222;
-    color: white;
-
-    border: 1px solid #444;
-    border-radius: 5px;
-
-    font-size: 16px;
-}
-
-
-/* ===============================
-   BUTTONS
-================================ */
-
-button {
-    width: 100%;
-
-    margin-top: 15px;
-    padding: 14px;
-
-    background: white;
-    color: black;
-
-    border: none;
-    border-radius: 5px;
-
-    font-size: 16px;
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
-.secondary-button {
-    background: #292929;
-    color: white;
-
-    border: 1px solid #555;
-}
-
-
-/* ===============================
-   AUCTION SCREEN
-================================ */
-
-#auction-screen {
-    min-height: 100vh;
+    align-items: center;
 
     padding: 30px;
 
     text-align: center;
 }
 
+.setup-box {
+    width: 420px;
 
-/* ===============================
+    max-width: 100%;
+
+    margin-top: 25px;
+
+    padding: 30px;
+
+    background:
+        rgba(
+            18,
+            23,
+            31,
+            0.95
+        );
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(
+            0,
+            0,
+            0,
+            0.4
+        );
+}
+
+label {
+    display: block;
+
+    margin:
+        18px 0 7px;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    color: #9da8b5;
+}
+
+
+/* ==================================================
+   INPUTS
+================================================== */
+
+input {
+    width: 100%;
+
+    padding: 14px;
+
+    background: #0d1117;
+
+    color: white;
+
+    border:
+        1px solid #303946;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+input:focus {
+    border-color: #e5e7eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            255,
+            255,
+            255,
+            0.07
+        );
+}
+
+
+/* ==================================================
+   BUTTONS
+================================================== */
+
+button {
+    width: 100%;
+
+    margin-top: 14px;
+
+    padding: 14px 18px;
+
+    background: white;
+
+    color: #050505;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+button:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(
+            255,
+            255,
+            255,
+            0.12
+        );
+}
+
+button:active {
+    transform:
+        translateY(0)
+        scale(0.98);
+}
+
+.secondary-button {
+    background: #1b222c;
+
+    color: white;
+
+    border:
+        1px solid #384351;
+}
+
+
+/* ==================================================
+   AUCTION PAGE
+================================================== */
+
+#auction-screen {
+    min-height: 100vh;
+
+    padding: 25px;
+}
+
+#auction-screen > h1 {
+    text-align: center;
+}
+
+
+/* ==================================================
+   AUCTION LAYOUT
+================================================== */
+
+.auction-layout {
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    animation:
+        screenFade
+        0.35s ease;
+}
+
+.auction-center {
+    width: 100%;
+
+    max-width: 600px;
+
+    margin: 0 auto;
+
+    text-align: center;
+}
+
+
+/* ==================================================
    TEAM TRACKERS
-================================ */
+================================================== */
 
 .team-trackers {
-    display: flex;
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
 
     gap: 20px;
 
-    max-width: 1100px;
+    margin:
+        25px auto 30px;
 
-    margin: 25px auto 30px auto;
+    max-width: 1100px;
 }
 
 .team-tracker {
-    flex: 1;
+    min-width: 0;
 
     padding: 20px;
 
-    background: #151515;
+    background:
+        rgba(
+            15,
+            20,
+            27,
+            0.92
+        );
 
-    border: 1px solid #333;
-    border-radius: 10px;
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
 
-    text-align: left;
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
 }
 
-.team-tracker h3 {
-    margin-top: 0;
+.team-header {
+    display: flex;
 
-    font-size: 22px;
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding-bottom: 13px;
+
+    border-bottom:
+        1px solid #28313c;
 }
 
-.team-tracker p {
-    margin: 8px 0;
-
-    color: #aaa;
-}
-
-.team-tracker strong {
-    color: white;
-}
-
-
-/* ===============================
-   TEAM PLAYER LIST
-================================ */
-
-.player-list {
-    margin-top: 15px;
-    padding-top: 10px;
-
-    border-top: 1px solid #333;
-}
-
-.player-list div {
-    padding: 6px 0;
-
-    color: #ddd;
-}
-
-.player-list span {
-    color: #666;
-
-    font-style: italic;
-}
-
-
-/* ===============================
-   CURRENT PLAYER CARD
-================================ */
-
-.current-player {
-    width: 300px;
-    max-width: 100%;
-
-    margin: 0 auto 25px auto;
-
-    padding: 20px;
-
-    background: #151515;
-
-    border: 1px solid #333;
-    border-radius: 12px;
-}
-
-.current-player h2 {
-    margin: 15px 0 0 0;
-
-    font-size: 28px;
-}
-
-
-/* ===============================
-   PLAYER IMAGE
-================================ */
-
-.player-image-container {
-    width: 100%;
-    height: 350px;
+.team-header h3 {
+    margin: 0;
 
     overflow: hidden;
 
-    background: #0c0c0c;
+    text-overflow:
+        ellipsis;
 
-    border-radius: 8px;
+    white-space: nowrap;
+
+    font-size: 21px;
 }
 
-.player-image {
-    width: 100%;
-    height: 100%;
+.roster-count {
+    flex-shrink: 0;
 
+    padding:
+        5px 9px;
+
+    background: #242d38;
+
+    border-radius: 20px;
+
+    color: #cdd5df;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.budget-label {
+    margin-top: 15px;
+
+    font-size: 10px;
+
+    letter-spacing: 1.4px;
+
+    color: #7f8b98;
+}
+
+.budget-amount {
+    margin-top: 3px;
+
+    font-size: 28px;
+
+    font-weight: 900;
+}
+
+
+/* ==================================================
+   MINI TEAM ROSTER
+================================================== */
+
+.mini-roster {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(80px, 1fr)
+        );
+
+    gap: 9px;
+
+    margin-top: 18px;
+}
+
+.mini-player-card {
+    min-width: 0;
+
+    overflow: hidden;
+
+    background: #0b0f14;
+
+    border:
+        1px solid #252e39;
+
+    border-radius: 8px;
+
+    animation:
+        rosterPlayerIn
+        0.4s ease;
+}
+
+.mini-player-card img {
     display: block;
+
+    width: 100%;
+
+    height: 90px;
 
     object-fit: cover;
 
     object-position: center;
 }
 
+.mini-player-card span {
+    display: block;
 
-/* ===============================
-   AUCTION ACTION
-================================ */
+    overflow: hidden;
 
-.auction-action {
+    padding: 7px 5px;
+
+    text-align: center;
+
+    text-overflow:
+        ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 10px;
+
+    font-weight: bold;
+}
+
+.empty-roster {
+    grid-column:
+        1 / -1;
+
+    padding: 15px;
+
+    color: #65717e;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+/* ==================================================
+   MAIN PLAYER CARD
+================================================== */
+
+.current-player {
+    width: 290px;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    margin:
+        0 auto 20px;
+
+    background: #10161e;
+
+    border:
+        1px solid #303a46;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(
+            0,
+            0,
+            0,
+            0.4
+        );
+
+    animation:
+        playerCardIn
+        0.45s ease;
+}
+
+.player-image-container {
+    width: 100%;
+
+    height: 390px;
+
+    overflow: hidden;
+
+    background: #05070a;
+}
+
+.player-image {
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    object-position: center;
+}
+
+.player-card-name {
+    padding: 16px;
+
+    font-size: 23px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* ==================================================
+   ACTION PANEL
+================================================== */
+
+.action-container {
+    animation:
+        actionFade
+        0.25s ease;
+}
+
+.auction-action,
+.auction-result {
     width: 500px;
+
     max-width: 100%;
 
     margin: 0 auto;
 
     padding: 25px;
 
-    background: #151515;
+    background:
+        rgba(
+            15,
+            20,
+            27,
+            0.95
+        );
 
-    border: 1px solid #333;
-    border-radius: 10px;
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
 }
 
 .auction-action h3 {
-    margin-top: 0;
+    margin:
+        7px 0 10px;
 
-    font-size: 24px;
+    font-size: 25px;
+}
+
+.turn-label,
+.sold-label {
+    font-size: 11px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    color: #8e9aa7;
+}
+
+.current-bid-label {
+    margin-top: 10px;
+
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+
+    color: #74808d;
+}
+
+.current-bid {
+    margin:
+        3px 0 10px;
+
+    font-size: 38px;
+
+    font-weight: 900;
 }
 
 
-/* ===============================
-   AUCTION RESULT
-================================ */
-
-.auction-result {
-    width: 600px;
-    max-width: 100%;
-
-    margin: 25px auto;
-
-    padding: 25px;
-
-    background: #151515;
-
-    border: 1px solid #333;
-    border-radius: 10px;
-}
+/* ==================================================
+   WINNER
+================================================== */
 
 .auction-result h2 {
-    font-size: 32px;
+    margin:
+        10px 0;
+
+    font-size: 30px;
 }
 
-.auction-result h3 {
-    font-size: 26px;
+.winning-price {
+    margin-top: 15px;
+
+    font-size: 36px;
+
+    font-weight: 900;
 }
 
 .next-player-button {
-    max-width: 400px;
+    max-width: 500px;
+
+    margin:
+        15px auto 40px;
+
+    display: block;
 }
 
 
-/* ===============================
-   MOBILE
-================================ */
+/* ==================================================
+   ANIMATIONS
+================================================== */
 
-@media (max-width: 700px) {
+@keyframes screenFade {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+@keyframes playerCardIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes actionFade {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes rosterPlayerIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+}
+
+
+.winner-animation {
+    animation:
+        winnerPop
+        0.45s ease;
+}
+
+
+@keyframes winnerPop {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            scale(0.9);
+    }
+
+    70% {
+        transform:
+            scale(1.025);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            scale(1);
+    }
+}
+
+
+/* ==================================================
+   ACCESSIBILITY
+================================================== */
+
+@media (
+    prefers-reduced-motion:
+    reduce
+) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            0.01ms !important;
+
+        transition-duration:
+            0.01ms !important;
+    }
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media (
+    max-width: 700px
+) {
 
     h1 {
-        font-size: 34px;
+        font-size: 33px;
     }
 
     #auction-screen {
-        padding: 15px;
+        padding: 12px;
     }
 
     .team-trackers {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+    .team-tracker {
+        padding: 15px;
+    }
+
+    .budget-amount {
+        font-size: 23px;
+    }
+
+    .mini-roster {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(
+                    65px,
+                    1fr
+                )
+            );
+    }
+
+    .mini-player-card img {
+        height: 75px;
     }
 
     .current-player {
-        width: 260px;
+        width: 250px;
     }
 
     .player-image-container {
-        height: 320px;
+        height: 335px;
+    }
+
+    .auction-action,
+    .auction-result {
+        padding: 20px;
+    }
+
+    .current-bid {
+        font-size: 32px;
     }
 }
