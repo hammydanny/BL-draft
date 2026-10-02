@@ -5,6 +5,7 @@ let team2 = { name:"", color:"#ff315d", budget:0, players:[] };
 let bidIncrement = 50, maxPlayers = 15, startingBudget = 15000;
 let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder = null;
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
+let selectedPlayerIds = new Set(players.map(player => player.id));
 
 const setupScreen = document.getElementById("setup-screen");
 const auctionScreen = document.getElementById("auction-screen");
@@ -14,6 +15,17 @@ const overlayContent = document.getElementById("overlay-content");
 const playersRemainingDisplay = document.getElementById("playersRemaining");
 
 document.getElementById("startGame").addEventListener("click", startGame);
+document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
+document.getElementById("selectAllPlayers").addEventListener("click", () => {
+    selectedPlayerIds = new Set(players.map(player => player.id));
+    renderPlayerPool();
+});
+document.getElementById("clearAllPlayers").addEventListener("click", () => {
+    selectedPlayerIds.clear();
+    renderPlayerPool();
+});
+document.getElementById("maxPlayers").addEventListener("input", updatePoolStatus);
+
 ["team1Color","team2Color"].forEach(id => {
     const input = document.getElementById(id);
     const output = document.getElementById(id+"Value");
@@ -31,6 +43,66 @@ function hexToRgba(hex,a){
     return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
 }
 
+function renderPlayerPool(){
+    const grid=document.getElementById("playerPoolGrid");
+    const empty=document.getElementById("playerPoolEmpty");
+    const query=document.getElementById("playerSearch").value.trim().toLowerCase();
+
+    const visiblePlayers=players.filter(player =>
+        player.name.toLowerCase().includes(query)
+    );
+
+    grid.innerHTML=visiblePlayers.map(player => {
+        const selected=selectedPlayerIds.has(player.id);
+        return `<button type="button"
+            class="pool-player-card ${selected?"selected":""}"
+            data-player-id="${player.id}"
+            aria-pressed="${selected}">
+            <div class="pool-player-check">${selected?"✓":"+"}</div>
+            <img src="${player.image}" alt="${esc(player.name)}">
+            <div class="pool-player-info">
+                <span>PLAYER // ${String(player.id).padStart(2,"0")}</span>
+                <strong>${esc(player.name)}</strong>
+            </div>
+        </button>`;
+    }).join("");
+
+    grid.querySelectorAll(".pool-player-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const id=Number(card.dataset.playerId);
+            if(selectedPlayerIds.has(id)) selectedPlayerIds.delete(id);
+            else selectedPlayerIds.add(id);
+            renderPlayerPool();
+        });
+    });
+
+    empty.classList.toggle("hidden", visiblePlayers.length !== 0);
+    updatePoolStatus();
+}
+
+function updatePoolStatus(){
+    const count=document.getElementById("selectedPlayerCount");
+    const requirement=document.getElementById("poolRequirement");
+    const max=Number(document.getElementById("maxPlayers").value)||0;
+    const needed=max*2;
+    const selected=selectedPlayerIds.size;
+
+    count.textContent=`${selected} / ${players.length}`;
+
+    if(max<=0){
+        requirement.textContent="ENTER A VALID TEAM SIZE";
+        requirement.className="pool-requirement warning";
+    } else if(selected<needed){
+        requirement.textContent=`NEED ${needed} PLAYERS TO FILL BOTH TEAMS`;
+        requirement.className="pool-requirement warning";
+    } else {
+        requirement.textContent=`READY // ${selected} PLAYERS IN POOL`;
+        requirement.className="pool-requirement ready";
+    }
+}
+
+renderPlayerPool();
+
 function startGame(){
     const n1=document.getElementById("team1Name").value.trim();
     const n2=document.getElementById("team2Name").value.trim();
@@ -42,10 +114,18 @@ function startGame(){
     if(bidIncrement<=0) return alert("Bid interval must be greater than $0.");
     if(maxPlayers<=0) return alert("Maximum players must be greater than 0.");
 
+    const selectedPlayers=players.filter(player => selectedPlayerIds.has(player.id));
+    const requiredPlayers=maxPlayers*2;
+
+    if(selectedPlayers.length===0) return alert("Select at least one player for the auction.");
+    if(selectedPlayers.length<requiredPlayers){
+        return alert(`You need at least ${requiredPlayers} selected players to fill two teams of ${maxPlayers}. Select more players or lower the maximum players per team.`);
+    }
+
     startingBudget=budget;
     team1={name:n1,color:document.getElementById("team1Color").value,budget,players:[]};
     team2={name:n2,color:document.getElementById("team2Color").value,budget,players:[]};
-    remainingPlayers=[...players]; auctionHistory=[]; auctionNumber=0;
+    remainingPlayers=[...selectedPlayers]; auctionHistory=[]; auctionNumber=0;
     currentPlayer=null; currentBid=0; currentBidder=null;
     startingTeam=Math.random()<.5?1:2;
     setupScreen.classList.add("hidden"); auctionScreen.classList.remove("hidden");
