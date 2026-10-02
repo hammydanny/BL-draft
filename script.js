@@ -21,6 +21,7 @@ let team2 = {
 
 let bidIncrement = 50;
 let maxPlayers = 15;
+let startingBudget = 15000;
 
 let remainingPlayers = [];
 
@@ -29,8 +30,9 @@ let currentBid = 0;
 let currentBidder = null;
 
 let startingTeam = null;
-
 let auctionNumber = 0;
+
+let auctionHistory = [];
 
 
 // ==================================================
@@ -145,6 +147,9 @@ function startGame() {
     }
 
 
+    startingBudget = budget;
+
+
     team1 = {
         name: team1Name,
         budget: budget,
@@ -160,7 +165,15 @@ function startGame() {
 
     remainingPlayers = [...players];
 
+    auctionHistory = [];
+
     auctionNumber = 0;
+
+    currentPlayer = null;
+
+    currentBid = 0;
+
+    currentBidder = null;
 
 
     // Coin flip
@@ -181,7 +194,6 @@ function startGame() {
 
 
     updatePlayersRemaining();
-
 
     showCoinFlip();
 }
@@ -268,13 +280,13 @@ function startNextAuction() {
 
 
     currentBid = 0;
+
     currentBidder = null;
 
     auctionNumber++;
 
 
     updatePlayersRemaining();
-
 
     showPlayerReveal();
 }
@@ -349,7 +361,7 @@ function createPlayerCard() {
             <div class="player-card-bottom">
 
                 <div class="player-card-label">
-                    CURRENT PLAYER
+                    CURRENT PLAYER // AUCTION ${auctionNumber}
                 </div>
 
                 <div class="player-card-name">
@@ -494,7 +506,7 @@ function displayOpeningBid() {
             : team2;
 
 
-    // BOTH TEAMS BROKE
+    // BOTH TEAMS HAVE $0
 
     if (
         team1.budget === 0 &&
@@ -514,7 +526,7 @@ function displayOpeningBid() {
     }
 
 
-    // STARTER BROKE
+    // STARTER HAS $0
 
     if (
         starter.budget === 0
@@ -840,6 +852,7 @@ function displayBiddingTurn(
             <div class="bid-holder">
 
                 Held by
+
                 <strong>
                     ${holder.name}
                 </strong>
@@ -1081,8 +1094,12 @@ function awardPlayer(
             : team2;
 
 
-    winner.budget -=
+    const price =
         currentBid;
+
+
+    winner.budget -=
+        price;
 
 
     winner.players.push(
@@ -1090,9 +1107,29 @@ function awardPlayer(
     );
 
 
-    const price =
-        currentBid;
+    // Record completed auction
 
+    auctionHistory.push({
+
+        auction:
+            auctionNumber,
+
+        player:
+            currentPlayer,
+
+        teamNumber:
+            teamNumber,
+
+        teamName:
+            winner.name,
+
+        price:
+            price
+
+    });
+
+
+    // Alternate opening bidder
 
     startingTeam =
         startingTeam === 1
@@ -1193,16 +1230,15 @@ function displayZeroBudgetChoice(
         <div class="bid-panel">
 
             <p>
-
                 ${brokeTeam.name}
                 has no budget.
-
             </p>
 
 
             <p>
 
                 Buy
+
                 <strong>
                     ${currentPlayer.name}
                 </strong>
@@ -1343,7 +1379,9 @@ function buyWithControl(
     }
 
 
-    currentBid = bid;
+    currentBid =
+        bid;
+
 
     currentBidder =
         teamNumber;
@@ -1370,6 +1408,7 @@ function passWithControl(
 
 
     currentBid = 0;
+
 
     currentBidder =
         brokeTeamNumber;
@@ -1406,6 +1445,120 @@ function enableEnterKey(
 
 
 // ==================================================
+// AUCTION HISTORY PANEL
+// ==================================================
+
+function createAuctionHistoryPanel() {
+
+    const latestAuctions =
+        [...auctionHistory]
+            .reverse()
+            .slice(0, 6);
+
+
+    let historyHTML;
+
+
+    if (
+        latestAuctions.length === 0
+    ) {
+
+        historyHTML = `
+
+            <div class="history-empty">
+                Completed auctions will appear here.
+            </div>
+
+        `;
+
+    } else {
+
+        historyHTML =
+            latestAuctions
+                .map(item => `
+
+                    <div class="history-row">
+
+                        <img
+                            src="${item.player.image}"
+                            alt="${item.player.name}"
+                        >
+
+
+                        <div class="history-player">
+
+                            <strong>
+                                ${item.player.name}
+                            </strong>
+
+                            <span>
+                                AUCTION
+                                ${String(item.auction).padStart(2, "0")}
+                                //
+                                ${item.teamName}
+                            </span>
+
+                        </div>
+
+
+                        <div class="history-price">
+
+                            ${
+                                item.price === 0
+                                    ? "FREE"
+                                    : "$" +
+                                      item.price
+                                          .toLocaleString()
+                            }
+
+                        </div>
+
+                    </div>
+
+                `)
+                .join("");
+    }
+
+
+    return `
+
+        <section class="auction-history-panel">
+
+            <div class="history-heading">
+
+                <div>
+
+                    <span>
+                        TRANSFER LOG
+                    </span>
+
+                    <h3>
+                        AUCTION HISTORY
+                    </h3>
+
+                </div>
+
+
+                <b>
+                    ${auctionHistory.length}
+                </b>
+
+            </div>
+
+
+            <div class="history-list">
+
+                ${historyHTML}
+
+            </div>
+
+        </section>
+
+    `;
+}
+
+
+// ==================================================
 // RENDER AUCTION
 // ==================================================
 
@@ -1432,6 +1585,9 @@ function renderAuctionScreen(
                 </div>
 
             </div>
+
+
+            ${createAuctionHistoryPanel()}
 
         </div>
 
@@ -1468,6 +1624,7 @@ function showOverlay(
     overlayContent.innerHTML =
         html;
 
+
     gameOverlay.classList.remove(
         "hidden"
     );
@@ -1487,11 +1644,310 @@ function hideOverlay() {
             "hidden"
         );
 
+
         gameOverlay.classList.remove(
             "overlay-out"
         );
 
     }, 250);
+}
+
+
+// ==================================================
+// FINAL RESULTS HELPERS
+// ==================================================
+
+function getTeamHistory(
+    teamNumber
+) {
+
+    return auctionHistory.filter(
+        item =>
+            item.teamNumber ===
+            teamNumber
+    );
+}
+
+
+function getMostExpensiveSigning(
+    teamNumber
+) {
+
+    const signings =
+        getTeamHistory(
+            teamNumber
+        );
+
+
+    if (
+        signings.length === 0
+    ) {
+
+        return null;
+    }
+
+
+    return signings.reduce(
+        (
+            highest,
+            signing
+        ) => {
+
+            if (
+                signing.price >
+                highest.price
+            ) {
+
+                return signing;
+            }
+
+
+            return highest;
+        }
+    );
+}
+
+
+// ==================================================
+// FINAL TEAM CARD
+// ==================================================
+
+function createFinalTeamCard(
+    team,
+    teamNumber
+) {
+
+    const spent =
+        startingBudget -
+        team.budget;
+
+
+    const expensive =
+        getMostExpensiveSigning(
+            teamNumber
+        );
+
+
+    let rosterHTML;
+
+
+    if (
+        team.players.length === 0
+    ) {
+
+        rosterHTML = `
+
+            <div class="history-empty">
+                No players drafted.
+            </div>
+
+        `;
+
+    } else {
+
+        rosterHTML =
+            team.players
+                .map(player => `
+
+                    <div class="final-player">
+
+                        <img
+                            src="${player.image}"
+                            alt="${player.name}"
+                        >
+
+                        <span>
+                            ${player.name}
+                        </span>
+
+                    </div>
+
+                `)
+                .join("");
+    }
+
+
+    return `
+
+        <article class="final-team-card">
+
+
+            <div class="final-team-top">
+
+                <span>
+                    TEAM
+                    ${String(teamNumber).padStart(2, "0")}
+                </span>
+
+                <h3>
+                    ${team.name}
+                </h3>
+
+            </div>
+
+
+            <div class="final-stats">
+
+
+                <div>
+
+                    <span>
+                        PLAYERS
+                    </span>
+
+                    <strong>
+                        ${team.players.length}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        SPENT
+                    </span>
+
+                    <strong>
+                        $${spent.toLocaleString()}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        REMAINING
+                    </span>
+
+                    <strong>
+                        $${team.budget.toLocaleString()}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="biggest-signing">
+
+                <span>
+                    MOST EXPENSIVE SIGNING
+                </span>
+
+
+                <strong>
+
+                    ${
+                        expensive
+                            ? expensive.player.name
+                            : "—"
+                    }
+
+                </strong>
+
+
+                <b>
+
+                    ${
+                        expensive
+                            ? (
+                                expensive.price === 0
+                                    ? "FREE"
+                                    : "$" +
+                                      expensive.price
+                                          .toLocaleString()
+                            )
+                            : "—"
+                    }
+
+                </b>
+
+            </div>
+
+
+            <div class="final-roster">
+
+                ${rosterHTML}
+
+            </div>
+
+        </article>
+
+    `;
+}
+
+
+// ==================================================
+// COMPLETE HISTORY
+// ==================================================
+
+function createFullHistory() {
+
+    if (
+        auctionHistory.length === 0
+    ) {
+
+        return `
+
+            <div class="history-empty">
+                No completed auctions.
+            </div>
+
+        `;
+    }
+
+
+    return auctionHistory
+        .map(item => `
+
+            <div class="final-history-row">
+
+
+                <span class="history-number">
+
+                    ${String(item.auction).padStart(2, "0")}
+
+                </span>
+
+
+                <img
+                    src="${item.player.image}"
+                    alt="${item.player.name}"
+                >
+
+
+                <div>
+
+                    <strong>
+                        ${item.player.name}
+                    </strong>
+
+                    <span>
+                        ${item.teamName}
+                    </span>
+
+                </div>
+
+
+                <b>
+
+                    ${
+                        item.price === 0
+                            ? "FREE"
+                            : "$" +
+                              item.price
+                                  .toLocaleString()
+                    }
+
+                </b>
+
+            </div>
+
+        `)
+        .join("");
 }
 
 
@@ -1507,21 +1963,125 @@ function showAuctionComplete() {
 
     auctionContent.innerHTML = `
 
-        <div class="complete-screen">
+        <div class="complete-screen results-screen">
+
 
             <div class="complete-label">
-                DRAFT COMPLETE
+                EGO // AUCTION SYSTEM
             </div>
 
 
             <h2>
-                FINAL TEAMS
+                DRAFT COMPLETE
             </h2>
 
 
-            ${createTeamTrackers()}
+            <p class="results-subtitle">
+                FINAL SQUAD REPORT
+            </p>
+
+
+            <div class="final-team-grid">
+
+                ${createFinalTeamCard(
+                    team1,
+                    1
+                )}
+
+                ${createFinalTeamCard(
+                    team2,
+                    2
+                )}
+
+            </div>
+
+
+            <section class="full-history">
+
+
+                <div class="history-heading">
+
+                    <div>
+
+                        <span>
+                            COMPLETE RECORD
+                        </span>
+
+                        <h3>
+                            AUCTION HISTORY
+                        </h3>
+
+                    </div>
+
+
+                    <b>
+                        ${auctionHistory.length}
+                    </b>
+
+                </div>
+
+
+                <div class="full-history-list">
+
+                    ${createFullHistory()}
+
+                </div>
+
+            </section>
+
+
+            <button
+                id="restartAuctionButton"
+                class="primary-button restart-button"
+            >
+
+                NEW AUCTION
+
+            </button>
+
 
         </div>
 
     `;
+
+
+    document
+        .getElementById(
+            "restartAuctionButton"
+        )
+        .addEventListener(
+            "click",
+            restartAuction
+        );
+}
+
+
+// ==================================================
+// RESTART
+// ==================================================
+
+function restartAuction() {
+
+    auctionScreen.classList.add(
+        "hidden"
+    );
+
+
+    setupScreen.classList.remove(
+        "hidden"
+    );
+
+
+    auctionContent.innerHTML =
+        "";
+
+
+    playersRemainingDisplay.innerHTML =
+        "";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
