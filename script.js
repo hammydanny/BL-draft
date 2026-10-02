@@ -13,6 +13,13 @@ const auctionContent = document.getElementById("auction-content");
 const gameOverlay = document.getElementById("game-overlay");
 const overlayContent = document.getElementById("overlay-content");
 const playersRemainingDisplay = document.getElementById("playersRemaining");
+const formationScreen = document.getElementById("formation-screen");
+const formationContent = document.getElementById("formation-content");
+
+let formationTeamNumber = 1;
+let activeFormation = "4-3-3";
+let formationAssignments = { 1: {}, 2: {} };
+let selectedFormationPlayerId = null;
 
 document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
@@ -102,6 +109,25 @@ function updatePoolStatus(){
 }
 
 renderPlayerPool();
+
+const PLAYER_PRESETS = {
+    "all": players.map(p=>p.id),
+    "blue-lock": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+    "japan-u20": [2,4,5,6,8,10,13,15,18,19,20,22,23,24,25,26,27,28,29,30,31,37,38,39,40,41,42,43,44,55,66,67,68],
+    "world-five": [32,33,34,35,36],
+    "nel": [34,45,46,47,48,49,50,51,52,53,54,58,64,65],
+    "u20-world-cup": [34,44,53,54,55,56,57,58,59,60,61,62,63,64]
+};
+
+document.querySelectorAll("[data-preset]").forEach(button=>{
+    button.addEventListener("click",()=>{
+        const ids=PLAYER_PRESETS[button.dataset.preset]||[];
+        selectedPlayerIds=new Set(ids.filter(id=>players.some(p=>p.id===id)));
+        renderPlayerPool();
+        document.querySelectorAll("[data-preset]").forEach(b=>b.classList.remove("active"));
+        button.classList.add("active");
+    });
+});
 
 function startGame(){
     const n1=document.getElementById("team1Name").value.trim();
@@ -374,8 +400,12 @@ function showAuctionComplete(){
       <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
-      <button id="restartAuctionButton" class="primary-button restart-button"><span>NEW AUCTION</span><b>↻</b></button>
+      <div class="results-actions">
+        <button id="formationBuilderButton" class="primary-button restart-button"><span>BUILD FORMATIONS</span><b>⚽</b></button>
+        <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
+      </div>
     </div>`;
+    document.getElementById("formationBuilderButton").addEventListener("click",openFormationBuilder);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
 }
 function restartAuction(){
@@ -383,3 +413,120 @@ function restartAuction(){
     auctionContent.innerHTML="";playersRemainingDisplay.innerHTML="";
     window.scrollTo({top:0,behavior:"smooth"});
 }
+
+
+const FORMATIONS = {
+ "4-3-3":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:25,y:47,label:"CM"},{x:50,y:53,label:"CM"},{x:75,y:47,label:"CM"},
+  {x:18,y:22,label:"LW"},{x:50,y:15,label:"ST"},{x:82,y:22,label:"RW"}],
+ "4-4-2":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:16,y:45,label:"LM"},{x:39,y:51,label:"CM"},{x:61,y:51,label:"CM"},{x:84,y:45,label:"RM"},
+  {x:37,y:19,label:"ST"},{x:63,y:19,label:"ST"}],
+ "4-2-3-1":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:38,y:55,label:"DM"},{x:62,y:55,label:"DM"},
+  {x:18,y:34,label:"LW"},{x:50,y:38,label:"AM"},{x:82,y:34,label:"RW"},
+  {x:50,y:14,label:"ST"}],
+ "3-4-3":[
+  {x:50,y:88,label:"GK"},
+  {x:25,y:70,label:"CB"},{x:50,y:74,label:"CB"},{x:75,y:70,label:"CB"},
+  {x:15,y:48,label:"LM"},{x:39,y:53,label:"CM"},{x:61,y:53,label:"CM"},{x:85,y:48,label:"RM"},
+  {x:18,y:22,label:"LW"},{x:50,y:15,label:"ST"},{x:82,y:22,label:"RW"}],
+ "3-5-2":[
+  {x:50,y:88,label:"GK"},
+  {x:25,y:70,label:"CB"},{x:50,y:74,label:"CB"},{x:75,y:70,label:"CB"},
+  {x:14,y:47,label:"LWB"},{x:35,y:52,label:"CM"},{x:50,y:43,label:"AM"},{x:65,y:52,label:"CM"},{x:86,y:47,label:"RWB"},
+  {x:37,y:18,label:"ST"},{x:63,y:18,label:"ST"}]
+};
+
+function openFormationBuilder(){
+    auctionScreen.classList.add("hidden");
+    formationScreen.classList.remove("hidden");
+    formationTeamNumber=1; activeFormation="4-3-3"; selectedFormationPlayerId=null;
+    formationAssignments={1:{},2:{}};
+    autoFillFormation(1); autoFillFormation(2);
+    renderFormationBuilder();
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+function autoFillFormation(n){
+    const team=teamByNumber(n), slots=FORMATIONS[activeFormation];
+    formationAssignments[n]={};
+    team.players.slice(0,11).forEach((p,i)=>formationAssignments[n][i]=p.id);
+}
+function switchFormationTeam(n){formationTeamNumber=n;selectedFormationPlayerId=null;renderFormationBuilder();}
+function changeFormation(name){
+    activeFormation=name; selectedFormationPlayerId=null;
+    autoFillFormation(formationTeamNumber); renderFormationBuilder();
+}
+function getFormationPlayer(n,slotIndex){
+    const id=formationAssignments[n][slotIndex];
+    return teamByNumber(n).players.find(p=>p.id===id)||null;
+}
+function assignedIds(n){return new Set(Object.values(formationAssignments[n]).filter(Boolean));}
+function clickFormationSlot(slotIndex){
+    const n=formationTeamNumber;
+    const current=getFormationPlayer(n,slotIndex);
+    if(selectedFormationPlayerId){
+        const existingSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===selectedFormationPlayerId);
+        if(existingSlot!==undefined) delete formationAssignments[n][existingSlot];
+        if(current && existingSlot!==undefined) formationAssignments[n][existingSlot]=current.id;
+        formationAssignments[n][slotIndex]=selectedFormationPlayerId;
+        selectedFormationPlayerId=null;
+    }else if(current){
+        selectedFormationPlayerId=current.id;
+    }
+    renderFormationBuilder();
+}
+function selectBenchPlayer(id){
+    if(selectedFormationPlayerId===id) selectedFormationPlayerId=null;
+    else selectedFormationPlayerId=id;
+    renderFormationBuilder();
+}
+function renderFormationBuilder(){
+    const team=teamByNumber(formationTeamNumber);
+    const slots=FORMATIONS[activeFormation];
+    const used=assignedIds(formationTeamNumber);
+    const bench=team.players.filter(p=>!used.has(p.id));
+    formationContent.innerHTML=`
+      <div class="formation-topbar">
+        <div class="formation-team-tabs">
+          ${[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})">${esc(t.name)}</button>`}).join("")}
+        </div>
+        <div class="formation-picker">
+          ${Object.keys(FORMATIONS).map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+        </div>
+      </div>
+      <div class="formation-instructions" style="${teamVars(team)}">
+        <span>TACTICAL BOARD // ${esc(team.name)}</span>
+        <strong>${selectedFormationPlayerId?"PLAYER SELECTED — CLICK A POSITION TO MOVE/SWAP":"CLICK A PLAYER, THEN CLICK ANOTHER POSITION TO SWAP"}</strong>
+      </div>
+      <div class="formation-layout">
+        <div class="football-pitch" style="${teamVars(team)}">
+          <div class="pitch-halfway"></div><div class="pitch-circle"></div>
+          <div class="penalty-box top"></div><div class="penalty-box bottom"></div>
+          ${slots.map((s,i)=>{
+             const p=getFormationPlayer(formationTeamNumber,i);
+             const selected=p&&p.id===selectedFormationPlayerId;
+             return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""}" style="left:${s.x}%;top:${s.y}%" onclick="clickFormationSlot(${i})">
+                <span class="slot-position">${s.label}</span>
+                ${p?`<img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>`:`<span class="empty-slot">+</span>`}
+             </button>`;
+          }).join("")}
+        </div>
+        <aside class="bench-panel" style="${teamVars(team)}">
+          <div class="bench-heading"><span>RESERVES</span><strong>${bench.length}</strong></div>
+          <div class="bench-list">
+            ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}" onclick="selectBenchPlayer(${p.id})"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span></button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
+          </div>
+        </aside>
+      </div>`;
+}
+document.getElementById("backToResults").addEventListener("click",()=>{
+    formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+});
