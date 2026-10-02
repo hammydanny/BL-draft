@@ -186,6 +186,39 @@ function displayOpeningBid() {
     const startingTeamObject =
         startingTeam === 1 ? team1 : team2;
 
+    // ===============================
+    // ZERO-BUDGET RULE
+    // ===============================
+
+    // If BOTH teams have $0,
+    // the scheduled starting team gets the player for free.
+
+    if (team1.budget === 0 && team2.budget === 0) {
+
+        currentBid = 0;
+        currentBidder = startingTeam;
+
+        awardPlayer(startingTeam);
+
+        return;
+    }
+
+
+// If the scheduled starting team has $0
+// but the other team still has money,
+// give control to the team with money.
+
+if (startingTeamObject.budget === 0) {
+
+    const teamWithMoneyNumber =
+        startingTeam === 1 ? 2 : 1;
+
+    displayZeroBudgetChoice(teamWithMoneyNumber);
+
+    return;
+}
+
+
 
     document.getElementById("auction-content").innerHTML = `
 
@@ -312,6 +345,9 @@ function displayBiddingTurn(teamNumber) {
 
     const team =
         teamNumber === 1 ? team1 : team2;
+
+
+
 
 
     document.getElementById("auction-content").innerHTML = `
@@ -641,4 +677,164 @@ function showAuctionComplete() {
 
         </div>
     `;
+}
+
+// ===============================
+// ZERO-BUDGET CHOICE
+// ===============================
+
+function displayZeroBudgetChoice(teamNumber) {
+
+    const teamWithMoney =
+        teamNumber === 1 ? team1 : team2;
+
+    const zeroBudgetTeam =
+        teamNumber === 1 ? team2 : team1;
+
+
+    document.getElementById("auction-content").innerHTML = `
+
+        ${createTeamTrackers()}
+
+        <div class="current-player">
+
+            <h2>${currentPlayer.name}</h2>
+
+            <p>
+                ${zeroBudgetTeam.name} has no remaining budget.
+            </p>
+
+        </div>
+
+
+        <div class="auction-action">
+
+            <p>
+                <strong>${teamWithMoney.name}</strong>
+                has control of this auction.
+            </p>
+
+            <p>
+                Enter how much you want to pay for
+                ${currentPlayer.name}, or pass.
+            </p>
+
+            <input
+                type="number"
+                id="controlBid"
+                placeholder="Enter bid"
+            >
+
+            <button id="buyPlayerButton">
+                BUY PLAYER
+            </button>
+
+            <button id="controlPassButton">
+                PASS
+            </button>
+
+        </div>
+    `;
+
+
+    document
+        .getElementById("buyPlayerButton")
+        .addEventListener(
+            "click",
+            () => buyWithControl(teamNumber)
+        );
+
+
+    document
+        .getElementById("controlPassButton")
+        .addEventListener(
+            "click",
+            () => passWithControl(teamNumber)
+        );
+}
+// ===============================
+// BUY WITH CONTROL
+// ===============================
+
+function buyWithControl(teamNumber) {
+
+    const team =
+        teamNumber === 1 ? team1 : team2;
+
+
+    const bid =
+        Number(document.getElementById("controlBid").value);
+
+
+    // Bid must be positive
+
+    if (bid <= 0) {
+
+        alert("Please enter a valid bid.");
+
+        return;
+    }
+
+
+    // Bid must follow the chosen interval
+
+    if (bid % bidIncrement !== 0) {
+
+        alert(
+            `Your bid must be in intervals of $${bidIncrement}.`
+        );
+
+        return;
+    }
+
+
+    // Cannot spend more than remaining budget
+
+    if (bid > team.budget) {
+
+        alert("You cannot afford this bid.");
+
+        return;
+    }
+
+
+    // Make sure roster isn't full
+
+    if (team.players.length >= maxPlayers) {
+
+        alert("Your team has reached the maximum roster size.");
+
+        return;
+    }
+
+
+    currentBid = bid;
+
+    currentBidder = teamNumber;
+
+
+    // The other team has $0,
+    // so they cannot counter.
+
+    awardPlayer(teamNumber);
+}
+// ===============================
+// PASS WITH CONTROL
+// ===============================
+
+function passWithControl(teamNumber) {
+
+    // The team with $0 receives
+    // the player for free.
+
+    const zeroBudgetTeamNumber =
+        teamNumber === 1 ? 2 : 1;
+
+
+    currentBid = 0;
+
+    currentBidder = zeroBudgetTeamNumber;
+
+
+    awardPlayer(zeroBudgetTeamNumber);
 }
