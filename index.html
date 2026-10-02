@@ -65,6 +65,31 @@
             <label for="maxPlayers">MAX PLAYERS PER TEAM</label>
             <input type="number" id="maxPlayers" value="15" min="1">
 
+            <div class="setup-section-title">PLAYER POOL</div>
+
+            <div class="player-pool-toolbar">
+                <div class="player-search-wrap">
+                    <span>⌕</span>
+                    <input type="search" id="playerSearch" placeholder="SEARCH PLAYERS..." autocomplete="off">
+                </div>
+
+                <div class="pool-actions">
+                    <button type="button" id="selectAllPlayers">SELECT ALL</button>
+                    <button type="button" id="clearAllPlayers">CLEAR ALL</button>
+                </div>
+            </div>
+
+            <div class="pool-status">
+                <div>
+                    <span>SELECTED</span>
+                    <strong id="selectedPlayerCount">0 / 0</strong>
+                </div>
+                <div id="poolRequirement" class="pool-requirement">SELECT PLAYERS FOR THE AUCTION</div>
+            </div>
+
+            <div id="playerPoolGrid" class="player-pool-grid"></div>
+            <div id="playerPoolEmpty" class="player-pool-empty hidden">NO PLAYERS MATCH YOUR SEARCH.</div>
+
             <button id="startGame" class="primary-button">
                 <span>INITIALIZE AUCTION</span><b>→</b>
             </button>
