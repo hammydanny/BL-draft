@@ -2,62 +2,201 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Blue Lock Auction</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-    <!-- SETUP SCREEN -->
 
-    <div id="setup-screen">
+    <!-- =====================================
+         SETUP SCREEN
+    ====================================== -->
 
-        <h1>BLUE LOCK AUCTION</h1>
+    <section id="setup-screen">
 
-        <p>Build your ultimate Blue Lock team.</p>
+        <div class="setup-logo">
+
+            <div class="logo-small">
+                TEAM BUILDER
+            </div>
+
+            <h1>
+                BLUE LOCK
+                <span>AUCTION</span>
+            </h1>
+
+            <p>
+                Draft. Bid. Build your team.
+            </p>
+
+        </div>
+
 
         <div class="setup-box">
 
-            <label for="team1Name">TEAM 1 NAME</label>
-            <input type="text" id="team1Name" value="TEAM 1">
 
-            <label for="team2Name">TEAM 2 NAME</label>
-            <input type="text" id="team2Name" value="TEAM 2">
+            <div class="setup-section-title">
+                TEAMS
+            </div>
 
-            <label for="budget">TEAM BUDGET</label>
-            <input type="number" id="budget" value="15000">
 
-            <label for="bidIncrement">BID INCREMENT</label>
-            <input type="number" id="bidIncrement" value="50">
+            <label for="team1Name">
+                TEAM 1
+            </label>
 
-            <label for="maxPlayers">MAX PLAYERS PER TEAM</label>
-            <input type="number" id="maxPlayers" value="15">
+            <input
+                type="text"
+                id="team1Name"
+                value="TEAM 1"
+                maxlength="20"
+            >
 
-            <button id="startGame">START AUCTION</button>
+
+            <label for="team2Name">
+                TEAM 2
+            </label>
+
+            <input
+                type="text"
+                id="team2Name"
+                value="TEAM 2"
+                maxlength="20"
+            >
+
+
+            <div class="setup-section-title">
+                AUCTION SETTINGS
+            </div>
+
+
+            <label for="budget">
+                STARTING BUDGET
+            </label>
+
+            <input
+                type="number"
+                id="budget"
+                value="15000"
+                min="50"
+                step="50"
+            >
+
+
+            <label for="bidIncrement">
+                BID INTERVAL
+            </label>
+
+            <input
+                type="number"
+                id="bidIncrement"
+                value="50"
+                min="1"
+            >
+
+
+            <label for="maxPlayers">
+                MAX PLAYERS PER TEAM
+            </label>
+
+            <input
+                type="number"
+                id="maxPlayers"
+                value="15"
+                min="1"
+            >
+
+
+            <button
+                id="startGame"
+                class="primary-button"
+            >
+
+                START AUCTION
+
+            </button>
 
         </div>
 
-    </div>
+    </section>
 
 
-    <!-- AUCTION SCREEN -->
 
-    <div id="auction-screen" class="hidden">
+    <!-- =====================================
+         AUCTION SCREEN
+    ====================================== -->
 
-        <h1>BLUE LOCK AUCTION</h1>
+    <section
+        id="auction-screen"
+        class="hidden"
+    >
+
+        <header class="game-header">
+
+            <div>
+
+                <div class="game-header-small">
+                    BLUE LOCK
+                </div>
+
+                <h1>
+                    AUCTION
+                </h1>
+
+            </div>
+
+
+            <div
+                id="playersRemaining"
+                class="players-remaining"
+            >
+            </div>
+
+        </header>
+
 
         <div id="auction-content">
-            <!-- Auction will appear here -->
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         OVERLAY
+    ====================================== -->
+
+    <div
+        id="game-overlay"
+        class="game-overlay hidden"
+    >
+
+        <div
+            id="overlay-content"
+            class="overlay-content"
+        >
         </div>
 
     </div>
+
 
 
     <script src="players.js"></script>
+
     <script src="script.js"></script>
 
 </body>
