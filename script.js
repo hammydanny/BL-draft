@@ -14,10 +14,6 @@ function startGame() {
         document.getElementById("budget").value
     );
 
-    const startingBid = Number(
-        document.getElementById("startingBid").value
-    );
-
     const bidIncrement = Number(
         document.getElementById("bidIncrement").value
     );
@@ -30,7 +26,6 @@ function startGame() {
     console.log("Team 1:", team1Name);
     console.log("Team 2:", team2Name);
     console.log("Budget:", budget);
-    console.log("Starting bid:", startingBid);
     console.log("Bid increment:", bidIncrement);
     console.log("Maximum players:", maxPlayers);
 
