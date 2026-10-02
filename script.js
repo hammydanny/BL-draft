@@ -226,6 +226,12 @@ if (startingTeamObject.budget === 0) {
 
         <div class="current-player">
 
+            <img
+                class="player-image"
+                src="${currentPlayer.image}"
+                alt="${currentPlayer.name}"
+            >
+
             <h2>${currentPlayer.name}</h2>
 
         </div>
@@ -697,6 +703,12 @@ function displayZeroBudgetChoice(teamNumber) {
         ${createTeamTrackers()}
 
         <div class="current-player">
+
+            <img
+                class="player-image"
+                src="${currentPlayer.image}"
+                alt="${currentPlayer.name}"
+            >
 
             <h2>${currentPlayer.name}</h2>
 
