@@ -1,6 +1,12 @@
-// ===============================
-// GAME SETTINGS
-// ===============================
+// ==================================================
+// BLUE LOCK AUCTION
+// MAIN GAME SCRIPT
+// ==================================================
+
+
+// ==================================================
+// GAME DATA
+// ==================================================
 
 let team1 = {
     name: "",
@@ -17,71 +23,111 @@ let team2 = {
 let bidIncrement = 50;
 let maxPlayers = 15;
 
-
-// ===============================
-// AUCTION VARIABLES
-// ===============================
-
 let remainingPlayers = [];
+
 let currentPlayer = null;
 let currentBid = 0;
 let currentBidder = null;
+
 let startingTeam = null;
 
 
-// ===============================
+// ==================================================
 // HTML ELEMENTS
-// ===============================
+// ==================================================
 
-const setupScreen = document.getElementById("setup-screen");
-const auctionScreen = document.getElementById("auction-screen");
-const startGameButton = document.getElementById("startGame");
+const setupScreen =
+    document.getElementById("setup-screen");
 
-startGameButton.addEventListener("click", startGame);
+const auctionScreen =
+    document.getElementById("auction-screen");
+
+const startGameButton =
+    document.getElementById("startGame");
+
+const auctionContent =
+    document.getElementById("auction-content");
 
 
-// ===============================
+startGameButton.addEventListener(
+    "click",
+    startGame
+);
+
+
+// ==================================================
 // START GAME
-// ===============================
+// ==================================================
 
 function startGame() {
 
     const team1Name =
-        document.getElementById("team1Name").value.trim();
+        document.getElementById("team1Name")
+            .value
+            .trim();
 
     const team2Name =
-        document.getElementById("team2Name").value.trim();
+        document.getElementById("team2Name")
+            .value
+            .trim();
 
     const budget =
-        Number(document.getElementById("budget").value);
+        Number(
+            document.getElementById("budget").value
+        );
 
     bidIncrement =
-        Number(document.getElementById("bidIncrement").value);
+        Number(
+            document.getElementById("bidIncrement").value
+        );
 
     maxPlayers =
-        Number(document.getElementById("maxPlayers").value);
+        Number(
+            document.getElementById("maxPlayers").value
+        );
 
+
+    // VALIDATION
 
     if (!team1Name || !team2Name) {
+
         alert("Please enter names for both teams.");
+
         return;
     }
+
 
     if (budget <= 0) {
-        alert("Team budget must be greater than $0.");
+
+        alert(
+            "Team budget must be greater than $0."
+        );
+
         return;
     }
+
 
     if (bidIncrement <= 0) {
-        alert("Bid increment must be greater than $0.");
+
+        alert(
+            "Bid increment must be greater than $0."
+        );
+
         return;
     }
+
 
     if (maxPlayers <= 0) {
-        alert("Maximum players must be greater than 0.");
+
+        alert(
+            "Maximum players must be greater than 0."
+        );
+
         return;
     }
 
+
+    // CREATE TEAMS
 
     team1 = {
         name: team1Name,
@@ -96,41 +142,69 @@ function startGame() {
     };
 
 
+    // COPY PLAYER POOL
+
     remainingPlayers = [...players];
+
+
+    // COIN FLIP
 
     startingTeam =
         Math.random() < 0.5 ? 1 : 2;
 
 
+    // CHANGE SCREEN
+
     setupScreen.classList.add("hidden");
+
     auctionScreen.classList.remove("hidden");
+
 
     startNextAuction();
 }
 
 
-// ===============================
+// ==================================================
 // START NEXT AUCTION
-// ===============================
+// ==================================================
 
 function startNextAuction() {
 
+    // CHECK PLAYER POOL
+
     if (remainingPlayers.length === 0) {
+
         showAuctionComplete();
+
         return;
     }
 
 
+    // RANDOM PLAYER
+
     const randomIndex =
-        Math.floor(Math.random() * remainingPlayers.length);
+        Math.floor(
+            Math.random() *
+            remainingPlayers.length
+        );
+
 
     currentPlayer =
         remainingPlayers[randomIndex];
 
-    remainingPlayers.splice(randomIndex, 1);
 
+    // REMOVE FROM AVAILABLE POOL
+
+    remainingPlayers.splice(
+        randomIndex,
+        1
+    );
+
+
+    // RESET AUCTION
 
     currentBid = 0;
+
     currentBidder = null;
 
 
@@ -138,13 +212,14 @@ function startNextAuction() {
 }
 
 
-// ===============================
+// ==================================================
 // PLAYER CARD
-// ===============================
+// ==================================================
 
 function createPlayerCard() {
 
     return `
+
         <div class="current-player">
 
             <div class="player-image-container">
@@ -157,83 +232,222 @@ function createPlayerCard() {
 
             </div>
 
-            <h2>${currentPlayer.name}</h2>
+            <div class="player-card-name">
+
+                ${currentPlayer.name}
+
+            </div>
 
         </div>
+
     `;
 }
 
 
-// ===============================
-// DISPLAY OPENING BID
-// ===============================
+// ==================================================
+// TEAM TRACKERS
+// ==================================================
+
+function createTeamTrackers() {
+
+    return `
+
+        <div class="team-trackers">
+
+            ${createTeamTracker(team1, 1)}
+
+            ${createTeamTracker(team2, 2)}
+
+        </div>
+
+    `;
+}
+
+
+// ==================================================
+// SINGLE TEAM TRACKER
+// ==================================================
+
+function createTeamTracker(team, teamNumber) {
+
+    let playerCards = "";
+
+
+    if (team.players.length === 0) {
+
+        playerCards = `
+
+            <div class="empty-roster">
+
+                No players drafted yet
+
+            </div>
+
+        `;
+
+    } else {
+
+        playerCards =
+            team.players
+                .map(player => `
+
+                    <div class="mini-player-card">
+
+                        <img
+                            src="${player.image}"
+                            alt="${player.name}"
+                        >
+
+                        <span>
+                            ${player.name}
+                        </span>
+
+                    </div>
+
+                `)
+                .join("");
+    }
+
+
+    return `
+
+        <div class="team-tracker team-${teamNumber}">
+
+            <div class="team-header">
+
+                <h3>
+                    ${team.name}
+                </h3>
+
+                <span class="roster-count">
+
+                    ${team.players.length}
+                    /
+                    ${maxPlayers}
+
+                </span>
+
+            </div>
+
+
+            <div class="budget-label">
+
+                REMAINING BUDGET
+
+            </div>
+
+
+            <div class="budget-amount">
+
+                $${team.budget.toLocaleString()}
+
+            </div>
+
+
+            <div class="mini-roster">
+
+                ${playerCards}
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+// ==================================================
+// OPENING BID
+// ==================================================
 
 function displayOpeningBid() {
 
     const startingTeamObject =
-        startingTeam === 1 ? team1 : team2;
+        startingTeam === 1
+            ? team1
+            : team2;
 
 
     // BOTH TEAMS HAVE $0
-    // Scheduled starting team gets player for free.
 
-    if (team1.budget === 0 && team2.budget === 0) {
+    if (
+        team1.budget === 0 &&
+        team2.budget === 0
+    ) {
 
         currentBid = 0;
-        currentBidder = startingTeam;
 
-        awardPlayer(startingTeam);
+        currentBidder =
+            startingTeam;
+
+        awardPlayer(
+            startingTeam
+        );
 
         return;
     }
 
 
     // STARTING TEAM HAS $0
-    // Other team gets control.
 
-    if (startingTeamObject.budget === 0) {
+    if (
+        startingTeamObject.budget === 0
+    ) {
 
-        const teamWithMoneyNumber =
-            startingTeam === 1 ? 2 : 1;
+        const teamWithMoney =
+            startingTeam === 1
+                ? 2
+                : 1;
 
-        displayZeroBudgetChoice(teamWithMoneyNumber);
+
+        displayZeroBudgetChoice(
+            teamWithMoney
+        );
 
         return;
     }
 
 
-    document.getElementById("auction-content").innerHTML = `
-
-        ${createTeamTrackers()}
-
-        ${createPlayerCard()}
+    renderAuctionScreen(`
 
         <div class="auction-action">
 
+            <div class="turn-label">
+                OPENING BID
+            </div>
+
+            <h3>
+                ${startingTeamObject.name}
+            </h3>
+
             <p>
-                <strong>${startingTeamObject.name}</strong>
-                starts the bidding.
+                Choose your opening bid.
             </p>
 
-            <p>Choose your opening bid.</p>
 
             <input
                 type="number"
                 id="openingBid"
-                placeholder="Enter opening bid"
+                placeholder="Enter bid"
                 step="${bidIncrement}"
             >
 
+
             <button id="placeOpeningBid">
+
                 PLACE OPENING BID
+
             </button>
 
         </div>
-    `;
+
+    `);
 
 
     document
-        .getElementById("placeOpeningBid")
+        .getElementById(
+            "placeOpeningBid"
+        )
         .addEventListener(
             "click",
             placeOpeningBid
@@ -241,28 +455,42 @@ function displayOpeningBid() {
 }
 
 
-// ===============================
+// ==================================================
 // PLACE OPENING BID
-// ===============================
+// ==================================================
 
 function placeOpeningBid() {
 
     const openingBid =
-        Number(document.getElementById("openingBid").value);
+        Number(
+            document
+                .getElementById(
+                    "openingBid"
+                )
+                .value
+        );
 
 
     const startingTeamObject =
-        startingTeam === 1 ? team1 : team2;
+        startingTeam === 1
+            ? team1
+            : team2;
 
 
     if (openingBid <= 0) {
 
-        alert("Please enter a valid bid.");
+        alert(
+            "Please enter a valid bid."
+        );
+
         return;
     }
 
 
-    if (openingBid % bidIncrement !== 0) {
+    if (
+        openingBid %
+        bidIncrement !== 0
+    ) {
 
         alert(
             `Your bid must be in intervals of $${bidIncrement}.`
@@ -272,7 +500,10 @@ function placeOpeningBid() {
     }
 
 
-    if (openingBid > startingTeamObject.budget) {
+    if (
+        openingBid >
+        startingTeamObject.budget
+    ) {
 
         alert(
             "You cannot bid more than your remaining budget."
@@ -283,7 +514,9 @@ function placeOpeningBid() {
 
 
     if (
-        startingTeamObject.players.length >= maxPlayers
+        startingTeamObject
+            .players
+            .length >= maxPlayers
     ) {
 
         alert(
@@ -294,81 +527,107 @@ function placeOpeningBid() {
     }
 
 
-    currentBid = openingBid;
-    currentBidder = startingTeam;
+    currentBid =
+        openingBid;
+
+    currentBidder =
+        startingTeam;
 
 
     const otherTeam =
-        startingTeam === 1 ? 2 : 1;
+        startingTeam === 1
+            ? 2
+            : 1;
 
-
-    // If the other team has no money,
-    // the opening bidder automatically wins.
 
     const otherTeamObject =
-        otherTeam === 1 ? team1 : team2;
+        otherTeam === 1
+            ? team1
+            : team2;
 
-    if (otherTeamObject.budget === 0) {
 
-        awardPlayer(startingTeam);
+    // OTHER TEAM CANNOT COUNTER
+
+    if (
+        otherTeamObject.budget === 0
+    ) {
+
+        awardPlayer(
+            startingTeam
+        );
+
         return;
     }
 
 
-    displayBiddingTurn(otherTeam);
+    displayBiddingTurn(
+        otherTeam
+    );
 }
 
 
-// ===============================
-// DISPLAY BIDDING TURN
-// ===============================
+// ==================================================
+// BIDDING TURN
+// ==================================================
 
 function displayBiddingTurn(teamNumber) {
 
     const team =
-        teamNumber === 1 ? team1 : team2;
+        teamNumber === 1
+            ? team1
+            : team2;
 
-
-    // If this team has no money,
-    // they cannot counter the current bid.
 
     if (team.budget === 0) {
 
-        awardPlayer(currentBidder);
+        awardPlayer(
+            currentBidder
+        );
+
         return;
     }
 
 
-    const currentHolder =
-        currentBidder === 1 ? team1 : team2;
+    const holder =
+        currentBidder === 1
+            ? team1
+            : team2;
 
 
-    document.getElementById("auction-content").innerHTML = `
-
-        ${createTeamTrackers()}
-
-        ${createPlayerCard()}
+    renderAuctionScreen(`
 
         <div class="auction-action">
 
-            <h3>
-                Current Bid:
+            <div class="turn-label">
+
+                ${team.name}'S TURN
+
+            </div>
+
+
+            <div class="current-bid-label">
+
+                CURRENT BID
+
+            </div>
+
+
+            <div class="current-bid">
+
                 $${currentBid.toLocaleString()}
-            </h3>
+
+            </div>
+
 
             <p>
-                Current holder:
-                <strong>${currentHolder.name}</strong>
+
+                Highest bidder:
+                <strong>
+                    ${holder.name}
+                </strong>
+
             </p>
 
-            <p>
-                <strong>${team.name}</strong>'s turn
-            </p>
-
-            <p>
-                Enter any bid higher than
-                $${currentBid.toLocaleString()}.
-            </p>
 
             <input
                 type="number"
@@ -377,53 +636,78 @@ function displayBiddingTurn(teamNumber) {
                 step="${bidIncrement}"
             >
 
+
             <button id="placeBidButton">
+
                 PLACE BID
+
             </button>
+
 
             <button
                 id="passButton"
                 class="secondary-button"
             >
+
                 PASS
+
             </button>
 
         </div>
-    `;
+
+    `);
 
 
     document
-        .getElementById("placeBidButton")
+        .getElementById(
+            "placeBidButton"
+        )
         .addEventListener(
             "click",
-            () => placeBid(teamNumber)
+            () =>
+                placeBid(
+                    teamNumber
+                )
         );
 
 
     document
-        .getElementById("passButton")
+        .getElementById(
+            "passButton"
+        )
         .addEventListener(
             "click",
-            () => passBid(teamNumber)
+            passBid
         );
 }
 
 
-// ===============================
+// ==================================================
 // PLACE BID
-// ===============================
+// ==================================================
 
 function placeBid(teamNumber) {
 
     const team =
-        teamNumber === 1 ? team1 : team2;
+        teamNumber === 1
+            ? team1
+            : team2;
 
 
     const newBid =
-        Number(document.getElementById("nextBid").value);
+        Number(
+            document
+                .getElementById(
+                    "nextBid"
+                )
+                .value
+        );
 
 
-    if (newBid <= currentBid) {
+    if (
+        newBid <=
+        currentBid
+    ) {
 
         alert(
             `Your bid must be higher than $${currentBid.toLocaleString()}.`
@@ -433,7 +717,10 @@ function placeBid(teamNumber) {
     }
 
 
-    if (newBid % bidIncrement !== 0) {
+    if (
+        newBid %
+        bidIncrement !== 0
+    ) {
 
         alert(
             `Your bid must be in intervals of $${bidIncrement}.`
@@ -443,14 +730,23 @@ function placeBid(teamNumber) {
     }
 
 
-    if (newBid > team.budget) {
+    if (
+        newBid >
+        team.budget
+    ) {
 
-        alert("You cannot afford this bid.");
+        alert(
+            "You cannot afford this bid."
+        );
+
         return;
     }
 
 
-    if (team.players.length >= maxPlayers) {
+    if (
+        team.players.length >=
+        maxPlayers
+    ) {
 
         alert(
             "Your team has reached the maximum roster size."
@@ -460,91 +756,111 @@ function placeBid(teamNumber) {
     }
 
 
-    currentBid = newBid;
-    currentBidder = teamNumber;
+    currentBid =
+        newBid;
+
+    currentBidder =
+        teamNumber;
 
 
     const nextTeam =
-        teamNumber === 1 ? 2 : 1;
+        teamNumber === 1
+            ? 2
+            : 1;
 
 
-    displayBiddingTurn(nextTeam);
+    displayBiddingTurn(
+        nextTeam
+    );
 }
 
 
-// ===============================
+// ==================================================
 // PASS
-// ===============================
+// ==================================================
 
 function passBid() {
 
-    awardPlayer(currentBidder);
+    awardPlayer(
+        currentBidder
+    );
 }
 
 
-// ===============================
+// ==================================================
 // AWARD PLAYER
-// ===============================
+// ==================================================
 
 function awardPlayer(teamNumber) {
 
     const winningTeam =
-        teamNumber === 1 ? team1 : team2;
+        teamNumber === 1
+            ? team1
+            : team2;
 
 
-    winningTeam.budget -= currentBid;
-
-    winningTeam.players.push(currentPlayer);
-
-
-    // Save these before the next auction changes anything.
-
-    const playerName = currentPlayer.name;
-    const playerImage = currentPlayer.image;
-    const winningBid = currentBid;
+    winningTeam.budget -=
+        currentBid;
 
 
-    // Alternate the scheduled starting team.
+    winningTeam.players.push(
+        currentPlayer
+    );
+
+
+    const winningBid =
+        currentBid;
+
+
+    // ALTERNATE STARTER
 
     startingTeam =
-        startingTeam === 1 ? 2 : 1;
+        startingTeam === 1
+            ? 2
+            : 1;
 
 
-    document.getElementById("auction-content").innerHTML = `
+    // PLAYER CARD REMAINS ON SCREEN HERE
 
-        ${createTeamTrackers()}
+    renderAuctionScreen(`
 
-        <div class="current-player">
+        <div class="auction-result winner-animation">
 
-            <div class="player-image-container">
+            <div class="sold-label">
 
-                <img
-                    class="player-image"
-                    src="${playerImage}"
-                    alt="${playerName}"
-                >
+                SOLD
 
             </div>
 
-            <h2>${playerName}</h2>
 
-        </div>
+            <h2>
 
+                ${winningTeam.name}
 
-        <div class="auction-result">
+            </h2>
 
-            <h3>${winningTeam.name} wins!</h3>
 
             <p>
-                Winning bid:
+
+                signs
                 <strong>
-                    ${
-                        winningBid === 0
-                            ? "FREE"
-                            : "$" + winningBid.toLocaleString()
-                    }
+                    ${currentPlayer.name}
                 </strong>
+
             </p>
+
+
+            <div class="winning-price">
+
+                ${
+                    winningBid === 0
+                        ? "FREE"
+                        : "$" +
+                          winningBid
+                              .toLocaleString()
+                }
+
+            </div>
 
         </div>
 
@@ -553,13 +869,18 @@ function awardPlayer(teamNumber) {
             id="nextPlayerButton"
             class="next-player-button"
         >
+
             NEXT PLAYER
+
         </button>
-    `;
+
+    `);
 
 
     document
-        .getElementById("nextPlayerButton")
+        .getElementById(
+            "nextPlayerButton"
+        )
         .addEventListener(
             "click",
             startNextAuction
@@ -567,42 +888,64 @@ function awardPlayer(teamNumber) {
 }
 
 
-// ===============================
-// ZERO-BUDGET CHOICE
-// ===============================
+// ==================================================
+// ZERO-BUDGET CONTROL
+// ==================================================
 
-function displayZeroBudgetChoice(teamNumber) {
+function displayZeroBudgetChoice(
+    teamNumber
+) {
 
     const teamWithMoney =
-        teamNumber === 1 ? team1 : team2;
+        teamNumber === 1
+            ? team1
+            : team2;
+
 
     const zeroBudgetTeam =
-        teamNumber === 1 ? team2 : team1;
+        teamNumber === 1
+            ? team2
+            : team1;
 
 
-    document.getElementById("auction-content").innerHTML = `
-
-        ${createTeamTrackers()}
-
-        ${createPlayerCard()}
-
+    renderAuctionScreen(`
 
         <div class="auction-action">
 
+            <div class="turn-label">
+
+                AUCTION CONTROL
+
+            </div>
+
+
+            <h3>
+
+                ${teamWithMoney.name}
+
+            </h3>
+
+
             <p>
-                <strong>${zeroBudgetTeam.name}</strong>
+
+                ${zeroBudgetTeam.name}
                 has no remaining budget.
+
             </p>
 
-            <p>
-                <strong>${teamWithMoney.name}</strong>
-                has control of this auction.
-            </p>
 
             <p>
-                Enter how much you want to pay for
-                ${currentPlayer.name}, or pass.
+
+                Buy
+                <strong>
+                    ${currentPlayer.name}
+                </strong>
+                or pass and give them
+                to ${zeroBudgetTeam.name}
+                for free.
+
             </p>
+
 
             <input
                 type="number"
@@ -611,60 +954,95 @@ function displayZeroBudgetChoice(teamNumber) {
                 step="${bidIncrement}"
             >
 
-            <button id="buyPlayerButton">
+
+            <button
+                id="buyPlayerButton"
+            >
+
                 BUY PLAYER
+
             </button>
+
 
             <button
                 id="controlPassButton"
                 class="secondary-button"
             >
+
                 PASS
+
             </button>
 
         </div>
-    `;
+
+    `);
 
 
     document
-        .getElementById("buyPlayerButton")
+        .getElementById(
+            "buyPlayerButton"
+        )
         .addEventListener(
             "click",
-            () => buyWithControl(teamNumber)
+            () =>
+                buyWithControl(
+                    teamNumber
+                )
         );
 
 
     document
-        .getElementById("controlPassButton")
+        .getElementById(
+            "controlPassButton"
+        )
         .addEventListener(
             "click",
-            () => passWithControl(teamNumber)
+            () =>
+                passWithControl(
+                    teamNumber
+                )
         );
 }
 
 
-// ===============================
+// ==================================================
 // BUY WITH CONTROL
-// ===============================
+// ==================================================
 
-function buyWithControl(teamNumber) {
+function buyWithControl(
+    teamNumber
+) {
 
     const team =
-        teamNumber === 1 ? team1 : team2;
+        teamNumber === 1
+            ? team1
+            : team2;
 
 
     const bid =
-        Number(document.getElementById("controlBid").value);
+        Number(
+            document
+                .getElementById(
+                    "controlBid"
+                )
+                .value
+        );
 
 
     if (bid <= 0) {
 
-        alert("Please enter a valid bid.");
+        alert(
+            "Please enter a valid bid."
+        );
+
         return;
     }
 
 
-    if (bid % bidIncrement !== 0) {
+    if (
+        bid %
+        bidIncrement !== 0
+    ) {
 
         alert(
             `Your bid must be in intervals of $${bidIncrement}.`
@@ -674,14 +1052,23 @@ function buyWithControl(teamNumber) {
     }
 
 
-    if (bid > team.budget) {
+    if (
+        bid >
+        team.budget
+    ) {
 
-        alert("You cannot afford this bid.");
+        alert(
+            "You cannot afford this bid."
+        );
+
         return;
     }
 
 
-    if (team.players.length >= maxPlayers) {
+    if (
+        team.players.length >=
+        maxPlayers
+    ) {
 
         alert(
             "Your team has reached the maximum roster size."
@@ -691,136 +1078,109 @@ function buyWithControl(teamNumber) {
     }
 
 
-    currentBid = bid;
-    currentBidder = teamNumber;
+    currentBid =
+        bid;
+
+    currentBidder =
+        teamNumber;
 
 
-    awardPlayer(teamNumber);
+    awardPlayer(
+        teamNumber
+    );
 }
 
 
-// ===============================
+// ==================================================
 // PASS WITH CONTROL
-// ===============================
+// ==================================================
 
-function passWithControl(teamNumber) {
+function passWithControl(
+    teamNumber
+) {
 
     const zeroBudgetTeamNumber =
-        teamNumber === 1 ? 2 : 1;
+        teamNumber === 1
+            ? 2
+            : 1;
 
 
     currentBid = 0;
-    currentBidder = zeroBudgetTeamNumber;
+
+    currentBidder =
+        zeroBudgetTeamNumber;
 
 
-    awardPlayer(zeroBudgetTeamNumber);
+    awardPlayer(
+        zeroBudgetTeamNumber
+    );
 }
 
 
-// ===============================
-// TEAM TRACKERS
-// ===============================
+// ==================================================
+// MAIN AUCTION RENDERER
+// ==================================================
+//
+// This is important:
+//
+// Every auction screen goes through this function.
+// That means the player card stays on screen
+// throughout the ENTIRE auction.
+//
 
-function createTeamTrackers() {
+function renderAuctionScreen(
+    actionHTML
+) {
 
-    return `
+    auctionContent.innerHTML = `
 
-        <div class="team-trackers">
+        <div class="auction-layout">
 
-            <div class="team-tracker">
+            ${createTeamTrackers()}
 
-                <h3>${team1.name}</h3>
 
-                <p>
-                    Budget:
-                    <strong>
-                        $${team1.budget.toLocaleString()}
-                    </strong>
-                </p>
+            <main class="auction-center">
 
-                <p>
-                    Players:
-                    <strong>
-                        ${team1.players.length} / ${maxPlayers}
-                    </strong>
-                </p>
+                ${createPlayerCard()}
 
-                <div class="player-list">
+                <div class="action-container">
 
-                    ${
-                        team1.players.length === 0
-                            ? "<span>No players yet</span>"
-                            : team1.players
-                                .map(
-                                    player =>
-                                        `<div>${player.name}</div>`
-                                )
-                                .join("")
-                    }
+                    ${actionHTML}
 
                 </div>
 
-            </div>
-
-
-            <div class="team-tracker">
-
-                <h3>${team2.name}</h3>
-
-                <p>
-                    Budget:
-                    <strong>
-                        $${team2.budget.toLocaleString()}
-                    </strong>
-                </p>
-
-                <p>
-                    Players:
-                    <strong>
-                        ${team2.players.length} / ${maxPlayers}
-                    </strong>
-                </p>
-
-                <div class="player-list">
-
-                    ${
-                        team2.players.length === 0
-                            ? "<span>No players yet</span>"
-                            : team2.players
-                                .map(
-                                    player =>
-                                        `<div>${player.name}</div>`
-                                )
-                                .join("")
-                    }
-
-                </div>
-
-            </div>
+            </main>
 
         </div>
+
     `;
 }
 
 
-// ===============================
+// ==================================================
 // AUCTION COMPLETE
-// ===============================
+// ==================================================
 
 function showAuctionComplete() {
 
-    document.getElementById("auction-content").innerHTML = `
+    auctionContent.innerHTML = `
 
-        ${createTeamTrackers()}
+        <div class="final-screen">
 
-        <div class="auction-result">
+            <h2>
+                AUCTION COMPLETE
+            </h2>
 
-            <h2>AUCTION COMPLETE</h2>
 
             <p>
-                All available players have been drafted.
+                All available players
+                have been drafted.
             </p>
 
+
+            ${createTeamTrackers()}
+
         </div>
+
     `;
 }
