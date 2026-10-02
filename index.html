@@ -19,7 +19,7 @@
             <p>DRAFT // BID // BUILD YOUR XI</p>
         </div>
 
-        <div class="setup-box">
+        <div class="setup-box setup-box-wide">
             <div class="panel-code">SYSTEM_CONFIG // 001</div>
             <div class="setup-section-title">TEAMS</div>
 
@@ -67,6 +67,19 @@
 
             <div class="setup-section-title">PLAYER POOL</div>
 
+            <div class="preset-section">
+                <div class="preset-label">QUICK SELECT // PRESETS</div>
+                <div class="preset-buttons">
+                    <button type="button" data-preset="all">ALL PLAYERS</button>
+                    <button type="button" data-preset="blue-lock">BLUE LOCK</button>
+                    <button type="button" data-preset="japan-u20">JAPAN U-20</button>
+                    <button type="button" data-preset="world-five">WORLD FIVE</button>
+                    <button type="button" data-preset="nel">NEL / PRO</button>
+                    <button type="button" data-preset="u20-world-cup">U-20 WORLD CUP</button>
+                </div>
+                <div class="preset-note">Presets are quick selections. You can still add or remove any character manually.</div>
+            </div>
+
             <div class="player-pool-toolbar">
                 <div class="player-search-wrap">
                     <span>⌕</span>
@@ -106,6 +119,18 @@
             <div id="playersRemaining" class="players-remaining"></div>
         </header>
         <div id="auction-content"></div>
+    </section>
+
+    <section id="formation-screen" class="hidden">
+        <header class="game-header formation-header">
+            <div>
+                <div class="game-header-small">BL // SQUAD DEPLOYMENT</div>
+                <h1>FORMATION <span>BUILDER</span></h1>
+            </div>
+            <div class="header-status"><i></i> TACTICAL MODE</div>
+            <button id="backToResults" class="header-button">← RESULTS</button>
+        </header>
+        <div id="formation-content"></div>
     </section>
 
     <div id="game-overlay" class="game-overlay hidden">
