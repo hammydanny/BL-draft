@@ -53,13 +53,11 @@ startGameButton.addEventListener("click", startGame);
 
 function startGame() {
 
-    // Get information from setup screen
-
     const team1Name =
-        document.getElementById("team1Name").value;
+        document.getElementById("team1Name").value.trim();
 
     const team2Name =
-        document.getElementById("team2Name").value;
+        document.getElementById("team2Name").value.trim();
 
     const budget =
         Number(document.getElementById("budget").value);
@@ -71,7 +69,30 @@ function startGame() {
         Number(document.getElementById("maxPlayers").value);
 
 
-    // Create the two teams
+    // Check settings
+
+    if (!team1Name || !team2Name) {
+        alert("Please enter names for both teams.");
+        return;
+    }
+
+    if (budget <= 0) {
+        alert("Team budget must be greater than $0.");
+        return;
+    }
+
+    if (bidIncrement <= 0) {
+        alert("Bid increment must be greater than $0.");
+        return;
+    }
+
+    if (maxPlayers <= 0) {
+        alert("Maximum players must be greater than 0.");
+        return;
+    }
+
+
+    // Create teams
 
     team1 = {
         name: team1Name,
@@ -86,35 +107,27 @@ function startGame() {
     };
 
 
-    // Copy the player list
+    // Copy player list
 
     remainingPlayers = [...players];
 
 
     // Randomly decide who starts
 
-    if (Math.random() < 0.5) {
-
-        startingTeam = 1;
-
-    } else {
-
-        startingTeam = 2;
-
-    }
+    startingTeam =
+        Math.random() < 0.5 ? 1 : 2;
 
 
-    // Hide setup screen
+    // Hide setup
 
     setupScreen.classList.add("hidden");
 
-
-    // Show auction screen
+    // Show auction
 
     auctionScreen.classList.remove("hidden");
 
 
-    // Start the first auction
+    // Start first auction
 
     startNextAuction();
 }
@@ -126,20 +139,15 @@ function startGame() {
 
 function startNextAuction() {
 
-    // Check if there are players left
-
     if (remainingPlayers.length === 0) {
 
-        document.getElementById("auction-content").innerHTML = `
-            <h2>AUCTION COMPLETE</h2>
-            <p>All available players have been drafted.</p>
-        `;
+        showAuctionComplete();
 
         return;
     }
 
 
-    // Randomly select a player
+    // Select random player
 
     const randomIndex =
         Math.floor(Math.random() * remainingPlayers.length);
@@ -153,20 +161,17 @@ function startNextAuction() {
     remainingPlayers.splice(randomIndex, 1);
 
 
-    // Reset auction variables
+    // Reset auction
 
     currentBid = 0;
 
     currentBidder = null;
 
 
-    // The team that starts gets to choose
-    // the opening bid
+    // Starting team opens bidding
 
     currentBidder = startingTeam;
 
-
-    // Display auction
 
     displayOpeningBid();
 }
@@ -178,36 +183,49 @@ function startNextAuction() {
 
 function displayOpeningBid() {
 
-    const startingTeamName =
-        startingTeam === 1
-            ? team1.name
-            : team2.name;
+    const startingTeamObject =
+        startingTeam === 1 ? team1 : team2;
 
 
     document.getElementById("auction-content").innerHTML = `
 
-        <h2>${currentPlayer.name}</h2>
+        ${createTeamTrackers()}
 
-        <p>${startingTeamName} starts the bidding.</p>
+        <div class="current-player">
 
-        <p>Choose your opening bid.</p>
+            <h2>${currentPlayer.name}</h2>
 
-        <input
-            type="number"
-            id="openingBid"
-            placeholder="Enter opening bid"
-        >
+        </div>
 
-        <button id="placeOpeningBid">
-            PLACE OPENING BID
-        </button>
+        <div class="auction-action">
 
+            <p>
+                <strong>${startingTeamObject.name}</strong>
+                starts the bidding.
+            </p>
+
+            <p>Choose your opening bid.</p>
+
+            <input
+                type="number"
+                id="openingBid"
+                placeholder="Enter opening bid"
+            >
+
+            <button id="placeOpeningBid">
+                PLACE OPENING BID
+            </button>
+
+        </div>
     `;
 
 
     document
         .getElementById("placeOpeningBid")
-        .addEventListener("click", placeOpeningBid);
+        .addEventListener(
+            "click",
+            placeOpeningBid
+        );
 }
 
 
@@ -222,12 +240,10 @@ function placeOpeningBid() {
 
 
     const startingTeamObject =
-        startingTeam === 1
-            ? team1
-            : team2;
+        startingTeam === 1 ? team1 : team2;
 
 
-    // Check that bid is positive
+    // Must be positive
 
     if (openingBid <= 0) {
 
@@ -237,7 +253,7 @@ function placeOpeningBid() {
     }
 
 
-    // Check bid interval
+    // Must be an interval of 50
 
     if (openingBid % bidIncrement !== 0) {
 
@@ -249,7 +265,7 @@ function placeOpeningBid() {
     }
 
 
-    // Check budget
+    // Must be affordable
 
     if (openingBid > startingTeamObject.budget) {
 
@@ -259,11 +275,10 @@ function placeOpeningBid() {
     }
 
 
-    // Check roster size
+    // Check roster space
 
     if (
-        startingTeamObject.players.length >=
-        maxPlayers
+        startingTeamObject.players.length >= maxPlayers
     ) {
 
         alert("Your team has reached the maximum roster size.");
@@ -276,13 +291,10 @@ function placeOpeningBid() {
 
     currentBid = openingBid;
 
-
-    // Starting team currently holds the bid
-
     currentBidder = startingTeam;
 
 
-    // Switch to the other team
+    // Other team gets next turn
 
     const otherTeam =
         startingTeam === 1 ? 2 : 1;
@@ -302,31 +314,61 @@ function displayBiddingTurn(teamNumber) {
         teamNumber === 1 ? team1 : team2;
 
 
-    const nextBid =
-        currentBid + bidIncrement;
-
-
     document.getElementById("auction-content").innerHTML = `
 
-        <h2>${currentPlayer.name}</h2>
+        ${createTeamTrackers()}
 
-        <h3>Current Bid: $${currentBid.toLocaleString()}</h3>
+        <div class="current-player">
 
-        <p>${team.name}'s turn</p>
+            <h2>${currentPlayer.name}</h2>
 
-        <button id="bidButton">
-            BID $${nextBid.toLocaleString()}
-        </button>
+            <h3>
+                Current Bid:
+                $${currentBid.toLocaleString()}
+            </h3>
 
-        <button id="passButton">
-            PASS
-        </button>
+            <p>
+                Current holder:
+                <strong>
+                    ${currentBidder === 1
+                        ? team1.name
+                        : team2.name}
+                </strong>
+            </p>
 
+        </div>
+
+        <div class="auction-action">
+
+            <p>
+                <strong>${team.name}</strong>'s turn
+            </p>
+
+            <p>
+                Enter any bid higher than
+                $${currentBid.toLocaleString()}
+            </p>
+
+            <input
+                type="number"
+                id="nextBid"
+                placeholder="Enter your bid"
+            >
+
+            <button id="placeBidButton">
+                PLACE BID
+            </button>
+
+            <button id="passButton">
+                PASS
+            </button>
+
+        </div>
     `;
 
 
     document
-        .getElementById("bidButton")
+        .getElementById("placeBidButton")
         .addEventListener(
             "click",
             () => placeBid(teamNumber)
@@ -353,10 +395,34 @@ function placeBid(teamNumber) {
 
 
     const newBid =
-        currentBid + bidIncrement;
+        Number(document.getElementById("nextBid").value);
 
 
-    // Check budget
+    // Must be higher than current bid
+
+    if (newBid <= currentBid) {
+
+        alert(
+            `Your bid must be higher than $${currentBid.toLocaleString()}.`
+        );
+
+        return;
+    }
+
+
+    // Must be an interval
+
+    if (newBid % bidIncrement !== 0) {
+
+        alert(
+            `Your bid must be in intervals of $${bidIncrement}.`
+        );
+
+        return;
+    }
+
+
+    // Must be affordable
 
     if (newBid > team.budget) {
 
@@ -366,17 +432,24 @@ function placeBid(teamNumber) {
     }
 
 
-    // Update current bid
+    // Check roster size
+
+    if (team.players.length >= maxPlayers) {
+
+        alert("Your team has reached the maximum roster size.");
+
+        return;
+    }
+
+
+    // Update bid
 
     currentBid = newBid;
-
-
-    // This team now holds the highest bid
 
     currentBidder = teamNumber;
 
 
-    // Switch turns
+    // Switch teams
 
     const nextTeam =
         teamNumber === 1 ? 2 : 1;
@@ -391,8 +464,6 @@ function placeBid(teamNumber) {
 // ===============================
 
 function passBid(teamNumber) {
-
-    // The other team wins
 
     const winningTeam =
         currentBidder;
@@ -422,29 +493,36 @@ function awardPlayer(teamNumber) {
     winningTeam.players.push(currentPlayer);
 
 
-    // Switch starting team for next auction
+    // Switch starting team
 
     startingTeam =
         startingTeam === 1 ? 2 : 1;
 
 
-    // Show result
+    // Display result
 
     document.getElementById("auction-content").innerHTML = `
 
-        <h2>${currentPlayer.name}</h2>
+        ${createTeamTrackers()}
 
-        <h3>${winningTeam.name} wins!</h3>
+        <div class="auction-result">
 
-        <p>
-            Winning bid:
-            $${currentBid.toLocaleString()}
-        </p>
+            <h2>${currentPlayer.name}</h2>
+
+            <h3>${winningTeam.name} wins!</h3>
+
+            <p>
+                Winning bid:
+                <strong>
+                    $${currentBid.toLocaleString()}
+                </strong>
+            </p>
+
+        </div>
 
         <button id="nextPlayerButton">
             NEXT PLAYER
         </button>
-
     `;
 
 
@@ -454,4 +532,113 @@ function awardPlayer(teamNumber) {
             "click",
             startNextAuction
         );
+}
+
+
+// ===============================
+// TEAM TRACKERS
+// ===============================
+
+function createTeamTrackers() {
+
+    return `
+
+        <div class="team-trackers">
+
+            <div class="team-tracker">
+
+                <h3>${team1.name}</h3>
+
+                <p>
+                    Budget:
+                    <strong>
+                        $${team1.budget.toLocaleString()}
+                    </strong>
+                </p>
+
+                <p>
+                    Players:
+                    <strong>
+                        ${team1.players.length}
+                        / ${maxPlayers}
+                    </strong>
+                </p>
+
+                <div class="player-list">
+
+                    ${
+                        team1.players.length === 0
+                            ? "<span>No players yet</span>"
+                            : team1.players
+                                .map(player =>
+                                    `<div>${player.name}</div>`
+                                )
+                                .join("")
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div class="team-tracker">
+
+                <h3>${team2.name}</h3>
+
+                <p>
+                    Budget:
+                    <strong>
+                        $${team2.budget.toLocaleString()}
+                    </strong>
+                </p>
+
+                <p>
+                    Players:
+                    <strong>
+                        ${team2.players.length}
+                        / ${maxPlayers}
+                    </strong>
+                </p>
+
+                <div class="player-list">
+
+                    ${
+                        team2.players.length === 0
+                            ? "<span>No players yet</span>"
+                            : team2.players
+                                .map(player =>
+                                    `<div>${player.name}</div>`
+                                )
+                                .join("")
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+// ===============================
+// AUCTION COMPLETE
+// ===============================
+
+function showAuctionComplete() {
+
+    document.getElementById("auction-content").innerHTML = `
+
+        ${createTeamTrackers()}
+
+        <div class="auction-result">
+
+            <h2>AUCTION COMPLETE</h2>
+
+            <p>
+                All available players have been drafted.
+            </p>
+
+        </div>
+    `;
 }
