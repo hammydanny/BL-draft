@@ -383,3 +383,377 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
  .stat-strip{grid-template-columns:repeat(4,1fr)}
  .squad-rating-hud{flex-wrap:wrap}
 }
+
+/* ==================================================
+   PLAYER INFORMATION SIDEBAR
+================================================== */
+
+.formation-layout{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 285px 270px;
+    gap:10px;
+    align-items:start;
+}
+
+.formation-layout.bench-hidden{
+    grid-template-columns:minmax(0, 1fr) 285px;
+}
+
+.player-info-panel{
+    position:sticky;
+    top:12px;
+    min-width:0;
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(7,22,35,.98),
+            rgba(2,8,14,.98)
+        );
+
+    border:1px solid var(--team-soft);
+    border-top:2px solid var(--team);
+
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,.18),
+        0 15px 40px rgba(0,0,0,.18);
+}
+
+.player-info-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:11px 12px 8px;
+    border-bottom:1px solid #10283a;
+}
+
+.player-info-code{
+    color:var(--team);
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:1.8px;
+}
+
+.player-info-id{
+    display:block;
+    margin-top:2px;
+    color:#32526a;
+    font:900 18px "Barlow Condensed";
+}
+
+.player-info-close{
+    width:26px;
+    height:26px;
+    padding:0;
+    color:#59748a;
+    background:#06121d;
+    border:1px solid #18384f;
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+}
+
+.player-info-close:hover{
+    color:#fff;
+    border-color:var(--team);
+}
+
+/* Portrait */
+
+.player-info-portrait{
+    position:relative;
+    min-height:250px;
+    background:#02080e;
+    overflow:hidden;
+}
+
+.player-info-portrait:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            180deg,
+            transparent 55%,
+            rgba(2,8,14,.9)
+        );
+}
+
+.player-info-portrait img{
+    display:block;
+    width:100%;
+    height:290px;
+    object-fit:cover;
+    object-position:center top;
+}
+
+.player-info-ovr{
+    position:absolute;
+    right:12px;
+    bottom:12px;
+    z-index:2;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    width:58px;
+    height:58px;
+
+    background:#03101a;
+    border:2px solid var(--team);
+
+    box-shadow:
+        0 0 20px var(--team-glow);
+}
+
+.player-info-ovr span{
+    color:#608096;
+    font-size:7px;
+    font-weight:800;
+    letter-spacing:1.3px;
+}
+
+.player-info-ovr strong{
+    color:#fff;
+    font:900 27px "Barlow Condensed";
+    line-height:1;
+    font-style:italic;
+}
+
+/* Player name */
+
+.player-info-name{
+    padding:12px;
+    border-bottom:1px solid #10283a;
+}
+
+.player-info-name>span{
+    color:#4b687d;
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:2px;
+}
+
+.player-info-name h2{
+    margin:2px 0 6px;
+    color:#fff;
+    font:900 28px "Barlow Condensed";
+    line-height:.95;
+    font-style:italic;
+}
+
+/* Stats */
+
+.player-info-section{
+    padding:12px;
+    border-bottom:1px solid #10283a;
+}
+
+.player-info-section-title{
+    margin-bottom:9px;
+}
+
+.player-info-section-title span{
+    color:var(--team);
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:1.8px;
+}
+
+.player-stat-row{
+    margin-bottom:8px;
+}
+
+.player-stat-row:last-child{
+    margin-bottom:0;
+}
+
+.player-stat-label{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:3px;
+}
+
+.player-stat-label span{
+    color:#66839a;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.player-stat-label strong{
+    color:#dceefa;
+    font:900 13px "Barlow Condensed";
+}
+
+.player-stat-track{
+    height:4px;
+    overflow:hidden;
+    background:#071521;
+    border:1px solid #102b3e;
+}
+
+.player-stat-track i{
+    display:block;
+    height:100%;
+    background:var(--team);
+    box-shadow:0 0 8px var(--team-glow);
+}
+
+/* Abilities */
+
+.player-ability{
+    padding:9px;
+    background:#030b13;
+    border:1px solid #123047;
+    border-left:2px solid #416076;
+}
+
+.player-ability.special{
+    border-left-color:var(--team);
+}
+
+.player-ability strong{
+    display:block;
+    color:#d7eaf7;
+    font:900 17px "Barlow Condensed";
+    font-style:italic;
+}
+
+.player-ability span{
+    display:block;
+    margin-top:2px;
+    color:#527086;
+    font-size:7px;
+    font-weight:800;
+    letter-spacing:1.1px;
+}
+
+.player-ability p{
+    margin:6px 0 0;
+    color:#748da1;
+    font-size:9px;
+    line-height:1.4;
+}
+
+/* Empty state */
+
+.player-info-empty{
+    min-height:490px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    text-align:center;
+}
+
+.player-info-empty-icon{
+    display:grid;
+    place-items:center;
+    width:56px;
+    height:56px;
+    margin-bottom:14px;
+
+    color:var(--team);
+    background:rgba(20,156,255,.05);
+    border:1px solid var(--team-soft);
+
+    font:400 27px "Barlow Condensed";
+}
+
+.player-info-empty strong{
+    color:#cfe4f2;
+    font:900 18px "Barlow Condensed";
+    letter-spacing:1px;
+}
+
+.player-info-empty span{
+    max-width:200px;
+    margin-top:7px;
+    color:#557084;
+    font-size:9px;
+    line-height:1.45;
+}
+
+/* Desktop */
+
+@media(min-width:1101px){
+    .player-info-panel{
+        max-height:calc(100vh - 90px);
+        overflow-y:auto;
+    }
+
+    .player-info-panel::-webkit-scrollbar{
+        width:4px;
+    }
+
+    .player-info-panel::-webkit-scrollbar-track{
+        background:#02080e;
+    }
+
+    .player-info-panel::-webkit-scrollbar-thumb{
+        background:#17384f;
+    }
+}
+
+/* Tablet */
+
+@media(max-width:1100px){
+    .formation-layout{
+        grid-template-columns:minmax(0,1fr) 260px;
+    }
+
+    .formation-layout .bench-panel{
+        grid-column:1 / -1;
+    }
+
+    .formation-layout.bench-hidden{
+        grid-template-columns:minmax(0,1fr) 260px;
+    }
+
+    .formation-layout.bench-hidden .bench-panel{
+        display:none;
+    }
+}
+
+/* Mobile */
+
+@media(max-width:700px){
+    .formation-layout,
+    .formation-layout.bench-hidden{
+        display:grid;
+        grid-template-columns:1fr;
+    }
+
+    .player-info-panel{
+        position:static;
+        order:2;
+    }
+
+    .formation-pitch-v2{
+        order:1;
+    }
+
+    .formation-layout .bench-panel{
+        order:3;
+        grid-column:auto;
+    }
+
+    .player-info-portrait{
+        min-height:220px;
+    }
+
+    .player-info-portrait img{
+        height:240px;
+    }
+
+    .player-info-empty{
+        min-height:280px;
+    }
+}
