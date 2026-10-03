@@ -1,17 +1,15 @@
-// BLUE LOCK PLAYER DATABASE // EVENT SIM
-// --------------------------------------------------
-// stats:
-//   gk  = Goalkeeping
-//   atk = Attacking
-//   def = Defense
-//
-// passive / special:
-//   name    = ability name
-//   trigger = situation in which it can activate
-//   effect  = what the event simulator should do
-//
-// All abilities are placeholders for now.
-// --------------------------------------------------
+function playerStats(player){
+    return player?.stats || {
+        ovr: 0,
+        off: 0,
+        sho: 0,
+        spd: 0,
+        def: 0,
+        pas: 0,
+        dri: 0,
+        gk: 0
+    };
+}
 
 const players = [
   { id: 1, name: "Yoichi Isagi", image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"], stats: { gk: 48, atk: 92, def: 78 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
