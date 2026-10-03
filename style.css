@@ -435,10 +435,15 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 .chemistry-lines{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:visible}.chem-link{vector-effect:non-scaling-stroke;stroke-linecap:round;fill:none;animation:chemGlow 1.9s ease-in-out infinite}.chem-link.chemical{stroke:#ffe65a;stroke-width:4;filter:drop-shadow(0 0 4px #ffe65a) drop-shadow(0 0 8px #ffad21)}.chem-link.elite{stroke:#43ff9a;stroke-width:3.4;filter:drop-shadow(0 0 5px #43ff9a)}.chem-link.strong{stroke:#31d7ff;stroke-width:2.9;filter:drop-shadow(0 0 4px #31d7ff)}.chem-link.link{stroke:#9c8cff;stroke-width:2.2;opacity:.78}.chem-link.weak{stroke:#ff496d;stroke-width:1.6;stroke-dasharray:4 4;opacity:.48}
 @keyframes chemGlow{0%,100%{opacity:.68}50%{opacity:1}}
 .current-ovr-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding:8px 10px;background:#06131e;border:1px solid #16364c}.current-ovr-row strong{color:var(--team);font:900 20px "Barlow Condensed"}.current-ovr-row b{font:900 28px "Barlow Condensed"}
-.formation-drag-ghost-live{position:fixed;z-index:999999;pointer-events:none;width:118px;padding:6px;background:rgba(2,9,16,.97);border:2px solid #2cc9ff;box-shadow:0 0 20px rgba(44,201,255,.62);animation:dragPop .12s ease-out both}.formation-drag-ghost-live img{display:block;width:104px;height:86px;object-fit:cover;object-position:center top}.formation-drag-ghost-live div{padding-top:4px}.formation-drag-ghost-live strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:900 13px "Barlow Condensed"}.formation-drag-ghost-live span{color:#2cc9ff;font-size:8px;font-weight:900}
-@keyframes dragPop{from{opacity:0;transform:scale(.86)}to{opacity:.96;transform:scale(1)}}
+to{opacity:.96;transform:scale(1)}}
 button,.player-pool-card,.bench-player-card,.formation-slot{transition:transform .12s ease,filter .12s ease,box-shadow .16s ease,border-color .16s ease}
 button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled){transform:scale(.975)}.player-pool-card:hover,.bench-player-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
 .screen.active>.screen-inner,.screen.active>.menu-shell,.screen.active>.formation-v2-shell{animation:screenIn .24s ease-out both}@keyframes screenIn{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
 @media(max-width:850px){.chemistry-hud{align-items:flex-start;flex-direction:column}.chem-key{justify-content:flex-start;max-width:none}}
 @media(prefers-reduced-motion:reduce){.chem-link,.screen.active>*{animation:none!important}button,.player-pool-card,.bench-player-card,.formation-slot{transition:none!important}}
+
+/* TEAM BUILDER DRAG FIX */
+.formation-player-card.dragging,.bench-player-card.dragging{
+  opacity:.28!important;transform:none!important;filter:grayscale(.2) brightness(.85)!important;box-shadow:none!important;
+}
+.formation-player-card img,.bench-player-card img{-webkit-user-drag:none;user-select:none}
