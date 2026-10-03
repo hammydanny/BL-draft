@@ -9,6 +9,52 @@ let selectedPlayerIds = new Set(players.map(player => player.id));
 const SAVE_KEY="blAuctionSaveV2";
 let uiState={screen:"setup",phase:"setup",turn:null};
 let pendingConfirmAction=null;
+let soundEnabled=localStorage.getItem("blAuctionSound")!=="off";
+let audioCtx=null;
+
+function ensureAudio(){
+    if(!soundEnabled)return null;
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    return audioCtx;
+}
+function tone(freq=440,duration=.08,type="sine",volume=.035,delay=0){
+    const ctx=ensureAudio();if(!ctx)return;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    const t=ctx.currentTime+delay;
+    o.type=type;o.frequency.setValueAtTime(freq,t);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+duration);
+    o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+duration+.02);
+}
+function playSfx(name){
+    if(!soundEnabled)return;
+    if(name==="reveal"){tone(180,.08,"sawtooth",.025);tone(360,.11,"square",.018,.07);}
+    if(name==="bid"){tone(520,.055,"square",.025);tone(700,.06,"square",.018,.045);}
+    if(name==="pass"){tone(230,.09,"sine",.025);tone(160,.12,"sine",.018,.06);}
+    if(name==="error"){tone(145,.11,"sawtooth",.025);tone(115,.15,"square",.018,.08);}
+    if(name==="sold"){tone(220,.08,"sawtooth",.025);tone(440,.1,"square",.025,.07);tone(880,.18,"sine",.03,.15);}
+}
+function updateSoundButton(){
+    const b=document.getElementById("soundToggle");if(!b)return;
+    b.classList.toggle("muted",!soundEnabled);
+    b.querySelector("strong").textContent=soundEnabled?"SFX ON":"SFX OFF";
+    b.querySelector(".sound-icon").textContent=soundEnabled?"◖))":"◖×";
+}
+document.getElementById("soundToggle").addEventListener("click",()=>{
+    soundEnabled=!soundEnabled;localStorage.setItem("blAuctionSound",soundEnabled?"on":"off");updateSoundButton();
+    if(soundEnabled)playSfx("bid");
+});
+updateSoundButton();
+
+function triggerFx(type,text=""){
+    const layer=document.getElementById("fxLayer");
+    if(type==="bid"){
+        const el=document.getElementById("bidFlash");el.classList.remove("go");void el.offsetWidth;el.classList.add("go");
+    }
+    if(type==="sold"){
+        const el=document.getElementById("soldBurst");el.textContent=text||"SOLD";el.classList.remove("go");void el.offsetWidth;el.classList.add("go");
+    }
+}
 
 const setupScreen = document.getElementById("setup-screen");
 const auctionScreen = document.getElementById("auction-screen");
@@ -48,6 +94,7 @@ function esc(value) {
 
 let siteErrorTimer=null;
 function showSiteError(message,title="INPUT ERROR"){
+    playSfx("error");
     let box=document.getElementById("siteError");
     if(!box){
         box=document.createElement("div");
@@ -379,6 +426,7 @@ function awardPlayerFree(teamNumber,forced=false){
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
     startingTeam=otherTeamNumber(startingTeam);
     uiState={screen:"auction",phase:"sold",turn:teamNumber};saveGame();
+    playSfx("sold");triggerFx("sold",forced?"ASSIGNED":"SOLD");
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
@@ -392,6 +440,7 @@ function awardPlayerFree(teamNumber,forced=false){
 }
 
 function showPlayerReveal(){
+    playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
       <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
@@ -531,6 +580,7 @@ function awardPlayer(n){
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
     startingTeam=startingTeam===1?2:1;
     uiState={screen:"auction",phase:"sold",turn:n};saveGame();
+    playSfx("sold");triggerFx("sold","SOLD");
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">TRANSFER COMPLETE</div>
@@ -543,6 +593,7 @@ function awardPlayer(n){
 }
 
 function renderSoldState(last){
+    playSfx("sold");triggerFx("sold",last?.automatic?"ASSIGNED":"SOLD");
     if(!last){startNextAuction();return;}
     const winner=teamByNumber(last.teamNumber);
     renderAuctionScreen(`
