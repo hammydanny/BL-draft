@@ -80,6 +80,7 @@ let selectedFormationPlayerId = null;
 let benchCollapsed = false;
 let draggedFormationPlayerId = null;
 let formationInitialized = false;
+let playerDatabaseHidden = false;
 
 document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("randomDraftGame").addEventListener("click", startRandomDraft);
@@ -139,98 +140,28 @@ function hideSiteError(){
     clearTimeout(siteErrorTimer);
 }
 
-function effectiveOVR(player, slotLabel){
-    const s = playerStats(player);
+function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
 
-    if(slotLabel === "GK"){
-        return s.gk;
-    }
-
-    if(primaryFit(player, slotLabel)){
-        return s.ovr;
-    }
-
-    if(canonicalFit(player, slotLabel)){
-        return Math.max(1, s.ovr - 2);
-    }
-
-    return Math.max(1, s.ovr - 12);
-}
 function statStrip(player,compact=false){
     const s=playerStats(player);
     return `<div class="stat-strip ${compact?"compact":""}">
-      <b><i>OVR</i>${playerOverall(player)}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
+      <b><i>OVR</i>${s.ovr}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
       <span><i>SPD</i>${s.spd}</span><span><i>DEF</i>${s.def}</span><span><i>PAS</i>${s.pas}</span>
       <span><i>DRI</i>${s.dri}</span><span><i>GK</i>${s.gk}</span>
     </div>`;
 }
 function squadRatings(teamNumber){
-    const team = teamByNumber(teamNumber);
-
-    const assignments =
-        formationAssignments[teamNumber] || {};
-
-    const formation =
-        formationByTeam[teamNumber] || "4-3-3";
-
-    const shape = FORMATIONS[formation] || FORMATIONS["4-3-3"];
-
-    const placed = Object.entries(assignments)
-        .map(([slot, id]) => {
-            const player = team.players.find(p => p.id === id);
-            const slotData = shape[Number(slot)];
-
-            if(!player || !slotData){
-                return null;
-            }
-
-            return {
-                player,
-                label: slotData.label,
-                ovr: effectiveOVR(player, slotData.label)
-            };
-        })
-        .filter(Boolean);
-
-    if(!placed.length){
-        return {
-            ovr: 0,
-            att: 0,
-            mid: 0,
-            def: 0
-        };
-    }
-
-    const average = values =>
-        Math.round(
-            values.reduce((sum, value) => sum + value, 0) /
-            Math.max(1, values.length)
-        );
-
-    const attack = placed.filter(x =>
-        ["ST","CF","LW","RW","AM"].includes(x.label)
-    );
-
-    const midfield = placed.filter(x =>
-        ["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label)
-    );
-
-    const defence = placed.filter(x =>
-        ["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label)
-    );
-
-    return {
-        ovr: average(placed.map(x => x.ovr)),
-        att: average(
-            (attack.length ? attack : placed).map(x => x.ovr)
-        ),
-        mid: average(
-            (midfield.length ? midfield : placed).map(x => x.ovr)
-        ),
-        def: average(
-            (defence.length ? defence : placed).map(x => x.ovr)
-        )
-    };
+    const team=teamByNumber(teamNumber), assignments=formationAssignments[teamNumber]||{}, shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
+    const placed=Object.entries(assignments).map(([slot,id])=>{
+      const p=team.players.find(x=>x.id===id), label=shape?.[Number(slot)]?.label;
+      return p&&label?{p,label,eff:effectiveOVR(p,label)}:null;
+    }).filter(Boolean);
+    if(!placed.length)return {ovr:0,att:0,mid:0,def:0};
+    const avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/Math.max(1,a.length));
+    const attack=placed.filter(x=>["ST","CF","LW","RW","AM"].includes(x.label));
+    const midfield=placed.filter(x=>["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label));
+    const defence=placed.filter(x=>["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label));
+    return {ovr:avg(placed.map(x=>x.eff)),att:avg((attack.length?attack:placed).map(x=>x.eff)),mid:avg((midfield.length?midfield:placed).map(x=>x.eff)),def:avg((defence.length?defence:placed).map(x=>x.eff))};
 }
 
 function playerPositions(player){return Array.isArray(player?.positions)&&player.positions.length?player.positions:["FW"];}
@@ -255,6 +186,61 @@ function primaryFit(player,slotLabel){
 }
 function positionBadges(player,compact=false){
     return `<span class="position-badges ${compact?"compact":""}">${playerPositions(player).map(pos=>`<i class="${pos===primaryPosition(player)?"primary":""}">${pos}</i>`).join("")}</span>`;
+}
+
+
+const POSITION_WEIGHTS = {
+  GK:{gk:.72,def:.10,pas:.08,spd:.10},
+  CB:{def:.43,spd:.12,pas:.16,dri:.08,off:.06,sho:.05,gk:.10},
+  LB:{def:.27,spd:.22,pas:.18,dri:.15,off:.08,sho:.05,gk:.05},
+  RB:{def:.27,spd:.22,pas:.18,dri:.15,off:.08,sho:.05,gk:.05},
+  LWB:{def:.20,spd:.24,pas:.19,dri:.18,off:.10,sho:.05,gk:.04},
+  RWB:{def:.20,spd:.24,pas:.19,dri:.18,off:.10,sho:.05,gk:.04},
+  DM:{def:.25,pas:.24,dri:.13,spd:.12,off:.11,sho:.08,gk:.07},
+  CM:{pas:.27,dri:.20,off:.15,def:.13,spd:.12,sho:.10,gk:.03},
+  AM:{off:.23,pas:.24,dri:.22,sho:.15,spd:.11,def:.03,gk:.02},
+  LM:{spd:.22,dri:.22,pas:.19,off:.16,sho:.12,def:.07,gk:.02},
+  RM:{spd:.22,dri:.22,pas:.19,off:.16,sho:.12,def:.07,gk:.02},
+  LW:{spd:.23,dri:.24,off:.20,sho:.17,pas:.12,def:.02,gk:.02},
+  RW:{spd:.23,dri:.24,off:.20,sho:.17,pas:.12,def:.02,gk:.02},
+  ST:{sho:.29,off:.28,dri:.15,spd:.14,pas:.09,def:.03,gk:.02},
+  CF:{sho:.25,off:.29,dri:.17,pas:.12,spd:.12,def:.03,gk:.02}
+};
+function normalizePosition(position){
+  const p=String(position||"").toUpperCase();
+  if(["FW","SS"].includes(p)) return "CF";
+  if(p==="DF") return "CB";
+  if(p==="WB") return "RWB";
+  if(p==="WM") return "RM";
+  return POSITION_WEIGHTS[p]?p:"CM";
+}
+function calculatePositionOVR(player,position){
+  const s=playerStats(player), pos=normalizePosition(position), w=POSITION_WEIGHTS[pos];
+  return Math.max(1,Math.min(100,Math.round(Object.entries(w).reduce((n,[k,v])=>n+(Number(s[k])||0)*v,0))));
+}
+function playerOverall(player){ return player ? calculatePositionOVR(player,primaryPosition(player)) : 0; }
+function effectiveOVR(player,slotLabel){
+  if(!player||!slotLabel)return 0;
+  const base=calculatePositionOVR(player,slotLabel);
+  if(primaryFit(player,slotLabel)) return base;
+  if(canonicalFit(player,slotLabel)) return Math.max(1,base-2);
+  const pg=positionGroup(primaryPosition(player)), sg=positionGroup(slotLabel);
+  return Math.max(1,base-(pg===sg?5:11));
+}
+function positionGroup(position){
+  const p=normalizePosition(position);
+  if(p==="GK")return "GK";
+  if(["ST","CF","LW","RW"].includes(p))return "ATTACK";
+  if(["AM","CM","DM","LM","RM"].includes(p))return "MIDFIELD";
+  return "DEFENCE";
+}
+function positionRatingGrid(player){
+  const order=["GK","CB","LB","RB","LWB","RWB","DM","CM","AM","LM","RM","LW","RW","ST","CF"];
+  return `<div class="position-rating-grid">${order.map(pos=>{
+    const score=calculatePositionOVR(player,pos);
+    const canon=canonicalFit(player,pos), primary=primaryFit(player,pos);
+    return `<div class="position-rating ${canon?"canon":""} ${primary?"primary":""}"><span>${pos}</span><strong>${score}</strong></div>`;
+  }).join("")}</div>`;
 }
 
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
@@ -639,84 +625,19 @@ function shufflePlayers(list){
     return shuffled;
 }
 function startRandomDraft(){
-    const setup = getValidatedSetup();
-    if(!setup) return;
-
-    resetDraftState(setup);
-    draftMode = "random";
-
-    // Shuffle the selected pool, then split it between the two teams.
-    const shuffled = shufflePlayers(setup.selectedPlayers);
-
-    const requiredPerTeam = maxPlayers;
-
-    team1.players = shuffled.slice(0, requiredPerTeam);
-    team2.players = shuffled.slice(requiredPerTeam, requiredPerTeam * 2);
-
-    // Any players beyond the two completed rosters remain unused.
-    remainingPlayers = shuffled.slice(requiredPerTeam * 2);
-
-    // Record the randomized draft in a true pick-by-pick order.
-    auctionHistory = [];
-
-    for(let i = 0; i < requiredPerTeam; i++){
-        const player1 = team1.players[i];
-        if(player1){
-            auctionHistory.push({
-                auction: i + 1,
-                player: player1,
-                teamNumber: 1,
-                teamName: team1.name,
-                teamColor: team1.color,
-                price: 0,
-                randomDraft: true
-            });
-        }
-
-        const player2 = team2.players[i];
-        if(player2){
-            auctionHistory.push({
-                auction: i + 1,
-                player: player2,
-                teamNumber: 2,
-                teamName: team2.name,
-                teamColor: team2.color,
-                price: 0,
-                randomDraft: true
-            });
-        }
-    }
-
-    auctionNumber = auctionHistory.length;
-
-    currentPlayer = null;
-    currentBid = 0;
-    currentBidder = null;
-    startingTeam = null;
-
-    // Start with completely empty formation assignments.
-    formationInitialized = false;
-    formationByTeam = {
-        1: "4-3-3",
-        2: "4-3-3"
-    };
-    formationAssignments = {
-        1: {},
-        2: {}
-    };
-
-    uiState = {
-        screen: "auction",
-        phase: "complete",
-        turn: null
-    };
-
-    setupScreen.classList.add("hidden");
-    formationScreen.classList.add("hidden");
-    auctionScreen.classList.remove("hidden");
-
-    updatePlayersRemaining();
-    showAuctionComplete();
+    const setup=getValidatedSetup();if(!setup)return;
+    resetDraftState(setup);draftMode="random";
+    const shuffled=shufflePlayers(setup.selectedPlayers);
+    team1.players=shuffled.slice(0,maxPlayers);team2.players=shuffled.slice(maxPlayers,maxPlayers*2);
+    remainingPlayers=shuffled.slice(maxPlayers*2);
+    auctionHistory=[
+        ...team1.players.map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true})),
+        ...team2.players.map((player,index)=>({auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true}))
+    ];
+    auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
+    uiState={screen:"auction",phase:"complete",turn:null};
+    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();showAuctionComplete();
 }
 
 function showCoinFlip(){
@@ -1015,70 +936,20 @@ function getMostExpensiveSigning(n){
     const a=getTeamHistory(n); if(!a.length)return null;
     return a.reduce((best,x)=>x.price>best.price?x:best,a[0]);
 }
-function createFinalTeamCard(team, n){
-    const spent = startingBudget - team.budget;
-    const expensive = getMostExpensiveSigning(n);
-
-    const roster = team.players.length
-        ? team.players.map(p => {
-            const stats = playerStats(p);
-
-            return `
-                <div class="final-player">
-                    <img src="${p.image}" alt="${esc(p.name)}">
-                    <span>${esc(p.name)}</span>
-                    ${positionBadges(p, true)}
-                    <em class="effective-ovr">${playerOverall(p)}</em>
-                </div>
-            `;
-        }).join("")
-        : `<div class="history-empty">NO PLAYERS DRAFTED</div>`;
-
-    return `
-        <article class="final-team-card" style="${teamVars(team)}">
-            <div class="team-accent"></div>
-
-            <div class="final-team-top">
-                <span>SQUAD // 0${n}</span>
-                <h3>${esc(team.name)}</h3>
-            </div>
-
-            <div class="final-stats">
-                <div>
-                    <span>PLAYERS</span>
-                    <strong>${team.players.length}</strong>
-                </div>
-
-                <div>
-                    <span>SPENT</span>
-                    <strong>$${spent.toLocaleString()}</strong>
-                </div>
-
-                <div>
-                    <span>REMAINING</span>
-                    <strong>$${team.budget.toLocaleString()}</strong>
-                </div>
-            </div>
-
-            <div class="biggest-signing">
-                <span>TOP VALUATION</span>
-                <strong>${expensive ? esc(expensive.player.name) : "—"}</strong>
-                <b>
-                    ${
-                        expensive
-                            ? (expensive.price === 0
-                                ? "FREE"
-                                : "$" + expensive.price.toLocaleString())
-                            : "—"
-                    }
-                </b>
-            </div>
-
-            <div class="final-roster">
-                ${roster}
-            </div>
-        </article>
-    `;
+function createFinalTeamCard(team,n){
+    const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${effectiveOVR(p,s.label)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    return `<article class="final-team-card" style="${teamVars(team)}">
+      <div class="team-accent"></div>
+      <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
+      <div class="final-stats">
+        <div><span>PLAYERS</span><strong>${team.players.length}</strong></div>
+        <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
+        <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
+      </div>
+      <div class="biggest-signing"><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
+      <div class="final-roster">${roster}</div>
+    </article>`;
 }
 function createFullHistory(){
     if(!auctionHistory.length)return `<div class="history-empty">NO COMPLETED AUCTIONS</div>`;
@@ -1276,33 +1147,19 @@ function assignedIds(n){return new Set(Object.values(formationAssignments[n]).fi
 function movePlayerToSlot(playerId,slotIndex){
     const n=formationTeamNumber;
     const team=teamByNumber(n);
-
-    if(!team.players.some(p=>p.id===playerId)) return;
+    if(!team.players.some(p=>p.id===playerId))return;
 
     const targetPlayer=getFormationPlayer(n,slotIndex);
+    const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
 
-    const sourceSlot=Object.keys(
-        formationAssignments[n]
-    ).find(
-        k => formationAssignments[n][k]===playerId
-    );
-
-    if(sourceSlot!==undefined){
-        delete formationAssignments[n][sourceSlot];
-    }
-
+    if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
     if(targetPlayer && targetPlayer.id!==playerId){
-        if(sourceSlot!==undefined){
-            formationAssignments[n][sourceSlot]=targetPlayer.id;
-        }
+        if(sourceSlot!==undefined) formationAssignments[n][sourceSlot]=targetPlayer.id;
+        // If dragged from bench, the displaced player naturally moves to bench.
     }
-
     formationAssignments[n][slotIndex]=playerId;
-
-    selectedFormationPlayerId=playerId;
-
-    renderFormationBuilder();
-    saveGame();
+    selectedFormationPlayerId=null;
+    renderFormationBuilder();saveGame();
 }
 function movePlayerToBench(playerId){
     const n=formationTeamNumber;
@@ -1327,7 +1184,12 @@ function selectBenchPlayer(id){
     renderFormationBuilder();saveGame();
 }
 function updateLiveFormationTargets(playerId){
+    selectedFormationPlayerId=playerId;
     const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===playerId);
+    const panel=document.querySelector(".player-info-panel");
+    if(panel && !playerDatabaseHidden && player){
+      panel.outerHTML=createPlayerInfoSidebar(teamByNumber(formationTeamNumber));
+    }
     document.querySelectorAll(".formation-slot").forEach(slot=>{
         slot.classList.remove("drag-canonical-target","drag-primary-target");
         if(!player)return;
@@ -1371,757 +1233,128 @@ function dropOnBench(event){
     if(id)movePlayerToBench(id);
 }
 
-function createPlayerInfoSidebar(team){
-    const player = team.players.find(
-        p => p.id === selectedFormationPlayerId
-    );
-
-    // Nothing selected yet.
-    if(!player){
-        return `
-            <aside class="player-info-panel" style="${teamVars(team)}">
-                <div class="player-info-code">PLAYER // DATABASE</div>
-
-                <div class="player-info-empty">
-                    <div class="player-info-empty-icon">+</div>
-                    <strong>SELECT A PLAYER</strong>
-                    <span>
-                        Click a player on the pitch or from the reserves
-                        to view their profile.
-                    </span>
-                </div>
-            </aside>
-        `;
-    }
-
-    const s = playerStats(player);
-
-    const stat = (label, value) => {
-        const safeValue = Math.max(
-            0,
-            Math.min(100, Number(value) || 0)
-        );
-
-        return `
-            <div class="player-stat-row">
-                <div class="player-stat-label">
-                    <span>${label}</span>
-                    <strong>${safeValue}</strong>
-                </div>
-
-                <div class="player-stat-track">
-                    <i style="width:${safeValue}%"></i>
-                </div>
-            </div>
-        `;
-    };
-
-    const passive = player.passive || {
-        name: "Placeholder Passive",
-        trigger: "TBD",
-        effect: "TBD"
-    };
-
-    const special = player.special || {
-        name: "Placeholder Special",
-        trigger: "TBD",
-        effect: "TBD"
-    };
-
-    return `
-        <aside class="player-info-panel" style="${teamVars(team)}">
-
-            <div class="player-info-top">
-                <div>
-                    <span class="player-info-code">PLAYER // PROFILE</span>
-                    <strong class="player-info-id">
-                        ${String(player.id).padStart(2, "0")}
-                    </strong>
-                </div>
-
-                <button
-                    type="button"
-                    class="player-info-close"
-                    onclick="clearSelectedFormationPlayer()"
-                    aria-label="Close player profile"
-                >×</button>
-            </div>
-
-            <div class="player-info-portrait">
-                <img
-                    src="${player.image}"
-                    alt="${esc(player.name)}"
-                >
-
-                <div class="player-info-ovr">
-                    <span>OVR</span>
-                    <strong>${s.ovr}</strong>
-                </div>
-            </div>
-
-            <div class="player-info-name">
-                <span>PLAYER</span>
-                <h2>${esc(player.name)}</h2>
-
-                <div class="player-info-positions">
-                    ${positionBadges(player)}
-                </div>
-            </div>
-
-            <div class="player-info-section">
-                <div class="player-info-section-title">
-                    <span>CORE ATTRIBUTES</span>
-                </div>
-
-                ${stat("OFF", s.off)}
-                ${stat("SHO", s.sho)}
-                ${stat("SPD", s.spd)}
-                ${stat("DEF", s.def)}
-                ${stat("PAS", s.pas)}
-                ${stat("DRI", s.dri)}
-                ${stat("GK", s.gk)}
-            </div>
-
-            <div class="player-info-section">
-                <div class="player-info-section-title">
-                    <span>PASSIVE</span>
-                </div>
-
-                <div class="player-ability">
-                    <strong>${esc(passive.name)}</strong>
-                    <span>TRIGGER // ${esc(passive.trigger)}</span>
-                    <p>${esc(passive.effect)}</p>
-                </div>
-            </div>
-
-            <div class="player-info-section">
-                <div class="player-info-section-title">
-                    <span>SPECIAL MOVE</span>
-                </div>
-
-                <div class="player-ability special">
-                    <strong>${esc(special.name)}</strong>
-                    <span>TRIGGER // ${esc(special.trigger)}</span>
-                    <p>${esc(special.effect)}</p>
-                </div>
-            </div>
-
-        </aside>
-    `;
+function togglePlayerDatabase(){
+  playerDatabaseHidden=!playerDatabaseHidden;
+  renderFormationBuilder();
 }
-
 function clearSelectedFormationPlayer(){
-    selectedFormationPlayerId = null;
-    clearLiveFormationTargets();
-    renderFormationBuilder();
-    saveGame();
+  selectedFormationPlayerId=null;
+  clearLiveFormationTargets();
+  renderFormationBuilder();
+  saveGame();
 }
+function createPlayerInfoSidebar(team){
+  const player=team.players.find(p=>p.id===selectedFormationPlayerId);
+  if(playerDatabaseHidden) return "";
+  if(!player) return `<aside class="player-info-panel" style="${teamVars(team)}">
+    <div class="player-info-top"><div><span class="player-info-code">PLAYER // DATABASE</span></div></div>
+    <div class="player-info-empty"><div class="player-info-empty-icon">+</div><strong>SELECT A PLAYER</strong><span>Click, press, or begin dragging a player to inspect their data and best positions.</span></div>
+  </aside>`;
+  const s=playerStats(player);
+  const stat=(label,value)=>`<div class="player-stat-row"><div class="player-stat-label"><span>${label}</span><strong>${value}</strong></div><div class="player-stat-track"><i style="width:${Math.max(0,Math.min(100,value))}%"></i></div></div>`;
+  return `<aside class="player-info-panel" style="${teamVars(team)}">
+    <div class="player-info-top"><div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
+    <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button></div>
+    <div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong></div></div>
+    <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
+    <div class="player-info-section"><div class="player-info-section-title"><span>POSITION OVERALLS</span></div>${positionRatingGrid(player)}</div>
+    <div class="player-info-section"><div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
+      ${stat("OFF",s.off)}${stat("SHO",s.sho)}${stat("SPD",s.spd)}${stat("DEF",s.def)}${stat("PAS",s.pas)}${stat("DRI",s.dri)}${stat("GK",s.gk)}
+    </div>
+  </aside>`;
+}
+
 function renderFormationBuilder(){
-    const team = teamByNumber(formationTeamNumber);
-    const rating = squadRatings(formationTeamNumber);
-
-    activeFormation =
-        formationByTeam[formationTeamNumber] || "4-3-3";
-
-    const slots = FORMATIONS[activeFormation];
-
+    const team=teamByNumber(formationTeamNumber);
+    activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
+    const slots=FORMATIONS[activeFormation];
     sanitizeFormationAssignments(formationTeamNumber);
-
-    const used = assignedIds(formationTeamNumber);
-
-    const bench = team.players.filter(
-        p => !used.has(p.id)
-    );
-
-    const selectedPlayer = team.players.find(
-        p => p.id === selectedFormationPlayerId
-    );
-
-    formationContent.innerHTML = `
-        <div class="formation-v2-shell">
-
-            <div class="formation-topbar">
-
-                <div class="formation-team-tabs">
-                    ${[1,2].map(n => {
-                        const t = teamByNumber(n);
-
-                        return `
-                            <button
-                                class="${formationTeamNumber === n ? "active" : ""}"
-                                style="${teamVars(t)}"
-                                onclick="switchFormationTeam(${n})"
-                            >
-                                <span>SQUAD 0${n}</span>
-                                ${esc(t.name)}
-                            </button>
-                        `;
-                    }).join("")}
-                </div>
-
-                <div class="formation-actions">
-                    <button
-                        class="formation-reset"
-                        onclick="resetCurrentFormation()"
-                    >
-                        ↻ CLEAR XI
-                    </button>
-
-                    <button
-                        class="formation-bench-toggle"
-                        onclick="toggleBench()"
-                    >
-                        ${benchCollapsed ? "SHOW BENCH" : "HIDE BENCH"}
-                    </button>
-                </div>
-
-            </div>
-
-            <div
-                class="formation-control-panel"
-                style="${teamVars(team)}"
-            >
-                <div class="formation-control-main">
-                    <span>FORMATION // ${esc(team.name)}</span>
-                    <strong>${activeFormation}</strong>
-                </div>
-
-                <div class="formation-team-rating">
-                    <span>TEAM OVR</span>
-                    <strong>${rating.ovr}</strong>
-                </div>
-
-                <details class="formation-menu">
-
-                    <summary>
-                        <span>CHANGE FORMATION</span>
-                        <b>${activeFormation}</b>
-                        <i>⌄</i>
-                    </summary>
-
-                    <div class="formation-menu-popover">
-
-                        <div class="formation-menu-group">
-                            <span>BACK FOUR</span>
-
-                            ${[
-                                "4-3-3",
-                                "4-2-3-1",
-                                "4-4-2",
-                                "4-1-3-2",
-                                "4-3-2-1"
-                            ].map(f => `
-                                <button
-                                    class="${activeFormation === f ? "active" : ""}"
-                                    onclick="changeFormation('${f}')"
-                                >
-                                    ${f}
-                                </button>
-                            `).join("")}
-                        </div>
-
-                        <div class="formation-menu-group">
-                            <span>BACK THREE</span>
-
-                            ${[
-                                "3-4-3",
-                                "3-5-2",
-                                "3-4-2-1"
-                            ].map(f => `
-                                <button
-                                    class="${activeFormation === f ? "active" : ""}"
-                                    onclick="changeFormation('${f}')"
-                                >
-                                    ${f}
-                                </button>
-                            `).join("")}
-                        </div>
-
-                        <div class="formation-menu-group">
-                            <span>BACK FIVE</span>
-
-                            ${[
-                                "5-3-2",
-                                "5-2-3"
-                            ].map(f => `
-                                <button
-                                    class="${activeFormation === f ? "active" : ""}"
-                                    onclick="changeFormation('${f}')"
-                                >
-                                    ${f}
-                                </button>
-                            `).join("")}
-                        </div>
-
-                    </div>
-                </details>
-
-            </div>
-
-            <div
-                class="formation-instructions"
-                style="${teamVars(team)}"
-            >
-                <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
-
-                <strong>
-                    ${
-                        selectedPlayer
-                            ? `${esc(selectedPlayer.name)}
-                               // PRIMARY: ${primaryPosition(selectedPlayer)}
-                               // CANON: ${playerPositions(selectedPlayer).join(" / ")}`
-                            : "SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"
-                    }
-                </strong>
-            </div>
-
-            <div class="formation-layout ${benchCollapsed ? "bench-hidden" : ""}">
-
-                <!-- PITCH -->
-
-                <div
-                    class="football-pitch formation-pitch-v2"
-                    style="${teamVars(team)}"
-                >
-                    <div class="pitch-stripes"></div>
-                    <div class="pitch-halfway"></div>
-                    <div class="pitch-circle"></div>
-                    <div class="pitch-dot"></div>
-
-                    <div class="penalty-box top"></div>
-                    <div class="penalty-box bottom"></div>
-
-                    <div class="goal-box top"></div>
-                    <div class="goal-box bottom"></div>
-
-                    ${slots.map((s,i) => {
-
-                        const p =
-                            getFormationPlayer(
-                                formationTeamNumber,
-                                i
-                            );
-
-                        const selected =
-                            p &&
-                            p.id === selectedFormationPlayerId;
-
-                        const canonicalTarget =
-                            selectedPlayer &&
-                            canonicalFit(
-                                selectedPlayer,
-                                s.label
-                            );
-
-                        const primaryTarget =
-                            selectedPlayer &&
-                            primaryFit(
-                                selectedPlayer,
-                                s.label
-                            );
-
-                        const currentFit =
-                            p &&
-                            canonicalFit(
-                                p,
-                                s.label
-                            );
-
-                        return `
-                            <button
-                                class="
-                                    formation-slot
-                                    ${p ? "occupied" : ""}
-                                    ${selected ? "selected" : ""}
-                                    ${canonicalTarget ? "canonical-target" : ""}
-                                    ${primaryTarget ? "primary-target" : ""}
-                                    ${currentFit ? "natural-fit" : ""}
-                                "
-                                style="left:${s.x}%;top:${s.y}%"
-                                data-slot-label="${s.label}"
-
-                                onclick="clickFormationSlot(${i})"
-
-                                ondragover="allowFormationDrop(event)"
-                                ondragleave="leaveFormationDrop(event)"
-                                ondrop="dropOnFormationSlot(event,${i})"
-                            >
-
-                                <span class="slot-position">
-                                    ${s.label}
-                                </span>
-
-                                ${
-                                    p
-                                        ? `
-                                            <div
-                                                class="formation-player-token"
-                                                draggable="true"
-                                                onpointerdown="updateLiveFormationTargets(${p.id})"
-                                                ondragstart="startFormationDrag(event,${p.id})"
-                                                ondragend="endFormationDrag(event)"
-                                            >
-                                                <img
-                                                    src="${p.image}"
-                                                    alt="${esc(p.name)}"
-                                                >
-
-                                                <strong>
-                                                    ${esc(p.name)}
-                                                </strong>
-
-                                                ${positionBadges(p,true)}
-                                            </div>
-                                        `
-                                        : `
-                                            <span class="empty-slot">
-                                                +
-                                            </span>
-                                        `
-                                }
-
-                            </button>
-                        `;
-                    }).join("")}
-
-                </div>
-
-                <!-- PLAYER INFORMATION -->
-
-                ${createPlayerInfoSidebar(team)}
-
-                <!-- RESERVES -->
-
-                <aside
-                    class="bench-panel ${benchCollapsed ? "collapsed" : ""}"
-                    style="${teamVars(team)}"
-
-                    ondragover="allowFormationDrop(event)"
-                    ondragleave="leaveFormationDrop(event)"
-                    ondrop="dropOnBench(event)"
-                >
-
-                    <div class="bench-heading">
-
-                        <div>
-                            <span>RESERVES</span>
-                            <small>DROP HERE TO BENCH</small>
-                        </div>
-
-                        <strong>${bench.length}</strong>
-
-                    </div>
-
-                    <div class="bench-list">
-
-                        ${
-                            bench.length
-                                ? bench.map(p => `
-                                    <button
-                                        class="
-                                            bench-player
-                                            ${p.id === selectedFormationPlayerId ? "selected" : ""}
-                                        "
-
-                                        onclick="selectBenchPlayer(${p.id})"
-
-                                        onpointerdown="updateLiveFormationTargets(${p.id})"
-
-                                        draggable="true"
-
-                                        ondragstart="startFormationDrag(event,${p.id})"
-                                        ondragend="endFormationDrag(event)"
-                                    >
-
-                                        <img
-                                            src="${p.image}"
-                                            alt="${esc(p.name)}"
-                                        >
-
-                                        <span>
-                                            ${esc(p.name)}
-                                            ${positionBadges(p,true)}
-                                        </span>
-
-                                        <b>DRAG</b>
-
-                                    </button>
-                                `).join("")
-                                : `
-                                    <div class="history-empty">
-                                        NO SUBSTITUTES
-                                    </div>
-                                `
-                        }
-
-                    </div>
-
-                </aside>
-
-            </div>
-
+    const used=assignedIds(formationTeamNumber);
+    const bench=team.players.filter(p=>!used.has(p.id));
+    const selectedPlayer=team.players.find(p=>p.id===selectedFormationPlayerId);
+
+    formationContent.innerHTML=`
+      <div class="formation-v2-shell">
+        <div class="formation-topbar">
+          <div class="formation-team-tabs">
+            ${[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
+          </div>
+          <div class="formation-actions">
+            <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
+            <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
+                    <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
+          </div>
         </div>
-    `;
+
+        <div class="formation-control-panel" style="${teamVars(team)}">
+          <div>
+            <span>FORMATION // ${esc(team.name)}</span>
+            <strong>${activeFormation}</strong>
+          </div>
+          <details class="formation-menu">
+            <summary><span>CHANGE FORMATION</span><b>${activeFormation}</b><i>⌄</i></summary>
+            <div class="formation-menu-popover">
+              <div class="formation-menu-group"><span>BACK FOUR</span>
+                ${["4-3-3","4-2-3-1","4-4-2","4-1-3-2","4-3-2-1"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+              <div class="formation-menu-group"><span>BACK THREE</span>
+                ${["3-4-3","3-5-2","3-4-2-1"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+              <div class="formation-menu-group"><span>BACK FIVE</span>
+                ${["5-3-2","5-2-3"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div class="formation-instructions" style="${teamVars(team)}">
+          <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
+          <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
+        </div>
+
+        <div class="formation-layout ${benchCollapsed?"bench-hidden":""}">
+          <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
+            <div class="pitch-stripes"></div>
+            <div class="pitch-halfway"></div><div class="pitch-circle"></div><div class="pitch-dot"></div>
+            <div class="penalty-box top"></div><div class="penalty-box bottom"></div>
+            <div class="goal-box top"></div><div class="goal-box bottom"></div>
+            ${slots.map((s,i)=>{
+               const p=getFormationPlayer(formationTeamNumber,i);
+               const selected=p&&p.id===selectedFormationPlayerId;
+               const canonicalTarget=selectedPlayer&&canonicalFit(selectedPlayer,s.label);
+               const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
+               const currentFit=p&&canonicalFit(p,s.label);
+               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
+                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}"
+                    onclick="clickFormationSlot(${i})"
+                    ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
+                  <span class="slot-position">${s.label}</span>
+                  ${p?`<div class="formation-player-token" draggable="true" onpointerdown="updateLiveFormationTargets(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                         <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
+                       </div>`:`<span class="empty-slot">+</span>`}
+               </button>`;
+            }).join("")}
+          </div>
+
+          <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}"
+                 ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnBench(event)">
+            <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
+            <div class="bench-list">
+              ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
+                    onclick="selectBenchPlayer(${p.id})" onpointerdown="updateLiveFormationTargets(${p.id})" draggable="true"
+                    ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                    <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
+                  </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
+            </div>
+          </aside>
+        </div>
+      </div>`;
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
     formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     showAuctionComplete();
     window.scrollTo({top:0,behavior:"smooth"});
 });
-
-function playerStats(player){
-    const stats=player?.stats||{};
-
-    return {
-        // Kept for compatibility with existing UI/code.
-        // DO NOT use this value for calculations.
-        ovr:Number(stats.ovr ?? player?.ovr ?? 0),
-
-        off:Number(stats.off ?? player?.off ?? 0),
-        sho:Number(stats.sho ?? player?.sho ?? 0),
-        spd:Number(stats.spd ?? player?.spd ?? 0),
-        def:Number(stats.def ?? player?.def ?? 0),
-        pas:Number(stats.pas ?? player?.pas ?? 0),
-        dri:Number(stats.dri ?? player?.dri ?? 0),
-        gk:Number(stats.gk ?? player?.gk ?? 0)
-    };
-}
-
-function positionGroup(position){
-    const pos=String(position||"").toUpperCase();
-
-    if(pos==="GK") return "GK";
-
-    if([
-        "ST","CF","SS","FW","LW","RW"
-    ].includes(pos)){
-        return "ATTACK";
-    }
-
-    if([
-        "CM","DM","AM","LM","RM","WM"
-    ].includes(pos)){
-        return "MIDFIELD";
-    }
-
-    if([
-        "CB","LB","RB","LWB","RWB","WB","DF"
-    ].includes(pos)){
-        return "DEFENCE";
-    }
-
-    return "MIDFIELD";
-}
-
-function calculatePositionOVR(player,position){
-    const s=playerStats(player);
-    const group=positionGroup(position);
-
-    let value=0;
-
-    if(group==="GK"){
-        value=
-            s.gk*0.70+
-            s.def*0.10+
-            s.pas*0.10+
-            s.spd*0.10;
-    }
-
-    else if(group==="ATTACK"){
-        value=
-            s.off*0.25+
-            s.sho*0.25+
-            s.dri*0.20+
-            s.spd*0.15+
-            s.pas*0.15;
-    }
-
-    else if(group==="MIDFIELD"){
-        value=
-            s.pas*0.25+
-            s.dri*0.20+
-            s.off*0.15+
-            s.spd*0.15+
-            s.def*0.15+
-            s.sho*0.10;
-    }
-
-    else{
-        value=
-            s.def*0.35+
-            s.spd*0.15+
-            s.pas*0.20+
-            s.dri*0.10+
-            s.off*0.10+
-            s.sho*0.10;
-    }
-
-    return Math.round(value);
-}
-
-function playerOverall(player){
-    if(!player) return 0;
-
-    const primary=primaryPosition(player);
-
-    return calculatePositionOVR(player,primary);
-}
-
-function effectiveOVR(player,slotLabel){
-    if(!player||!slotLabel) return 0;
-
-    const position=String(slotLabel).toUpperCase();
-
-    // Calculate from detailed stats.
-    // NEVER use stats.ovr here.
-    const calculated=calculatePositionOVR(player,position);
-
-    // Primary/preferred position.
-    if(primaryFit(player,position)){
-        return calculated;
-    }
-
-    // Secondary/canonical position.
-    if(canonicalFit(player,position)){
-        return Math.max(1,calculated-2);
-    }
-
-    // Same broad positional group.
-    const primaryGroup=positionGroup(primaryPosition(player));
-    const slotGroup=positionGroup(position);
-
-    if(primaryGroup===slotGroup){
-        return Math.max(1,calculated-6);
-    }
-
-    // Completely different role.
-    return Math.max(1,calculated-12);
-}
-
-function statStrip(player,compact=false){
-    const s=playerStats(player);
-
-    return `<div class="stat-strip ${compact?"compact":""}">
-      <b><i>OVR</i>${playerOverall(player)}</b>
-      <span><i>OFF</i>${s.off}</span>
-      <span><i>SHO</i>${s.sho}</span>
-      <span><i>SPD</i>${s.spd}</span>
-      <span><i>DEF</i>${s.def}</span>
-      <span><i>PAS</i>${s.pas}</span>
-      <span><i>DRI</i>${s.dri}</span>
-      <span><i>GK</i>${s.gk}</span>
-    </div>`;
-}
-
-function positionGroup(position){
-    const pos=String(position||"").toUpperCase();
-
-    if(pos==="GK") return "GK";
-
-    if([
-        "ST","CF","SS","FW","LW","RW"
-    ].includes(pos)){
-        return "ATTACK";
-    }
-
-    if([
-        "CM","DM","AM","LM","RM","WM"
-    ].includes(pos)){
-        return "MIDFIELD";
-    }
-
-    if([
-        "CB","LB","RB","LWB","RWB","WB","DF"
-    ].includes(pos)){
-        return "DEFENCE";
-    }
-
-    return "MIDFIELD";
-}
-
-function calculatePositionOVR(player,position){
-    const s=playerStats(player);
-    const group=positionGroup(position);
-
-    let value=0;
-
-    if(group==="GK"){
-        value=
-            s.gk  * 0.70 +
-            s.def * 0.10 +
-            s.pas * 0.10 +
-            s.spd * 0.10;
-    }
-
-    else if(group==="ATTACK"){
-        value=
-            s.off * 0.25 +
-            s.sho * 0.25 +
-            s.dri * 0.20 +
-            s.spd * 0.15 +
-            s.pas * 0.15;
-    }
-
-    else if(group==="MIDFIELD"){
-        value=
-            s.pas * 0.25 +
-            s.dri * 0.20 +
-            s.off * 0.15 +
-            s.spd * 0.15 +
-            s.def * 0.15 +
-            s.sho * 0.10;
-    }
-
-    else if(group==="DEFENCE"){
-        value=
-            s.def * 0.35 +
-            s.spd * 0.15 +
-            s.pas * 0.20 +
-            s.dri * 0.10 +
-            s.off * 0.10 +
-            s.sho * 0.10;
-    }
-
-    return Math.round(value);
-}
-
-function playerOverall(player){
-    if(!player) return 0;
-
-    const primary=primaryPosition(player);
-
-    return calculatePositionOVR(player,primary);
-}
-
-function effectiveOVR(player,slotLabel){
-    if(!player || !slotLabel) return 0;
-
-    const position=String(slotLabel).toUpperCase();
-
-    // ALWAYS calculate OVR from the actual stats.
-    const calculated=calculatePositionOVR(player,position);
-
-    // Preferred position = no penalty.
-    if(primaryFit(player,position)){
-        return calculated;
-    }
-
-    // Secondary/canonical position = small penalty.
-    if(canonicalFit(player,position)){
-        return Math.max(1,calculated-2);
-    }
-
-    // Same general role, but not a listed position.
-    const primaryGroup=positionGroup(primaryPosition(player));
-    const slotGroup=positionGroup(position);
-
-    if(primaryGroup===slotGroup){
-        return Math.max(1,calculated-6);
-    }
-
-    // Completely different role.
-    return Math.max(1,calculated-12);
-}
 
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
