@@ -42,6 +42,41 @@ document.getElementById("maxPlayers").addEventListener("input", updatePoolStatus
 function esc(value) {
     return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 }
+
+let siteErrorTimer=null;
+function showSiteError(message,title="INPUT ERROR"){
+    let box=document.getElementById("siteError");
+    if(!box){
+        box=document.createElement("div");
+        box.id="siteError";
+        box.className="site-error";
+        box.setAttribute("role","alert");
+        box.setAttribute("aria-live","assertive");
+        box.innerHTML=`
+          <div class="site-error-bar"></div>
+          <div class="site-error-icon">!</div>
+          <div class="site-error-copy">
+            <span id="siteErrorTitle"></span>
+            <strong id="siteErrorMessage"></strong>
+          </div>
+          <button id="siteErrorClose" type="button" aria-label="Close error">×</button>`;
+        document.body.appendChild(box);
+        document.getElementById("siteErrorClose").addEventListener("click",hideSiteError);
+    }
+    document.getElementById("siteErrorTitle").textContent=title;
+    document.getElementById("siteErrorMessage").textContent=message;
+    box.classList.remove("show","error-pulse");
+    void box.offsetWidth;
+    box.classList.add("show","error-pulse");
+    clearTimeout(siteErrorTimer);
+    siteErrorTimer=setTimeout(hideSiteError,5200);
+}
+function hideSiteError(){
+    const box=document.getElementById("siteError");
+    if(box) box.classList.remove("show","error-pulse");
+    clearTimeout(siteErrorTimer);
+}
+
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
 function isTeamFull(n){ return teamByNumber(n).players.length >= maxPlayers; }
 function otherTeamNumber(n){ return n === 1 ? 2 : 1; }
@@ -143,17 +178,17 @@ function startGame(){
     const budget=Number(document.getElementById("budget").value);
     bidIncrement=Number(document.getElementById("bidIncrement").value);
     maxPlayers=Number(document.getElementById("maxPlayers").value);
-    if(!n1||!n2) return alert("Please enter names for both teams.");
-    if(budget<=0) return alert("Starting budget must be greater than $0.");
-    if(bidIncrement<=0) return alert("Bid interval must be greater than $0.");
-    if(maxPlayers<=0) return alert("Maximum players must be greater than 0.");
+    if(!n1||!n2) return showSiteError("Please enter names for both teams.","SETUP INCOMPLETE");
+    if(budget<=0) return showSiteError("Starting budget must be greater than $0.","INVALID BUDGET");
+    if(bidIncrement<=0) return showSiteError("Bid interval must be greater than $0.","INVALID BID INTERVAL");
+    if(maxPlayers<=0) return showSiteError("Maximum players must be greater than 0.","INVALID TEAM SIZE");
 
     const selectedPlayers=players.filter(player => selectedPlayerIds.has(player.id));
     const requiredPlayers=maxPlayers*2;
 
-    if(selectedPlayers.length===0) return alert("Select at least one player for the auction.");
+    if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers){
-        return alert(`You need at least ${requiredPlayers} selected players to fill two teams of ${maxPlayers}. Select more players or lower the maximum players per team.`);
+        return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${maxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
     }
 
     startingBudget=budget;
@@ -341,10 +376,10 @@ function placeBid(n){
     currentBid=bid; currentBidder=n; displayBiddingTurn(n===1?2:1);
 }
 function validateBid(bid,team,minimum){
-    if(bid<=minimum){alert(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`);return false;}
-    if(bid%bidIncrement!==0){alert(`Bids must be in intervals of $${bidIncrement}.`);return false;}
-    if(bid>team.budget){alert(`${team.name} only has $${team.budget.toLocaleString()} remaining.`);return false;}
-    if(team.players.length>=maxPlayers){alert(`${team.name}'s roster is full.`);return false;}
+    if(bid<=minimum){showSiteError(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`,"BID REJECTED");return false;}
+    if(bid%bidIncrement!==0){showSiteError(`Bids must be in intervals of $${bidIncrement}.`,"INVALID BID INTERVAL");return false;}
+    if(bid>team.budget){showSiteError(`${team.name} only has $${team.budget.toLocaleString()} remaining.`,"INSUFFICIENT BUDGET");return false;}
+    if(team.players.length>=maxPlayers){showSiteError(`${team.name}'s roster is full.`,"ROSTER FULL");return false;}
     return true;
 }
 function passBid(){awardPlayer(currentBidder);}
