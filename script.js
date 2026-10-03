@@ -52,6 +52,17 @@ document.getElementById("soundToggle").addEventListener("click",toggleSound);
 document.querySelectorAll("[data-sound-toggle]").forEach(b=>b.addEventListener("click",toggleSound));
 updateSoundButton();
 
+
+document.addEventListener("change",e=>{
+  if(e.target.matches("input,select"))playSfx("switch");
+});
+document.addEventListener("pointerover",e=>{
+  const b=e.target.closest("button,.player-pool-card,.preset-card");
+  if(!b||b.dataset.sfxHover==="1")return;
+  b.dataset.sfxHover="1";playSfx("hover");
+  setTimeout(()=>{if(b)b.dataset.sfxHover="0"},180);
+});
+
 function triggerFx(type,text=""){
     const layer=document.getElementById("fxLayer");
     if(type==="bid"){
@@ -306,6 +317,57 @@ const CHEMISTRY_OVERRIDES={
   "Ranze Kurona|Yo Hiori":91,
   "Jin Kiyora|Ranze Kurona":87
 };
+Object.assign(CHEMISTRY_OVERRIDES,{
+  "Charles Chevalier|Ryusei Shido":99,
+  "Yo Hiori|Yoichi Isagi":99,
+  "Meguru Bachira|Yoichi Isagi":98,
+  "Reo Mikage|Seishiro Nagi":99,
+  "Eita Otoya|Tabito Karasu":98,
+  "Ryusei Shido|Sae Itoshi":98,
+  "Alexis Ness|Michael Kaiser":98,
+  "Don Lorenzo|Marc Snuffy":98,
+  "Nijiro Nanase|Rin Itoshi":94,
+  "Aoshi Tokimitsu|Rin Itoshi":94,
+  "Jyubei Aryu|Rin Itoshi":94,
+  "Meguru Bachira|Rin Itoshi":91,
+  "Jyubei Aryu|Meguru Bachira":88,
+  "Aoshi Tokimitsu|Meguru Bachira":88,
+  "Aoshi Tokimitsu|Jyubei Aryu":93,
+  "Seishiro Nagi|Shoei Baro":88,
+  "Hyoma Chigiri|Seishiro Nagi":91,
+  "Hyoma Chigiri|Shoei Baro":88,
+  "Seishiro Nagi|Zantetsu Tsurugi":90,
+  "Jin Kiyora|Seishiro Nagi":86,
+  "Jin Kiyora|Shoei Baro":85,
+  "Hyoma Chigiri|Jin Kiyora":85,
+  "Jin Kiyora|Zantetsu Tsurugi":86,
+  "Eita Otoya|Jin Kiyora":85,
+  "Jin Kiyora|Tabito Karasu":85,
+  "Kenyu Yukimiya|Tabito Karasu":90,
+  "Eita Otoya|Kenyu Yukimiya":90,
+  "Hyoma Chigiri|Rensuke Kunigami":91,
+  "Rensuke Kunigami|Reo Mikage":89,
+  "Gurimu Igarashi|Ryusei Shido":89,
+  "Gurimu Igarashi|Reo Mikage":86,
+  "Ranze Kurona|Ryusei Shido":84,
+  "Ranze Kurona|Reo Mikage":84,
+  "Gin Gagamaru|Jingo Raichi":89,
+  "Gin Gagamaru|Junichi Wanima":84,
+  "Jingo Raichi|Junichi Wanima":84,
+  "Ikki Niko|Yo Hiori":85,
+  "Hyoma Chigiri|Yoichi Isagi":91,
+  "Rensuke Kunigami|Yoichi Isagi":90,
+  "Gin Gagamaru|Yoichi Isagi":88,
+  "Jingo Raichi|Yoichi Isagi":87,
+  "Hyoma Chigiri|Meguru Bachira":91,
+  "Meguru Bachira|Rensuke Kunigami":89,
+  "Gin Gagamaru|Meguru Bachira":87,
+  "Jingo Raichi|Meguru Bachira":86,
+  "Gin Gagamaru|Rensuke Kunigami":87,
+  "Jingo Raichi|Rensuke Kunigami":87,
+  "Gin Gagamaru|Hyoma Chigiri":87,
+  "Hyoma Chigiri|Jingo Raichi":87
+});
 const CHEMISTRY_GROUPS=[
  ["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"],
  ["Seishiro Nagi","Reo Mikage","Zantetsu Tsurugi"],
@@ -326,19 +388,33 @@ function playerChemistry(a,b){
   const fixed=CHEMISTRY_OVERRIDES[chemKey(a,b)];
   if(fixed!=null)return fixed;
   const shared=sharedChemGroups(a,b);
-  if(shared>=2)return 88;
-  if(shared===1)return 82;
-  return 58;
+  if(shared>=3)return 92;
+  if(shared===2)return 88;
+  if(shared===1)return 83;
+  return 56;
 }
 function chemistryTier(v){return v>=95?"chemical":v>=88?"elite":v>=80?"strong":v>=70?"link":"weak";}
 function formationChemistry(teamNumber){
  const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
  const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
- const links=[];
- for(let i=0;i<placed.length;i++)for(let j=i+1;j<placed.length;j++){
-   const a=placed[i],b=placed[j],value=playerChemistry(a.p,b.p);
-   links.push({a,b,value});
- }
+ const distances=new Map();
+ placed.forEach(a=>{
+   const list=placed.filter(b=>b!==a).map(b=>({b,d:Math.hypot(a.slot.x-b.slot.x,a.slot.y-b.slot.y)})).sort((x,y)=>x.d-y.d);
+   distances.set(a,list);
+ });
+ const seen=new Set(),links=[];
+ placed.forEach(a=>{
+   const nearest=(distances.get(a)||[]).slice(0,3);
+   nearest.forEach(({b,d})=>{
+     const reverse=(distances.get(b)||[]).slice(0,3).some(x=>x.b===a);
+     const sameBand=Math.abs(a.slot.y-b.slot.y)<=16;
+     const close=d<=31;
+     if(!(reverse||sameBand||close))return;
+     const key=[a.index,b.index].sort((x,y)=>x-y).join("-");
+     if(seen.has(key))return;seen.add(key);
+     links.push({a,b,value:playerChemistry(a.p,b.p),distance:d});
+   });
+ });
  const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
  return {overall,links};
 }
@@ -1448,7 +1524,7 @@ function renderFormationBuilder(){
           </details>
         </div>
 
-        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong><small>PAIR-SPECIFIC // MANGA + ANIME RELATIONSHIPS</small></div>`})()}
+        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><div class="chemistry-score"><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong><small>DIRECT LINKS // MANGA + ANIME RELATIONSHIPS</small></div><div class="chemistry-key"><b>LINK KEY</b><i class="chemical"></i><span>95+ CHEMICAL</span><i class="elite"></i><span>88+ ELITE</span><i class="strong"></i><span>80+ STRONG</span><i class="link"></i><span>70+ LINK</span><i class="weak"></i><span>&lt;70 WEAK</span></div></div>`})()}
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
