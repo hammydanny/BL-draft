@@ -58,6 +58,7 @@ function triggerFx(type,text=""){
     }
 }
 
+const menuScreen = document.getElementById("menu-screen");
 const setupScreen = document.getElementById("setup-screen");
 const auctionScreen = document.getElementById("auction-screen");
 const auctionContent = document.getElementById("auction-content");
@@ -144,6 +145,108 @@ function hexToRgba(hex,a){
     const n=parseInt(h.length===3?h.split("").map(x=>x+x).join(""):h,16);
     return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
 }
+
+
+const GAME_MODES={
+    quick:{budget:5000,increment:50,maxPlayers:5},
+    standard:{budget:11000,increment:50,maxPlayers:11},
+    full:{budget:15000,increment:50,maxPlayers:15}
+};
+
+function setVisibleScreen(screen){
+    [menuScreen,setupScreen,auctionScreen,formationScreen].forEach(el=>el&&el.classList.add("hidden"));
+    if(screen)screen.classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
+}
+function refreshMainMenu(){
+    const saved=loadSavedData();
+    const hasGame=!!saved?.gameActive;
+    const resume=document.getElementById("menuResumeAuction");
+    const panel=document.getElementById("menuResumePanel");
+    resume.classList.toggle("hidden",!hasGame);
+    panel.classList.toggle("hidden",!hasGame);
+    if(hasGame){
+        document.getElementById("menuResumeMeta").textContent=
+          `AUCTION ${String(saved.auctionNumber||0).padStart(2,"0")} // ${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers} VS ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
+    }
+}
+function openSetupFromMenu(){
+    const saved=loadSavedData();
+    if(saved?.gameActive){
+        showConfirm("START A NEW AUCTION","A saved auction already exists. Starting a new setup will discard that unfinished auction.",()=>{
+            clearSavedGame();
+            setVisibleScreen(setupScreen);
+            renderPlayerPool();
+        });
+        return;
+    }
+    setVisibleScreen(setupScreen);
+    renderPlayerPool();
+}
+function openInfoModal(type){
+    const modal=document.getElementById("infoModal");
+    const title=document.getElementById("infoModalTitle");
+    const code=document.getElementById("infoModalCode");
+    const body=document.getElementById("infoModalBody");
+    if(type==="about"){
+        code.textContent="BL // PROJECT INFORMATION";
+        title.textContent="ABOUT";
+        body.innerHTML=`
+          <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK AUCTION</h3>
+          <p>A local two-player auction team builder developed by <strong>hammydanny</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
+          <div class="info-section"><span>STATUS</span><h3>UNOFFICIAL FAN PROJECT</h3>
+          <p>This is a non-commercial fan-made project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock. Blue Lock and related characters and imagery belong to their respective rights holders.</p></div>`;
+    }else{
+        code.textContent="BL // AUCTION PROTOCOL";
+        title.textContent="HOW TO PLAY";
+        body.innerHTML=`
+          <div class="rule-grid">
+            <div class="rule"><b>01</b><span>SET UP</span><p>Name both teams, choose colors, budget, bid interval, roster size and the characters in the player pool.</p></div>
+            <div class="rule"><b>02</b><span>OPENING BID</span><p>A coin flip chooses who opens first. Opening responsibility alternates every player. The opener chooses any valid amount within their budget.</p></div>
+            <div class="rule"><b>03</b><span>BID OR PASS</span><p>Teams take turns. A new bid must beat the current bid, fit the configured interval, and stay within that team's remaining budget.</p></div>
+            <div class="rule"><b>04</b><span>WIN PLAYER</span><p>Passing ends the auction and the current highest bidder signs the player. Their winning bid is deducted from their budget.</p></div>
+            <div class="rule"><b>05</b><span>ZERO BUDGET</span><p>If the opening side has no money, the funded team controls the decision: buy the player or pass and release them to the zero-budget team for free.</p></div>
+            <div class="rule"><b>06</b><span>FULL ROSTER</span><p>Once one team reaches its roster limit, future players are automatically assigned to the other team until both squads are complete.</p></div>
+            <div class="rule"><b>07</b><span>FORMATION</span><p>After the draft, compare both squads and build formations using the players each team won.</p></div>
+            <div class="rule"><b>08</b><span>AUTOSAVE</span><p>Your active auction is stored locally in this browser. Return to the main menu and use Resume Auction to continue.</p></div>
+          </div>`;
+    }
+    modal.classList.remove("hidden");
+}
+function closeInfoModal(){document.getElementById("infoModal").classList.add("hidden");}
+
+document.getElementById("menuNewAuction").addEventListener("click",openSetupFromMenu);
+document.getElementById("menuResumeAuction").addEventListener("click",()=>restoreGame(loadSavedData()));
+document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
+document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
+document.getElementById("setupBackToMenu").addEventListener("click",()=>{saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();});
+document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);
+document.getElementById("infoModalDone").addEventListener("click",closeInfoModal);
+document.getElementById("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfoModal();});
+
+function applyGameMode(mode){
+    const data=GAME_MODES[mode];
+    document.querySelectorAll("[data-game-mode]").forEach(b=>b.classList.toggle("active",b.dataset.gameMode===mode));
+    if(!data)return;
+    document.getElementById("budget").value=data.budget;
+    document.getElementById("bidIncrement").value=data.increment;
+    document.getElementById("maxPlayers").value=data.maxPlayers;
+    updatePoolStatus();
+    saveSetupPreferences();
+}
+document.querySelectorAll("[data-game-mode]").forEach(button=>{
+    button.addEventListener("click",()=>applyGameMode(button.dataset.gameMode));
+});
+["budget","bidIncrement","maxPlayers"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",()=>{
+        const matched=Object.entries(GAME_MODES).find(([,m])=>
+            Number(document.getElementById("budget").value)===m.budget &&
+            Number(document.getElementById("bidIncrement").value)===m.increment &&
+            Number(document.getElementById("maxPlayers").value)===m.maxPlayers
+        );
+        document.querySelectorAll("[data-game-mode]").forEach(b=>b.classList.toggle("active",matched?b.dataset.gameMode===matched[0]:b.dataset.gameMode==="custom"));
+    });
+});
 
 function renderPlayerPool(){
     const grid=document.getElementById("playerPoolGrid");
@@ -313,7 +416,7 @@ function restoreGame(saved){
     formationTeamNumber=saved.formationTeamNumber||1;activeFormation=saved.activeFormation||"4-3-3";
     formationAssignments=saved.formationAssignments||{1:{},2:{}};
     uiState=saved.uiState||{screen:"auction",phase:"opening",turn:null};
-    setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    menuScreen.classList.add("hidden");setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
     resumeCurrentView();
 }
@@ -722,7 +825,7 @@ function restartAuction(){
         uiState={screen:"setup",phase:"setup",turn:null};
         auctionScreen.classList.add("hidden");formationScreen.classList.add("hidden");setupScreen.classList.remove("hidden");
         auctionContent.innerHTML="";playersRemainingDisplay.innerHTML="";
-        saveSetupPreferences();showResumeCard(null);
+        saveSetupPreferences();showResumeCard(null);refreshMainMenu();
         window.scrollTo({top:0,behavior:"smooth"});
     });
 }
@@ -849,3 +952,5 @@ document.getElementById("backToResults").addEventListener("click",()=>{
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
+setVisibleScreen(menuScreen);
+refreshMainMenu();
