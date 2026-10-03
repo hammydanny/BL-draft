@@ -127,3 +127,34 @@ button{font-family:"Rajdhani";cursor:pointer}.primary-button{display:flex;justif
 img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#071522 0,#071522 9px,#0b1d2c 9px,#0b1d2c 18px);position:relative}
 .pool-player-card:has(img.image-fallback)::after,.final-player:has(img.image-fallback)::after,.history-row:has(img.image-fallback)::after{content:"IMAGE OFFLINE";position:absolute;inset:35% 4px auto;text-align:center;color:#54758e;font-size:7px;font-weight:800;letter-spacing:1px}
 @media(max-width:600px){.resume-session{align-items:flex-start;flex-direction:column}.resume-session-actions{width:100%}.resume-session-actions button{flex:1}}
+
+/* ==================================================
+   AUCTION EXPERIENCE POLISH + ORIGINAL SFX UI
+================================================== */
+.sound-toggle{display:flex;align-items:center;gap:7px;height:38px;padding:0 11px;color:#a6d8ff;background:rgba(20,156,255,.07);border:1px solid rgba(20,156,255,.28);font-size:8px;font-weight:800;letter-spacing:1px;cursor:pointer}
+.sound-toggle .sound-icon{color:var(--blue);font-size:12px}.sound-toggle.muted{color:#5d7487;background:#06101a;border-color:#183247}.sound-toggle.muted .sound-icon{color:#61798d}
+.auction-enter{animation:auctionEnter .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes auctionEnter{from{opacity:0;transform:translateY(9px) scale(.994)}to{opacity:1;transform:none}}
+.counter-pop{animation:counterPop .28s ease}
+@keyframes counterPop{50%{transform:scale(1.18);color:#fff;text-shadow:0 0 15px var(--blue)}}
+.fx-layer{position:fixed;z-index:90000;inset:0;pointer-events:none;overflow:hidden}
+.bid-flash{position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,transparent,rgba(20,156,255,.18),transparent);transform:translateX(-100%)}
+.bid-flash.go{animation:bidSweep .36s ease-out}
+@keyframes bidSweep{0%{opacity:0;transform:translateX(-100%)}30%{opacity:1}100%{opacity:0;transform:translateX(100%)}}
+.sold-burst{position:absolute;left:50%;top:50%;opacity:0;transform:translate(-50%,-50%) scale(2.6) skew(-8deg);color:#fff;font:italic 1000 clamp(70px,15vw,190px) "Barlow Condensed";letter-spacing:-4px;text-shadow:0 0 10px #149cff,0 0 40px rgba(20,156,255,.8);white-space:nowrap}
+.sold-burst.go{animation:soldBurst .72s cubic-bezier(.1,.85,.2,1)}
+@keyframes soldBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(2.7) skew(-8deg);filter:blur(12px)}30%{opacity:.9;filter:blur(0)}55%{opacity:.88;transform:translate(-50%,-50%) scale(.92) skew(-8deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.04) skew(-8deg)}}
+.overlay-card .reveal-image{position:relative;overflow:hidden}
+.overlay-card .reveal-image:after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.16) 48%,transparent 72%);transform:translateX(-120%);animation:revealScan .8s .12s ease-out forwards}
+@keyframes revealScan{to{transform:translateX(120%)}}
+.reveal-kicker{animation:techFlicker .55s steps(2)}
+@keyframes techFlicker{0%,20%,45%{opacity:.25}10%,35%,100%{opacity:1}}
+.sold-panel{animation:soldPanelIn .45s cubic-bezier(.15,.8,.25,1)}
+@keyframes soldPanelIn{from{opacity:0;transform:scale(.94);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+.sold-word{animation:soldWordIn .55s cubic-bezier(.1,.9,.15,1)}
+@keyframes soldWordIn{0%{opacity:0;letter-spacing:20px;transform:scale(1.4)}100%{opacity:1;letter-spacing:normal;transform:none}}
+.budget-fill,.budget-bar>div{transition:width .65s cubic-bezier(.2,.75,.2,1)}
+.bid-box input:focus{animation:inputCharge 1.2s ease-in-out infinite alternate}
+@keyframes inputCharge{to{box-shadow:0 0 0 1px var(--team),0 0 22px var(--team-soft)}}
+@media(prefers-reduced-motion:reduce){.auction-enter,.counter-pop,.bid-flash.go,.sold-burst.go,.overlay-card .reveal-image:after,.reveal-kicker,.sold-panel,.sold-word,.bid-box input:focus{animation:none!important}.budget-fill,.budget-bar>div{transition:none!important}}
+@media(max-width:600px){.sound-toggle{height:34px;padding:0 8px}.sound-toggle strong{display:none}.sold-burst{font-size:25vw}}
