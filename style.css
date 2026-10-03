@@ -441,3 +441,26 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 .current-ovr-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:8px;background:#06131e;border:1px solid #16364c}.current-ovr-row strong{font:900 20px "Barlow Condensed";color:var(--team)}.current-ovr-row b{font:900 28px "Barlow Condensed"}
 .live-formation-drag-ghost{position:fixed;left:0;top:0;z-index:999999;pointer-events:none;width:112px;padding:6px;background:rgba(2,10,17,.94);border:2px solid #36caff;box-shadow:0 0 22px rgba(54,202,255,.65);will-change:transform}
 .live-formation-drag-ghost img{display:block;width:96px;height:96px;object-fit:cover;object-position:center top}.live-formation-drag-ghost strong{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:4px;font:900 13px "Barlow Condensed"}.live-formation-drag-ghost span{font-size:8px;font-weight:900;color:#42d9ff}
+
+/* =========================================================
+   BLUE LOCK // CHEMISTRY + SITE POLISH
+========================================================= */
+.chemistry-hud{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:18px!important;position:relative;overflow:hidden}
+.chemistry-hud:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0 52%,rgba(25,167,255,.06) 53%,transparent 55%);pointer-events:none}
+.chemistry-score{display:grid;grid-template-columns:auto auto;align-items:baseline;gap:3px 10px;min-width:220px}.chemistry-score small{grid-column:1/-1}
+.chemistry-key{margin-left:auto;display:grid;grid-template-columns:auto 18px auto 18px auto;align-items:center;gap:4px 6px;padding:6px 8px;border-left:1px solid rgba(80,190,255,.22);background:rgba(0,8,15,.45);font-size:7px;font-weight:900;letter-spacing:.55px;color:#8aa4b6}
+.chemistry-key b{grid-column:1/-1;color:#dff5ff;font-size:7px;letter-spacing:1.4px}.chemistry-key i{width:17px;height:3px;border-radius:3px;display:block}.chemistry-key i.chemical{background:#fff36a;box-shadow:0 0 8px #ffcf33}.chemistry-key i.elite{background:#42ff9b;box-shadow:0 0 7px #42ff9b}.chemistry-key i.strong{background:#35d9ff;box-shadow:0 0 7px #35d9ff}.chemistry-key i.link{background:#9a8cff}.chemistry-key i.weak{background:repeating-linear-gradient(90deg,#ff496c 0 4px,transparent 4px 7px)}
+.chem-link{animation:chemPulse 2.2s ease-in-out infinite}.chem-link.chemical{animation-duration:1.25s}.chem-link.elite{animation-duration:1.55s}
+@keyframes chemPulse{0%,100%{opacity:.62}50%{opacity:1}}
+.live-formation-drag-ghost{animation:dragGhostIn .12s ease-out both;transform-origin:center}.live-formation-drag-ghost:after{content:"MOVE // PLAYER";position:absolute;right:4px;top:4px;padding:2px 4px;background:#19a7ff;color:#00101b;font-size:6px;font-weight:1000;letter-spacing:.8px}
+@keyframes dragGhostIn{from{opacity:0;scale:.82}to{opacity:1;scale:1}}
+button,.player-pool-card,.preset-card,.formation-slot,.bench-player-card{transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease,filter .14s ease}
+button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}button:active:not(:disabled){transform:translateY(1px) scale(.985)}
+.player-pool-card:hover,.bench-player-card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.28),0 0 0 1px rgba(25,167,255,.15)}
+.screen.active{animation:blScreenIn .28s cubic-bezier(.2,.75,.25,1) both}
+@keyframes blScreenIn{from{opacity:0;transform:translateY(7px);filter:blur(2px)}to{opacity:1;transform:none;filter:none}}
+.menu-title,.section-title,.formation-title{position:relative}.menu-title:after,.section-title:after,.formation-title:after{content:"";position:absolute;left:0;bottom:-5px;width:42px;height:2px;background:#19a7ff;box-shadow:0 0 9px #19a7ff;animation:egoLine 2.4s ease-in-out infinite}
+@keyframes egoLine{0%,100%{width:32px;opacity:.6}50%{width:72px;opacity:1}}
+.sold-burst.go{filter:drop-shadow(0 0 18px #19a7ff)}
+@media(max-width:850px){.chemistry-hud{align-items:flex-start!important;flex-direction:column}.chemistry-key{margin-left:0;border-left:0;border-top:1px solid rgba(80,190,255,.22);width:100%}}
+@media(prefers-reduced-motion:reduce){.chem-link,.screen.active,.menu-title:after,.section-title:after,.formation-title:after{animation:none!important}*{scroll-behavior:auto!important}}
