@@ -336,22 +336,39 @@ function playerChemistry(a,b){
 }
 function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":"weak";}
 function tacticalNeighbors(placed){
-    const edgeKeys=new Set(),edges=[];
-    placed.forEach(a=>{
-        const candidates=placed.filter(b=>b!==a).map(b=>{
-            const dx=Math.abs(a.slot.x-b.slot.x),dy=Math.abs(a.slot.y-b.slot.y);
-            return {b,d:Math.hypot(dx,dy),dx,dy};
-        }).sort((x,y)=>x.d-y.d);
-        // Two nearest are always direct tactical neighbors. A third is allowed only
-        // when genuinely close or horizontally adjacent in the same line.
-        const chosen=candidates.filter((x,i)=>i<2 || (i===2 && (x.d<=25 || (x.dy<=12&&x.dx<=34))));
-        chosen.forEach(({b,d})=>{
-            if(d>38)return;
-            const key=[a.index,b.index].sort((x,y)=>x-y).join("-");
-            if(edgeKeys.has(key))return;
-            edgeKeys.add(key);edges.push({a,b,d});
-        });
+    if(placed.length<2)return [];
+    const sorted=[...placed].sort((a,b)=>a.slot.y-b.slot.y || a.slot.x-b.slot.x);
+    const rows=[];
+    sorted.forEach(p=>{
+        let row=rows.find(r=>Math.abs(r.y-p.slot.y)<=9);
+        if(!row){row={y:p.slot.y,players:[]};rows.push(row);}
+        row.players.push(p);
+        row.y=row.players.reduce((n,x)=>n+x.slot.y,0)/row.players.length;
     });
+    rows.sort((a,b)=>a.y-b.y);
+    rows.forEach(r=>r.players.sort((a,b)=>a.slot.x-b.slot.x));
+    const keys=new Set(),edges=[];
+    const add=(a,b)=>{
+        if(!a||!b||a===b)return;
+        const key=[a.index,b.index].sort((x,y)=>x-y).join("-");
+        if(keys.has(key))return;
+        keys.add(key);edges.push({a,b,d:Math.hypot(a.slot.x-b.slot.x,a.slot.y-b.slot.y)});
+    };
+    rows.forEach(row=>{
+        for(let i=0;i<row.players.length-1;i++)add(row.players[i],row.players[i+1]);
+    });
+    for(let r=0;r<rows.length-1;r++){
+        const aRow=rows[r].players,bRow=rows[r+1].players;
+        aRow.forEach(a=>{
+            const ranked=[...bRow].map(b=>({b,dx:Math.abs(a.slot.x-b.slot.x)})).sort((x,y)=>x.dx-y.dx);
+            if(ranked[0])add(a,ranked[0].b);
+            if(ranked[1] && ranked[1].dx<=ranked[0].dx+10 && ranked[1].dx<=22)add(a,ranked[1].b);
+        });
+        bRow.forEach(b=>{
+            const ranked=[...aRow].map(a=>({a,dx:Math.abs(a.slot.x-b.slot.x)})).sort((x,y)=>x.dx-y.dx);
+            if(ranked[0])add(ranked[0].a,b);
+        });
+    }
     return edges;
 }
 function formationChemistry(teamNumber){
@@ -1285,7 +1302,7 @@ function movePlayerToSlot(playerId,slotIndex){
         // If dragged from bench, the displaced player naturally moves to bench.
     }
     formationAssignments[n][slotIndex]=playerId;
-    playSfx("drop");removeFormationDragGhost();
+    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1293,7 +1310,7 @@ function movePlayerToBench(playerId){
     const n=formationTeamNumber;
     const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
-    playSfx("drop");removeFormationDragGhost();
+    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1338,39 +1355,17 @@ function clearLiveFormationTargets(){
     document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
 }
 
-let formationDragGhost=null;
-function createFormationDragGhost(player,event){
-    removeFormationDragGhost();
-    formationDragGhost=document.createElement("div");
-    formationDragGhost.className="formation-drag-ghost-live";
-    formationDragGhost.innerHTML=`<img src="${player.image}" alt=""><div><strong>${esc(player.name)}</strong><span>${primaryPosition(player)}</span></div>`;
-    document.body.appendChild(formationDragGhost);
-    moveFormationDragGhost(event);
-}
-function moveFormationDragGhost(event){
-    if(!formationDragGhost)return;
-    formationDragGhost.style.left=(event.clientX+18)+"px";
-    formationDragGhost.style.top=(event.clientY+18)+"px";
-}
-function removeFormationDragGhost(){
-    if(formationDragGhost){formationDragGhost.remove();formationDragGhost=null;}
-}
-document.addEventListener("dragover",moveFormationDragGhost);
-document.addEventListener("dragend",removeFormationDragGhost);
-document.addEventListener("drop",removeFormationDragGhost);
-
 function startFormationDrag(event,id){
     draggedFormationPlayerId=id;
     selectedFormationPlayerId=id;
     event.dataTransfer.effectAllowed="move";
     event.dataTransfer.setData("text/plain",String(id));
-    const p=teamByNumber(formationTeamNumber).players.find(x=>x.id===id);
-    if(p)createFormationDragGhost(p,event);
-    const blank=document.createElement("canvas");blank.width=1;blank.height=1;
-    event.dataTransfer.setDragImage(blank,0,0);
+    const source=event.currentTarget;
+    const rect=source.getBoundingClientRect();
+    event.dataTransfer.setDragImage(source,Math.max(1,Math.min(rect.width/2,event.clientX-rect.left)),Math.max(1,Math.min(rect.height/2,event.clientY-rect.top)));
     updateLiveFormationTargets(id);
     playSfx("select");
-    requestAnimationFrame(()=>event.currentTarget.classList.add("dragging"));
+    requestAnimationFrame(()=>source.classList.add("dragging"));
 }
 function endFormationDrag(event){
     event.currentTarget.classList.remove("dragging");
