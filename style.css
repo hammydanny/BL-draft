@@ -250,3 +250,45 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 .share-card-footer{display:flex;justify-content:space-between;gap:15px;margin-top:18px;padding-top:10px;border-top:1px solid var(--line);color:#557086;font-size:6px;letter-spacing:1.4px}
 @media(max-width:760px){.results-actions-top{grid-template-columns:1fr}.share-team-grid{grid-template-columns:1fr}.share-card{padding:16px}.share-toolbar{flex-direction:column}.header-status{display:none}.game-header{grid-template-columns:1fr auto}.header-mini-actions button span{display:none}}
 @media print{body>*:not(#shareScreen){display:none!important}.share-screen{position:static!important;padding:0!important;background:#02070d!important}.share-toolbar{display:none!important}.share-card{box-shadow:none!important}.share-shell{width:100%!important}}
+
+
+/* ==================================================
+   CANONICAL PLAYER ROLES // CHAPTER 363 DATABASE
+================================================== */
+.position-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.position-badges i{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:3px 6px;border:1px solid rgba(84,200,255,.28);background:rgba(20,156,255,.08);color:#9bd8fb;font-style:normal;font-size:9px;font-weight:800;line-height:1;letter-spacing:.7px}
+.position-badges i.primary{color:#fff;border-color:var(--blue);background:rgba(20,156,255,.25);box-shadow:0 0 11px rgba(20,156,255,.18)}
+.position-badges.compact{justify-content:center;gap:2px;margin:3px 3px 5px}
+.position-badges.compact i{min-width:23px;padding:2px 4px;font-size:7px}
+.formation-player-token .position-badges{pointer-events:none}
+.bench-player span .position-badges{justify-content:flex-start;margin-top:3px}
+
+/* Green = canonically demonstrated/supported role.
+   Blue ring = primary role in our database. */
+.formation-slot.canonical-target{border-color:#63f2ac!important;box-shadow:0 0 0 2px rgba(99,242,172,.18),0 0 28px rgba(99,242,172,.30)!important}
+.formation-slot.canonical-target .slot-position{color:#8affc4!important;background:#08251b!important;border-color:#3cba80!important}
+.formation-slot.canonical-target:after{content:"CANON";position:absolute;left:50%;bottom:-17px;transform:translateX(-50%);padding:2px 5px;color:#8affc4;background:#04130d;border:1px solid rgba(99,242,172,.35);font-size:7px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+.formation-slot.primary-target{outline:2px solid rgba(20,156,255,.78);outline-offset:3px}
+.formation-slot.natural-fit:not(.canonical-target){border-color:rgba(84,200,255,.55)}
+.formation-instructions strong{line-height:1.4}
+
+/* Desktop readability pass: retain the HUD look without 6–8px body labels. */
+@media (min-width:761px){
+  .system-tag,.panel-code,.team-code,.overlay-kicker{font-size:10px}
+  label{font-size:10px}
+  .game-header-small,.header-status,.players-remaining{font-size:9px}
+  .budget-label,.player-card-label,.turn-indicator span,.current-bid-label,
+  .sold-stamp,.sold-to,.history-heading span,.overlay-eyebrow{font-size:9px}
+  .mini-player-card span,.final-player span{font-size:9px}
+  .empty-roster,.bid-holder,.history-empty{font-size:10px}
+  .history-player span,.final-history-row>div span{font-size:9px}
+  .history-player strong,.final-history-row strong{font-size:12px}
+  .formation-instructions span,.formation-control-panel>div:first-child span,
+  .bench-heading span,.bench-heading small{font-size:9px!important}
+  .formation-instructions strong{font-size:11px}
+  .formation-actions button,.formation-picker button,.formation-team-tabs button,
+  .global-menu-button,.compact-control,.header-mini-actions .sound-toggle{font-size:9px!important}
+  .mode-note,.preset-note,.pool-requirement,.pool-card-name{font-size:10px}
+  .share-team-head span,.share-money span,.share-card-footer{font-size:8px}
+  .share-player>span,.share-player strong{font-size:8px}
+}
