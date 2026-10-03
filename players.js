@@ -67,10 +67,4 @@ const players = [
     { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:91, off:92, sho:90, spd:88, def:73, pas:91, dri:89, gk:56 } },
     { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
     { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:88, off:90, sho:89, spd:87, def:68, pas:83, dri:86, gk:52 } }
-,
-    { id:69, name:"John Paccini", image:"images/john-paccini.jpg",
-      primaryPosition:"CF", positions:["FW","RW","LW","CM","CB","GK"],
-      stats:{ovr:100,off:100,sho:100,spd:100,def:100,pas:100,dri:100,gk:100},
-      passive:{name:"TBD",trigger:"TBD",effect:"TBD"},
-      special:{name:"TBD",trigger:"TBD",effect:"TBD"} }
 ];
