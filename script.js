@@ -36,10 +36,6 @@ function playSfx(name){
     if(name==="pass"){tone(230,.09,"sine",.025);tone(160,.12,"sine",.018,.06);}
     if(name==="error"){tone(145,.11,"sawtooth",.025);tone(115,.15,"square",.018,.08);}
     if(name==="sold"){tone(220,.08,"sawtooth",.025);tone(440,.1,"square",.025,.07);tone(880,.18,"sine",.03,.15);}
-    if(name==="ui"){tone(420,.035,"sine",.012);tone(560,.035,"sine",.009,.025);}
-    if(name==="pick"){tone(310,.045,"triangle",.014);tone(470,.05,"triangle",.012,.03);}
-    if(name==="drop"){tone(520,.045,"sine",.015);tone(700,.055,"sine",.012,.035);}
-    if(name==="menu"){tone(260,.045,"triangle",.012);tone(390,.055,"triangle",.011,.035);}
 }
 function updateSoundButton(){
     document.querySelectorAll("#soundToggle,[data-sound-toggle]").forEach(b=>{
@@ -55,13 +51,6 @@ function toggleSound(){
 document.getElementById("soundToggle").addEventListener("click",toggleSound);
 document.querySelectorAll("[data-sound-toggle]").forEach(b=>b.addEventListener("click",toggleSound));
 updateSoundButton();
-document.addEventListener("click",e=>{
-    const b=e.target.closest("button");
-    if(!b||b.id==="soundToggle"||b.hasAttribute("data-sound-toggle"))return;
-    if(b.closest("#auction-content") && (b.id==="placeBidButton"||b.id==="placeOpeningBid"||b.id==="passButton"||b.id==="buyPlayerButton"||b.id==="controlPassButton"))return;
-    if(b.matches(".menu-primary,.menu-action,.global-menu-button,.header-button,[data-game-mode],[data-preset],.formation-database-toggle,.formation-bench-toggle,.formation-reset"))playSfx("menu");
-    else if(b.closest("#formation-screen")||b.closest("#setup-screen")||b.closest("#infoModal")||b.closest("#confirmModal"))playSfx("ui");
-});
 
 function triggerFx(type,text=""){
     const layer=document.getElementById("fxLayer");
@@ -255,72 +244,111 @@ function positionRatingGrid(player){
 }
 
 
-const CHEMISTRY_PAIRS={
-  "Yoichi Isagi|Meguru Bachira":96,
-  "Yoichi Isagi|Yo Hiori":97,
-  "Yoichi Isagi|Ranze Kurona":95,
-  "Yoichi Isagi|Rin Itoshi":83,
-  "Yoichi Isagi|Michael Kaiser":72,
-  "Yoichi Isagi|Seishiro Nagi":91,
-  "Yoichi Isagi|Rensuke Kunigami":86,
-  "Yoichi Isagi|Hyoma Chigiri":88,
-  "Yoichi Isagi|Gin Gagamaru":84,
-  "Michael Kaiser|Alexis Ness":98,
-  "Michael Kaiser|Benedict Grim":88,
-  "Michael Kaiser|Noel Noa":84,
-  "Seishiro Nagi|Reo Mikage":99,
-  "Seishiro Nagi|Zantetsu Tsurugi":86,
-  "Rin Itoshi|Ryusei Shido":62,
-  "Rin Itoshi|Sae Itoshi":68,
-  "Ryusei Shido|Sae Itoshi":96,
-  "Shoei Baro|Don Lorenzo":88,
-  "Shoei Baro|Oliver Aiku":85,
-  "Shoei Baro|Ikki Niko":84,
-  "Oliver Aiku|Don Lorenzo":89,
-  "Oliver Aiku|Jyubei Aryu":87,
-  "Tabito Karasu|Yo Hiori":92,
-  "Tabito Karasu|Eita Otoya":93,
-  "Meguru Bachira|Lavinho":94,
-  "Hyoma Chigiri|Chris Prince":88,
-  "Marc Snuffy|Don Lorenzo":96,
-  "Charles Chevalier|Julien Loki":94,
+const CHEMISTRY_OVERRIDES={
+  "Yo Hiori|Yoichi Isagi":99,
+  "Meguru Bachira|Yoichi Isagi":97,
+  "Ranze Kurona|Yoichi Isagi":96,
+  "Seishiro Nagi|Yoichi Isagi":94,
+  "Rin Itoshi|Yoichi Isagi":86,
+  "Hyoma Chigiri|Yoichi Isagi":90,
+  "Rensuke Kunigami|Yoichi Isagi":88,
+  "Gin Gagamaru|Yoichi Isagi":86,
+  "Nijiro Nanase|Yoichi Isagi":89,
+  "Michael Kaiser|Yoichi Isagi":68,
+  "Alexis Ness|Yoichi Isagi":66,
+  "Jin Kiyora|Yoichi Isagi":78,
+  "Reo Mikage|Seishiro Nagi":99,
+  "Seishiro Nagi|Zantetsu Tsurugi":92,
+  "Hyoma Chigiri|Seishiro Nagi":91,
+  "Hyoma Chigiri|Reo Mikage":90,
+  "Reo Mikage|Zantetsu Tsurugi":94,
+  "Eita Otoya|Tabito Karasu":99,
+  "Tabito Karasu|Yo Hiori":95,
+  "Kenyu Yukimiya|Tabito Karasu":88,
+  "Hyoma Chigiri|Tabito Karasu":88,
+  "Eita Otoya|Hyoma Chigiri":88,
+  "Eita Otoya|Kenyu Yukimiya":87,
+  "Charles Chevalier|Ryusei Shido":99,
+  "Ryusei Shido|Sae Itoshi":98,
+  "Rin Itoshi|Ryusei Shido":55,
+  "Rin Itoshi|Sae Itoshi":65,
+  "Nijiro Nanase|Rin Itoshi":93,
+  "Aoshi Tokimitsu|Rin Itoshi":91,
+  "Jyubei Aryu|Rin Itoshi":91,
+  "Alexis Ness|Michael Kaiser":98,
+  "Benedict Grim|Michael Kaiser":91,
+  "Michael Kaiser|Noel Noa":86,
+  "Alexis Ness|Benedict Grim":88,
+  "Oliver Aiku|Shoei Baro":91,
+  "Ikki Niko|Shoei Baro":90,
+  "Jyubei Aryu|Shoei Baro":89,
+  "Don Lorenzo|Shoei Baro":90,
+  "Don Lorenzo|Oliver Aiku":94,
+  "Ikki Niko|Oliver Aiku":92,
+  "Jyubei Aryu|Oliver Aiku":92,
+  "Ikki Niko|Jyubei Aryu":90,
+  "Don Lorenzo|Marc Snuffy":98,
+  "Marc Snuffy|Shoei Baro":94,
+  "Eita Otoya|Meguru Bachira":91,
+  "Lavinho|Meguru Bachira":96,
+  "Chris Prince|Hyoma Chigiri":91,
+  "Chris Prince|Seishiro Nagi":90,
+  "Chris Prince|Reo Mikage":90,
+  "Charles Chevalier|Julien Loki":96,
+  "Julien Loki|Ryusei Shido":91,
   "Junichi Wanima|Keisuke Wanima":99,
-  "Ranze Kurona|Jin Kiyora":87,
-  "Teddy Knight|Lockhart":88,
-  "Teddy Knight|Achanpong":87
+  "Hyoma Chigiri|Rensuke Kunigami":89,
+  "Meguru Bachira|Rensuke Kunigami":88,
+  "Hyoma Chigiri|Meguru Bachira":90,
+  "Gin Gagamaru|Jingo Raichi":88,
+  "Gin Gagamaru|Rensuke Kunigami":87,
+  "Jingo Raichi|Rensuke Kunigami":87,
+  "Ranze Kurona|Yo Hiori":91,
+  "Jin Kiyora|Ranze Kurona":87
 };
-function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
-function pairChemistry(a,b,slotA,slotB){
-  const explicit=CHEMISTRY_PAIRS[chemistryKey(a,b)];
-  if(explicit!==undefined)return explicit;
-  const ga=positionGroup(slotA),gb=positionGroup(slotB);
-  let score=72;
-  if(ga!==gb)score+=6;
-  if(ga==="MIDFIELD"||gb==="MIDFIELD")score+=4;
-  if(canonicalFit(a,slotA)&&canonicalFit(b,slotB))score+=5;
-  if(primaryFit(a,slotA))score+=2;if(primaryFit(b,slotB))score+=2;
-  return Math.max(45,Math.min(90,score));
+const CHEMISTRY_GROUPS=[
+ ["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"],
+ ["Seishiro Nagi","Reo Mikage","Zantetsu Tsurugi"],
+ ["Rin Itoshi","Aoshi Tokimitsu","Jyubei Aryu"],
+ ["Tabito Karasu","Eita Otoya","Yo Hiori","Kenyu Yukimiya"],
+ ["Yoichi Isagi","Yo Hiori","Nijiro Nanase"],
+ ["Michael Kaiser","Alexis Ness","Benedict Grim","Yoichi Isagi","Rensuke Kunigami","Yo Hiori","Ranze Kurona","Jin Kiyora","Jingo Raichi","Kenyu Yukimiya"],
+ ["Shoei Baro","Oliver Aiku","Ikki Niko","Jyubei Aryu","Don Lorenzo"],
+ ["Meguru Bachira","Eita Otoya"],
+ ["Seishiro Nagi","Reo Mikage","Hyoma Chigiri"],
+ ["Rin Itoshi","Ryusei Shido","Charles Chevalier","Tabito Karasu","Aoshi Tokimitsu","Nijiro Nanase"],
+ ["Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Kento Cho","Teru Kitsunezato","Shuto Sendo","Gen Fukaku"],
+];
+function chemKey(a,b){return [a.name,b.name].sort().join("|");}
+function sharedChemGroups(a,b){return CHEMISTRY_GROUPS.reduce((n,g)=>n+(g.includes(a.name)&&g.includes(b.name)?1:0),0);}
+function playerChemistry(a,b){
+  if(!a||!b||a.id===b.id)return 0;
+  const fixed=CHEMISTRY_OVERRIDES[chemKey(a,b)];
+  if(fixed!=null)return fixed;
+  const shared=sharedChemGroups(a,b);
+  if(shared>=2)return 88;
+  if(shared===1)return 82;
+  return 58;
 }
+function chemistryTier(v){return v>=95?"chemical":v>=88?"elite":v>=80?"strong":v>=70?"link":"weak";}
 function formationChemistry(teamNumber){
-  const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
-  const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
-  const links=[];
-  for(let i=0;i<placed.length;i++)for(let j=i+1;j<placed.length;j++){
-    const a=placed[i],b=placed[j],dx=a.slot.x-b.slot.x,dy=a.slot.y-b.slot.y,dist=Math.hypot(dx,dy);
-    if(dist<=36)links.push({a,b,value:pairChemistry(a.p,b.p,a.slot.label,b.slot.label),dist});
-  }
-  const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
-  return {overall,links};
+ const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
+ const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
+ const links=[];
+ for(let i=0;i<placed.length;i++)for(let j=i+1;j<placed.length;j++){
+   const a=placed[i],b=placed[j],value=playerChemistry(a.p,b.p);
+   links.push({a,b,value});
+ }
+ const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
+ return {overall,links};
 }
-function chemistryClass(v){return v>=90?"elite":v>=80?"strong":v>=70?"normal":"weak";}
 function chemistrySvg(teamNumber){
  const c=formationChemistry(teamNumber);
- return `<svg class="chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${c.links.map(l=>`<line class="chem-link ${chemistryClass(l.value)}" x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}"><title>${esc(l.a.p.name)} + ${esc(l.b.p.name)} // ${l.value}</title></line>`).join("")}</svg>`;
+ return `<svg class="chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none">${c.links.map(l=>`<line x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}" class="chem-link ${chemistryTier(l.value)}" data-chem="${l.value}"><title>${esc(l.a.p.name)} × ${esc(l.b.p.name)} — ${l.value} CHEM</title></line>`).join("")}</svg>`;
 }
-function currentPlayerSlot(teamNumber,playerId){
+function currentPlayerSlot(teamNumber,id){
  const ass=formationAssignments[teamNumber]||{},shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
- const key=Object.keys(ass).find(k=>ass[k]===playerId);
- return key===undefined?null:shape[+key]||null;
+ const k=Object.keys(ass).find(k=>ass[k]===id);return k==null?null:shape[+k]||null;
 }
 
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
@@ -1191,7 +1219,6 @@ function sanitizeFormationAssignments(n){
     formationAssignments[n]=clean;
 }
 function switchFormationTeam(n){
-    playSfx("ui");
     formationTeamNumber=n;
     activeFormation=formationByTeam[n]||"4-3-3";
     selectedFormationPlayerId=null;
@@ -1201,7 +1228,7 @@ function changeFormation(name){
     if(!FORMATIONS[name])return;
     const n=formationTeamNumber;
     const previous={...(formationAssignments[n]||{})};
-    formationByTeam[n]=name;activeFormation=name;selectedFormationPlayerId=null;playSfx("ui");
+    formationByTeam[n]=name;activeFormation=name;selectedFormationPlayerId=null;
     const slotCount=FORMATIONS[name].length,preserved={};
     Object.entries(previous).forEach(([slot,id])=>{
         const i=Number(slot);
@@ -1239,7 +1266,7 @@ function movePlayerToSlot(playerId,slotIndex){
         // If dragged from bench, the displaced player naturally moves to bench.
     }
     formationAssignments[n][slotIndex]=playerId;
-    playSfx("drop");
+    playSfx("drop");removeFormationDragGhost();
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1247,7 +1274,6 @@ function movePlayerToBench(playerId){
     const n=formationTeamNumber;
     const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
-    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1291,17 +1317,37 @@ function updateLiveFormationTargets(playerId){
 function clearLiveFormationTargets(){
     document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
 }
+
+let formationDragGhost=null;
+function makeFormationDragGhost(player,event){
+  removeFormationDragGhost();
+  formationDragGhost=document.createElement("div");
+  formationDragGhost.className="live-formation-drag-ghost";
+  formationDragGhost.innerHTML=`<img src="${player.image}" alt=""><strong>${esc(player.name)}</strong><span>${primaryPosition(player)}</span>`;
+  document.body.appendChild(formationDragGhost);
+  moveFormationDragGhost(event);
+}
+function moveFormationDragGhost(event){
+  if(!formationDragGhost)return;
+  const x=event.clientX||0,y=event.clientY||0;
+  formationDragGhost.style.transform=`translate3d(${x+16}px,${y+16}px,0)`;
+}
+function removeFormationDragGhost(){
+  if(formationDragGhost){formationDragGhost.remove();formationDragGhost=null;}
+}
+document.addEventListener("dragover",moveFormationDragGhost);
+document.addEventListener("dragend",removeFormationDragGhost);
+document.addEventListener("drop",removeFormationDragGhost);
+
 function startFormationDrag(event,id){
     draggedFormationPlayerId=id;
     selectedFormationPlayerId=id;
     event.dataTransfer.effectAllowed="move";
     event.dataTransfer.setData("text/plain",String(id));
-    const ghost=event.currentTarget.cloneNode(true);
-    ghost.classList.add("formation-drag-ghost");ghost.removeAttribute("onclick");ghost.removeAttribute("draggable");
-    document.body.appendChild(ghost);
-    const r=event.currentTarget.getBoundingClientRect();
-    event.dataTransfer.setDragImage(ghost,Math.min(r.width/2,55),Math.min(r.height/2,45));
-    setTimeout(()=>ghost.remove(),0);
+    const dragPlayer=teamByNumber(formationTeamNumber).players.find(p=>p.id===id);
+    if(dragPlayer)makeFormationDragGhost(dragPlayer,event);
+    const transparent=document.createElement("canvas");transparent.width=1;transparent.height=1;
+    event.dataTransfer.setDragImage(transparent,0,0);
     updateLiveFormationTargets(id);
     playSfx("pick");
     requestAnimationFrame(()=>event.currentTarget.classList.add("dragging"));
@@ -1350,9 +1396,9 @@ function createPlayerInfoSidebar(team){
   return `<aside class="player-info-panel" style="${teamVars(team)}">
     <div class="player-info-top"><div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
     <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button></div>
-    ${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);const pos=slot?.label||primaryPosition(player);const ovr=slot?effectiveOVR(player,pos):playerOverall(player);return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?"CURRENT "+pos:"BASE OVR"}</span><strong>${ovr}</strong></div></div>`})()}
+    <div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong></div></div>
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
-    <div class="player-info-section current-position-panel">${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);return slot?`<span>CURRENT DEPLOYMENT</span><strong>${slot.label}</strong><small>${canonicalFit(player,slot.label)?"NATURAL / CANONICAL FIT":"OUT OF POSITION"}</small>`:`<span>CURRENT DEPLOYMENT</span><strong>RESERVE</strong><small>SELECT A PITCH SLOT TO SEE POSITION OVR</small>`})()}</div>
+    <div class="player-info-section current-position-rating">${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);const pos=slot?.label||primaryPosition(player);return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE / NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${slot?effectiveOVR(player,pos):playerOverall(player)}</b></div>`})()}</div>
     <div class="player-info-section"><div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
       ${stat("OFF",s.off)}${stat("SHO",s.sho)}${stat("SPD",s.spd)}${stat("DEF",s.def)}${stat("PAS",s.pas)}${stat("DRI",s.dri)}${stat("GK",s.gk)}
     </div>
@@ -1402,7 +1448,7 @@ function renderFormationBuilder(){
           </details>
         </div>
 
-        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><div><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong></div><div class="chemistry-legend"><i class="elite"></i>ELITE <i class="strong"></i>STRONG <i class="normal"></i>LINK <i class="weak"></i>WEAK</div></div>`})()}
+        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong><small>PAIR-SPECIFIC // MANGA + ANIME RELATIONSHIPS</small></div>`})()}
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
