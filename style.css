@@ -292,3 +292,77 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
   .share-team-head span,.share-money span,.share-card-footer{font-size:8px}
   .share-player>span,.share-player strong{font-size:8px}
 }
+
+
+/* ==================================================
+   FORMATION BUILDER V3 // READABILITY + TACTICAL MENU
+================================================== */
+.formation-menu{position:relative;min-width:230px}
+.formation-menu summary{list-style:none;display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid #1b5278;background:#04111d;cursor:pointer;user-select:none}
+.formation-menu summary::-webkit-details-marker{display:none}
+.formation-menu summary span{color:#7c9bb2;font-size:9px;font-weight:800;letter-spacing:1.3px}
+.formation-menu summary b{margin-left:auto;color:#fff;font:900 15px "Barlow Condensed";letter-spacing:1px}
+.formation-menu summary i{color:var(--blue);font-style:normal;font-size:14px}
+.formation-menu[open] summary{border-color:var(--blue);box-shadow:0 0 18px rgba(20,156,255,.12)}
+.formation-menu-popover{position:absolute;right:0;top:calc(100% + 6px);z-index:40;width:300px;padding:10px;background:rgba(2,10,18,.98);border:1px solid #1b5278;box-shadow:0 18px 45px rgba(0,0,0,.5)}
+.formation-menu-group+ .formation-menu-group{margin-top:9px;padding-top:9px;border-top:1px solid #102b3e}
+.formation-menu-group>span{display:block;margin-bottom:6px;color:#64849b;font-size:8px;font-weight:900;letter-spacing:1.7px}
+.formation-menu-group button{min-width:72px;margin:2px;padding:8px 9px;color:#9ab2c3;background:#061522;border:1px solid #173d58;font:800 10px "Barlow Condensed";letter-spacing:.7px}
+.formation-menu-group button:hover,.formation-menu-group button.active{color:#fff;border-color:var(--blue);background:rgba(20,156,255,.17)}
+.formation-menu-group button.active{box-shadow:inset 0 -2px var(--blue)}
+
+/* Larger player markers and text on desktop. */
+@media (min-width:761px){
+  .formation-slot{width:116px}
+  .formation-slot img{width:78px;height:78px;border-width:3px}
+  .formation-slot strong{max-width:112px;margin-top:5px;padding:5px 7px;font-size:13px;line-height:1.05}
+  .slot-position{margin-bottom:4px;padding:3px 7px;font-size:9px}
+  .empty-slot{width:68px;height:68px;font-size:30px}
+  .position-badges.compact{gap:3px;margin-top:4px}
+  .position-badges.compact i{min-width:27px;padding:3px 5px;font-size:8px}
+  .bench-player{gap:11px;padding:8px}
+  .bench-player img{width:54px;height:64px}
+  .bench-player span{font-size:13px}
+  .bench-player b{font-size:8px}
+  .bench-heading{font-size:11px}
+  .formation-instructions span{font-size:10px!important}
+  .formation-instructions strong{font-size:13px}
+}
+
+/* Live drag preview: these appear the instant a player starts being dragged. */
+.formation-slot.drag-canonical-target{
+  z-index:12!important;
+  filter:none!important;
+}
+.formation-slot.drag-canonical-target .empty-slot,
+.formation-slot.drag-canonical-target img{
+  border-color:#67f6b2!important;
+  box-shadow:0 0 0 4px rgba(103,246,178,.16),0 0 34px rgba(103,246,178,.58)!important;
+}
+.formation-slot.drag-canonical-target .slot-position{
+  color:#9bffd0!important;
+  border-color:#54d99d!important;
+  background:#072319!important;
+}
+.formation-slot.drag-canonical-target:before{
+  content:"BEST FIT";
+  position:absolute;left:50%;top:-20px;transform:translateX(-50%);
+  padding:3px 7px;color:#a2ffd4;background:#04160f;border:1px solid rgba(103,246,178,.55);
+  font-size:8px;font-weight:900;letter-spacing:1px;white-space:nowrap;
+}
+.formation-slot.drag-primary-target .empty-slot,
+.formation-slot.drag-primary-target img{
+  outline:3px solid rgba(20,156,255,.9);outline-offset:4px;
+}
+.formation-slot.drag-over.drag-canonical-target{
+  transform:translate(-50%,-50%) scale(1.12);
+}
+
+@media(max-width:700px){
+  .formation-menu{width:100%;min-width:0}
+  .formation-menu-popover{left:0;right:auto;width:min(100%,340px)}
+  .formation-menu-group button{min-width:67px}
+  .formation-slot img{width:56px;height:56px}
+  .formation-slot strong{max-width:72px;font-size:9px}
+  .slot-position{font-size:8px}
+}
