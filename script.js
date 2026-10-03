@@ -938,7 +938,7 @@ function getMostExpensiveSigning(n){
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${effectiveOVR(p,s.label)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
@@ -1178,6 +1178,11 @@ function clickFormationSlot(slotIndex){
         renderFormationBuilder();saveGame();
     }
 }
+function selectFormationPlayerOnly(id){
+    selectedFormationPlayerId = selectedFormationPlayerId===id ? null : id;
+    renderFormationBuilder();
+    saveGame();
+}
 function selectBenchPlayer(id){
     if(selectedFormationPlayerId===id) selectedFormationPlayerId=null;
     else selectedFormationPlayerId=id;
@@ -1312,7 +1317,7 @@ function renderFormationBuilder(){
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
         </div>
 
-        <div class="formation-layout ${benchCollapsed?"bench-hidden":""}">
+        <div class="formation-layout ${benchCollapsed?"bench-hidden":""} ${playerDatabaseHidden?"database-hidden":""}">
           <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
             <div class="pitch-stripes"></div>
             <div class="pitch-halfway"></div><div class="pitch-circle"></div><div class="pitch-dot"></div>
@@ -1329,19 +1334,21 @@ function renderFormationBuilder(){
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
-                  ${p?`<div class="formation-player-token" draggable="true" onpointerdown="updateLiveFormationTargets(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                  ${p?`<div class="formation-player-token" draggable="true" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
                          <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
                        </div>`:`<span class="empty-slot">+</span>`}
                </button>`;
             }).join("")}
           </div>
 
+          ${createPlayerInfoSidebar(team)}
+
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}"
                  ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnBench(event)">
             <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
-                    onclick="selectBenchPlayer(${p.id})" onpointerdown="updateLiveFormationTargets(${p.id})" draggable="true"
+                    onclick="selectBenchPlayer(${p.id})" draggable="true"
                     ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
                     <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
