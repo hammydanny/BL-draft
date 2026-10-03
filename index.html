@@ -12,8 +12,38 @@
 <body>
     <div class="background-tech" aria-hidden="true"></div>
 
-    <section id="setup-screen">
+
+    <section id="menu-screen" class="menu-screen">
+        <div class="menu-shell">
+            <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
+            <div class="menu-title-wrap">
+                <div class="menu-number">01</div>
+                <h1>BLUE LOCK <span>AUCTION</span></h1>
+                <p>TEAM DRAFT SIMULATOR // UNOFFICIAL FAN PROJECT</p>
+            </div>
+
+            <div id="menuResumePanel" class="menu-resume-panel hidden">
+                <span>LOCAL SESSION DETECTED</span>
+                <strong id="menuResumeMeta">AUCTION IN PROGRESS</strong>
+            </div>
+
+            <div class="menu-actions">
+                <button id="menuNewAuction" class="menu-primary" type="button"><span>NEW AUCTION</span><b>→</b></button>
+                <button id="menuResumeAuction" class="menu-action hidden" type="button"><span>RESUME AUCTION</span><b>CONTINUE</b></button>
+                <button id="menuHowToPlay" class="menu-action" type="button"><span>HOW TO PLAY</span><b>RULES</b></button>
+                <button id="menuAbout" class="menu-action" type="button"><span>ABOUT</span><b>INFO</b></button>
+            </div>
+
+            <div class="menu-footer-line">
+                <span>DEVELOPED BY <strong>HAMMYDANNY</strong></span>
+                <span>FAN PROJECT // 2026</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="setup-screen" class="hidden">
         <div class="setup-logo">
+            <button id="setupBackToMenu" class="setup-back-button" type="button">← MAIN MENU</button>
             <div class="system-tag">BL // STRIKER SELECTION PROGRAM</div>
             <h1>BLUE LOCK <span>AUCTION</span></h1>
             <p>DRAFT // BID // BUILD YOUR XI</p>
@@ -60,6 +90,24 @@
                     </div>
                 </div>
             </div>
+
+
+            <div class="setup-section-title">GAME MODE</div>
+            <div class="game-mode-grid">
+                <button type="button" class="game-mode-card" data-game-mode="quick">
+                    <span>QUICK</span><strong>5v5</strong><small>$5,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="standard">
+                    <span>STANDARD</span><strong>11v11</strong><small>$11,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card active" data-game-mode="full">
+                    <span>FULL SQUAD</span><strong>15v15</strong><small>$15,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="custom">
+                    <span>CUSTOM</span><strong>MANUAL</strong><small>SET YOUR OWN RULES</small>
+                </button>
+            </div>
+            <div class="mode-note">Presets only change budget, bid interval and roster size. Team names, colors and player pool stay yours.</div>
 
             <div class="setup-section-title">AUCTION SETTINGS</div>
 
@@ -128,12 +176,6 @@
                 <h1>AUCTION <span>ROOM</span></h1>
             </div>
             <div class="header-status"><i></i> SYSTEM LIVE</div>
-            
-            <button id="soundToggle" class="sound-toggle" type="button" aria-label="Toggle sound">
-                <span class="sound-icon">◖))</span>
-                <strong>SFX ON</strong>
-            </button>
-            
             <div id="playersRemaining" class="players-remaining"></div>
         </header>
         <div id="auction-content"></div>
@@ -160,6 +202,17 @@
     <div id="fxLayer" class="fx-layer" aria-hidden="true">
         <div id="bidFlash" class="bid-flash"></div>
         <div id="soldBurst" class="sold-burst">SOLD</div>
+    </div>
+
+
+    <div id="infoModal" class="info-modal hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="info-card">
+            <button id="infoModalClose" class="info-close" type="button" aria-label="Close">×</button>
+            <div class="panel-code" id="infoModalCode">BL // DATABASE</div>
+            <h2 id="infoModalTitle">HOW TO PLAY</h2>
+            <div id="infoModalBody" class="info-body"></div>
+            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO MENU</span><b>→</b></button>
+        </div>
     </div>
 
     <div id="confirmModal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
