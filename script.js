@@ -575,19 +575,84 @@ function shufflePlayers(list){
     return shuffled;
 }
 function startRandomDraft(){
-    const setup=getValidatedSetup();if(!setup)return;
-    resetDraftState(setup);draftMode="random";
-    const shuffled=shufflePlayers(setup.selectedPlayers);
-    team1.players=shuffled.slice(0,maxPlayers);team2.players=shuffled.slice(maxPlayers,maxPlayers*2);
-    remainingPlayers=shuffled.slice(maxPlayers*2);
-    auctionHistory=[
-        ...team1.players.map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true})),
-        ...team2.players.map((player,index)=>({auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true}))
-    ];
-    auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
-    uiState={screen:"auction",phase:"complete",turn:null};
-    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
-    updatePlayersRemaining();showAuctionComplete();
+    const setup = getValidatedSetup();
+    if(!setup) return;
+
+    resetDraftState(setup);
+    draftMode = "random";
+
+    // Shuffle the selected pool, then split it between the two teams.
+    const shuffled = shufflePlayers(setup.selectedPlayers);
+
+    const requiredPerTeam = maxPlayers;
+
+    team1.players = shuffled.slice(0, requiredPerTeam);
+    team2.players = shuffled.slice(requiredPerTeam, requiredPerTeam * 2);
+
+    // Any players beyond the two completed rosters remain unused.
+    remainingPlayers = shuffled.slice(requiredPerTeam * 2);
+
+    // Record the randomized draft in a true pick-by-pick order.
+    auctionHistory = [];
+
+    for(let i = 0; i < requiredPerTeam; i++){
+        const player1 = team1.players[i];
+        if(player1){
+            auctionHistory.push({
+                auction: i + 1,
+                player: player1,
+                teamNumber: 1,
+                teamName: team1.name,
+                teamColor: team1.color,
+                price: 0,
+                randomDraft: true
+            });
+        }
+
+        const player2 = team2.players[i];
+        if(player2){
+            auctionHistory.push({
+                auction: i + 1,
+                player: player2,
+                teamNumber: 2,
+                teamName: team2.name,
+                teamColor: team2.color,
+                price: 0,
+                randomDraft: true
+            });
+        }
+    }
+
+    auctionNumber = auctionHistory.length;
+
+    currentPlayer = null;
+    currentBid = 0;
+    currentBidder = null;
+    startingTeam = null;
+
+    // Start with completely empty formation assignments.
+    formationInitialized = false;
+    formationByTeam = {
+        1: "4-3-3",
+        2: "4-3-3"
+    };
+    formationAssignments = {
+        1: {},
+        2: {}
+    };
+
+    uiState = {
+        screen: "auction",
+        phase: "complete",
+        turn: null
+    };
+
+    setupScreen.classList.add("hidden");
+    formationScreen.classList.add("hidden");
+    auctionScreen.classList.remove("hidden");
+
+    updatePlayersRemaining();
+    showAuctionComplete();
 }
 
 function showCoinFlip(){
@@ -886,20 +951,70 @@ function getMostExpensiveSigning(n){
     const a=getTeamHistory(n); if(!a.length)return null;
     return a.reduce((best,x)=>x.price>best.price?x:best,a[0]);
 }
-function createFinalTeamCard(team,n){
-    const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${effectiveOVR(p,s.label)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
-    return `<article class="final-team-card" style="${teamVars(team)}">
-      <div class="team-accent"></div>
-      <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
-      <div class="final-stats">
-        <div><span>PLAYERS</span><strong>${team.players.length}</strong></div>
-        <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
-        <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
-      </div>
-      <div class="biggest-signing"><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
-      <div class="final-roster">${roster}</div>
-    </article>`;
+function createFinalTeamCard(team, n){
+    const spent = startingBudget - team.budget;
+    const expensive = getMostExpensiveSigning(n);
+
+    const roster = team.players.length
+        ? team.players.map(p => {
+            const stats = playerStats(p);
+
+            return `
+                <div class="final-player">
+                    <img src="${p.image}" alt="${esc(p.name)}">
+                    <span>${esc(p.name)}</span>
+                    ${positionBadges(p, true)}
+                    <em class="effective-ovr">${stats.ovr}</em>
+                </div>
+            `;
+        }).join("")
+        : `<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+
+    return `
+        <article class="final-team-card" style="${teamVars(team)}">
+            <div class="team-accent"></div>
+
+            <div class="final-team-top">
+                <span>SQUAD // 0${n}</span>
+                <h3>${esc(team.name)}</h3>
+            </div>
+
+            <div class="final-stats">
+                <div>
+                    <span>PLAYERS</span>
+                    <strong>${team.players.length}</strong>
+                </div>
+
+                <div>
+                    <span>SPENT</span>
+                    <strong>$${spent.toLocaleString()}</strong>
+                </div>
+
+                <div>
+                    <span>REMAINING</span>
+                    <strong>$${team.budget.toLocaleString()}</strong>
+                </div>
+            </div>
+
+            <div class="biggest-signing">
+                <span>TOP VALUATION</span>
+                <strong>${expensive ? esc(expensive.player.name) : "—"}</strong>
+                <b>
+                    ${
+                        expensive
+                            ? (expensive.price === 0
+                                ? "FREE"
+                                : "$" + expensive.price.toLocaleString())
+                            : "—"
+                    }
+                </b>
+            </div>
+
+            <div class="final-roster">
+                ${roster}
+            </div>
+        </article>
+    `;
 }
 function createFullHistory(){
     if(!auctionHistory.length)return `<div class="history-empty">NO COMPLETED AUCTIONS</div>`;
