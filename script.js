@@ -43,6 +43,14 @@ function esc(value) {
     return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 }
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
+function isTeamFull(n){ return teamByNumber(n).players.length >= maxPlayers; }
+function otherTeamNumber(n){ return n === 1 ? 2 : 1; }
+function onlyTeamWithSpace(){
+    const t1Full=isTeamFull(1), t2Full=isTeamFull(2);
+    if(t1Full && !t2Full) return 2;
+    if(t2Full && !t1Full) return 1;
+    return null;
+}
 function teamVars(team){ return `--team:${team.color};--team-soft:${hexToRgba(team.color,.14)};--team-glow:${hexToRgba(team.color,.28)}`; }
 function hexToRgba(hex,a){
     const h=hex.replace("#","");
@@ -170,13 +178,48 @@ function showCoinFlip(){
 }
 
 function startNextAuction(){
-    if(remainingPlayers.length===0 || (team1.players.length>=maxPlayers && team2.players.length>=maxPlayers)){
+    if(remainingPlayers.length===0 || (isTeamFull(1) && isTeamFull(2))){
         showAuctionComplete(); return;
     }
     const i=Math.floor(Math.random()*remainingPlayers.length);
     currentPlayer=remainingPlayers.splice(i,1)[0];
     currentBid=0; currentBidder=null; auctionNumber++;
-    updatePlayersRemaining(); showPlayerReveal();
+    updatePlayersRemaining();
+
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){ showForcedAssignment(forcedTeam); return; }
+
+    showPlayerReveal();
+}
+
+function showForcedAssignment(teamNumber){
+    const team=teamByNumber(teamNumber);
+    const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
+    showOverlay(`
+      <div class="overlay-kicker">ROSTER CAPACITY PROTOCOL // ${String(auctionNumber).padStart(2,"0")}</div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
+      <h2>${esc(currentPlayer.name)}</h2>
+      <p><strong style="color:${fullTeam.color}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
+      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
+    setTimeout(()=>{hideOverlay();setTimeout(()=>awardPlayerFree(teamNumber,true),260);},1500);
+}
+
+function awardPlayerFree(teamNumber,forced=false){
+    const winner=teamByNumber(teamNumber);
+    winner.players.push(currentPlayer);
+    auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
+    startingTeam=otherTeamNumber(startingTeam);
+    renderAuctionScreen(`
+      <div class="sold-panel" style="${teamVars(winner)}">
+        <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
+        <div class="sold-word">${forced?"ASSIGNED":"SOLD"}</div>
+        <div class="sold-to">${forced?"ROSTER SPACE AVAILABLE":"SIGNED BY"}</div>
+        <h2 style="color:${winner.color}">${esc(winner.name)}</h2>
+        <div class="winning-price">FREE</div>
+        <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
+      </div>`);
+    document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
 }
 
 function showPlayerReveal(){
@@ -222,6 +265,8 @@ function createTeamTracker(team,number){
 }
 
 function displayOpeningBid(){
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const starter=teamByNumber(startingTeam);
     if(team1.budget===0&&team2.budget===0){currentBid=0;currentBidder=startingTeam;awardPlayer(startingTeam);return;}
     if(starter.budget===0){displayZeroBudgetChoice(startingTeam===1?2:1);return;}
@@ -268,6 +313,8 @@ function placeOpeningBid(){
 }
 
 function displayBiddingTurn(teamNumber){
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const team=teamByNumber(teamNumber);
     if(team.budget===0){awardPlayer(currentBidder);return;}
     const holder=teamByNumber(currentBidder), min=currentBid+bidIncrement;
@@ -303,6 +350,11 @@ function validateBid(bid,team,minimum){
 function passBid(){awardPlayer(currentBidder);}
 
 function awardPlayer(n){
+    if(isTeamFull(n)){
+        const other=otherTeamNumber(n);
+        if(!isTeamFull(other)){awardPlayerFree(other,true);return;}
+        showAuctionComplete();return;
+    }
     const winner=teamByNumber(n), price=currentBid;
     winner.budget-=price; winner.players.push(currentPlayer);
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
