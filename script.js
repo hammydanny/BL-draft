@@ -139,7 +139,6 @@ function hideSiteError(){
     clearTimeout(siteErrorTimer);
 }
 
-function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
 function effectiveOVR(player, slotLabel){
     const s = playerStats(player);
 
@@ -1871,19 +1870,147 @@ document.getElementById("backToResults").addEventListener("click",()=>{
 });
 
 function playerStats(player){
-    const stats = player?.stats || {};
+    const stats=player?.stats||{};
 
     return {
-        // IMPORTANT:
-        // stats.ovr is intentionally NOT used for OVR calculations.
-        off: Number(stats.off ?? player?.off ?? 0),
-        sho: Number(stats.sho ?? player?.sho ?? 0),
-        spd: Number(stats.spd ?? player?.spd ?? 0),
-        def: Number(stats.def ?? player?.def ?? 0),
-        pas: Number(stats.pas ?? player?.pas ?? 0),
-        dri: Number(stats.dri ?? player?.dri ?? 0),
-        gk: Number(stats.gk ?? player?.gk ?? 0)
+        // Kept for compatibility with existing UI/code.
+        // DO NOT use this value for calculations.
+        ovr:Number(stats.ovr ?? player?.ovr ?? 0),
+
+        off:Number(stats.off ?? player?.off ?? 0),
+        sho:Number(stats.sho ?? player?.sho ?? 0),
+        spd:Number(stats.spd ?? player?.spd ?? 0),
+        def:Number(stats.def ?? player?.def ?? 0),
+        pas:Number(stats.pas ?? player?.pas ?? 0),
+        dri:Number(stats.dri ?? player?.dri ?? 0),
+        gk:Number(stats.gk ?? player?.gk ?? 0)
     };
+}
+
+function positionGroup(position){
+    const pos=String(position||"").toUpperCase();
+
+    if(pos==="GK") return "GK";
+
+    if([
+        "ST","CF","SS","FW","LW","RW"
+    ].includes(pos)){
+        return "ATTACK";
+    }
+
+    if([
+        "CM","DM","AM","LM","RM","WM"
+    ].includes(pos)){
+        return "MIDFIELD";
+    }
+
+    if([
+        "CB","LB","RB","LWB","RWB","WB","DF"
+    ].includes(pos)){
+        return "DEFENCE";
+    }
+
+    return "MIDFIELD";
+}
+
+function calculatePositionOVR(player,position){
+    const s=playerStats(player);
+    const group=positionGroup(position);
+
+    let value=0;
+
+    if(group==="GK"){
+        value=
+            s.gk*0.70+
+            s.def*0.10+
+            s.pas*0.10+
+            s.spd*0.10;
+    }
+
+    else if(group==="ATTACK"){
+        value=
+            s.off*0.25+
+            s.sho*0.25+
+            s.dri*0.20+
+            s.spd*0.15+
+            s.pas*0.15;
+    }
+
+    else if(group==="MIDFIELD"){
+        value=
+            s.pas*0.25+
+            s.dri*0.20+
+            s.off*0.15+
+            s.spd*0.15+
+            s.def*0.15+
+            s.sho*0.10;
+    }
+
+    else{
+        value=
+            s.def*0.35+
+            s.spd*0.15+
+            s.pas*0.20+
+            s.dri*0.10+
+            s.off*0.10+
+            s.sho*0.10;
+    }
+
+    return Math.round(value);
+}
+
+function playerOverall(player){
+    if(!player) return 0;
+
+    const primary=primaryPosition(player);
+
+    return calculatePositionOVR(player,primary);
+}
+
+function effectiveOVR(player,slotLabel){
+    if(!player||!slotLabel) return 0;
+
+    const position=String(slotLabel).toUpperCase();
+
+    // Calculate from detailed stats.
+    // NEVER use stats.ovr here.
+    const calculated=calculatePositionOVR(player,position);
+
+    // Primary/preferred position.
+    if(primaryFit(player,position)){
+        return calculated;
+    }
+
+    // Secondary/canonical position.
+    if(canonicalFit(player,position)){
+        return Math.max(1,calculated-2);
+    }
+
+    // Same broad positional group.
+    const primaryGroup=positionGroup(primaryPosition(player));
+    const slotGroup=positionGroup(position);
+
+    if(primaryGroup===slotGroup){
+        return Math.max(1,calculated-6);
+    }
+
+    // Completely different role.
+    return Math.max(1,calculated-12);
+}
+
+function statStrip(player,compact=false){
+    const s=playerStats(player);
+
+    return `<div class="stat-strip ${compact?"compact":""}">
+      <b><i>OVR</i>${playerOverall(player)}</b>
+      <span><i>OFF</i>${s.off}</span>
+      <span><i>SHO</i>${s.sho}</span>
+      <span><i>SPD</i>${s.spd}</span>
+      <span><i>DEF</i>${s.def}</span>
+      <span><i>PAS</i>${s.pas}</span>
+      <span><i>DRI</i>${s.dri}</span>
+      <span><i>GK</i>${s.gk}</span>
+    </div>`;
 }
 
 function positionGroup(position){
