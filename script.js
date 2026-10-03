@@ -5,6 +5,7 @@ let team2 = { name:"", color:"#ff315d", budget:0, players:[] };
 let bidIncrement = 50, maxPlayers = 15, startingBudget = 15000;
 let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder = null;
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
+let draftMode = "auction";
 let selectedPlayerIds = new Set(players.map(player => player.id));
 const SAVE_KEY="blAuctionSaveV2";
 let uiState={screen:"setup",phase:"setup",turn:null};
@@ -81,6 +82,7 @@ let draggedFormationPlayerId = null;
 let formationInitialized = false;
 
 document.getElementById("startGame").addEventListener("click", startGame);
+document.getElementById("randomDraftGame").addEventListener("click", startRandomDraft);
 document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
 document.getElementById("selectAllPlayers").addEventListener("click", () => {
     selectedPlayerIds = new Set(players.map(player => player.id));
@@ -391,7 +393,7 @@ function saveGame(){
     if(uiState.screen==="setup"){saveSetupPreferences();return;}
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
-            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,
+            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
@@ -427,6 +429,7 @@ function showResumeCard(saved){
 function restoreGame(saved){
     if(!saved?.gameActive)return;
     startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
+    draftMode=saved.draftMode==="random"?"random":"auction";
     auctionNumber=saved.auctionNumber;currentBid=saved.currentBid;currentBidder=saved.currentBidder;
     currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
     remainingPlayers=hydratePlayers(saved.remainingPlayerIds);
@@ -479,35 +482,84 @@ document.addEventListener("error",event=>{
     img.alt="Player image unavailable";
 },true);
 
-function startGame(){
-    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};
+function getValidatedSetup(){
     const n1=document.getElementById("team1Name").value.trim();
     const n2=document.getElementById("team2Name").value.trim();
     const budget=Number(document.getElementById("budget").value);
-    bidIncrement=Number(document.getElementById("bidIncrement").value);
-    maxPlayers=Number(document.getElementById("maxPlayers").value);
+    const setupBidIncrement=Number(document.getElementById("bidIncrement").value);
+    const setupMaxPlayers=Number(document.getElementById("maxPlayers").value);
+
     if(!n1||!n2) return showSiteError("Please enter names for both teams.","SETUP INCOMPLETE");
     if(budget<=0) return showSiteError("Starting budget must be greater than $0.","INVALID BUDGET");
-    if(bidIncrement<=0) return showSiteError("Bid interval must be greater than $0.","INVALID BID INTERVAL");
-    if(maxPlayers<=0) return showSiteError("Maximum players must be greater than 0.","INVALID TEAM SIZE");
+    if(setupBidIncrement<=0) return showSiteError("Bid interval must be greater than $0.","INVALID BID INTERVAL");
+    if(setupMaxPlayers<=0) return showSiteError("Maximum players must be greater than 0.","INVALID TEAM SIZE");
 
     const selectedPlayers=players.filter(player => selectedPlayerIds.has(player.id));
-    const requiredPlayers=maxPlayers*2;
+    const requiredPlayers=setupMaxPlayers*2;
 
     if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers){
-        return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${maxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
+        return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
     }
 
-    startingBudget=budget;
-    team1={name:n1,color:document.getElementById("team1Color").value,budget,players:[]};
-    team2={name:n2,color:document.getElementById("team2Color").value,budget,players:[]};
-    remainingPlayers=[...selectedPlayers]; auctionHistory=[]; auctionNumber=0;
-    currentPlayer=null; currentBid=0; currentBidder=null;
+    return {n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,selectedPlayers};
+}
+
+function resetDraftState(setup){
+    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};
+    bidIncrement=setup.bidIncrement;
+    maxPlayers=setup.maxPlayers;
+    startingBudget=setup.budget;
+    team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
+    team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
+    remainingPlayers=[...setup.selectedPlayers];
+    auctionHistory=[];auctionNumber=0;
+    currentPlayer=null;currentBid=0;currentBidder=null;
+}
+
+function startGame(){
+    const setup=getValidatedSetup();
+    if(!setup)return;
+    resetDraftState(setup);
+    draftMode="auction";
     startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
-    setupScreen.classList.add("hidden"); auctionScreen.classList.remove("hidden");
-    updatePlayersRemaining(); showCoinFlip();
+    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();showCoinFlip();
+}
+
+function shufflePlayers(list){
+    const shuffled=[...list];
+    for(let i=shuffled.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+    }
+    return shuffled;
+}
+
+function startRandomDraft(){
+    const setup=getValidatedSetup();
+    if(!setup)return;
+    resetDraftState(setup);
+    draftMode="random";
+
+    const shuffled=shufflePlayers(setup.selectedPlayers);
+    team1.players=shuffled.slice(0,maxPlayers);
+    team2.players=shuffled.slice(maxPlayers,maxPlayers*2);
+    remainingPlayers=shuffled.slice(maxPlayers*2);
+    auctionHistory=[
+        ...team1.players.map((player,index)=>({
+            auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true
+        })),
+        ...team2.players.map((player,index)=>({
+            auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true
+        }))
+    ];
+    auctionNumber=auctionHistory.length;
+    currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
+    uiState={screen:"auction",phase:"complete",turn:null};
+    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();showAuctionComplete();
 }
 
 function showCoinFlip(){
@@ -808,6 +860,7 @@ function getMostExpensiveSigning(n){
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
+    const randomDraft=draftMode==="random";
     const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
@@ -817,7 +870,7 @@ function createFinalTeamCard(team,n){
         <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
         <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
       </div>
-      <div class="biggest-signing"><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
+      <div class="biggest-signing"><span>${randomDraft?"DRAFT METHOD":"TOP VALUATION"}</span><strong>${randomDraft?"RANDOM DRAFT":(expensive?esc(expensive.player.name):"—")}</strong><b>${randomDraft?"$0 SPENT":(expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—")}</b></div>
       <div class="final-roster">${roster}</div>
     </article>`;
 }
@@ -826,21 +879,23 @@ function createFullHistory(){
     return auctionHistory.map(x=>`<div class="final-history-row" style="--row-team:${x.teamColor}">
       <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img src="${x.player.image}" alt="${esc(x.player.name)}">
       <div><strong>${esc(x.player.name)}</strong><span style="color:${x.teamColor}">${esc(x.teamName)}</span></div>
-      <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
+      <b>${x.randomDraft?"RANDOM // $0":(x.price===0?"FREE":"$"+x.price.toLocaleString())}</b></div>`).join("");
 }
 function showAuctionComplete(){
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
+    const randomDraft=draftMode==="random";
+    const undrafted=randomDraft?remainingPlayers.length:0;
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
-      <div class="complete-label">BL // FINAL SELECTION REPORT</div>
-      <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
+      <div class="complete-label">BL // ${randomDraft?"RANDOM DRAFT REPORT":"FINAL SELECTION REPORT"}</div>
+      <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">${randomDraft?`RANDOM DRAFT // ${auctionHistory.length} PLAYERS ASSIGNED // $0 SPENT${undrafted?` // ${undrafted} UNDRAFTED`:""}`:`FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS`}</p>
       <div class="results-actions results-actions-top">
         <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
         <button id="shareResultsButton" class="primary-button restart-button share-action"><span>SHARE / SAVE RESULT</span><b>↗</b></button>
         <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
       </div>
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
-      <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
+      <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>${randomDraft?"RANDOM DRAFT RECORD":"TRANSFER DATABASE"}</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
     document.getElementById("formationBuilderButton").addEventListener("click",openFormationBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
