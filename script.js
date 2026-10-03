@@ -947,17 +947,29 @@ const FORMATIONS = {
   {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
   {x:25,y:47,label:"CM"},{x:50,y:53,label:"CM"},{x:75,y:47,label:"CM"},
   {x:18,y:22,label:"LW"},{x:50,y:15,label:"ST"},{x:82,y:22,label:"RW"}],
- "4-4-2":[
-  {x:50,y:88,label:"GK"},
-  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
-  {x:16,y:45,label:"LM"},{x:39,y:51,label:"CM"},{x:61,y:51,label:"CM"},{x:84,y:45,label:"RM"},
-  {x:37,y:19,label:"ST"},{x:63,y:19,label:"ST"}],
  "4-2-3-1":[
   {x:50,y:88,label:"GK"},
   {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
   {x:38,y:55,label:"DM"},{x:62,y:55,label:"DM"},
   {x:18,y:34,label:"LW"},{x:50,y:38,label:"AM"},{x:82,y:34,label:"RW"},
   {x:50,y:14,label:"ST"}],
+ "4-4-2":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:16,y:45,label:"LM"},{x:39,y:51,label:"CM"},{x:61,y:51,label:"CM"},{x:84,y:45,label:"RM"},
+  {x:37,y:19,label:"ST"},{x:63,y:19,label:"ST"}],
+ "4-1-3-2":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:50,y:57,label:"DM"},
+  {x:20,y:39,label:"LM"},{x:50,y:42,label:"AM"},{x:80,y:39,label:"RM"},
+  {x:37,y:17,label:"ST"},{x:63,y:17,label:"ST"}],
+ "4-3-2-1":[
+  {x:50,y:88,label:"GK"},
+  {x:17,y:69,label:"LB"},{x:39,y:73,label:"CB"},{x:61,y:73,label:"CB"},{x:83,y:69,label:"RB"},
+  {x:27,y:51,label:"CM"},{x:50,y:56,label:"DM"},{x:73,y:51,label:"CM"},
+  {x:36,y:31,label:"AM"},{x:64,y:31,label:"AM"},
+  {x:50,y:13,label:"ST"}],
  "3-4-3":[
   {x:50,y:88,label:"GK"},
   {x:25,y:70,label:"CB"},{x:50,y:74,label:"CB"},{x:75,y:70,label:"CB"},
@@ -967,7 +979,23 @@ const FORMATIONS = {
   {x:50,y:88,label:"GK"},
   {x:25,y:70,label:"CB"},{x:50,y:74,label:"CB"},{x:75,y:70,label:"CB"},
   {x:14,y:47,label:"LWB"},{x:35,y:52,label:"CM"},{x:50,y:43,label:"AM"},{x:65,y:52,label:"CM"},{x:86,y:47,label:"RWB"},
-  {x:37,y:18,label:"ST"},{x:63,y:18,label:"ST"}]
+  {x:37,y:18,label:"ST"},{x:63,y:18,label:"ST"}],
+ "3-4-2-1":[
+  {x:50,y:88,label:"GK"},
+  {x:25,y:70,label:"CB"},{x:50,y:74,label:"CB"},{x:75,y:70,label:"CB"},
+  {x:15,y:50,label:"LWB"},{x:40,y:54,label:"CM"},{x:60,y:54,label:"CM"},{x:85,y:50,label:"RWB"},
+  {x:36,y:31,label:"AM"},{x:64,y:31,label:"AM"},
+  {x:50,y:13,label:"ST"}],
+ "5-3-2":[
+  {x:50,y:88,label:"GK"},
+  {x:12,y:66,label:"LWB"},{x:30,y:72,label:"CB"},{x:50,y:75,label:"CB"},{x:70,y:72,label:"CB"},{x:88,y:66,label:"RWB"},
+  {x:27,y:48,label:"CM"},{x:50,y:53,label:"DM"},{x:73,y:48,label:"CM"},
+  {x:37,y:18,label:"ST"},{x:63,y:18,label:"ST"}],
+ "5-2-3":[
+  {x:50,y:88,label:"GK"},
+  {x:12,y:66,label:"LWB"},{x:30,y:72,label:"CB"},{x:50,y:75,label:"CB"},{x:70,y:72,label:"CB"},{x:88,y:66,label:"RWB"},
+  {x:39,y:49,label:"CM"},{x:61,y:49,label:"CM"},
+  {x:18,y:22,label:"LW"},{x:50,y:15,label:"ST"},{x:82,y:22,label:"RW"}]
 };
 
 function openFormationBuilder(){
@@ -1075,15 +1103,32 @@ function selectBenchPlayer(id){
     else selectedFormationPlayerId=id;
     renderFormationBuilder();saveGame();
 }
+function updateLiveFormationTargets(playerId){
+    const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===playerId);
+    document.querySelectorAll(".formation-slot").forEach(slot=>{
+        slot.classList.remove("drag-canonical-target","drag-primary-target");
+        if(!player)return;
+        const label=slot.dataset.slotLabel;
+        if(canonicalFit(player,label))slot.classList.add("drag-canonical-target");
+        if(primaryFit(player,label))slot.classList.add("drag-primary-target");
+    });
+    const hint=document.querySelector(".formation-instructions strong");
+    if(hint&&player)hint.innerHTML=`${esc(player.name)} // PRIMARY: ${primaryPosition(player)} // BEST FITS GLOWING ON PITCH`;
+}
+function clearLiveFormationTargets(){
+    document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
+}
 function startFormationDrag(event,id){
     draggedFormationPlayerId=id;
     selectedFormationPlayerId=id;
     event.dataTransfer.effectAllowed="move";
     event.dataTransfer.setData("text/plain",String(id));
+    updateLiveFormationTargets(id);
     requestAnimationFrame(()=>event.currentTarget.classList.add("dragging"));
 }
 function endFormationDrag(event){
     event.currentTarget.classList.remove("dragging");
+    clearLiveFormationTargets();
     draggedFormationPlayerId=null;
 }
 function allowFormationDrop(event){
@@ -1128,9 +1173,20 @@ function renderFormationBuilder(){
             <span>FORMATION // ${esc(team.name)}</span>
             <strong>${activeFormation}</strong>
           </div>
-          <div class="formation-picker">
-            ${Object.keys(FORMATIONS).map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
-          </div>
+          <details class="formation-menu">
+            <summary><span>CHANGE FORMATION</span><b>${activeFormation}</b><i>⌄</i></summary>
+            <div class="formation-menu-popover">
+              <div class="formation-menu-group"><span>BACK FOUR</span>
+                ${["4-3-3","4-2-3-1","4-4-2","4-1-3-2","4-3-2-1"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+              <div class="formation-menu-group"><span>BACK THREE</span>
+                ${["3-4-3","3-5-2","3-4-2-1"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+              <div class="formation-menu-group"><span>BACK FIVE</span>
+                ${["5-3-2","5-2-3"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
+              </div>
+            </div>
+          </details>
         </div>
 
         <div class="formation-instructions" style="${teamVars(team)}">
@@ -1151,11 +1207,11 @@ function renderFormationBuilder(){
                const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
                const currentFit=p&&canonicalFit(p,s.label);
                return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
-                    style="left:${s.x}%;top:${s.y}%"
+                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}"
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
-                  ${p?`<div class="formation-player-token" draggable="true" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                  ${p?`<div class="formation-player-token" draggable="true" onpointerdown="updateLiveFormationTargets(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
                          <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
                        </div>`:`<span class="empty-slot">+</span>`}
                </button>`;
@@ -1167,7 +1223,7 @@ function renderFormationBuilder(){
             <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
-                    onclick="selectBenchPlayer(${p.id})" draggable="true"
+                    onclick="selectBenchPlayer(${p.id})" onpointerdown="updateLiveFormationTargets(${p.id})" draggable="true"
                     ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
                     <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
