@@ -68,3 +68,78 @@ const players = [
     { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
     { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:88, off:90, sho:89, spd:87, def:68, pas:83, dri:86, gk:52 } }
 ];
+
+function getPassive(player){
+    return player?.passive || {
+        id: "missing-passive",
+        name: "Placeholder Passive",
+        description: "No passive assigned.",
+        trigger: "NONE",
+        effect: "NONE",
+        active: false
+    };
+}
+
+function getSpecial(player){
+    return player?.special || {
+        id: "missing-special",
+        name: "Placeholder Special",
+        description: "No special move assigned.",
+        trigger: "NONE",
+        effect: "NONE",
+        cooldown: 0,
+        uses: null,
+        active: false
+    };
+}
+
+function canTriggerPassive(player, situation){
+    const passive = getPassive(player);
+
+    if(passive.trigger !== "SITUATIONAL") return false;
+
+    // Placeholder until actual situation logic exists.
+    return Boolean(situation);
+}
+
+function canTriggerSpecial(player, situation){
+    const special = getSpecial(player);
+
+    if(special.trigger !== "SITUATIONAL") return false;
+
+    // Placeholder until actual special-move logic exists.
+    return Boolean(situation);
+}
+
+function abilitySlug(name){
+    return String(name)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
+players.forEach(player => {
+    const slug = abilitySlug(player.name);
+
+    // Passive
+    player.passive = {
+        id: `${slug}-passive`,
+        name: "Placeholder Passive",
+        description: `${player.name}'s passive ability is not yet implemented.`,
+        trigger: "SITUATIONAL",
+        effect: "TBD",
+        active: false
+    };
+
+    // Special Move
+    player.special = {
+        id: `${slug}-special`,
+        name: "Placeholder Special",
+        description: `${player.name}'s special move is not yet implemented.`,
+        trigger: "SITUATIONAL",
+        effect: "TBD",
+        cooldown: 0,
+        uses: null,
+        active: false
+    };
+});
