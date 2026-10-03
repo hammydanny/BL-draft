@@ -36,6 +36,10 @@ function playSfx(name){
     if(name==="pass"){tone(230,.09,"sine",.025);tone(160,.12,"sine",.018,.06);}
     if(name==="error"){tone(145,.11,"sawtooth",.025);tone(115,.15,"square",.018,.08);}
     if(name==="sold"){tone(220,.08,"sawtooth",.025);tone(440,.1,"square",.025,.07);tone(880,.18,"sine",.03,.15);}
+    if(name==="ui"){tone(420,.035,"sine",.012);tone(560,.035,"sine",.009,.025);}
+    if(name==="pick"){tone(310,.045,"triangle",.014);tone(470,.05,"triangle",.012,.03);}
+    if(name==="drop"){tone(520,.045,"sine",.015);tone(700,.055,"sine",.012,.035);}
+    if(name==="menu"){tone(260,.045,"triangle",.012);tone(390,.055,"triangle",.011,.035);}
 }
 function updateSoundButton(){
     document.querySelectorAll("#soundToggle,[data-sound-toggle]").forEach(b=>{
@@ -51,6 +55,13 @@ function toggleSound(){
 document.getElementById("soundToggle").addEventListener("click",toggleSound);
 document.querySelectorAll("[data-sound-toggle]").forEach(b=>b.addEventListener("click",toggleSound));
 updateSoundButton();
+document.addEventListener("click",e=>{
+    const b=e.target.closest("button");
+    if(!b||b.id==="soundToggle"||b.hasAttribute("data-sound-toggle"))return;
+    if(b.closest("#auction-content") && (b.id==="placeBidButton"||b.id==="placeOpeningBid"||b.id==="passButton"||b.id==="buyPlayerButton"||b.id==="controlPassButton"))return;
+    if(b.matches(".menu-primary,.menu-action,.global-menu-button,.header-button,[data-game-mode],[data-preset],.formation-database-toggle,.formation-bench-toggle,.formation-reset"))playSfx("menu");
+    else if(b.closest("#formation-screen")||b.closest("#setup-screen")||b.closest("#infoModal")||b.closest("#confirmModal"))playSfx("ui");
+});
 
 function triggerFx(type,text=""){
     const layer=document.getElementById("fxLayer");
@@ -241,6 +252,75 @@ function positionRatingGrid(player){
     const canon=canonicalFit(player,pos), primary=primaryFit(player,pos);
     return `<div class="position-rating ${canon?"canon":""} ${primary?"primary":""}"><span>${pos}</span><strong>${score}</strong></div>`;
   }).join("")}</div>`;
+}
+
+
+const CHEMISTRY_PAIRS={
+  "Yoichi Isagi|Meguru Bachira":96,
+  "Yoichi Isagi|Yo Hiori":97,
+  "Yoichi Isagi|Ranze Kurona":95,
+  "Yoichi Isagi|Rin Itoshi":83,
+  "Yoichi Isagi|Michael Kaiser":72,
+  "Yoichi Isagi|Seishiro Nagi":91,
+  "Yoichi Isagi|Rensuke Kunigami":86,
+  "Yoichi Isagi|Hyoma Chigiri":88,
+  "Yoichi Isagi|Gin Gagamaru":84,
+  "Michael Kaiser|Alexis Ness":98,
+  "Michael Kaiser|Benedict Grim":88,
+  "Michael Kaiser|Noel Noa":84,
+  "Seishiro Nagi|Reo Mikage":99,
+  "Seishiro Nagi|Zantetsu Tsurugi":86,
+  "Rin Itoshi|Ryusei Shido":62,
+  "Rin Itoshi|Sae Itoshi":68,
+  "Ryusei Shido|Sae Itoshi":96,
+  "Shoei Baro|Don Lorenzo":88,
+  "Shoei Baro|Oliver Aiku":85,
+  "Shoei Baro|Ikki Niko":84,
+  "Oliver Aiku|Don Lorenzo":89,
+  "Oliver Aiku|Jyubei Aryu":87,
+  "Tabito Karasu|Yo Hiori":92,
+  "Tabito Karasu|Eita Otoya":93,
+  "Meguru Bachira|Lavinho":94,
+  "Hyoma Chigiri|Chris Prince":88,
+  "Marc Snuffy|Don Lorenzo":96,
+  "Charles Chevalier|Julien Loki":94,
+  "Junichi Wanima|Keisuke Wanima":99,
+  "Ranze Kurona|Jin Kiyora":87,
+  "Teddy Knight|Lockhart":88,
+  "Teddy Knight|Achanpong":87
+};
+function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
+function pairChemistry(a,b,slotA,slotB){
+  const explicit=CHEMISTRY_PAIRS[chemistryKey(a,b)];
+  if(explicit!==undefined)return explicit;
+  const ga=positionGroup(slotA),gb=positionGroup(slotB);
+  let score=72;
+  if(ga!==gb)score+=6;
+  if(ga==="MIDFIELD"||gb==="MIDFIELD")score+=4;
+  if(canonicalFit(a,slotA)&&canonicalFit(b,slotB))score+=5;
+  if(primaryFit(a,slotA))score+=2;if(primaryFit(b,slotB))score+=2;
+  return Math.max(45,Math.min(90,score));
+}
+function formationChemistry(teamNumber){
+  const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
+  const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
+  const links=[];
+  for(let i=0;i<placed.length;i++)for(let j=i+1;j<placed.length;j++){
+    const a=placed[i],b=placed[j],dx=a.slot.x-b.slot.x,dy=a.slot.y-b.slot.y,dist=Math.hypot(dx,dy);
+    if(dist<=36)links.push({a,b,value:pairChemistry(a.p,b.p,a.slot.label,b.slot.label),dist});
+  }
+  const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
+  return {overall,links};
+}
+function chemistryClass(v){return v>=90?"elite":v>=80?"strong":v>=70?"normal":"weak";}
+function chemistrySvg(teamNumber){
+ const c=formationChemistry(teamNumber);
+ return `<svg class="chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${c.links.map(l=>`<line class="chem-link ${chemistryClass(l.value)}" x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}"><title>${esc(l.a.p.name)} + ${esc(l.b.p.name)} // ${l.value}</title></line>`).join("")}</svg>`;
+}
+function currentPlayerSlot(teamNumber,playerId){
+ const ass=formationAssignments[teamNumber]||{},shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
+ const key=Object.keys(ass).find(k=>ass[k]===playerId);
+ return key===undefined?null:shape[+key]||null;
 }
 
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
@@ -1111,6 +1191,7 @@ function sanitizeFormationAssignments(n){
     formationAssignments[n]=clean;
 }
 function switchFormationTeam(n){
+    playSfx("ui");
     formationTeamNumber=n;
     activeFormation=formationByTeam[n]||"4-3-3";
     selectedFormationPlayerId=null;
@@ -1120,7 +1201,7 @@ function changeFormation(name){
     if(!FORMATIONS[name])return;
     const n=formationTeamNumber;
     const previous={...(formationAssignments[n]||{})};
-    formationByTeam[n]=name;activeFormation=name;selectedFormationPlayerId=null;
+    formationByTeam[n]=name;activeFormation=name;selectedFormationPlayerId=null;playSfx("ui");
     const slotCount=FORMATIONS[name].length,preserved={};
     Object.entries(previous).forEach(([slot,id])=>{
         const i=Number(slot);
@@ -1158,6 +1239,7 @@ function movePlayerToSlot(playerId,slotIndex){
         // If dragged from bench, the displaced player naturally moves to bench.
     }
     formationAssignments[n][slotIndex]=playerId;
+    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1165,6 +1247,7 @@ function movePlayerToBench(playerId){
     const n=formationTeamNumber;
     const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
+    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1213,7 +1296,14 @@ function startFormationDrag(event,id){
     selectedFormationPlayerId=id;
     event.dataTransfer.effectAllowed="move";
     event.dataTransfer.setData("text/plain",String(id));
+    const ghost=event.currentTarget.cloneNode(true);
+    ghost.classList.add("formation-drag-ghost");ghost.removeAttribute("onclick");ghost.removeAttribute("draggable");
+    document.body.appendChild(ghost);
+    const r=event.currentTarget.getBoundingClientRect();
+    event.dataTransfer.setDragImage(ghost,Math.min(r.width/2,55),Math.min(r.height/2,45));
+    setTimeout(()=>ghost.remove(),0);
     updateLiveFormationTargets(id);
+    playSfx("pick");
     requestAnimationFrame(()=>event.currentTarget.classList.add("dragging"));
 }
 function endFormationDrag(event){
@@ -1260,9 +1350,9 @@ function createPlayerInfoSidebar(team){
   return `<aside class="player-info-panel" style="${teamVars(team)}">
     <div class="player-info-top"><div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
     <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button></div>
-    <div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong></div></div>
+    ${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);const pos=slot?.label||primaryPosition(player);const ovr=slot?effectiveOVR(player,pos):playerOverall(player);return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?"CURRENT "+pos:"BASE OVR"}</span><strong>${ovr}</strong></div></div>`})()}
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
-    <div class="player-info-section"><div class="player-info-section-title"><span>POSITION OVERALLS</span></div>${positionRatingGrid(player)}</div>
+    <div class="player-info-section current-position-panel">${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);return slot?`<span>CURRENT DEPLOYMENT</span><strong>${slot.label}</strong><small>${canonicalFit(player,slot.label)?"NATURAL / CANONICAL FIT":"OUT OF POSITION"}</small>`:`<span>CURRENT DEPLOYMENT</span><strong>RESERVE</strong><small>SELECT A PITCH SLOT TO SEE POSITION OVR</small>`})()}</div>
     <div class="player-info-section"><div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
       ${stat("OFF",s.off)}${stat("SHO",s.sho)}${stat("SPD",s.spd)}${stat("DEF",s.def)}${stat("PAS",s.pas)}${stat("DRI",s.dri)}${stat("GK",s.gk)}
     </div>
@@ -1312,6 +1402,7 @@ function renderFormationBuilder(){
           </details>
         </div>
 
+        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><div><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong></div><div class="chemistry-legend"><i class="elite"></i>ELITE <i class="strong"></i>STRONG <i class="normal"></i>LINK <i class="weak"></i>WEAK</div></div>`})()}
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
@@ -1320,6 +1411,7 @@ function renderFormationBuilder(){
         <div class="formation-layout ${benchCollapsed?"bench-hidden":""} ${playerDatabaseHidden?"database-hidden":""}">
           <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
             <div class="pitch-stripes"></div>
+            ${chemistrySvg(formationTeamNumber)}
             <div class="pitch-halfway"></div><div class="pitch-circle"></div><div class="pitch-dot"></div>
             <div class="penalty-box top"></div><div class="penalty-box bottom"></div>
             <div class="goal-box top"></div><div class="goal-box bottom"></div>
