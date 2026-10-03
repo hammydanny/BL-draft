@@ -14,7 +14,9 @@ let audioCtx=null;
 
 function ensureAudio(){
     if(!soundEnabled)return null;
-    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return null;
+    if(!audioCtx) audioCtx=new AudioContextClass();
     if(audioCtx.state==="suspended")audioCtx.resume();
     return audioCtx;
 }
@@ -321,6 +323,7 @@ function resumeCurrentView(){
     if(!currentPlayer){startNextAuction();return;}
     if(uiState.phase==="bidding"){displayBiddingTurn(uiState.turn);return;}
     if(uiState.phase==="zero"){displayZeroBudgetChoice(uiState.turn);return;}
+    if(uiState.phase==="forced"){showForcedAssignment(uiState.turn,true);return;}
     if(uiState.phase==="sold"){
         const last=auctionHistory[auctionHistory.length-1];
         renderSoldState(last);return;
@@ -399,15 +402,16 @@ function startNextAuction(){
     currentPlayer=remainingPlayers.splice(i,1)[0];
     currentBid=0; currentBidder=null; auctionNumber++;
     updatePlayersRemaining();
+    saveGame();
 
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){ showForcedAssignment(forcedTeam); return; }
 
     showPlayerReveal();
-    saveGame();
 }
 
-function showForcedAssignment(teamNumber){
+function showForcedAssignment(teamNumber,resuming=false){
+    uiState={screen:"auction",phase:"forced",turn:teamNumber};saveGame();
     const team=teamByNumber(teamNumber);
     const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
     showOverlay(`
@@ -417,7 +421,11 @@ function showForcedAssignment(teamNumber){
       <h2>${esc(currentPlayer.name)}</h2>
       <p><strong style="color:${fullTeam.color}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
       <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
-    setTimeout(()=>{hideOverlay();setTimeout(()=>awardPlayerFree(teamNumber,true),260);},1500);
+    const delay=resuming?500:1500;
+    setTimeout(()=>{hideOverlay();setTimeout(()=>{
+        if(currentPlayer && !isTeamFull(teamNumber)) awardPlayerFree(teamNumber,true);
+        else if(isTeamFull(1)&&isTeamFull(2)) showAuctionComplete();
+    },260);},delay);
 }
 
 function awardPlayerFree(teamNumber,forced=false){
@@ -523,9 +531,12 @@ function increaseBidInput(id,amount){
 }
 
 function placeOpeningBid(){
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const bid=Number(document.getElementById("openingBid").value), starter=teamByNumber(startingTeam);
     if(!validateBid(bid,starter,0)) return;
     currentBid=bid; currentBidder=startingTeam;
+    playSfx("bid");triggerFx("bid");
     const other=startingTeam===1?2:1;
     if(teamByNumber(other).budget===0){awardPlayer(startingTeam);return;}
     displayBiddingTurn(other);
@@ -536,6 +547,7 @@ function displayBiddingTurn(teamNumber){
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const team=teamByNumber(teamNumber);
+    if(isTeamFull(teamNumber)){awardPlayer(otherTeamNumber(teamNumber));return;}
     if(team.budget===0){awardPlayer(currentBidder);return;}
     const holder=teamByNumber(currentBidder), min=currentBid+bidIncrement;
     renderAuctionScreen(`
@@ -558,7 +570,9 @@ function displayBiddingTurn(teamNumber){
 function placeBid(n){
     const team=teamByNumber(n), bid=Number(document.getElementById("nextBid").value);
     if(!validateBid(bid,team,currentBid)) return;
-    currentBid=bid; currentBidder=n; displayBiddingTurn(n===1?2:1);
+    currentBid=bid; currentBidder=n;
+    playSfx("bid");triggerFx("bid");
+    displayBiddingTurn(n===1?2:1);
 }
 function validateBid(bid,team,minimum){
     if(bid<=minimum){showSiteError(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`,"BID REJECTED");return false;}
@@ -567,7 +581,7 @@ function validateBid(bid,team,minimum){
     if(team.players.length>=maxPlayers){showSiteError(`${team.name}'s roster is full.`,"ROSTER FULL");return false;}
     return true;
 }
-function passBid(){awardPlayer(currentBidder);}
+function passBid(){playSfx("pass");awardPlayer(currentBidder);}
 
 function awardPlayer(n){
     if(isTeamFull(n)){
@@ -593,7 +607,6 @@ function awardPlayer(n){
 }
 
 function renderSoldState(last){
-    playSfx("sold");triggerFx("sold",last?.automatic?"ASSIGNED":"SOLD");
     if(!last){startNextAuction();return;}
     const winner=teamByNumber(last.teamNumber);
     renderAuctionScreen(`
@@ -628,9 +641,9 @@ function displayZeroBudgetChoice(n){
 function buyWithControl(n){
     const team=teamByNumber(n),bid=Number(document.getElementById("controlBid").value);
     if(!validateBid(bid,team,0)) return;
-    currentBid=bid;currentBidder=n;awardPlayer(n);
+    currentBid=bid;currentBidder=n;playSfx("bid");triggerFx("bid");awardPlayer(n);
 }
-function passWithControl(n){const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
+function passWithControl(n){playSfx("pass");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
 function enableEnterKey(input,action){input.addEventListener("keydown",e=>{if(e.key==="Enter")action();});}
 
 function createAuctionHistoryPanel(){
@@ -648,11 +661,15 @@ function createAuctionHistoryPanel(){
 }
 
 function renderAuctionScreen(actionHTML){
+    auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
     auctionContent.innerHTML=`<div class="auction-layout">${createTeamTrackers()}
       <div class="auction-main">${createPlayerCard()}<div class="action-container">${actionHTML}</div></div>
       ${createAuctionHistoryPanel()}</div>`;
 }
-function updatePlayersRemaining(){playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;}
+function updatePlayersRemaining(){
+    playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;
+    playersRemainingDisplay.classList.remove("counter-pop");void playersRemainingDisplay.offsetWidth;playersRemainingDisplay.classList.add("counter-pop");
+}
 function showOverlay(html){overlayContent.innerHTML=html;gameOverlay.classList.remove("hidden");}
 function hideOverlay(){gameOverlay.classList.add("overlay-out");setTimeout(()=>{gameOverlay.classList.add("hidden");gameOverlay.classList.remove("overlay-out");},250);}
 
@@ -824,8 +841,8 @@ function renderFormationBuilder(){
       </div>`;
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
-    uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    showAuctionComplete();
     window.scrollTo({top:0,behavior:"smooth"});
 });
 
