@@ -139,6 +139,36 @@ function hideSiteError(){
     clearTimeout(siteErrorTimer);
 }
 
+function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
+function effectiveOVR(player,slotLabel){
+    const s=playerStats(player);
+    if(slotLabel==="GK") return s.gk;
+    if(primaryFit(player,slotLabel)) return s.ovr;
+    if(canonicalFit(player,slotLabel)) return Math.max(1,s.ovr-2);
+    return Math.max(1,s.ovr-12);
+}
+function statStrip(player,compact=false){
+    const s=playerStats(player);
+    return `<div class="stat-strip ${compact?"compact":""}">
+      <b><i>OVR</i>${s.ovr}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
+      <span><i>SPD</i>${s.spd}</span><span><i>DEF</i>${s.def}</span><span><i>PAS</i>${s.pas}</span>
+      <span><i>DRI</i>${s.dri}</span><span><i>GK</i>${s.gk}</span>
+    </div>`;
+}
+function squadRatings(teamNumber){
+    const team=teamByNumber(teamNumber), assignments=formationAssignments[teamNumber]||{}, shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
+    const placed=Object.entries(assignments).map(([slot,id])=>{
+      const p=team.players.find(x=>x.id===id), label=shape?.[Number(slot)]?.label;
+      return p&&label?{p,label,eff:effectiveOVR(p,label)}:null;
+    }).filter(Boolean);
+    if(!placed.length)return {ovr:0,att:0,mid:0,def:0};
+    const avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/Math.max(1,a.length));
+    const attack=placed.filter(x=>["ST","CF","LW","RW","AM"].includes(x.label));
+    const midfield=placed.filter(x=>["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label));
+    const defence=placed.filter(x=>["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label));
+    return {ovr:avg(placed.map(x=>x.eff)),att:avg((attack.length?attack:placed).map(x=>x.eff)),mid:avg((midfield.length?midfield:placed).map(x=>x.eff)),def:avg((defence.length?defence:placed).map(x=>x.eff))};
+}
+
 function playerPositions(player){return Array.isArray(player?.positions)&&player.positions.length?player.positions:["FW"];}
 function primaryPosition(player){return player?.primaryPosition||playerPositions(player)[0]||"FW";}
 function slotMatchesRole(slot,role){
@@ -642,7 +672,7 @@ function createPlayerCard(){
       <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="player-card-bottom">
         <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
-        <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
+        <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}${statStrip(currentPlayer)}
       </div>
     </div>`;
 }
@@ -858,7 +888,7 @@ function getMostExpensiveSigning(n){
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}</div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${effectiveOVR(p,s.label)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
@@ -987,13 +1017,13 @@ const FORMATIONS = {
   {x:36,y:31,label:"AM"},{x:64,y:31,label:"AM"},
   {x:50,y:13,label:"ST"}],
  "5-3-2":[
-  {x:50,y:88,label:"GK"},
-  {x:12,y:66,label:"LWB"},{x:30,y:72,label:"CB"},{x:50,y:75,label:"CB"},{x:70,y:72,label:"CB"},{x:88,y:66,label:"RWB"},
+  {x:50,y:91,label:"GK"},
+  {x:10,y:62,label:"LWB"},{x:29,y:66,label:"CB"},{x:50,y:68,label:"CB"},{x:71,y:66,label:"CB"},{x:90,y:62,label:"RWB"},
   {x:27,y:48,label:"CM"},{x:50,y:53,label:"DM"},{x:73,y:48,label:"CM"},
   {x:37,y:18,label:"ST"},{x:63,y:18,label:"ST"}],
  "5-2-3":[
-  {x:50,y:88,label:"GK"},
-  {x:12,y:66,label:"LWB"},{x:30,y:72,label:"CB"},{x:50,y:75,label:"CB"},{x:70,y:72,label:"CB"},{x:88,y:66,label:"RWB"},
+  {x:50,y:91,label:"GK"},
+  {x:10,y:62,label:"LWB"},{x:29,y:66,label:"CB"},{x:50,y:68,label:"CB"},{x:71,y:66,label:"CB"},{x:90,y:62,label:"RWB"},
   {x:39,y:49,label:"CM"},{x:61,y:49,label:"CM"},
   {x:18,y:22,label:"LW"},{x:50,y:15,label:"ST"},{x:82,y:22,label:"RW"}]
 };
