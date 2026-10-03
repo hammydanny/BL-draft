@@ -428,14 +428,16 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
   .formation-layout.bench-hidden:not(.database-hidden){grid-template-columns:1fr}
 }
 
-/* CHEMISTRY + CURRENT POSITION PROFILE */
-.chemistry-hud{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0;padding:9px 12px;background:linear-gradient(90deg,var(--team-soft),rgba(3,12,20,.88));border:1px solid var(--team-soft)}
-.chemistry-hud>div:first-child{display:flex;align-items:baseline;gap:10px}.chemistry-hud span{color:var(--team);font-size:8px;font-weight:900;letter-spacing:1.6px}.chemistry-hud strong{font:900 25px "Barlow Condensed"}
-.chemistry-legend{display:flex;align-items:center;gap:5px;color:#718ca1;font-size:7px;font-weight:800;letter-spacing:.7px}.chemistry-legend i{width:14px;height:2px;display:inline-block;margin-left:5px}
-.chemistry-legend .elite{background:#63f2ac}.chemistry-legend .strong{background:#54c8ff}.chemistry-legend .normal{background:#b8d5e8}.chemistry-legend .weak{background:#ff6c7f}
-.chemistry-lines{position:absolute;z-index:3;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}.chem-link{vector-effect:non-scaling-stroke;stroke-width:2;opacity:.62}.chem-link.elite{stroke:#63f2ac;stroke-width:3;filter:drop-shadow(0 0 3px #63f2ac)}.chem-link.strong{stroke:#54c8ff}.chem-link.normal{stroke:#b8d5e8;opacity:.4}.chem-link.weak{stroke:#ff6c7f;stroke-dasharray:5 4;opacity:.55}
-.current-position-panel{display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px 10px}.current-position-panel>span{grid-column:1/-1;color:var(--team);font-size:8px;font-weight:900;letter-spacing:1.4px}.current-position-panel strong{font:900 26px "Barlow Condensed"}.current-position-panel small{color:#718ca1;font-size:7px;font-weight:800;text-align:right}
-.player-info-ovr span{max-width:52px;text-align:center;line-height:1.05}
-.formation-drag-ghost{position:fixed!important;left:-9999px!important;top:-9999px!important;z-index:999999!important;width:105px!important;opacity:.92!important;transform:scale(1.05)!important;filter:none!important;pointer-events:none!important}
-.formation-drag-ghost img{width:70px!important;height:70px!important;object-fit:cover!important;border-radius:50%!important}
-@media(max-width:700px){.chemistry-hud{align-items:flex-start;flex-direction:column}.chemistry-legend{flex-wrap:wrap}}
+/* CHEMISTRY V2 */
+.chemistry-hud{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:10px;margin:8px 0;padding:9px 13px;background:#030d16;border:1px solid var(--team-soft);box-shadow:inset 3px 0 var(--team)}
+.chemistry-hud span{font-size:8px;font-weight:900;letter-spacing:1.7px;color:var(--team)}.chemistry-hud strong{font:900 27px "Barlow Condensed";color:#fff;text-shadow:0 0 12px var(--team)}.chemistry-hud small{font-size:7px;color:#668399;letter-spacing:1px}
+.chemistry-lines{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:visible}
+.chem-link{vector-effect:non-scaling-stroke;fill:none;stroke-linecap:round}
+.chem-link.chemical{stroke:#fff36a;stroke-width:4;opacity:.98;filter:drop-shadow(0 0 3px #fff36a) drop-shadow(0 0 7px #ffb800)}
+.chem-link.elite{stroke:#42ff9b;stroke-width:3.3;opacity:.94;filter:drop-shadow(0 0 5px #42ff9b)}
+.chem-link.strong{stroke:#35d9ff;stroke-width:2.8;opacity:.88;filter:drop-shadow(0 0 4px #35d9ff)}
+.chem-link.link{stroke:#9a8cff;stroke-width:2.1;opacity:.68}
+.chem-link.weak{stroke:#ff496c;stroke-width:1.5;opacity:.35;stroke-dasharray:4 4}
+.current-ovr-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:8px;background:#06131e;border:1px solid #16364c}.current-ovr-row strong{font:900 20px "Barlow Condensed";color:var(--team)}.current-ovr-row b{font:900 28px "Barlow Condensed"}
+.live-formation-drag-ghost{position:fixed;left:0;top:0;z-index:999999;pointer-events:none;width:112px;padding:6px;background:rgba(2,10,17,.94);border:2px solid #36caff;box-shadow:0 0 22px rgba(54,202,255,.65);will-change:transform}
+.live-formation-drag-ghost img{display:block;width:96px;height:96px;object-fit:cover;object-position:center top}.live-formation-drag-ghost strong{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:4px;font:900 13px "Barlow Condensed"}.live-formation-drag-ghost span{font-size:8px;font-weight:900;color:#42d9ff}
