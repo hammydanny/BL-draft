@@ -140,12 +140,22 @@ function hideSiteError(){
 }
 
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
-function effectiveOVR(player,slotLabel){
-    const s=playerStats(player);
-    if(slotLabel==="GK") return s.gk;
-    if(primaryFit(player,slotLabel)) return s.ovr;
-    if(canonicalFit(player,slotLabel)) return Math.max(1,s.ovr-2);
-    return Math.max(1,s.ovr-12);
+function effectiveOVR(player, slotLabel){
+    const s = playerStats(player);
+
+    if(slotLabel === "GK"){
+        return s.gk;
+    }
+
+    if(primaryFit(player, slotLabel)){
+        return s.ovr;
+    }
+
+    if(canonicalFit(player, slotLabel)){
+        return Math.max(1, s.ovr - 2);
+    }
+
+    return Math.max(1, s.ovr - 12);
 }
 function statStrip(player,compact=false){
     const s=playerStats(player);
@@ -156,17 +166,72 @@ function statStrip(player,compact=false){
     </div>`;
 }
 function squadRatings(teamNumber){
-    const team=teamByNumber(teamNumber), assignments=formationAssignments[teamNumber]||{}, shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
-    const placed=Object.entries(assignments).map(([slot,id])=>{
-      const p=team.players.find(x=>x.id===id), label=shape?.[Number(slot)]?.label;
-      return p&&label?{p,label,eff:effectiveOVR(p,label)}:null;
-    }).filter(Boolean);
-    if(!placed.length)return {ovr:0,att:0,mid:0,def:0};
-    const avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/Math.max(1,a.length));
-    const attack=placed.filter(x=>["ST","CF","LW","RW","AM"].includes(x.label));
-    const midfield=placed.filter(x=>["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label));
-    const defence=placed.filter(x=>["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label));
-    return {ovr:avg(placed.map(x=>x.eff)),att:avg((attack.length?attack:placed).map(x=>x.eff)),mid:avg((midfield.length?midfield:placed).map(x=>x.eff)),def:avg((defence.length?defence:placed).map(x=>x.eff))};
+    const team = teamByNumber(teamNumber);
+
+    const assignments =
+        formationAssignments[teamNumber] || {};
+
+    const formation =
+        formationByTeam[teamNumber] || "4-3-3";
+
+    const shape = FORMATIONS[formation] || FORMATIONS["4-3-3"];
+
+    const placed = Object.entries(assignments)
+        .map(([slot, id]) => {
+            const player = team.players.find(p => p.id === id);
+            const slotData = shape[Number(slot)];
+
+            if(!player || !slotData){
+                return null;
+            }
+
+            return {
+                player,
+                label: slotData.label,
+                ovr: effectiveOVR(player, slotData.label)
+            };
+        })
+        .filter(Boolean);
+
+    if(!placed.length){
+        return {
+            ovr: 0,
+            att: 0,
+            mid: 0,
+            def: 0
+        };
+    }
+
+    const average = values =>
+        Math.round(
+            values.reduce((sum, value) => sum + value, 0) /
+            Math.max(1, values.length)
+        );
+
+    const attack = placed.filter(x =>
+        ["ST","CF","LW","RW","AM"].includes(x.label)
+    );
+
+    const midfield = placed.filter(x =>
+        ["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label)
+    );
+
+    const defence = placed.filter(x =>
+        ["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label)
+    );
+
+    return {
+        ovr: average(placed.map(x => x.ovr)),
+        att: average(
+            (attack.length ? attack : placed).map(x => x.ovr)
+        ),
+        mid: average(
+            (midfield.length ? midfield : placed).map(x => x.ovr)
+        ),
+        def: average(
+            (defence.length ? defence : placed).map(x => x.ovr)
+        )
+    };
 }
 
 function playerPositions(player){return Array.isArray(player?.positions)&&player.positions.length?player.positions:["FW"];}
@@ -1212,19 +1277,33 @@ function assignedIds(n){return new Set(Object.values(formationAssignments[n]).fi
 function movePlayerToSlot(playerId,slotIndex){
     const n=formationTeamNumber;
     const team=teamByNumber(n);
-    if(!team.players.some(p=>p.id===playerId))return;
+
+    if(!team.players.some(p=>p.id===playerId)) return;
 
     const targetPlayer=getFormationPlayer(n,slotIndex);
-    const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
 
-    if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
-    if(targetPlayer && targetPlayer.id!==playerId){
-        if(sourceSlot!==undefined) formationAssignments[n][sourceSlot]=targetPlayer.id;
-        // If dragged from bench, the displaced player naturally moves to bench.
+    const sourceSlot=Object.keys(
+        formationAssignments[n]
+    ).find(
+        k => formationAssignments[n][k]===playerId
+    );
+
+    if(sourceSlot!==undefined){
+        delete formationAssignments[n][sourceSlot];
     }
+
+    if(targetPlayer && targetPlayer.id!==playerId){
+        if(sourceSlot!==undefined){
+            formationAssignments[n][sourceSlot]=targetPlayer.id;
+        }
+    }
+
     formationAssignments[n][slotIndex]=playerId;
-    selectedFormationPlayerId=null;
-    renderFormationBuilder();saveGame();
+
+    selectedFormationPlayerId=playerId;
+
+    renderFormationBuilder();
+    saveGame();
 }
 function movePlayerToBench(playerId){
     const n=formationTeamNumber;
@@ -1440,6 +1519,7 @@ function clearSelectedFormationPlayer(){
 }
 function renderFormationBuilder(){
     const team = teamByNumber(formationTeamNumber);
+    const rating = squadRatings(formationTeamNumber);
 
     activeFormation =
         formationByTeam[formationTeamNumber] || "4-3-3";
@@ -1502,9 +1582,14 @@ function renderFormationBuilder(){
                 class="formation-control-panel"
                 style="${teamVars(team)}"
             >
-                <div>
+                <div class="formation-control-main">
                     <span>FORMATION // ${esc(team.name)}</span>
                     <strong>${activeFormation}</strong>
+                </div>
+
+                <div class="formation-team-rating">
+                    <span>TEAM OVR</span>
+                    <strong>${rating.ovr}</strong>
                 </div>
 
                 <details class="formation-menu">
@@ -1786,15 +1871,17 @@ document.getElementById("backToResults").addEventListener("click",()=>{
 });
 
 function playerStats(player){
+    const stats = player?.stats || {};
+
     return {
-        ovr: Number(player?.stats?.ovr) || 0,
-        off: Number(player?.stats?.off) || 0,
-        sho: Number(player?.stats?.sho) || 0,
-        spd: Number(player?.stats?.spd) || 0,
-        def: Number(player?.stats?.def) || 0,
-        pas: Number(player?.stats?.pas) || 0,
-        dri: Number(player?.stats?.dri) || 0,
-        gk: Number(player?.stats?.gk) || 0
+        ovr: Number(stats.ovr ?? player?.ovr ?? 0),
+        off: Number(stats.off ?? player?.off ?? 0),
+        sho: Number(stats.sho ?? player?.sho ?? 0),
+        spd: Number(stats.spd ?? player?.spd ?? 0),
+        def: Number(stats.def ?? player?.def ?? 0),
+        pas: Number(stats.pas ?? player?.pas ?? 0),
+        dri: Number(stats.dri ?? player?.dri ?? 0),
+        gk: Number(stats.gk ?? player?.gk ?? 0)
     };
 }
 
