@@ -1,145 +1,85 @@
+// BLUE LOCK PLAYER DATABASE // EVENT SIM
+// --------------------------------------------------
+// stats:
+//   gk  = Goalkeeping
+//   atk = Attacking
+//   def = Defense
+//
+// passive / special:
+//   name    = ability name
+//   trigger = situation in which it can activate
+//   effect  = what the event simulator should do
+//
+// All abilities are placeholders for now.
+// --------------------------------------------------
+
 const players = [
-    { id: 1, name: "Yoichi Isagi", image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"] , stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 } },
-    { id: 2, name: "Ryosuke Kira", image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 } },
-    { id: 3, name: "Noel Noa", image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 } },
-    { id: 4, name: "Meguru Bachira", image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 } },
-    { id: 5, name: "Gurimu Igarashi", image: "images/gurimu-igarashi.jpg", primaryPosition: "FW", positions: ["FW", "DF"] , stats: { ovr:69, off:67, sho:65, spd:68, def:77, pas:66, dri:65, gk:54 } },
-    { id: 6, name: "Rensuke Kunigami", image: "images/rensuke-kunigami.jpg", primaryPosition: "CF", positions: ["CF", "DM"] , stats: { ovr:90, off:91, sho:95, spd:87, def:86, pas:75, dri:79, gk:58 } },
-    { id: 7, name: "Hyoma Chigiri", image: "images/hyoma-chigiri.jpg", primaryPosition: "LW", positions: ["LW", "RW", "RWB", "RB"] , stats: { ovr:93, off:88, sho:88, spd:98, def:68, pas:80, dri:93, gk:49 } },
-    { id: 8, name: "Gin Gagamaru", image: "images/gin-gagamaru.jpg", primaryPosition: "GK", positions: ["GK", "FW"] , stats: { ovr:89, off:79, sho:80, spd:87, def:93, pas:88, dri:84, gk:96 } },
-    { id: 9, name: "Jingo Raichi", image: "images/jingo-raichi.jpg", primaryPosition: "DM", positions: ["DM", "CB"] , stats: { ovr:87, off:79, sho:82, spd:77, def:90, pas:81, dri:82, gk:62 } },
-    { id: 10, name: "Asahi Naruhaya", image: "images/asahi-naruhaya.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:70, off:77, sho:68, spd:81, def:54, pas:67, dri:75, gk:42 } },
-    { id: 11, name: "Okuhito Iemon", image: "images/okuhito-iemon.jpg", primaryPosition: "GK", positions: ["GK", "FW"] , stats: { ovr:68, off:67, sho:65, spd:70, def:70, pas:68, dri:67, gk:72 } },
-    { id: 12, name: "Wataru Kuon", image: "images/wataru-kuon.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:71, off:76, sho:73, spd:79, def:66, pas:70, dri:71, gk:55 } },
-    { id: 13, name: "Yudai Imamura", image: "images/yudai-imamura.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:68, off:72, sho:70, spd:76, def:54, pas:67, dri:72, gk:41 } },
-    { id: 14, name: "Sae Itoshi", image: "images/sae-itoshi.jpg", primaryPosition: "AM", positions: ["AM", "CM"] , stats: { ovr:96, off:95, sho:91, spd:88, def:78, pas:98, dri:96, gk:58 } },
-    { id: 15, name: "Shoei Baro", image: "images/shoei-baro.jpg", primaryPosition: "CF", positions: ["CF", "RW"] , stats: { ovr:93, off:96, sho:96, spd:89, def:74, pas:76, dri:91, gk:53 } },
-    { id: 16, name: "Ikki Niko", image: "images/ikki-niko.jpg", primaryPosition: "CB", positions: ["CB", "DM"] , stats: { ovr:87, off:82, sho:76, spd:78, def:84, pas:88, dri:67, gk:57 } },
-    { id: 17, name: "Hibiki Okawa", image: "images/hibiki-okawa.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:73, off:78, sho:79, spd:73, def:55, pas:68, dri:73, gk:42 } },
-    { id: 18, name: "Junichi Wanima", image: "images/junichi-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } },
-    { id: 19, name: "Keisuke Wanima", image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } },
-    { id: 20, name: "Reo Mikage", image: "images/reo-mikage.jpg", primaryPosition: "CM", positions: ["CM", "AM", "CB", "RM"] , stats: { ovr:90, off:89, sho:85, spd:86, def:86, pas:91, dri:89, gk:68 } },
-    { id: 21, name: "Seishiro Nagi", image: "images/seishiro-nagi.jpg", primaryPosition: "CF", positions: ["CF", "AM", "FW"] , stats: { ovr:91, off:94, sho:92, spd:82, def:69, pas:84, dri:96, gk:55 } },
-    { id: 22, name: "Zantetsu Tsurugi", image: "images/zantetsu-tsurugi.jpg", primaryPosition: "RW", positions: ["RW", "RM", "WB"] , stats: { ovr:84, off:84, sho:81, spd:95, def:70, pas:73, dri:82, gk:48 } },
-    { id: 23, name: "Rin Itoshi", image: "images/rin-itoshi.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:95, off:97, sho:97, spd:90, def:83, pas:91, dri:92, gk:60 } },
-    { id: 24, name: "Jyubei Aryu", image: "images/jyubei-aryu.jpg", primaryPosition: "CB", positions: ["CB"] , stats: { ovr:86, off:68, sho:69, spd:74, def:90, pas:76, dri:79, gk:67 } },
-    { id: 25, name: "Aoshi Tokimitsu", image: "images/aoshi-tokimitsu.jpg", primaryPosition: "DM", positions: ["DM", "CM"] , stats: { ovr:85, off:82, sho:82, spd:83, def:87, pas:75, dri:76, gk:64 } },
-    { id: 26, name: "Ranze Kurona", image: "images/ranze-kurona.jpg", primaryPosition: "RB", positions: ["RB", "RWB"] , stats: { ovr:87, off:84, sho:77, spd:91, def:84, pas:89, dri:88, gk:55 } },
-    { id: 27, name: "Yo Hiori", image: "images/yo-hiori.jpg", primaryPosition: "CM", positions: ["CM", "AM", "RWB", "LWB"] , stats: { ovr:89, off:87, sho:82, spd:81, def:82, pas:95, dri:91, gk:58 } },
-    { id: 28, name: "Tabito Karasu", image: "images/tabito-karasu.jpg", primaryPosition: "DM", positions: ["DM", "CM"] , stats: { ovr:89, off:86, sho:80, spd:82, def:91, pas:91, dri:88, gk:60 } },
-    { id: 29, name: "Eita Otoya", image: "images/eita-otoya.jpg", primaryPosition: "RW", positions: ["RW", "RWB", "RM"] , stats: { ovr:87, off:90, sho:84, spd:91, def:70, pas:84, dri:88, gk:49 } },
-    { id: 30, name: "Kenyu Yukimiya", image: "images/kenyu-yukimiya.jpg", primaryPosition: "LW", positions: ["LW", "LWB", "LM"] , stats: { ovr:89, off:88, sho:86, spd:89, def:76, pas:77, dri:91, gk:52 } },
-    { id: 31, name: "Ryusei Shido", image: "images/ryusei-shido.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:94, off:97, sho:98, spd:91, def:72, pas:75, dri:88, gk:57 } },
-    { id: 32, name: "Nijiro Nanase", image: "images/nijiro-nanase.jpg", primaryPosition: "CM", positions: ["CM", "DM"] , stats: { ovr:82, off:82, sho:76, spd:81, def:79, pas:84, dri:81, gk:55 } },
-    { id: 33, name: "Jin Kiyora", image: "images/jin-kiyora.jpg", primaryPosition: "LB", positions: ["LB", "WB", "DF"] , stats: { ovr:86, off:85, sho:86, spd:88, def:82, pas:83, dri:89, gk:56 } },
-    { id: 34, name: "Leonardo Luna", image: "images/leonardo-luna.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:94, off:95, sho:94, spd:92, def:73, pas:89, dri:94, gk:58 } },
-    { id: 35, name: "Pablo Cavasoz", image: "images/pablo-cavasoz.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:92, off:91, sho:88, spd:89, def:69, pas:94, dri:93, gk:55 } },
-    { id: 36, name: "Adam Blake", image: "images/adam-blake.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:93, off:94, sho:95, spd:88, def:70, pas:84, dri:87, gk:59 } },
-    { id: 37, name: "Dada Silva", image: "images/dada-silva.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:92, off:92, sho:91, spd:91, def:74, pas:80, dri:84, gk:63 } },
-    { id: 38, name: "Julien Loki", image: "images/julien-loki.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:97, off:96, sho:94, spd:99, def:74, pas:91, dri:97, gk:61 } },
-    { id: 39, name: "Gen Fukaku", image: "images/gen-fukaku.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:82, off:58, sho:56, spd:72, def:86, pas:76, dri:62, gk:88 } },
-    { id: 40, name: "Oliver Aiku", image: "images/oliver-aiku.jpg", primaryPosition: "CB", positions: ["CB"] , stats: { ovr:91, off:75, sho:77, spd:82, def:96, pas:85, dri:79, gk:69 } },
-    { id: 41, name: "Kazuma Nio", image: "images/kazuma-nio.jpg", primaryPosition: "CB", positions: ["CB"] , stats: { ovr:82, off:65, sho:67, spd:76, def:88, pas:73, dri:69, gk:63 } },
-    { id: 42, name: "Miroku Darai", image: "images/miroku-darai.jpg", primaryPosition: "LB", positions: ["LB"] , stats: { ovr:82, off:69, sho:65, spd:83, def:87, pas:75, dri:76, gk:57 } },
-    { id: 43, name: "Teppei Neru", image: "images/teppei-neru.jpg", primaryPosition: "RB", positions: ["RB"] , stats: { ovr:83, off:72, sho:65, spd:91, def:86, pas:76, dri:78, gk:56 } },
-    { id: 44, name: "Itsuki Wakatsuki", image: "images/itsuki-wakatsuki.jpg", primaryPosition: "DM", positions: ["DM"] , stats: { ovr:80, off:73, sho:72, spd:75, def:83, pas:80, dri:75, gk:57 } },
-    { id: 45, name: "Haru Hayate", image: "images/haru-hayate.jpg", primaryPosition: "DM", positions: ["DM"] , stats: { ovr:80, off:74, sho:70, spd:77, def:82, pas:81, dri:76, gk:55 } },
-    { id: 46, name: "Kento Cho", image: "images/kento-cho.jpg", primaryPosition: "LW", positions: ["LW", "FW"] , stats: { ovr:79, off:82, sho:78, spd:82, def:68, pas:75, dri:80, gk:46 } },
-    { id: 47, name: "Teru Kitsunezato", image: "images/teru-kitsunezato.jpg", primaryPosition: "RW", positions: ["RW", "FW"] , stats: { ovr:79, off:82, sho:77, spd:84, def:67, pas:75, dri:81, gk:46 } },
-    { id: 48, name: "Shuto Sendo", image: "images/shuto-sendo.jpg", primaryPosition: "CF", positions: ["CF", "AM"] , stats: { ovr:83, off:86, sho:83, spd:80, def:67, pas:81, dri:80, gk:49 } },
-    { id: 49, name: "Michael Kaiser", image: "images/michael-kaiser.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:96, off:96, sho:98, spd:91, def:74, pas:81, dri:85, gk:57 } },
-    { id: 50, name: "Alexis Ness", image: "images/alexis-ness.jpg", primaryPosition: "AM", positions: ["AM", "CM"] , stats: { ovr:91, off:94, sho:82, spd:74, def:71, pas:97, dri:90, gk:52 } },
-    { id: 51, name: "Benedict Grim", image: "images/benedict-grim.jpg", primaryPosition: "LW", positions: ["LW", "LM"] , stats: { ovr:84, off:84, sho:82, spd:85, def:72, pas:83, dri:85, gk:50 } },
-    { id: 52, name: "Lavinho", image: "images/lavinho.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:97, off:96, sho:92, spd:94, def:76, pas:92, dri:99, gk:59 } },
-    { id: 53, name: "Chris Prince", image: "images/chris-prince.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:97, off:96, sho:95, spd:95, def:85, pas:88, dri:92, gk:67 } },
-    { id: 54, name: "Agi", image: "images/agi.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:91, off:92, sho:88, spd:85, def:76, pas:91, dri:90, gk:60 } },
-    { id: 55, name: "Marc Snuffy", image: "images/marc-snuffy.jpg", primaryPosition: "FW", positions: ["FW", "AM"] , stats: { ovr:97, off:97, sho:91, spd:87, def:94, pas:98, dri:94, gk:72 } },
-    { id: 56, name: "Don Lorenzo", image: "images/don-lorenzo.jpg", primaryPosition: "CB", positions: ["CB", "DF"] , stats: { ovr:95, off:84, sho:82, spd:83, def:99, pas:87, dri:93, gk:70 } },
-    { id: 57, name: "Charles Chevalier", image: "images/charles-chevalier.jpg", primaryPosition: "CM", positions: ["CM", "AM"] , stats: { ovr:93, off:95, sho:85, spd:86, def:71, pas:98, dri:93, gk:51 } },
-    { id: 58, name: "Rooke", image: "images/rooke.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:88, off:61, sho:59, spd:80, def:91, pas:82, dri:72, gk:92 } },
-    { id: 59, name: "Renoir", image: "images/renoir.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:89, off:63, sho:61, spd:82, def:92, pas:84, dri:75, gk:93 } },
-    { id: 60, name: "Haneru Shindo", image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:77, off:80, sho:79, spd:82, def:59, pas:72, dri:78, gk:44 } },
-    { id: 61, name: "Bunny Iglesias", image: "images/bunny-iglesias.jpg", primaryPosition: "FW", positions: ["FW", "SS"] , stats: { ovr:95, off:96, sho:95, spd:94, def:70, pas:87, dri:94, gk:56 } },
-    { id: 62, name: "Innocent Onazi", image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"] , stats: { ovr:90, off:93, sho:91, spd:88, def:70, pas:83, dri:87, gk:54 } },
-    { id: 63, name: "Godwin Kuso", image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"] , stats: { ovr:89, off:91, sho:84, spd:84, def:75, pas:93, dri:89, gk:55 } },
-    { id: 64, name: "Vivien Hugo", image: "images/vivien-hugo.jpg", primaryPosition: "CM", positions: ["CM"] , stats: { ovr:95, off:91, sho:88, spd:89, def:88, pas:95, dri:94, gk:65 } },
-    { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:91, off:91, sho:87, spd:93, def:72, pas:88, dri:91, gk:54 } },
-    { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:91, off:92, sho:90, spd:88, def:73, pas:91, dri:89, gk:56 } },
-    { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
-    { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:88, off:90, sho:89, spd:87, def:68, pas:83, dri:86, gk:52 } }
+  { id: 1, name: "Yoichi Isagi", image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"], stats: { gk: 48, atk: 92, def: 78 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 2, name: "Ryosuke Kira", image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 43, atk: 81, def: 60 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 3, name: "Noel Noa", image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 66, atk: 96, def: 84 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 4, name: "Meguru Bachira", image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"], stats: { gk: 51, atk: 92, def: 68 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 5, name: "Gurimu Igarashi", image: "images/gurimu-igarashi.jpg", primaryPosition: "FW", positions: ["FW", "DF"], stats: { gk: 54, atk: 66, def: 77 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 6, name: "Rensuke Kunigami", image: "images/rensuke-kunigami.jpg", primaryPosition: "CF", positions: ["CF", "DM"], stats: { gk: 58, atk: 85, def: 86 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 7, name: "Hyoma Chigiri", image: "images/hyoma-chigiri.jpg", primaryPosition: "LW", positions: ["LW", "RW", "RWB", "RB"], stats: { gk: 49, atk: 87, def: 68 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 8, name: "Gin Gagamaru", image: "images/gin-gagamaru.jpg", primaryPosition: "GK", positions: ["GK", "FW"], stats: { gk: 96, atk: 83, def: 93 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 9, name: "Jingo Raichi", image: "images/jingo-raichi.jpg", primaryPosition: "DM", positions: ["DM", "CB"], stats: { gk: 62, atk: 81, def: 90 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 10, name: "Asahi Naruhaya", image: "images/asahi-naruhaya.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 42, atk: 72, def: 54 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 11, name: "Okuhito Iemon", image: "images/okuhito-iemon.jpg", primaryPosition: "GK", positions: ["GK", "FW"], stats: { gk: 72, atk: 67, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 12, name: "Wataru Kuon", image: "images/wataru-kuon.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 55, atk: 72, def: 66 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 13, name: "Yudai Imamura", image: "images/yudai-imamura.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 41, atk: 70, def: 54 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 14, name: "Sae Itoshi", image: "images/sae-itoshi.jpg", primaryPosition: "AM", positions: ["AM", "CM"], stats: { gk: 58, atk: 95, def: 78 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 15, name: "Shoei Baro", image: "images/shoei-baro.jpg", primaryPosition: "CF", positions: ["CF", "RW"], stats: { gk: 53, atk: 90, def: 74 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 16, name: "Ikki Niko", image: "images/ikki-niko.jpg", primaryPosition: "CB", positions: ["CB", "DM"], stats: { gk: 57, atk: 78, def: 84 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 17, name: "Hibiki Okawa", image: "images/hibiki-okawa.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 42, atk: 74, def: 55 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 18, name: "Junichi Wanima", image: "images/junichi-wanima.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 45, atk: 73, def: 65 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 19, name: "Keisuke Wanima", image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 45, atk: 73, def: 65 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 20, name: "Reo Mikage", image: "images/reo-mikage.jpg", primaryPosition: "CM", positions: ["CM", "AM", "CB", "RM"], stats: { gk: 68, atk: 88, def: 86 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 21, name: "Seishiro Nagi", image: "images/seishiro-nagi.jpg", primaryPosition: "CF", positions: ["CF", "AM", "FW"], stats: { gk: 55, atk: 92, def: 69 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 22, name: "Zantetsu Tsurugi", image: "images/zantetsu-tsurugi.jpg", primaryPosition: "RW", positions: ["RW", "RM", "WB"], stats: { gk: 48, atk: 80, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 23, name: "Rin Itoshi", image: "images/rin-itoshi.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 60, atk: 94, def: 83 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 24, name: "Jyubei Aryu", image: "images/jyubei-aryu.jpg", primaryPosition: "CB", positions: ["CB"], stats: { gk: 67, atk: 73, def: 90 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 25, name: "Aoshi Tokimitsu", image: "images/aoshi-tokimitsu.jpg", primaryPosition: "DM", positions: ["DM", "CM"], stats: { gk: 64, atk: 79, def: 87 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 26, name: "Ranze Kurona", image: "images/ranze-kurona.jpg", primaryPosition: "RB", positions: ["RB", "RWB"], stats: { gk: 55, atk: 84, def: 84 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 27, name: "Yo Hiori", image: "images/yo-hiori.jpg", primaryPosition: "CM", positions: ["CM", "AM", "RWB", "LWB"], stats: { gk: 58, atk: 89, def: 82 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 28, name: "Tabito Karasu", image: "images/tabito-karasu.jpg", primaryPosition: "DM", positions: ["DM", "CM"], stats: { gk: 60, atk: 86, def: 91 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 29, name: "Eita Otoya", image: "images/eita-otoya.jpg", primaryPosition: "RW", positions: ["RW", "RWB", "RM"], stats: { gk: 49, atk: 86, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 30, name: "Kenyu Yukimiya", image: "images/kenyu-yukimiya.jpg", primaryPosition: "LW", positions: ["LW", "LWB", "LM"], stats: { gk: 52, atk: 86, def: 76 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 31, name: "Ryusei Shido", image: "images/ryusei-shido.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 57, atk: 90, def: 72 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 32, name: "Nijiro Nanase", image: "images/nijiro-nanase.jpg", primaryPosition: "CM", positions: ["CM", "DM"], stats: { gk: 55, atk: 81, def: 79 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 33, name: "Jin Kiyora", image: "images/jin-kiyora.jpg", primaryPosition: "LB", positions: ["LB", "WB", "DF"], stats: { gk: 56, atk: 86, def: 82 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 34, name: "Leonardo Luna", image: "images/leonardo-luna.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 58, atk: 93, def: 73 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 35, name: "Pablo Cavasoz", image: "images/pablo-cavasoz.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 55, atk: 92, def: 69 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 36, name: "Adam Blake", image: "images/adam-blake.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 59, atk: 90, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 37, name: "Dada Silva", image: "images/dada-silva.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 63, atk: 87, def: 74 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 38, name: "Julien Loki", image: "images/julien-loki.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 61, atk: 94, def: 74 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 39, name: "Gen Fukaku", image: "images/gen-fukaku.jpg", primaryPosition: "GK", positions: ["GK"], stats: { gk: 88, atk: 63, def: 86 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 40, name: "Oliver Aiku", image: "images/oliver-aiku.jpg", primaryPosition: "CB", positions: ["CB"], stats: { gk: 69, atk: 79, def: 96 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 41, name: "Kazuma Nio", image: "images/kazuma-nio.jpg", primaryPosition: "CB", positions: ["CB"], stats: { gk: 63, atk: 68, def: 88 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 42, name: "Miroku Darai", image: "images/miroku-darai.jpg", primaryPosition: "LB", positions: ["LB"], stats: { gk: 57, atk: 71, def: 87 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 43, name: "Teppei Neru", image: "images/teppei-neru.jpg", primaryPosition: "RB", positions: ["RB"], stats: { gk: 56, atk: 73, def: 86 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 44, name: "Itsuki Wakatsuki", image: "images/itsuki-wakatsuki.jpg", primaryPosition: "DM", positions: ["DM"], stats: { gk: 57, atk: 75, def: 83 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 45, name: "Haru Hayate", image: "images/haru-hayate.jpg", primaryPosition: "DM", positions: ["DM"], stats: { gk: 55, atk: 75, def: 82 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 46, name: "Kento Cho", image: "images/kento-cho.jpg", primaryPosition: "LW", positions: ["LW", "FW"], stats: { gk: 46, atk: 79, def: 68 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 47, name: "Teru Kitsunezato", image: "images/teru-kitsunezato.jpg", primaryPosition: "RW", positions: ["RW", "FW"], stats: { gk: 46, atk: 79, def: 67 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 48, name: "Shuto Sendo", image: "images/shuto-sendo.jpg", primaryPosition: "CF", positions: ["CF", "AM"], stats: { gk: 49, atk: 82, def: 67 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 49, name: "Michael Kaiser", image: "images/michael-kaiser.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 57, atk: 90, def: 74 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 50, name: "Alexis Ness", image: "images/alexis-ness.jpg", primaryPosition: "AM", positions: ["AM", "CM"], stats: { gk: 52, atk: 91, def: 71 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 51, name: "Benedict Grim", image: "images/benedict-grim.jpg", primaryPosition: "LW", positions: ["LW", "LM"], stats: { gk: 50, atk: 84, def: 72 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 52, name: "Lavinho", image: "images/lavinho.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 59, atk: 95, def: 76 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 53, name: "Chris Prince", image: "images/chris-prince.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 67, atk: 93, def: 85 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 54, name: "Agi", image: "images/agi.jpg", primaryPosition: "CF", positions: ["CF", "FW"], stats: { gk: 60, atk: 90, def: 76 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 55, name: "Marc Snuffy", image: "images/marc-snuffy.jpg", primaryPosition: "FW", positions: ["FW", "AM"], stats: { gk: 72, atk: 95, def: 94 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 56, name: "Don Lorenzo", image: "images/don-lorenzo.jpg", primaryPosition: "CB", positions: ["CB", "DF"], stats: { gk: 70, atk: 86, def: 99 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 57, name: "Charles Chevalier", image: "images/charles-chevalier.jpg", primaryPosition: "CM", positions: ["CM", "AM"], stats: { gk: 51, atk: 93, def: 71 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 58, name: "Rooke", image: "images/rooke.jpg", primaryPosition: "GK", positions: ["GK"], stats: { gk: 92, atk: 68, def: 91 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 59, name: "Renoir", image: "images/renoir.jpg", primaryPosition: "GK", positions: ["GK"], stats: { gk: 93, atk: 71, def: 92 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 60, name: "Haneru Shindo", image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 44, atk: 77, def: 59 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 61, name: "Bunny Iglesias", image: "images/bunny-iglesias.jpg", primaryPosition: "FW", positions: ["FW", "SS"], stats: { gk: 56, atk: 93, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 62, name: "Innocent Onazi", image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"], stats: { gk: 54, atk: 88, def: 70 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 63, name: "Godwin Kuso", image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"], stats: { gk: 55, atk: 89, def: 75 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 64, name: "Vivien Hugo", image: "images/vivien-hugo.jpg", primaryPosition: "CM", positions: ["CM"], stats: { gk: 65, atk: 92, def: 88 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"], stats: { gk: 54, atk: 89, def: 72 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 56, atk: 90, def: 73 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"], stats: { gk: 58, atk: 94, def: 75 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } },
+  { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"], stats: { gk: 52, atk: 87, def: 68 }, passive: { name: "TBD", trigger: "TBD", effect: "TBD" }, special: { name: "TBD", trigger: "TBD", effect: "TBD" } }
 ];
-
-function getPassive(player){
-    return player?.passive || {
-        id: "missing-passive",
-        name: "Placeholder Passive",
-        description: "No passive assigned.",
-        trigger: "NONE",
-        effect: "NONE",
-        active: false
-    };
-}
-
-function getSpecial(player){
-    return player?.special || {
-        id: "missing-special",
-        name: "Placeholder Special",
-        description: "No special move assigned.",
-        trigger: "NONE",
-        effect: "NONE",
-        cooldown: 0,
-        uses: null,
-        active: false
-    };
-}
-
-function canTriggerPassive(player, situation){
-    const passive = getPassive(player);
-
-    if(passive.trigger !== "SITUATIONAL") return false;
-
-    // Placeholder until actual situation logic exists.
-    return Boolean(situation);
-}
-
-function canTriggerSpecial(player, situation){
-    const special = getSpecial(player);
-
-    if(special.trigger !== "SITUATIONAL") return false;
-
-    // Placeholder until actual special-move logic exists.
-    return Boolean(situation);
-}
-
-function abilitySlug(name){
-    return String(name)
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-}
-
-players.forEach(player => {
-    const slug = abilitySlug(player.name);
-
-    // Passive
-    player.passive = {
-        id: `${slug}-passive`,
-        name: "Placeholder Passive",
-        description: `${player.name}'s passive ability is not yet implemented.`,
-        trigger: "SITUATIONAL",
-        effect: "TBD",
-        active: false
-    };
-
-    // Special Move
-    player.special = {
-        id: `${slug}-special`,
-        name: "Placeholder Special",
-        description: `${player.name}'s special move is not yet implemented.`,
-        trigger: "SITUATIONAL",
-        effect: "TBD",
-        cooldown: 0,
-        uses: null,
-        active: false
-    };
-});
