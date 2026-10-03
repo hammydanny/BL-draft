@@ -139,6 +139,30 @@ function hideSiteError(){
     clearTimeout(siteErrorTimer);
 }
 
+function playerPositions(player){return Array.isArray(player?.positions)&&player.positions.length?player.positions:["FW"];}
+function primaryPosition(player){return player?.primaryPosition||playerPositions(player)[0]||"FW";}
+function slotMatchesRole(slot,role){
+    const map={
+        GK:["GK"],
+        CB:["CB","DF"], LB:["LB","LWB","WB","DF"], RB:["RB","RWB","WB","DF"],
+        LWB:["LWB","WB","LB","LM"], RWB:["RWB","WB","RB","RM"],
+        DM:["DM","CM"], CM:["CM","DM","AM"], AM:["AM","CM","SS"],
+        LM:["LM","LW","WM","LWB"], RM:["RM","RW","WM","RWB"],
+        LW:["LW","LM","WM","FW"], RW:["RW","RM","WM","FW"],
+        ST:["CF","ST","FW","SS"], CF:["CF","ST","FW","SS"]
+    };
+    return (map[slot]||[slot]).includes(role);
+}
+function canonicalFit(player,slotLabel){
+    return playerPositions(player).some(role=>slotMatchesRole(slotLabel,role));
+}
+function primaryFit(player,slotLabel){
+    return slotMatchesRole(slotLabel,primaryPosition(player));
+}
+function positionBadges(player,compact=false){
+    return `<span class="position-badges ${compact?"compact":""}">${playerPositions(player).map(pos=>`<i class="${pos===primaryPosition(player)?"primary":""}">${pos}</i>`).join("")}</span>`;
+}
+
 function teamByNumber(n){ return n === 1 ? team1 : team2; }
 function isTeamFull(n){ return teamByNumber(n).players.length >= maxPlayers; }
 function otherTeamNumber(n){ return n === 1 ? 2 : 1; }
@@ -618,7 +642,7 @@ function createPlayerCard(){
       <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="player-card-bottom">
         <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
-        <div class="player-card-name">${esc(currentPlayer.name)}</div>
+        <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
       </div>
     </div>`;
 }
@@ -834,7 +858,7 @@ function getMostExpensiveSigning(n){
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}</div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
@@ -880,7 +904,7 @@ function createShareTeam(team,n){
     return `<article class="share-team" style="${teamVars(team)}">
       <div class="share-team-head"><div><span>SQUAD 0${n} // ${arranged.length?formation:"DRAFTED ROSTER"}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
       <div class="share-money"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
-      <div class="share-lineup">${list.map(x=>`<div class="share-player"><span>${x.pos}</span><img src="${x.p.image}" alt=""><strong>${esc(x.p.name)}</strong></div>`).join("")}</div>
+      <div class="share-lineup">${list.map(x=>`<div class="share-player"><span>${x.pos}</span><img src="${x.p.image}" alt=""><strong>${esc(x.p.name)}</strong>${positionBadges(x.p,true)}</div>`).join("")}</div>
     </article>`;
 }
 function openShareScreen(){
@@ -1111,7 +1135,7 @@ function renderFormationBuilder(){
 
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
-          <strong>${selectedPlayer?`${esc(selectedPlayer.name)} SELECTED — DROP OR TAP A POSITION`:"DRAG PLAYERS BETWEEN THE XI AND BENCH // TAP ALSO WORKS ON MOBILE"}</strong>
+          <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
         </div>
 
         <div class="formation-layout ${benchCollapsed?"bench-hidden":""}">
@@ -1123,13 +1147,16 @@ function renderFormationBuilder(){
             ${slots.map((s,i)=>{
                const p=getFormationPlayer(formationTeamNumber,i);
                const selected=p&&p.id===selectedFormationPlayerId;
-               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""}"
+               const canonicalTarget=selectedPlayer&&canonicalFit(selectedPlayer,s.label);
+               const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
+               const currentFit=p&&canonicalFit(p,s.label);
+               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
                     style="left:${s.x}%;top:${s.y}%"
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="true" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
-                         <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>
+                         <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
                        </div>`:`<span class="empty-slot">+</span>`}
                </button>`;
             }).join("")}
@@ -1142,7 +1169,7 @@ function renderFormationBuilder(){
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
                     onclick="selectBenchPlayer(${p.id})" draggable="true"
                     ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
-                    <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span><b>DRAG</b>
+                    <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
           </aside>
