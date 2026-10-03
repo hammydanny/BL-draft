@@ -366,3 +366,20 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
   .formation-slot strong{max-width:72px;font-size:9px}
   .slot-position{font-size:8px}
 }
+
+/* ==================================================
+   RATINGS V1
+================================================== */
+.stat-strip{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;width:100%;margin-top:9px}
+.stat-strip>*{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;background:#06131e;border:1px solid #14364d;color:#d8edf9;font-size:11px;font-style:normal}
+.stat-strip i{color:#64869e;font:800 7px "Barlow Condensed";letter-spacing:.7px}
+.stat-strip b{border-color:var(--blue);color:#fff;background:rgba(20,156,255,.15)}
+.stat-strip.compact>*{padding:3px 2px;font-size:9px}
+.effective-ovr{position:absolute;right:7px;top:24px;z-index:5;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#03101a;border:2px solid var(--blue);box-shadow:0 0 12px rgba(20,156,255,.35);color:#fff;font:900 12px "Barlow Condensed";font-style:normal}
+.squad-rating-hud{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 10px;border:1px solid #17486a;background:rgba(3,16,27,.9)}
+.squad-rating-hud b{margin-right:auto;color:#fff;font:900 16px "Barlow Condensed";letter-spacing:1px}
+.squad-rating-hud span{padding:4px 7px;border:1px solid #153b55;color:#91bdd8;font:800 9px "Barlow Condensed";letter-spacing:.7px}
+@media(max-width:700px){
+ .stat-strip{grid-template-columns:repeat(4,1fr)}
+ .squad-rating-hud{flex-wrap:wrap}
+}
