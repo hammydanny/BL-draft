@@ -21,6 +21,18 @@
 
         <div class="setup-box setup-box-wide">
             <div class="panel-code">SYSTEM_CONFIG // 001</div>
+            <div id="resumeSessionCard" class="resume-session hidden">
+                <div class="resume-session-copy">
+                    <span>LOCAL SESSION DETECTED</span>
+                    <strong id="resumeSessionTitle">UNFINISHED AUCTION</strong>
+                    <small id="resumeSessionMeta"></small>
+                </div>
+                <div class="resume-session-actions">
+                    <button type="button" id="resumeSessionButton">RESUME</button>
+                    <button type="button" id="discardSessionButton">DISCARD</button>
+                </div>
+            </div>
+
             <div class="setup-section-title">TEAMS</div>
 
             <div class="team-config team-config-1">
@@ -71,11 +83,11 @@
                 <div class="preset-label">QUICK SELECT // PRESETS</div>
                 <div class="preset-buttons">
                     <button type="button" data-preset="all">ALL PLAYERS</button>
-                    <button type="button" data-preset="blue-lock">BLUE LOCK</button>
-                    <button type="button" data-preset="japan-u20">JAPAN U-20</button>
+                    <button type="button" data-preset="blue-lock-project">BLUE LOCK PROJECT</button>
                     <button type="button" data-preset="world-five">WORLD FIVE</button>
-                    <button type="button" data-preset="nel">NEL / PRO</button>
-                    <button type="button" data-preset="u20-world-cup">U-20 WORLD CUP</button>
+                    <button type="button" data-preset="u20-match">JAPAN U-20 MATCH</button>
+                    <button type="button" data-preset="nel-stars">NEL STARS</button>
+                    <button type="button" data-preset="world-cup-new">U-20 WC NEWCOMERS</button>
                 </div>
                 <div class="preset-note">Presets are quick selections. You can still add or remove any character manually.</div>
             </div>
@@ -138,6 +150,19 @@
         <div id="overlay-content" class="overlay-content"></div>
     </div>
 
+
+    <div id="confirmModal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="confirm-card">
+            <div class="panel-code">SYSTEM // CONFIRM ACTION</div>
+            <div class="confirm-mark">!</div>
+            <h2 id="confirmTitle">CONFIRM</h2>
+            <p id="confirmMessage"></p>
+            <div class="confirm-actions">
+                <button id="confirmCancel" type="button" class="pass-button">CANCEL</button>
+                <button id="confirmAccept" type="button" class="primary-button"><span>CONFIRM</span><b>→</b></button>
+            </div>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <div class="footer-inner">
