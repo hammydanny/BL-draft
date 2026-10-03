@@ -757,3 +757,249 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
         min-height:280px;
     }
 }
+
+/* ==================================================
+   FORMATION WORKSPACE // MATCHED HEIGHTS
+================================================== */
+
+.formation-layout{
+    display:grid;
+
+    /*
+     * Pitch
+     * Player information
+     * Reserves
+     */
+    grid-template-columns:
+        minmax(0, 1fr)
+        285px
+        270px;
+
+    gap:10px;
+
+    align-items:stretch;
+
+    /*
+     * One fixed workspace height keeps
+     * all three panels visually aligned.
+     */
+    height:920px;
+}
+
+/* All three columns occupy the same height. */
+
+.formation-pitch-v2,
+.player-info-panel,
+.bench-panel{
+    height:920px;
+    min-height:0;
+}
+
+/* ------------------------------------------
+   PITCH
+------------------------------------------ */
+
+.formation-pitch-v2{
+    min-height:0;
+
+    height:920px;
+
+    overflow:hidden;
+}
+
+/* ------------------------------------------
+   PLAYER INFO
+------------------------------------------ */
+
+.player-info-panel{
+    position:relative;
+
+    height:920px;
+    max-height:none;
+
+    overflow-y:auto;
+}
+
+/* ------------------------------------------
+   RESERVES
+------------------------------------------ */
+
+.bench-panel{
+    display:flex;
+    flex-direction:column;
+
+    height:920px;
+    min-height:0;
+
+    overflow:hidden;
+}
+
+.bench-heading{
+    flex:0 0 auto;
+}
+
+/*
+ * Only the reserve list scrolls.
+ * The panel header remains visible.
+ */
+.bench-list{
+    flex:1 1 auto;
+
+    min-height:0;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    padding-right:4px;
+}
+
+/* Reserve scrollbar */
+
+.bench-list::-webkit-scrollbar{
+    width:7px;
+}
+
+.bench-list::-webkit-scrollbar-track{
+    background:#020810;
+    border-left:1px solid #0e2536;
+}
+
+.bench-list::-webkit-scrollbar-thumb{
+    background:#234963;
+    border:1px solid #315f7b;
+}
+
+.bench-list::-webkit-scrollbar-thumb:hover{
+    background:var(--team);
+}
+
+/* Firefox */
+
+.bench-list{
+    scrollbar-width:thin;
+    scrollbar-color:#234963 #020810;
+}
+
+/* ------------------------------------------
+   PLAYER INFO SCROLLBAR
+------------------------------------------ */
+
+.player-info-panel::-webkit-scrollbar{
+    width:6px;
+}
+
+.player-info-panel::-webkit-scrollbar-track{
+    background:#020810;
+}
+
+.player-info-panel::-webkit-scrollbar-thumb{
+    background:#234963;
+}
+
+.player-info-panel::-webkit-scrollbar-thumb:hover{
+    background:var(--team);
+}
+
+.player-info-panel{
+    scrollbar-width:thin;
+    scrollbar-color:#234963 #020810;
+}
+
+/* ------------------------------------------
+   WHEN BENCH IS HIDDEN
+------------------------------------------ */
+
+.formation-layout.bench-hidden{
+    grid-template-columns:
+        minmax(0, 1fr)
+        285px;
+}
+
+.formation-layout.bench-hidden .bench-panel{
+    display:none;
+}
+
+/* ------------------------------------------
+   LARGE SCREENS
+------------------------------------------ */
+
+@media(min-width:1200px){
+    .formation-layout{
+        height:960px;
+    }
+
+    .formation-pitch-v2,
+    .player-info-panel,
+    .bench-panel{
+        height:960px;
+    }
+}
+
+/* ------------------------------------------
+   TABLET
+------------------------------------------ */
+
+@media(max-width:1100px){
+    .formation-layout{
+        grid-template-columns:
+            minmax(0, 1fr)
+            270px;
+
+        height:850px;
+    }
+
+    .formation-pitch-v2,
+    .player-info-panel{
+        height:850px;
+    }
+
+    .bench-panel{
+        grid-column:1 / -1;
+
+        height:420px;
+    }
+
+    .formation-layout:not(.bench-hidden){
+        height:auto;
+        align-items:start;
+    }
+
+    .formation-layout:not(.bench-hidden)
+    .football-pitch,
+    .formation-layout:not(.bench-hidden)
+    .player-info-panel{
+        height:850px;
+    }
+}
+
+/* ------------------------------------------
+   MOBILE
+------------------------------------------ */
+
+@media(max-width:700px){
+    .formation-layout,
+    .formation-layout.bench-hidden{
+        display:grid;
+        grid-template-columns:1fr;
+
+        height:auto;
+    }
+
+    .formation-pitch-v2{
+        height:720px;
+        min-height:720px;
+    }
+
+    .player-info-panel{
+        height:auto;
+        max-height:720px;
+    }
+
+    .bench-panel{
+        height:420px;
+    }
+
+    .bench-list{
+        overflow-y:auto;
+    }
+}
