@@ -1292,6 +1292,152 @@ function dropOnBench(event){
     const id=Number(event.dataTransfer.getData("text/plain")||draggedFormationPlayerId);
     if(id)movePlayerToBench(id);
 }
+
+function createPlayerInfoSidebar(team){
+    const player = team.players.find(
+        p => p.id === selectedFormationPlayerId
+    );
+
+    // Nothing selected yet.
+    if(!player){
+        return `
+            <aside class="player-info-panel" style="${teamVars(team)}">
+                <div class="player-info-code">PLAYER // DATABASE</div>
+
+                <div class="player-info-empty">
+                    <div class="player-info-empty-icon">+</div>
+                    <strong>SELECT A PLAYER</strong>
+                    <span>
+                        Click a player on the pitch or from the reserves
+                        to view their profile.
+                    </span>
+                </div>
+            </aside>
+        `;
+    }
+
+    const s = playerStats(player);
+
+    const stat = (label, value) => {
+        const safeValue = Math.max(
+            0,
+            Math.min(100, Number(value) || 0)
+        );
+
+        return `
+            <div class="player-stat-row">
+                <div class="player-stat-label">
+                    <span>${label}</span>
+                    <strong>${safeValue}</strong>
+                </div>
+
+                <div class="player-stat-track">
+                    <i style="width:${safeValue}%"></i>
+                </div>
+            </div>
+        `;
+    };
+
+    const passive = player.passive || {
+        name: "Placeholder Passive",
+        trigger: "TBD",
+        effect: "TBD"
+    };
+
+    const special = player.special || {
+        name: "Placeholder Special",
+        trigger: "TBD",
+        effect: "TBD"
+    };
+
+    return `
+        <aside class="player-info-panel" style="${teamVars(team)}">
+
+            <div class="player-info-top">
+                <div>
+                    <span class="player-info-code">PLAYER // PROFILE</span>
+                    <strong class="player-info-id">
+                        ${String(player.id).padStart(2, "0")}
+                    </strong>
+                </div>
+
+                <button
+                    type="button"
+                    class="player-info-close"
+                    onclick="clearSelectedFormationPlayer()"
+                    aria-label="Close player profile"
+                >×</button>
+            </div>
+
+            <div class="player-info-portrait">
+                <img
+                    src="${player.image}"
+                    alt="${esc(player.name)}"
+                >
+
+                <div class="player-info-ovr">
+                    <span>OVR</span>
+                    <strong>${s.ovr}</strong>
+                </div>
+            </div>
+
+            <div class="player-info-name">
+                <span>PLAYER</span>
+                <h2>${esc(player.name)}</h2>
+
+                <div class="player-info-positions">
+                    ${positionBadges(player)}
+                </div>
+            </div>
+
+            <div class="player-info-section">
+                <div class="player-info-section-title">
+                    <span>CORE ATTRIBUTES</span>
+                </div>
+
+                ${stat("OFF", s.off)}
+                ${stat("SHO", s.sho)}
+                ${stat("SPD", s.spd)}
+                ${stat("DEF", s.def)}
+                ${stat("PAS", s.pas)}
+                ${stat("DRI", s.dri)}
+                ${stat("GK", s.gk)}
+            </div>
+
+            <div class="player-info-section">
+                <div class="player-info-section-title">
+                    <span>PASSIVE</span>
+                </div>
+
+                <div class="player-ability">
+                    <strong>${esc(passive.name)}</strong>
+                    <span>TRIGGER // ${esc(passive.trigger)}</span>
+                    <p>${esc(passive.effect)}</p>
+                </div>
+            </div>
+
+            <div class="player-info-section">
+                <div class="player-info-section-title">
+                    <span>SPECIAL MOVE</span>
+                </div>
+
+                <div class="player-ability special">
+                    <strong>${esc(special.name)}</strong>
+                    <span>TRIGGER // ${esc(special.trigger)}</span>
+                    <p>${esc(special.effect)}</p>
+                </div>
+            </div>
+
+        </aside>
+    `;
+}
+
+function clearSelectedFormationPlayer(){
+    selectedFormationPlayerId = null;
+    clearLiveFormationTargets();
+    renderFormationBuilder();
+    saveGame();
+}
 function renderFormationBuilder(){
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
@@ -1340,28 +1486,125 @@ function renderFormationBuilder(){
         </div>
 
         <div class="formation-layout ${benchCollapsed?"bench-hidden":""}">
-          <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
-            <div class="pitch-stripes"></div>
-            <div class="pitch-halfway"></div><div class="pitch-circle"></div><div class="pitch-dot"></div>
-            <div class="penalty-box top"></div><div class="penalty-box bottom"></div>
-            <div class="goal-box top"></div><div class="goal-box bottom"></div>
-            ${slots.map((s,i)=>{
-               const p=getFormationPlayer(formationTeamNumber,i);
-               const selected=p&&p.id===selectedFormationPlayerId;
-               const canonicalTarget=selectedPlayer&&canonicalFit(selectedPlayer,s.label);
-               const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
-               const currentFit=p&&canonicalFit(p,s.label);
-               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
-                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}"
+
+    <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
+        <div class="pitch-stripes"></div>
+        <div class="pitch-halfway"></div>
+        <div class="pitch-circle"></div>
+        <div class="pitch-dot"></div>
+        <div class="penalty-box top"></div>
+        <div class="penalty-box bottom"></div>
+        <div class="goal-box top"></div>
+        <div class="goal-box bottom"></div>
+
+        ${slots.map((s,i)=>{
+            const p = getFormationPlayer(formationTeamNumber,i);
+            const selected = p && p.id === selectedFormationPlayerId;
+            const canonicalTarget =
+                selectedPlayer && canonicalFit(selectedPlayer,s.label);
+            const primaryTarget =
+                selectedPlayer && primaryFit(selectedPlayer,s.label);
+            const currentFit =
+                p && canonicalFit(p,s.label);
+
+            return `
+                <button
+                    class="formation-slot ${p?"occupied":""}
+                    ${selected?"selected":""}
+                    ${canonicalTarget?"canonical-target":""}
+                    ${primaryTarget?"primary-target":""}
+                    ${currentFit?"natural-fit":""}"
+                    style="left:${s.x}%;top:${s.y}%"
+                    data-slot-label="${s.label}"
                     onclick="clickFormationSlot(${i})"
-                    ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
-                  <span class="slot-position">${s.label}</span>
-                  ${p?`<div class="formation-player-token" draggable="true" onpointerdown="updateLiveFormationTargets(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
-                         <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
-                       </div>`:`<span class="empty-slot">+</span>`}
-               </button>`;
-            }).join("")}
-          </div>
+                    ondragover="allowFormationDrop(event)"
+                    ondragleave="leaveFormationDrop(event)"
+                    ondrop="dropOnFormationSlot(event,${i})"
+                >
+                    <span class="slot-position">${s.label}</span>
+
+                    ${
+                        p
+                        ? `
+                            <div
+                                class="formation-player-token"
+                                draggable="true"
+                                onpointerdown="updateLiveFormationTargets(${p.id})"
+                                ondragstart="startFormationDrag(event,${p.id})"
+                                ondragend="endFormationDrag(event)"
+                            >
+                                <img
+                                    src="${p.image}"
+                                    alt="${esc(p.name)}"
+                                >
+
+                                <strong>${esc(p.name)}</strong>
+
+                                ${positionBadges(p,true)}
+                            </div>
+                        `
+                        : `
+                            <span class="empty-slot">+</span>
+                        `
+                    }
+                </button>
+            `;
+        }).join("")}
+    </div>
+
+    ${createPlayerInfoSidebar(team)}
+
+    <aside
+        class="bench-panel ${benchCollapsed?"collapsed":""}"
+        style="${teamVars(team)}"
+        ondragover="allowFormationDrop(event)"
+        ondragleave="leaveFormationDrop(event)"
+        ondrop="dropOnBench(event)"
+    >
+        <div class="bench-heading">
+            <div>
+                <span>RESERVES</span>
+                <small>DROP HERE TO BENCH</small>
+            </div>
+
+            <strong>${bench.length}</strong>
+        </div>
+
+        <div class="bench-list">
+            ${
+                bench.length
+                ? bench.map(p => `
+                    <button
+                        class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
+                        onclick="selectBenchPlayer(${p.id})"
+                        onpointerdown="updateLiveFormationTargets(${p.id})"
+                        draggable="true"
+                        ondragstart="startFormationDrag(event,${p.id})"
+                        ondragend="endFormationDrag(event)"
+                    >
+                        <img
+                            src="${p.image}"
+                            alt="${esc(p.name)}"
+                        >
+
+                        <span>
+                            ${esc(p.name)}
+                            ${positionBadges(p,true)}
+                        </span>
+
+                        <b>DRAG</b>
+                    </button>
+                `).join("")
+                : `
+                    <div class="history-empty">
+                        NO SUBSTITUTES
+                    </div>
+                `
+            }
+        </div>
+    </aside>
+
+</div>
 
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}"
                  ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnBench(event)">
