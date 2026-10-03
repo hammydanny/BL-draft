@@ -116,3 +116,14 @@ button{font-family:"Rajdhani";cursor:pointer}.primary-button{display:flex;justif
 .site-error.error-pulse{animation:siteErrorPulse .32s ease}
 @keyframes siteErrorPulse{0%,100%{margin-left:0}25%{margin-left:-5px}50%{margin-left:5px}75%{margin-left:-2px}}
 @media(max-width:600px){.site-error{bottom:14px;grid-template-columns:4px 32px 1fr 28px}.site-error-copy strong{font-size:10px}}
+
+/* SAVE / RESUME + CONFIRMATION + IMAGE FALLBACK */
+.resume-session{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:0 0 18px;padding:13px 14px;background:linear-gradient(90deg,rgba(20,156,255,.12),rgba(4,13,23,.86));border:1px solid rgba(20,156,255,.4);border-left:3px solid var(--blue)}
+.resume-session-copy span{display:block;color:var(--blue);font-size:7px;font-weight:800;letter-spacing:2px}.resume-session-copy strong{display:block;margin:3px 0;color:#eef8ff;font:900 20px "Barlow Condensed";letter-spacing:.5px}.resume-session-copy small{color:#718ca3;font-size:8px}
+.resume-session-actions{display:flex;gap:6px}.resume-session-actions button{padding:9px 13px;color:#8da6bb;background:#06121e;border:1px solid #1b4566;font-size:8px;font-weight:800;letter-spacing:1px}.resume-session-actions button:first-child{color:#fff;border-color:var(--blue);background:rgba(20,156,255,.13)}
+.confirm-modal{position:fixed;z-index:100000;inset:0;display:grid;place-items:center;padding:20px;background:rgba(0,4,10,.78);backdrop-filter:blur(8px)}
+.confirm-card{width:min(460px,100%);padding:24px;background:linear-gradient(145deg,#091827,#020810);border:1px solid #25516f;box-shadow:0 25px 80px rgba(0,0,0,.65);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.confirm-mark{width:42px;height:42px;display:grid;place-items:center;margin:16px 0 8px;color:#fff;border:1px solid #ff355d;background:rgba(255,53,93,.1);font:900 23px "Barlow Condensed"}.confirm-card h2{margin:0;color:#fff;font:900 30px "Barlow Condensed"}.confirm-card p{color:#7892a7;font-size:11px;line-height:1.55}.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:18px}.confirm-actions button{margin:0}
+img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#071522 0,#071522 9px,#0b1d2c 9px,#0b1d2c 18px);position:relative}
+.pool-player-card:has(img.image-fallback)::after,.final-player:has(img.image-fallback)::after,.history-row:has(img.image-fallback)::after{content:"IMAGE OFFLINE";position:absolute;inset:35% 4px auto;text-align:center;color:#54758e;font-size:7px;font-weight:800;letter-spacing:1px}
+@media(max-width:600px){.resume-session{align-items:flex-start;flex-direction:column}.resume-session-actions{width:100%}.resume-session-actions button{flex:1}}
