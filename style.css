@@ -404,3 +404,26 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 @media(min-width:1200px){.player-info-panel{height:960px}}
 @media(max-width:1100px){.formation-layout,.formation-layout.database-hidden{grid-template-columns:minmax(0,1fr) 280px}.formation-layout .bench-panel{grid-column:1/-1}.formation-layout.database-hidden .bench-panel{grid-column:1/-1}.player-info-panel{height:850px}}
 @media(max-width:700px){.formation-layout,.formation-layout.database-hidden,.formation-layout.bench-hidden{grid-template-columns:1fr}.player-info-panel{height:auto;max-height:720px}.position-rating-grid{grid-template-columns:repeat(5,1fr)}}
+
+
+/* ==================================================
+   MAIN-BRANCH FORMATION DATABASE FIXES // V3
+================================================== */
+.formation-layout.database-hidden{grid-template-columns:minmax(0,1fr) 270px}
+.formation-layout.database-hidden.bench-hidden{grid-template-columns:1fr}
+.formation-layout.bench-hidden:not(.database-hidden){grid-template-columns:minmax(0,1fr) 300px}
+.formation-layout.bench-hidden:not(.database-hidden) .player-info-panel{display:block}
+.formation-layout.bench-hidden .bench-panel{display:none}
+.player-info-panel{min-width:0}
+.formation-player-token{position:relative}
+.formation-player-token .effective-ovr{pointer-events:none}
+@media(max-width:1100px){
+  .formation-layout:not(.database-hidden){grid-template-columns:minmax(0,1fr) 280px}
+  .formation-layout:not(.database-hidden) .bench-panel{grid-column:1/-1}
+  .formation-layout.database-hidden{grid-template-columns:1fr}
+  .formation-layout.database-hidden .bench-panel{grid-column:auto}
+}
+@media(max-width:700px){
+  .formation-layout,.formation-layout.database-hidden,
+  .formation-layout.bench-hidden:not(.database-hidden){grid-template-columns:1fr}
+}
