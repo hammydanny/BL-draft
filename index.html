@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=formation-v2">
+    <link rel="stylesheet" href="style.css?v=share-v3">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
@@ -35,7 +35,7 @@
             </div>
 
             <div class="menu-footer-line">
-                <span>DEVELOPED BY <strong>HAMMYDANNY</strong></span>
+                <span>DEVELOPED BY <strong>HAMMYDANNY</strong> <i>//</i> WITH THE SUPPORT OF <strong>SYAAFIBWN</strong></span>
                 <span>FAN PROJECT // 2026</span>
             </div>
         </div>
@@ -176,11 +176,13 @@
                 <h1>AUCTION <span>ROOM</span></h1>
             </div>
             <div class="header-status"><i></i> SYSTEM LIVE</div>
-            <button id="soundToggle" class="sound-toggle" type="button" aria-label="Toggle sound">
-                <span class="sound-icon">◖))</span>
-                <strong>SFX ON</strong>
-            </button>
-            <div id="playersRemaining" class="players-remaining"></div>
+            <div class="header-right-controls">
+                <div id="playersRemaining" class="players-remaining"></div>
+                <div class="header-mini-actions">
+                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
+                    <button id="soundToggle" class="sound-toggle compact-control" type="button"><span class="sound-icon">◖))</span><strong>SFX</strong></button>
+                </div>
+            </div>
         </header>
         <div id="auction-content"></div>
     </section>
@@ -192,7 +194,13 @@
                 <h1>FORMATION <span>BUILDER</span></h1>
             </div>
             <div class="header-status"><i></i> TACTICAL MODE</div>
-            <button id="backToResults" class="header-button">← RESULTS</button>
+            <div class="header-right-controls">
+                <button id="backToResults" class="header-button compact-control">← RESULTS</button>
+                <div class="header-mini-actions">
+                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
+                    <button class="sound-toggle compact-control" type="button" data-sound-toggle><span class="sound-icon">◖))</span><strong>SFX</strong></button>
+                </div>
+            </div>
         </header>
         <div id="formation-content"></div>
     </section>
@@ -244,13 +252,13 @@
                 Blue Lock and related names, characters, and imagery belong to their respective rights holders.
             </p>
             <div class="footer-meta">
-                <span>DEVELOPED BY <b>HAMMYDANNY</b></span>
+                <span>DEVELOPED BY <b>HAMMYDANNY</b> <i>//</i> WITH THE SUPPORT OF <b>SYAAFIBWN</b></span>
                 <span>FAN PROJECT // 2026</span>
             </div>
         </div>
     </footer>
 
-    <script src="players.js?v=formation-v2"></script>
-    <script src="script.js?v=formation-v2"></script>
+    <script src="players.js?v=share-v3"></script>
+    <script src="script.js?v=share-v3"></script>
 </body>
 </html>
