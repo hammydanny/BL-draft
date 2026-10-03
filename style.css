@@ -1003,3 +1003,37 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
         overflow-y:auto;
     }
 }
+
+.formation-control-main{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+}
+
+.formation-team-rating{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    justify-content:center;
+    min-width:82px;
+    padding:7px 12px;
+    border-left:1px solid color-mix(
+        in srgb,
+        var(--team) 45%,
+        transparent
+    );
+}
+
+.formation-team-rating span{
+    font-size:9px;
+    letter-spacing:.18em;
+    font-weight:800;
+    opacity:.6;
+}
+
+.formation-team-rating strong{
+    font-size:28px;
+    line-height:1;
+    color:var(--team);
+    font-family:"Arial Narrow",Impact,sans-serif;
+}
