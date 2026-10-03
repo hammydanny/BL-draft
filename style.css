@@ -188,3 +188,46 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 @keyframes menuOrbit{to{transform:rotate(360deg)}}
 @media(max-width:700px){.menu-shell{padding:27px 20px}.menu-title-wrap{margin-top:28px}.menu-number{font-size:95px}.menu-footer-line,.menu-resume-panel{align-items:flex-start;flex-direction:column}.game-mode-grid{grid-template-columns:repeat(2,1fr)}.rule-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.menu-screen:before{animation:none}.menu-actions button:hover{transform:none}}
+
+
+/* ==================================================
+   FORMATION BUILDER V2
+================================================== */
+.formation-v2-shell{max-width:1180px;margin:22px auto 0}
+.formation-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.formation-actions button{padding:9px 12px;color:#8aa4b9;background:#04101a;border:1px solid #173b56;font-size:8px;font-weight:800;letter-spacing:1.3px}
+.formation-actions button:hover{color:#fff;border-color:var(--blue)}
+.formation-team-tabs button span{display:block;margin-bottom:2px;color:var(--team);font-size:6px;letter-spacing:1.5px}
+.formation-control-panel{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:8px 0;padding:12px 14px;background:linear-gradient(90deg,var(--team-soft),rgba(3,12,20,.85));border-left:3px solid var(--team);border-top:1px solid var(--team-soft)}
+.formation-control-panel>div:first-child span{display:block;color:var(--team);font-size:7px;font-weight:800;letter-spacing:2px}
+.formation-control-panel>div:first-child strong{display:block;color:#fff;font:900 25px "Barlow Condensed";font-style:italic}
+.formation-pitch-v2{position:relative;min-height:720px;overflow:hidden;background:linear-gradient(180deg,#071e2b,#082737 50%,#071e2b);border:1px solid color-mix(in srgb,var(--team),transparent 62%);box-shadow:inset 0 0 70px rgba(0,0,0,.35),0 20px 60px rgba(0,0,0,.25)}
+.pitch-stripes{position:absolute;inset:0;opacity:.16;background:repeating-linear-gradient(90deg,rgba(255,255,255,.09) 0,rgba(255,255,255,.09) 12.5%,transparent 12.5%,transparent 25%)}
+.formation-pitch-v2:after{content:"";position:absolute;inset:2.5%;pointer-events:none;border:1px solid rgba(185,226,255,.26)}
+.pitch-dot{position:absolute;z-index:1;left:50%;top:50%;width:5px;height:5px;transform:translate(-50%,-50%);border-radius:50%;background:rgba(220,240,255,.45)}
+.goal-box{position:absolute;z-index:1;left:39%;width:22%;height:7%;border:1px solid rgba(190,225,255,.25)}.goal-box.top{top:2.5%;border-top:0}.goal-box.bottom{bottom:2.5%;border-bottom:0}
+.formation-slot{z-index:5;transition:transform .18s,border-color .18s,box-shadow .18s}.formation-slot:hover{z-index:8;transform:translate(-50%,-50%) scale(1.05)}
+.formation-slot.drag-over{border-color:#fff!important;box-shadow:0 0 0 2px var(--team),0 0 28px var(--team-glow);transform:translate(-50%,-50%) scale(1.08)}
+.formation-player-token{width:100%;display:flex;flex-direction:column;align-items:center;cursor:grab}.formation-player-token:active{cursor:grabbing}
+.formation-player-token img{pointer-events:none}.formation-player-token strong{pointer-events:none}
+.formation-player-token.dragging,.bench-player.dragging{opacity:.35;filter:grayscale(.5)}
+.bench-panel{transition:width .25s,opacity .2s,transform .25s}.bench-panel.drag-over{border-color:var(--team);box-shadow:inset 0 0 30px var(--team-soft)}
+.bench-heading>div span,.bench-heading>div small{display:block}.bench-heading>div small{margin-top:2px;color:#49647a;font-size:6px;letter-spacing:1px}
+.bench-player{position:relative}.bench-player b{margin-left:auto;color:#365a74;font-size:6px;letter-spacing:1px}
+.formation-layout.bench-hidden{grid-template-columns:1fr}.formation-layout.bench-hidden .bench-panel{display:none}
+.formation-reset{border-color:rgba(255,80,110,.3)!important}.formation-reset:hover{border-color:#ff506f!important;color:#ff8ca1!important}
+@media(max-width:850px){
+  .formation-control-panel{align-items:flex-start;flex-direction:column}
+  .formation-control-panel .formation-picker{width:100%}
+  .formation-pitch-v2{min-height:650px}
+}
+@media(max-width:600px){
+  .formation-topbar{align-items:stretch;flex-direction:column}
+  .formation-actions{justify-content:stretch}.formation-actions button{flex:1}
+  .formation-control-panel .formation-picker{display:grid;grid-template-columns:repeat(3,1fr)}
+  .formation-pitch-v2{min-height:580px}
+  .formation-slot{width:70px}
+  .formation-slot img{width:44px;height:44px}
+  .formation-slot strong{max-width:64px;font-size:7px}
+  .bench-player b{display:none}
+}
