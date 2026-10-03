@@ -37,15 +37,18 @@ function playSfx(name){
     if(name==="sold"){tone(220,.08,"sawtooth",.025);tone(440,.1,"square",.025,.07);tone(880,.18,"sine",.03,.15);}
 }
 function updateSoundButton(){
-    const b=document.getElementById("soundToggle");if(!b)return;
-    b.classList.toggle("muted",!soundEnabled);
-    b.querySelector("strong").textContent=soundEnabled?"SFX ON":"SFX OFF";
-    b.querySelector(".sound-icon").textContent=soundEnabled?"◖))":"◖×";
+    document.querySelectorAll("#soundToggle,[data-sound-toggle]").forEach(b=>{
+        b.classList.toggle("muted",!soundEnabled);
+        const label=b.querySelector("strong");if(label)label.textContent=soundEnabled?"SFX":"MUTED";
+        const icon=b.querySelector(".sound-icon");if(icon)icon.textContent=soundEnabled?"◖))":"◖×";
+    });
 }
-document.getElementById("soundToggle").addEventListener("click",()=>{
+function toggleSound(){
     soundEnabled=!soundEnabled;localStorage.setItem("blAuctionSound",soundEnabled?"on":"off");updateSoundButton();
     if(soundEnabled)playSfx("bid");
-});
+}
+document.getElementById("soundToggle").addEventListener("click",toggleSound);
+document.querySelectorAll("[data-sound-toggle]").forEach(b=>b.addEventListener("click",toggleSound));
 updateSoundButton();
 
 function triggerFx(type,text=""){
@@ -75,6 +78,7 @@ let formationAssignments = { 1: {}, 2: {} };
 let selectedFormationPlayerId = null;
 let benchCollapsed = false;
 let draggedFormationPlayerId = null;
+let formationInitialized = false;
 
 document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
@@ -173,6 +177,16 @@ function refreshMainMenu(){
           `AUCTION ${String(saved.auctionNumber||0).padStart(2,"0")} // ${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers} VS ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
     }
 }
+function goToMainMenu(){
+    if(uiState.screen==="auction"||uiState.screen==="formation")saveGame();
+    hideSiteError();
+    const info=document.getElementById("infoModal");if(info)info.classList.add("hidden");
+    const confirm=document.getElementById("confirmModal");if(confirm)confirm.classList.add("hidden");
+    gameOverlay.classList.add("hidden");gameOverlay.classList.remove("overlay-out");
+    setVisibleScreen(menuScreen);refreshMainMenu();
+}
+document.querySelectorAll("[data-main-menu]").forEach(b=>b.addEventListener("click",goToMainMenu));
+
 function openSetupFromMenu(){
     const saved=loadSavedData();
     if(saved?.gameActive){
@@ -200,7 +214,7 @@ function openInfoModal(type){
         title.textContent="ABOUT";
         body.innerHTML=`
           <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK AUCTION</h3>
-          <p>A local two-player auction team builder developed by <strong>hammydanny</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
+          <p>A local two-player auction team builder developed by <strong>hammydanny</strong>, with the support of <strong>syaafibwn</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
           <div class="info-section"><span>STATUS</span><h3>UNOFFICIAL FAN PROJECT</h3>
           <p>This is a non-commercial fan-made project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock. Blue Lock and related characters and imagery belong to their respective rights holders.</p></div>`;
     }else{
@@ -384,7 +398,7 @@ function saveGame(){
             team1:{...team1,players:serializePlayerList(team1.players)},
             team2:{...team2,players:serializePlayerList(team2.players)},
             auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
-            formationTeamNumber,activeFormation,formationByTeam,formationAssignments,benchCollapsed
+            formationTeamNumber,activeFormation,formationByTeam,formationAssignments,benchCollapsed,formationInitialized
         }));
     }catch(e){}
 }
@@ -424,7 +438,7 @@ function restoreGame(saved){
     formationByTeam=saved.formationByTeam||{1:saved.activeFormation||"4-3-3",2:saved.activeFormation||"4-3-3"};
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     formationAssignments=saved.formationAssignments||{1:{},2:{}};
-    benchCollapsed=!!saved.benchCollapsed;
+    benchCollapsed=!!saved.benchCollapsed;formationInitialized=!!saved.formationInitialized;
     uiState=saved.uiState||{screen:"auction",phase:"opening",turn:null};
     menuScreen.classList.add("hidden");setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
@@ -466,6 +480,7 @@ document.addEventListener("error",event=>{
 },true);
 
 function startGame(){
+    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};
     const n1=document.getElementById("team1Name").value.trim();
     const n2=document.getElementById("team2Name").value.trim();
     const budget=Number(document.getElementById("budget").value);
@@ -819,15 +834,50 @@ function showAuctionComplete(){
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
       <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
-      <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
-      <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
-      <div class="results-actions">
-        <button id="formationBuilderButton" class="primary-button restart-button"><span>BUILD FORMATIONS</span><b>⚽</b></button>
+      <div class="results-actions results-actions-top">
+        <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
+        <button id="shareResultsButton" class="primary-button restart-button share-action"><span>SHARE / SAVE RESULT</span><b>↗</b></button>
         <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
       </div>
+      <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
+      <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
     document.getElementById("formationBuilderButton").addEventListener("click",openFormationBuilder);
+    document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
+}
+function createShareTeam(team,n){
+    const spent=startingBudget-team.budget,formation=formationByTeam[n]||"4-3-3";
+    const slots=FORMATIONS[formation]||FORMATIONS["4-3-3"];
+    const arranged=slots.map((slot,i)=>({slot,player:getFormationPlayer(n,i)})).filter(x=>x.player);
+    const list=arranged.length?arranged.map(x=>({p:x.player,pos:x.slot.label})):team.players.map(p=>({p,pos:"RES"}));
+    return `<article class="share-team" style="${teamVars(team)}">
+      <div class="share-team-head"><div><span>SQUAD 0${n} // ${arranged.length?formation:"DRAFTED ROSTER"}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
+      <div class="share-money"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
+      <div class="share-lineup">${list.map(x=>`<div class="share-player"><span>${x.pos}</span><img src="${x.p.image}" alt=""><strong>${esc(x.p.name)}</strong></div>`).join("")}</div>
+    </article>`;
+}
+function openShareScreen(){
+    document.getElementById("shareScreen")?.remove();
+    const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
+    screen.innerHTML=`<div class="share-shell">
+      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button></div></div>
+      <div id="shareCard" class="share-card">
+        <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>AUCTION</b></h2></div><strong>FINAL</strong></div>
+        <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
+        <div class="share-team-grid">${createShareTeam(team1,1)}${createShareTeam(team2,2)}</div>
+        <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY</b> // WITH THE SUPPORT OF <b>SYAAFIBWN</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
+      </div></div>`;
+    document.body.appendChild(screen);
+    document.getElementById("closeShareScreen").onclick=()=>screen.remove();
+    document.getElementById("printShareResult").onclick=()=>window.print();
+    document.getElementById("copyShareSummary").onclick=copyShareSummary;
+}
+async function copyShareSummary(){
+    const names=t=>t.players.map(p=>p.name).join(", ");
+    const text=`BLUE LOCK AUCTION // FINAL RESULT\n${team1.name}: ${names(team1)}\n${team2.name}: ${names(team2)}\n\nDeveloped by hammydanny // With the support of syaafibwn`;
+    try{await navigator.clipboard.writeText(text);const b=document.getElementById("copyShareSummary");b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
+    catch(e){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
 }
 function restartAuction(){
     showConfirm("START A NEW AUCTION","Your current auction and saved progress will be cleared.",()=>{
@@ -875,14 +925,12 @@ function openFormationBuilder(){
     auctionScreen.classList.add("hidden");
     formationScreen.classList.remove("hidden");
     selectedFormationPlayerId=null;
-
-    // Preserve a saved/custom formation instead of wiping it every time Results -> Builder is opened.
     if(!formationByTeam || typeof formationByTeam!=="object") formationByTeam={1:"4-3-3",2:"4-3-3"};
-    [1,2].forEach(n=>{
-        if(!formationByTeam[n] || !FORMATIONS[formationByTeam[n]]) formationByTeam[n]="4-3-3";
-        if(!formationAssignments[n] || Object.keys(formationAssignments[n]).length===0) autoFillFormation(n);
-        sanitizeFormationAssignments(n);
-    });
+    [1,2].forEach(n=>{if(!formationByTeam[n]||!FORMATIONS[formationByTeam[n]])formationByTeam[n]="4-3-3";});
+    if(!formationInitialized){
+        formationTeamNumber=1;formationByTeam={1:"4-3-3",2:"4-3-3"};formationAssignments={1:{},2:{}};
+        formationInitialized=true;
+    }else [1,2].forEach(n=>sanitizeFormationAssignments(n));
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     renderFormationBuilder();saveGame();
     window.scrollTo({top:0,behavior:"smooth"});
