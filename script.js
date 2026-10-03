@@ -6,6 +6,9 @@ let bidIncrement = 50, maxPlayers = 15, startingBudget = 15000;
 let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder = null;
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
 let selectedPlayerIds = new Set(players.map(player => player.id));
+const SAVE_KEY="blAuctionSaveV2";
+let uiState={screen:"setup",phase:"setup",turn:null};
+let pendingConfirmAction=null;
 
 const setupScreen = document.getElementById("setup-screen");
 const auctionScreen = document.getElementById("auction-screen");
@@ -153,24 +156,151 @@ function updatePoolStatus(){
 
 renderPlayerPool();
 
-const PLAYER_PRESETS = {
-    "all": players.map(p=>p.id),
-    "blue-lock": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
-    "japan-u20": [2,4,5,6,8,10,13,15,18,19,20,22,23,24,25,26,27,28,29,30,31,37,38,39,40,41,42,43,44,55,66,67,68],
-    "world-five": [32,33,34,35,36],
-    "nel": [34,45,46,47,48,49,50,51,52,53,54,58,64,65],
-    "u20-world-cup": [34,44,53,54,55,56,57,58,59,60,61,62,63,64]
+const presetNames = {
+    "all": players.map(p=>p.name),
+    "blue-lock-project": [
+        "Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri",
+        "Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura",
+        "Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi",
+        "Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu",
+        "Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora"
+    ],
+    "world-five": ["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"],
+    "u20-match": [
+        "Sae Itoshi","Gen Fukaku","Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki",
+        "Haru Hayate","Kento Cho","Teru Kitsunezato","Shuto Sendo","Ryusei Shido"
+    ],
+    "nel-stars": [
+        "Noel Noa","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi",
+        "Marc Snuffy","Don Lorenzo","Charles Chevalier","Julien Loki"
+    ],
+    "world-cup-new": [
+        "Rooke","Renoir","Haneru Shindo","Bunny Iglesias","Innocent Onazi","Godwin Kuso",
+        "Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs"
+    ]
 };
+const PLAYER_PRESETS=Object.fromEntries(Object.entries(presetNames).map(([key,names])=>[
+    key, players.filter(p=>names.includes(p.name)).map(p=>p.id)
+]));
 
 document.querySelectorAll("[data-preset]").forEach(button=>{
     button.addEventListener("click",()=>{
         const ids=PLAYER_PRESETS[button.dataset.preset]||[];
-        selectedPlayerIds=new Set(ids.filter(id=>players.some(p=>p.id===id)));
+        selectedPlayerIds=new Set(ids);
         renderPlayerPool();
-        document.querySelectorAll("[data-preset]").forEach(b=>b.classList.remove("active"));
-        button.classList.add("active");
+        document.querySelectorAll("[data-preset]").forEach(b=>b.classList.toggle("active",b===button));
+        saveSetupPreferences();
     });
 });
+
+function serializePlayerList(list){return list.map(p=>p.id);}
+function hydratePlayers(ids=[]){return ids.map(id=>players.find(p=>p.id===id)).filter(Boolean);}
+function saveSetupPreferences(){
+    try{
+        const existing=JSON.parse(localStorage.getItem(SAVE_KEY)||"{}");
+        if(existing.gameActive) return;
+        localStorage.setItem(SAVE_KEY,JSON.stringify({
+            ...existing,gameActive:false,
+            setup:{
+                team1Name:document.getElementById("team1Name").value,
+                team2Name:document.getElementById("team2Name").value,
+                team1Color:document.getElementById("team1Color").value,
+                team2Color:document.getElementById("team2Color").value,
+                budget:document.getElementById("budget").value,
+                bidIncrement:document.getElementById("bidIncrement").value,
+                maxPlayers:document.getElementById("maxPlayers").value,
+                selected:[...selectedPlayerIds]
+            }
+        }));
+    }catch(e){}
+}
+function saveGame(){
+    if(uiState.screen==="setup"){saveSetupPreferences();return;}
+    try{
+        localStorage.setItem(SAVE_KEY,JSON.stringify({
+            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,
+            currentPlayerId:currentPlayer?.id??null,
+            remainingPlayerIds:serializePlayerList(remainingPlayers),
+            selectedPlayerIds:[...selectedPlayerIds],
+            team1:{...team1,players:serializePlayerList(team1.players)},
+            team2:{...team2,players:serializePlayerList(team2.players)},
+            auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
+            formationTeamNumber,activeFormation,formationAssignments
+        }));
+    }catch(e){}
+}
+function loadSavedData(){
+    try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){return null;}
+}
+function clearSavedGame(){localStorage.removeItem(SAVE_KEY);}
+function restoreSetup(saved){
+    const s=saved?.setup;if(!s)return;
+    ["team1Name","team2Name","team1Color","team2Color","budget","bidIncrement","maxPlayers"].forEach(id=>{
+        if(s[id]!==undefined)document.getElementById(id).value=s[id];
+    });
+    document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
+    document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
+    if(Array.isArray(s.selected))selectedPlayerIds=new Set(s.selected);
+    renderPlayerPool();
+}
+function showResumeCard(saved){
+    const card=document.getElementById("resumeSessionCard");
+    if(!saved?.gameActive){card.classList.add("hidden");return;}
+    card.classList.remove("hidden");
+    document.getElementById("resumeSessionTitle").textContent=`AUCTION ${String(saved.auctionNumber||0).padStart(2,"0")} // IN PROGRESS`;
+    document.getElementById("resumeSessionMeta").textContent=
+      `${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers}  •  ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
+}
+function restoreGame(saved){
+    if(!saved?.gameActive)return;
+    startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
+    auctionNumber=saved.auctionNumber;currentBid=saved.currentBid;currentBidder=saved.currentBidder;
+    currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
+    remainingPlayers=hydratePlayers(saved.remainingPlayerIds);
+    selectedPlayerIds=new Set(saved.selectedPlayerIds||players.map(p=>p.id));
+    team1={...saved.team1,players:hydratePlayers(saved.team1?.players)};
+    team2={...saved.team2,players:hydratePlayers(saved.team2?.players)};
+    auctionHistory=(saved.auctionHistory||[]).map(x=>({...x,player:players.find(p=>p.id===x.playerId)})).filter(x=>x.player);
+    formationTeamNumber=saved.formationTeamNumber||1;activeFormation=saved.activeFormation||"4-3-3";
+    formationAssignments=saved.formationAssignments||{1:{},2:{}};
+    uiState=saved.uiState||{screen:"auction",phase:"opening",turn:null};
+    setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();
+    resumeCurrentView();
+}
+function resumeCurrentView(){
+    if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}
+    if(uiState.phase==="complete"){showAuctionComplete();return;}
+    if(!currentPlayer){startNextAuction();return;}
+    if(uiState.phase==="bidding"){displayBiddingTurn(uiState.turn);return;}
+    if(uiState.phase==="zero"){displayZeroBudgetChoice(uiState.turn);return;}
+    if(uiState.phase==="sold"){
+        const last=auctionHistory[auctionHistory.length-1];
+        renderSoldState(last);return;
+    }
+    displayOpeningBid();
+}
+function showConfirm(title,message,onAccept){
+    pendingConfirmAction=onAccept;
+    document.getElementById("confirmTitle").textContent=title;
+    document.getElementById("confirmMessage").textContent=message;
+    document.getElementById("confirmModal").classList.remove("hidden");
+}
+function closeConfirm(){document.getElementById("confirmModal").classList.add("hidden");pendingConfirmAction=null;}
+document.getElementById("confirmCancel").addEventListener("click",closeConfirm);
+document.getElementById("confirmAccept").addEventListener("click",()=>{const fn=pendingConfirmAction;closeConfirm();if(fn)fn();});
+document.getElementById("resumeSessionButton").addEventListener("click",()=>restoreGame(loadSavedData()));
+document.getElementById("discardSessionButton").addEventListener("click",()=>showConfirm("DISCARD SAVED AUCTION","This permanently removes the unfinished local auction from this browser.",()=>{clearSavedGame();showResumeCard(null);}));
+["team1Name","team2Name","team1Color","team2Color","budget","bidIncrement","maxPlayers"].forEach(id=>document.getElementById(id).addEventListener("change",saveSetupPreferences));
+
+document.addEventListener("error",event=>{
+    const img=event.target;
+    if(img?.tagName!=="IMG"||img.dataset.fallbackApplied)return;
+    img.dataset.fallbackApplied="1";
+    img.classList.add("image-fallback");
+    img.removeAttribute("src");
+    img.alt="Player image unavailable";
+},true);
 
 function startGame(){
     const n1=document.getElementById("team1Name").value.trim();
@@ -197,6 +327,7 @@ function startGame(){
     remainingPlayers=[...selectedPlayers]; auctionHistory=[]; auctionNumber=0;
     currentPlayer=null; currentBid=0; currentBidder=null;
     startingTeam=Math.random()<.5?1:2;
+    uiState={screen:"auction",phase:"coin",turn:null};saveGame();
     setupScreen.classList.add("hidden"); auctionScreen.classList.remove("hidden");
     updatePlayersRemaining(); showCoinFlip();
 }
@@ -213,6 +344,7 @@ function showCoinFlip(){
 }
 
 function startNextAuction(){
+    uiState={screen:"auction",phase:"next",turn:null};
     if(remainingPlayers.length===0 || (isTeamFull(1) && isTeamFull(2))){
         showAuctionComplete(); return;
     }
@@ -225,6 +357,7 @@ function startNextAuction(){
     if(forcedTeam){ showForcedAssignment(forcedTeam); return; }
 
     showPlayerReveal();
+    saveGame();
 }
 
 function showForcedAssignment(teamNumber){
@@ -245,6 +378,7 @@ function awardPlayerFree(teamNumber,forced=false){
     winner.players.push(currentPlayer);
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
     startingTeam=otherTeamNumber(startingTeam);
+    uiState={screen:"auction",phase:"sold",turn:teamNumber};saveGame();
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
@@ -300,6 +434,7 @@ function createTeamTracker(team,number){
 }
 
 function displayOpeningBid(){
+    uiState={screen:"auction",phase:"opening",turn:startingTeam};saveGame();
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const starter=teamByNumber(startingTeam);
@@ -348,6 +483,7 @@ function placeOpeningBid(){
 }
 
 function displayBiddingTurn(teamNumber){
+    uiState={screen:"auction",phase:"bidding",turn:teamNumber};saveGame();
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const team=teamByNumber(teamNumber);
@@ -394,6 +530,7 @@ function awardPlayer(n){
     winner.budget-=price; winner.players.push(currentPlayer);
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
     startingTeam=startingTeam===1?2:1;
+    uiState={screen:"auction",phase:"sold",turn:n};saveGame();
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">TRANSFER COMPLETE</div>
@@ -405,7 +542,22 @@ function awardPlayer(n){
     document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
 }
 
+function renderSoldState(last){
+    if(!last){startNextAuction();return;}
+    const winner=teamByNumber(last.teamNumber);
+    renderAuctionScreen(`
+      <div class="sold-panel" style="${teamVars(winner)}">
+        <div class="sold-stamp">${last.automatic?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
+        <div class="sold-word">${last.automatic?"ASSIGNED":"SOLD"}</div><div class="sold-to">${last.automatic?"ROSTER SPACE AVAILABLE":"SIGNED BY"}</div>
+        <h2 style="color:${winner.color}">${esc(winner.name)}</h2>
+        <div class="winning-price">${last.price===0?"FREE":"$"+last.price.toLocaleString()}</div>
+        <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
+      </div>`);
+    document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
+}
+
 function displayZeroBudgetChoice(n){
+    uiState={screen:"auction",phase:"zero",turn:n};saveGame();
     const rich=teamByNumber(n), broke=teamByNumber(n===1?2:1);
     renderAuctionScreen(`
       ${turnIndicator("AUCTION CONTROL",rich)}
@@ -481,6 +633,7 @@ function createFullHistory(){
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
+    uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
@@ -496,9 +649,14 @@ function showAuctionComplete(){
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
 }
 function restartAuction(){
-    auctionScreen.classList.add("hidden");setupScreen.classList.remove("hidden");
-    auctionContent.innerHTML="";playersRemainingDisplay.innerHTML="";
-    window.scrollTo({top:0,behavior:"smooth"});
+    showConfirm("START A NEW AUCTION","Your current auction and saved progress will be cleared.",()=>{
+        clearSavedGame();
+        uiState={screen:"setup",phase:"setup",turn:null};
+        auctionScreen.classList.add("hidden");formationScreen.classList.add("hidden");setupScreen.classList.remove("hidden");
+        auctionContent.innerHTML="";playersRemainingDisplay.innerHTML="";
+        saveSetupPreferences();showResumeCard(null);
+        window.scrollTo({top:0,behavior:"smooth"});
+    });
 }
 
 
@@ -532,12 +690,13 @@ const FORMATIONS = {
 };
 
 function openFormationBuilder(){
+    uiState={screen:"formation",phase:"formation",turn:null};
     auctionScreen.classList.add("hidden");
     formationScreen.classList.remove("hidden");
     formationTeamNumber=1; activeFormation="4-3-3"; selectedFormationPlayerId=null;
     formationAssignments={1:{},2:{}};
     autoFillFormation(1); autoFillFormation(2);
-    renderFormationBuilder();
+    renderFormationBuilder();saveGame();
     window.scrollTo({top:0,behavior:"smooth"});
 }
 function autoFillFormation(n){
@@ -545,10 +704,10 @@ function autoFillFormation(n){
     formationAssignments[n]={};
     team.players.slice(0,11).forEach((p,i)=>formationAssignments[n][i]=p.id);
 }
-function switchFormationTeam(n){formationTeamNumber=n;selectedFormationPlayerId=null;renderFormationBuilder();}
+function switchFormationTeam(n){formationTeamNumber=n;selectedFormationPlayerId=null;renderFormationBuilder();saveGame();}
 function changeFormation(name){
     activeFormation=name; selectedFormationPlayerId=null;
-    autoFillFormation(formationTeamNumber); renderFormationBuilder();
+    autoFillFormation(formationTeamNumber); renderFormationBuilder();saveGame();
 }
 function getFormationPlayer(n,slotIndex){
     const id=formationAssignments[n][slotIndex];
@@ -567,12 +726,12 @@ function clickFormationSlot(slotIndex){
     }else if(current){
         selectedFormationPlayerId=current.id;
     }
-    renderFormationBuilder();
+    renderFormationBuilder();saveGame();
 }
 function selectBenchPlayer(id){
     if(selectedFormationPlayerId===id) selectedFormationPlayerId=null;
     else selectedFormationPlayerId=id;
-    renderFormationBuilder();
+    renderFormationBuilder();saveGame();
 }
 function renderFormationBuilder(){
     const team=teamByNumber(formationTeamNumber);
@@ -614,6 +773,11 @@ function renderFormationBuilder(){
       </div>`;
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
+    uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
 });
+
+const initialSaved=loadSavedData();
+if(initialSaved?.gameActive) showResumeCard(initialSaved);
+else restoreSetup(initialSaved);
