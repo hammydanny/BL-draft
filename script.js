@@ -7,6 +7,13 @@ let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder =
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
 let draftMode = "auction";
 let selectedPlayerIds = new Set(players.map(player => player.id));
+let watchlistedPlayerIds = new Set();
+let playerPoolPositionFilter = "ALL";
+let playerPoolGroupFilter = "all";
+let playerPoolSort = "id";
+let formationDbQuery = "";
+let formationDbPosition = "ALL";
+let formationDbSort = "ovr";
 const SAVE_KEY="blAuctionSaveV2";
 let uiState={screen:"setup",phase:"setup",turn:null};
 let pendingConfirmAction=null;
@@ -43,6 +50,10 @@ function playSfx(name){
     else if(name==="back"){tone(320,.045,"sine",.011);tone(210,.07,"sine",.009,.035);}
     else if(name==="toggle"){tone(360,.035,"square",.008);tone(540,.04,"square",.008,.025);}
     else if(name==="result"){tone(330,.06,"triangle",.012);tone(495,.075,"triangle",.012,.05);tone(660,.10,"sine",.014,.10);}
+    else if(name==="outbid"){tone(690,.04,"square",.014);tone(520,.05,"triangle",.012,.035);tone(820,.07,"sine",.011,.07);}
+    else if(name==="watch"){tone(740,.04,"sine",.010);tone(980,.08,"triangle",.010,.035);}
+    else if(name==="swap"){tone(430,.04,"triangle",.012);tone(640,.05,"triangle",.012,.035);tone(430,.06,"sine",.010,.075);}
+    else if(name==="warning"){tone(180,.07,"square",.012);tone(140,.10,"sine",.010,.055);}
 }
 function updateSoundButton(){
     document.querySelectorAll("#soundToggle,[data-sound-toggle]").forEach(b=>{
@@ -72,6 +83,7 @@ document.addEventListener("keydown",unlockAudio,{capture:true});
 document.addEventListener("click",e=>{
     const b=e.target.closest("button");
     if(!b || b.id==="soundToggle" || b.hasAttribute("data-sound-toggle"))return;
+    if(b.classList.contains("pool-watch")||b.classList.contains("current-watch"))return;
     if(b.id==="placeBidButton"||b.id==="placeOpeningBid"||b.id==="passButton"||b.id==="buyPlayerButton"||b.id==="controlPassButton")return;
     const text=(b.textContent||"").toLowerCase();
     if(text.includes("back")||text.includes("main menu"))playSfx("back");
@@ -304,7 +316,8 @@ const CHEMISTRY_CONTEXTS = [
   {name:"JAPAN U-20 // WORLD CUP",score:79,players:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Meguru Bachira","Hyoma Chigiri","Reo Mikage","Rensuke Kunigami","Eita Otoya","Oliver Aiku","Tabito Karasu","Gin Gagamaru","Jyubei Aryu","Kenyu Yukimiya","Ikki Niko","Yo Hiori","Shuto Sendo","Ranze Kurona","Zantetsu Tsurugi","Gen Fukaku","Jingo Raichi","Jin Kiyora","Nijiro Nanase","Shoei Baro"]},
   {name:"FRANCE U-20 // GOLDEN GENERATION",score:89,players:["Julien Loki","Charles Chevalier","Vivien Hugo","Renoir"]},
   {name:"ENGLAND U-20 // FOX SYSTEM",score:86,players:["Teddy Knight","Lockhart","Achanpong","Childs","Agi","Rooke"]},
-  {name:"NIGERIA U-20",score:88,players:["Innocent Onazi","Godwin Kuso"]}
+  {name:"NIGERIA U-20",score:88,players:["Innocent Onazi","Godwin Kuso"]},
+  {name:"TEAM WORLD FIVE",score:92,players:["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"]}
 ];
 
 const CHEMISTRY_SPECIAL_PAIRS = [
@@ -348,6 +361,18 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Yo Hiori","Nijiro Nanase",86,"THIRD-SELECTION LINK","Friendly Team A1 teammates who repeatedly function as clean support options around the central striker."],
   ["Yoichi Isagi","Nijiro Nanase",84,"THIRD-SELECTION LINK","Team A1 gave them direct combination experience, though no signature duo developed."],
   ["Tabito Karasu","Yoichi Isagi",86,"TACTICAL FRICTION","They can read and use each other's movement, but chapter 337 shows a genuine philosophical/tactical clash over how Japan should attack."],
+
+  // Team World Five // demonstrated professional passing chains
+  ["Leonardo Luna","Julien Loki",97,"KICKOFF PUNISHMENT","Against the First Clear Team, Luna immediately feeds Loki from the restart and Loki turns the pass into the equalizer with his world-class acceleration."],
+  ["Pablo Cavasoz","Dada Silva",97,"PINPOINT AERIAL ROUTE","Pablo threads/crosses through pressure to Dada, whose aerial presence turns the delivery into the next scoring action."],
+  ["Dada Silva","Adam Blake",97,"AERIAL LAYOFF","Dada converts Pablo's service into a headed layoff and Blake finishes the move, a direct demonstrated two-man scoring connection."],
+  ["Julien Loki","Dada Silva",96,"SPEED TO AERIAL","Loki attacks the entire field and later delivers the cross that Dada heads in over Aryu."],
+  ["Leonardo Luna","Pablo Cavasoz",95,"CHAIN STARTER","Luna wins possession from Rin and immediately routes the ball into Pablo, starting the sequence that ends with Blake's goal."],
+  ["Pablo Cavasoz","Adam Blake",95,"ACCURACY TO POWER","Pablo repeatedly facilitates the World Five passing chain and directly routes possession toward Blake in their professional attack."],
+  ["Adam Blake","Julien Loki",94,"WORLD-CLASS TRANSITION","Blake supplies Loki during the World Five attack before Loki turns the phase into Dada's scoring cross."],
+  ["Pablo Cavasoz","Julien Loki",94,"CONNECTOR × SPEED","Pablo is the team's central passing facilitator while Loki covers both attack and defense, making them naturally compatible inside the World Five optimal-position system."],
+  ["Leonardo Luna","Adam Blake",93,"WORLD FIVE ATTACK","Both occupy the World Five attacking chain and repeatedly move possession toward the best-positioned finisher rather than forcing individual plays."],
+  ["Leonardo Luna","Dada Silva",93,"WORLD FIVE ATTACK","Luna's progression and Dada's aerial finishing coexist cleanly inside the World Five's optimal-position passing structure."],
 
   // Additional demonstrated combinations and World Cup relationships
   ["Hyoma Chigiri","Zantetsu Tsurugi",89,"SPEED PAIR","Second Selection: the two speed specialists play on the same clear team, and Zantetsu directly assists a Chigiri goal."],
@@ -533,6 +558,9 @@ function chemistrySvg(teamNumber){
 
 let chemistryTooltipEl=null;
 function showChemistryTooltip(event,line){
+    document.querySelectorAll(".chem-link.chem-active").forEach(el=>el.classList.remove("chem-active"));
+    line.classList.add("chem-active");
+    line.ownerSVGElement?.classList.add("chem-inspecting");
     const team=teamByNumber(formationTeamNumber);
     const a=team.players.find(p=>p.id===Number(line.dataset.aId));
     const b=team.players.find(p=>p.id===Number(line.dataset.bId));
@@ -565,6 +593,8 @@ function moveChemistryTooltip(event){
 }
 function hideChemistryTooltip(){
     chemistryTooltipEl?.classList.remove("show");
+    document.querySelectorAll(".chemistry-lines.chem-inspecting").forEach(el=>el.classList.remove("chem-inspecting"));
+    document.querySelectorAll(".chem-link.chem-active").forEach(el=>el.classList.remove("chem-active"));
 }
 
 function chemistryLinkName(link){
@@ -789,36 +819,68 @@ document.querySelectorAll("[data-game-mode]").forEach(button=>{
     });
 });
 
+function playerMatchesPoolGroup(player,group){
+    if(!group||group==="all")return true;
+    const ids=PLAYER_PRESETS?.[group]||[];
+    return ids.includes(player.id);
+}
+function poolSortValue(player,key){
+    if(key==="name")return player.name.toLowerCase();
+    if(key==="id")return player.id;
+    const stats=playerStats(player);
+    if(key==="ovr")return playerOverall(player);
+    return Number(stats[key]||0);
+}
 function renderPlayerPool(){
     const grid=document.getElementById("playerPoolGrid");
     const empty=document.getElementById("playerPoolEmpty");
     const query=document.getElementById("playerSearch").value.trim().toLowerCase();
+    const position=document.getElementById("playerPositionFilter")?.value||playerPoolPositionFilter||"ALL";
+    const group=document.getElementById("playerGroupFilter")?.value||playerPoolGroupFilter||"all";
+    const sort=document.getElementById("playerSort")?.value||playerPoolSort||"id";
+    playerPoolPositionFilter=position;playerPoolGroupFilter=group;playerPoolSort=sort;
 
-    const visiblePlayers=players.filter(player =>
-        player.name.toLowerCase().includes(query)
-    );
+    let visiblePlayers=players.filter(player => {
+        const matchesQuery=player.name.toLowerCase().includes(query);
+        const matchesPosition=position==="ALL" || positionGroup(primaryPosition(player))===position;
+        const matchesGroup=playerMatchesPoolGroup(player,group);
+        return matchesQuery&&matchesPosition&&matchesGroup;
+    });
+    visiblePlayers.sort((a,b)=>{
+        const av=poolSortValue(a,sort),bv=poolSortValue(b,sort);
+        if(typeof av==="string")return av.localeCompare(bv);
+        return sort==="id"?av-bv:bv-av;
+    });
 
     grid.innerHTML=visiblePlayers.map(player => {
         const selected=selectedPlayerIds.has(player.id);
-        return `<button type="button"
-            class="pool-player-card ${selected?"selected":""}"
-            data-player-id="${player.id}"
-            aria-pressed="${selected}">
-            <div class="pool-player-check">${selected?"✓":"+"}</div>
-            <img src="${player.image}" alt="${esc(player.name)}">
-            <div class="pool-player-info">
-                <span>PLAYER // ${String(player.id).padStart(2,"0")}</span>
-                <strong>${esc(player.name)}</strong>
-            </div>
-        </button>`;
+        const watched=watchlistedPlayerIds.has(player.id);
+        return `<div class="pool-player-card ${selected?"selected":""} ${watched?"watchlisted":""}" data-player-id="${player.id}">
+            <button type="button" class="pool-select-hit" aria-pressed="${selected}" aria-label="${selected?"Remove":"Add"} ${esc(player.name)} from auction pool">
+              <div class="pool-player-check">${selected?"✓":"+"}</div>
+              <img src="${player.image}" alt="${esc(player.name)}">
+              <div class="pool-player-info">
+                  <span>PLAYER // ${String(player.id).padStart(2,"0")} // OVR ${playerOverall(player)}</span>
+                  <strong>${esc(player.name)}</strong>
+              </div>
+            </button>
+            <button type="button" class="pool-watch ${watched?"active":""}" data-watch-id="${player.id}" title="${watched?"Remove from":"Add to"} shortlist" aria-pressed="${watched}">${watched?"★":"☆"}</button>
+        </div>`;
     }).join("");
 
-    grid.querySelectorAll(".pool-player-card").forEach(card => {
-        card.addEventListener("click", () => {
-            const id=Number(card.dataset.playerId);
+    grid.querySelectorAll(".pool-select-hit").forEach(button => {
+        button.addEventListener("click", () => {
+            const id=Number(button.closest(".pool-player-card").dataset.playerId);
             if(selectedPlayerIds.has(id)) selectedPlayerIds.delete(id);
             else selectedPlayerIds.add(id);
             renderPlayerPool();
+            saveSetupPreferences();
+        });
+    });
+    grid.querySelectorAll(".pool-watch").forEach(button=>{
+        button.addEventListener("click",event=>{
+            event.stopPropagation();
+            toggleWatchlistPlayer(Number(button.dataset.watchId),true);
         });
     });
 
@@ -826,6 +888,19 @@ function renderPlayerPool(){
     updatePoolStatus();
 }
 
+function toggleWatchlistPlayer(id,rerenderPool=false){
+    if(watchlistedPlayerIds.has(id))watchlistedPlayerIds.delete(id);
+    else watchlistedPlayerIds.add(id);
+    playSfx("watch");
+    if(rerenderPool)renderPlayerPool();
+    const button=document.querySelector(`[data-current-watch="${id}"]`);
+    if(button){
+        const active=watchlistedPlayerIds.has(id);
+        button.classList.toggle("active",active);
+        button.innerHTML=`${active?"★":"☆"} ${active?"SHORTLISTED":"SHORTLIST"}`;
+    }
+    if(uiState.screen==="auction")saveGame();else saveSetupPreferences();
+}
 function updatePoolStatus(){
     const count=document.getElementById("selectedPlayerCount");
     const requirement=document.getElementById("poolRequirement");
@@ -846,8 +921,6 @@ function updatePoolStatus(){
         requirement.className="pool-requirement ready";
     }
 }
-
-renderPlayerPool();
 
 const presetNames = {
     "all": players.map(p=>p.name),
@@ -885,6 +958,10 @@ document.querySelectorAll("[data-preset]").forEach(button=>{
         saveSetupPreferences();
     });
 });
+["playerPositionFilter","playerGroupFilter","playerSort"].forEach(id=>{
+    document.getElementById(id)?.addEventListener("change",()=>{renderPlayerPool();saveSetupPreferences();});
+});
+renderPlayerPool();
 
 function serializePlayerList(list){return list.map(p=>p.id);}
 function hydratePlayers(ids=[]){return ids.map(id=>players.find(p=>p.id===id)).filter(Boolean);}
@@ -902,7 +979,11 @@ function saveSetupPreferences(){
                 budget:document.getElementById("budget").value,
                 bidIncrement:document.getElementById("bidIncrement").value,
                 maxPlayers:document.getElementById("maxPlayers").value,
-                selected:[...selectedPlayerIds]
+                selected:[...selectedPlayerIds],
+                watchlisted:[...watchlistedPlayerIds],
+                poolPosition:playerPoolPositionFilter,
+                poolGroup:playerPoolGroupFilter,
+                poolSort:playerPoolSort
             }
         }));
     }catch(e){}
@@ -915,6 +996,7 @@ function saveGame(){
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
+            watchlistedPlayerIds:[...watchlistedPlayerIds],
             team1:{...team1,players:serializePlayerList(team1.players)},
             team2:{...team2,players:serializePlayerList(team2.players)},
             auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
@@ -934,6 +1016,13 @@ function restoreSetup(saved){
     document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
     if(Array.isArray(s.selected))selectedPlayerIds=new Set(s.selected);
+    if(Array.isArray(s.watchlisted))watchlistedPlayerIds=new Set(s.watchlisted);
+    playerPoolPositionFilter=s.poolPosition||"ALL";
+    playerPoolGroupFilter=s.poolGroup||"all";
+    playerPoolSort=s.poolSort||"id";
+    if(document.getElementById("playerPositionFilter"))document.getElementById("playerPositionFilter").value=playerPoolPositionFilter;
+    if(document.getElementById("playerGroupFilter"))document.getElementById("playerGroupFilter").value=playerPoolGroupFilter;
+    if(document.getElementById("playerSort"))document.getElementById("playerSort").value=playerPoolSort;
     renderPlayerPool();
 }
 function showResumeCard(saved){
@@ -952,6 +1041,7 @@ function restoreGame(saved){
     currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
     remainingPlayers=hydratePlayers(saved.remainingPlayerIds);
     selectedPlayerIds=new Set(saved.selectedPlayerIds||players.map(p=>p.id));
+    watchlistedPlayerIds=new Set(saved.watchlistedPlayerIds||[]);
     team1={...saved.team1,players:hydratePlayers(saved.team1?.players)};
     team2={...saved.team2,players:hydratePlayers(saved.team2?.players)};
     auctionHistory=(saved.auctionHistory||[]).map(x=>({...x,player:players.find(p=>p.id===x.playerId)})).filter(x=>x.player);
@@ -1123,7 +1213,7 @@ function showPlayerReveal(){
     playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="reveal-image ${watchlistedPlayerIds.has(currentPlayer.id)?"watchlisted-reveal":""}"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}">${watchlistedPlayerIds.has(currentPlayer.id)?`<span class="reveal-watch-badge">★ SHORTLIST TARGET</span>`:""}</div>
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);
@@ -1131,8 +1221,10 @@ function showPlayerReveal(){
 }
 
 function createPlayerCard(){
-    return `<div class="current-player">
+    const watched=watchlistedPlayerIds.has(currentPlayer.id);
+    return `<div class="current-player ${watched?"watchlisted-target":""}">
       <div class="card-index">${String(auctionNumber).padStart(2,"0")}</div>
+      <button class="current-watch ${watched?"active":""}" data-current-watch="${currentPlayer.id}" onclick="toggleWatchlistPlayer(${currentPlayer.id})" type="button">${watched?"★ SHORTLISTED":"☆ SHORTLIST"}</button>
       <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="player-card-bottom">
         <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
@@ -1145,21 +1237,36 @@ function createTeamTrackers(){
     return `<div class="team-trackers">${createTeamTracker(team1,1)}${createTeamTracker(team2,2)}</div>`;
 }
 function createTeamTracker(team,number){
+    const isTurn=uiState.turn===number;
+    const isLeader=currentBidder===number&&currentBid>0;
+    const slotsLeft=Math.max(0,maxPlayers-team.players.length);
+    const budgetPct=startingBudget?Math.max(0,Math.round(team.budget/startingBudget*100)):0;
+    const lowBudget=budgetPct<=20&&team.budget>0;
+    const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
-      <div class="mini-player-card" title="${esc(p.name)}">
-        <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>
+      <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
+        <img src="${p.image}" alt="${esc(p.name)}"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
-    return `<div class="team-tracker team-${number}" style="${teamVars(team)}">
+    const warnings=[];
+    if(full)warnings.push("ROSTER FULL");
+    else if(slotsLeft<=2)warnings.push(`${slotsLeft} SLOT${slotsLeft===1?"":"S"} LEFT`);
+    if(lowBudget)warnings.push("LOW CAPITAL");
+    if(team.budget===0)warnings.push("NO CAPITAL");
+    return `<aside class="team-tracker side-team team-${number} ${isTurn?"is-turn":""} ${isLeader?"is-leader":""}" style="${teamVars(team)}">
       <div class="team-accent"></div>
+      <div class="team-live-state">${isTurn?"● ACTIVE TURN":isLeader?"◆ LEADING BID":"SQUAD STATUS"}</div>
       <div class="team-header">
         <div><span class="team-code">SQUAD // 0${number}</span><h3>${esc(team.name)}</h3></div>
         <span class="roster-count">${team.players.length}/${maxPlayers}</span>
       </div>
-      <div class="budget-label">AVAILABLE CAPITAL</div>
-      <div class="budget-amount">$${team.budget.toLocaleString()}</div>
-      <div class="budget-bar"><i style="width:${Math.max(0,(team.budget/startingBudget)*100)}%"></i></div>
+      <div class="team-economy-grid">
+        <div><span>AVAILABLE CAPITAL</span><strong>$${team.budget.toLocaleString()}</strong></div>
+        <div><span>ROSTER SPACE</span><strong>${slotsLeft}</strong></div>
+      </div>
+      <div class="budget-bar"><i style="width:${budgetPct}%"></i></div>
+      ${warnings.length?`<div class="strategy-warning">${warnings.join(" // ")}</div>`:"<div class=\"strategy-clear\">BUDGET HEALTHY // SQUAD OPEN</div>"}
       <div class="mini-roster">${roster}</div>
-    </div>`;
+    </aside>`;
 }
 
 function displayOpeningBid(){
@@ -1174,13 +1281,14 @@ function displayOpeningBid(){
       <div class="bid-panel" style="${teamVars(starter)}">
         <div class="panel-code">MANUAL VALUATION // OPEN</div>
         <p>Set your opening valuation for <strong>${esc(currentPlayer.name)}</strong>.</p>
+        ${bidPressureRow(starter,bidIncrement)}
         ${moneyInput("openingBid",bidIncrement,bidIncrement)}
         ${createQuickBidButtons("openingBid")}
         <button id="placeOpeningBid" class="primary-button team-action"><span>LOCK OPENING BID</span><b>→</b></button>
       </div>`);
     const input=document.getElementById("openingBid");
     document.getElementById("placeOpeningBid").addEventListener("click",placeOpeningBid);
-    enableEnterKey(input,placeOpeningBid); input.select();
+    enableEnterKey(input,placeOpeningBid); focusBidInput(input);
 }
 
 function turnIndicator(label,team){
@@ -1191,6 +1299,12 @@ function turnIndicator(label,team){
 function moneyInput(id,value,min){
     return `<div class="money-input"><span>$</span><input type="number" id="${id}" value="${value}" min="${min}" step="${bidIncrement}"></div>`;
 }
+function bidPressureRow(team,minBid){
+    const after=Math.max(0,team.budget-minBid);
+    const pct=team.budget?Math.round(minBid/team.budget*100):100;
+    return `<div class="bid-pressure-row"><span>MINIMUM <b>$${minBid.toLocaleString()}</b></span><span>AFTER MIN BID <b>$${after.toLocaleString()}</b></span><span>CAP PRESSURE <b>${Math.min(999,pct)}%</b></span></div>`;
+}
+
 function createQuickBidButtons(id){
     return `<div class="quick-bids">
       <button type="button" onclick="increaseBidInput('${id}',${bidIncrement})">+$${bidIncrement.toLocaleString()}</button>
@@ -1229,6 +1343,7 @@ function displayBiddingTurn(teamNumber){
         <div class="current-bid-label">CURRENT BID</div>
         <div class="current-bid">$${currentBid.toLocaleString()}</div>
         <div class="bid-holder">CONTROLLED BY <strong style="color:${accessibleTeamAccent(holder.color)}">${esc(holder.name)}</strong></div>
+        ${bidPressureRow(team,min)}
         ${moneyInput("nextBid",min,min)}
         ${createQuickBidButtons("nextBid")}
         <button id="placeBidButton" class="primary-button team-action"><span>PLACE BID</span><b>→</b></button>
@@ -1237,13 +1352,14 @@ function displayBiddingTurn(teamNumber){
     const input=document.getElementById("nextBid");
     document.getElementById("placeBidButton").addEventListener("click",()=>placeBid(teamNumber));
     document.getElementById("passButton").addEventListener("click",passBid);
-    enableEnterKey(input,()=>placeBid(teamNumber)); input.select();
+    enableEnterKey(input,()=>placeBid(teamNumber)); focusBidInput(input);
 }
 function placeBid(n){
     const team=teamByNumber(n), bid=Number(document.getElementById("nextBid").value);
     if(!validateBid(bid,team,currentBid)) return;
+    const previousBidder=currentBidder;
     currentBid=bid; currentBidder=n;
-    playSfx("bid");triggerFx("bid");
+    playSfx(previousBidder&&previousBidder!==n?"outbid":"bid");triggerFx("bid");
     displayBiddingTurn(n===1?2:1);
 }
 function validateBid(bid,team,minimum){
@@ -1300,6 +1416,7 @@ function displayZeroBudgetChoice(n){
       <div class="bid-panel" style="${teamVars(rich)}">
         <div class="panel-code">ZERO-BUDGET PROTOCOL</div>
         <p><strong style="color:${accessibleTeamAccent(broke.color)}">${esc(broke.name)}</strong> has no remaining budget. Buy ${esc(currentPlayer.name)}, or pass and they receive the player for free.</p>
+        ${bidPressureRow(rich,bidIncrement)}
         ${moneyInput("controlBid",bidIncrement,bidIncrement)}
         ${createQuickBidButtons("controlBid")}
         <button id="buyPlayerButton" class="primary-button team-action"><span>BUY PLAYER</span><b>→</b></button>
@@ -1308,7 +1425,7 @@ function displayZeroBudgetChoice(n){
     const input=document.getElementById("controlBid");
     document.getElementById("buyPlayerButton").addEventListener("click",()=>buyWithControl(n));
     document.getElementById("controlPassButton").addEventListener("click",()=>passWithControl(n));
-    enableEnterKey(input,()=>buyWithControl(n)); input.select();
+    enableEnterKey(input,()=>buyWithControl(n)); focusBidInput(input);
 }
 function buyWithControl(n){
     const team=teamByNumber(n),bid=Number(document.getElementById("controlBid").value);
@@ -1316,6 +1433,10 @@ function buyWithControl(n){
     currentBid=bid;currentBidder=n;playSfx("bid");triggerFx("bid");awardPlayer(n);
 }
 function passWithControl(n){playSfx("pass");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
+function focusBidInput(input){
+    if(!input)return;
+    try{input.focus({preventScroll:true});input.setSelectionRange(0,String(input.value).length);}catch(_){try{input.focus({preventScroll:true})}catch(__){}}
+}
 function enableEnterKey(input,action){input.addEventListener("keydown",e=>{if(e.key==="Enter")action();});}
 
 function createAuctionHistoryPanel(){
@@ -1334,9 +1455,15 @@ function createAuctionHistoryPanel(){
 
 function renderAuctionScreen(actionHTML){
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
-    auctionContent.innerHTML=`<div class="auction-layout">${createTeamTrackers()}
-      <div class="auction-main">${createPlayerCard()}<div class="action-container">${actionHTML}</div></div>
-      ${createAuctionHistoryPanel()}</div>`;
+    auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
+      <div class="auction-command-grid">
+        ${createTeamTracker(team1,1)}
+        <main class="auction-main auction-command-center">${createPlayerCard()}<div class="action-container">${actionHTML}</div></main>
+        ${createTeamTracker(team2,2)}
+      </div>
+      ${createAuctionHistoryPanel()}
+    </div>`;
+    window.scrollTo({top:0,behavior:"auto"});
 }
 function updatePlayersRemaining(){
     playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;
@@ -1350,18 +1477,63 @@ function getMostExpensiveSigning(n){
     const a=getTeamHistory(n); if(!a.length)return null;
     return a.reduce((best,x)=>x.price>best.price?x:best,a[0]);
 }
+function naturalSquadOVR(team){
+    if(!team.players.length)return 0;
+    return Math.round(team.players.reduce((sum,p)=>sum+playerOverall(p),0)/team.players.length);
+}
+function getMvpSigning(n){
+    const history=getTeamHistory(n);if(!history.length)return null;
+    return [...history].sort((a,b)=>playerOverall(b.player)-playerOverall(a.player)||a.price-b.price)[0];
+}
+function getBestValueSigning(n){
+    const history=getTeamHistory(n);if(!history.length)return null;
+    const score=x=>playerOverall(x.player)-(x.price/Math.max(1,startingBudget))*32;
+    return [...history].sort((a,b)=>score(b)-score(a)||playerOverall(b.player)-playerOverall(a.player))[0];
+}
+function strongestRosterChemistry(team){
+    let best=null;
+    for(let i=0;i<team.players.length;i++)for(let j=i+1;j<team.players.length;j++){
+        const relation=chemistryRelation(team.players[i],team.players[j]);
+        if(!best||relation.score>best.score)best={a:team.players[i],b:team.players[j],...relation};
+    }
+    return best;
+}
+function resultMetricLeader(a,b,higher=true){
+    if(a===b)return "EVEN";
+    return (higher?a>b:a<b)?team1.name:team2.name;
+}
+function createResultsComparison(){
+    const o1=naturalSquadOVR(team1),o2=naturalSquadOVR(team2);
+    const c1=strongestRosterChemistry(team1),c2=strongestRosterChemistry(team2);
+    const spent1=startingBudget-team1.budget,spent2=startingBudget-team2.budget;
+    return `<section class="results-comparison">
+      <div class="comparison-head"><span>HEAD-TO-HEAD // DRAFT INTELLIGENCE</span><strong>POST-AUCTION COMPARISON</strong></div>
+      <div class="comparison-grid">
+        <div><span>SQUAD OVR</span><b style="${teamVars(team1)};color:var(--team)">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">${o2}</b></div>
+        <div><span>CAPITAL REMAINING</span><b style="${teamVars(team1)};color:var(--team)">$${team1.budget.toLocaleString()}</b><em>${esc(resultMetricLeader(team1.budget,team2.budget))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">$${team2.budget.toLocaleString()}</b></div>
+        <div><span>BEST CHEMISTRY</span><b style="${teamVars(team1)};color:var(--team)">${c1?.score||"--"}</b><em>${esc(resultMetricLeader(c1?.score||0,c2?.score||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">${c2?.score||"--"}</b></div>
+        <div><span>CAPITAL SPENT</span><b style="${teamVars(team1)};color:var(--team)">$${spent1.toLocaleString()}</b><em>${spent1===spent2?"EVEN SPEND":"DRAFT PROFILE"}</em><b style="${teamVars(team2)};color:var(--team)">$${spent2.toLocaleString()}</b></div>
+      </div>
+    </section>`;
+}
 function createFinalTeamCard(team,n){
-    const spent=startingBudget-team.budget, expensive=getMostExpensiveSigning(n);
+    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chem=strongestRosterChemistry(team);
     const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
-    return `<article class="final-team-card" style="${teamVars(team)}">
+    return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
-      <div class="final-stats">
+      <div class="final-stats final-stats-v9">
+        <div><span>SQUAD OVR</span><strong>${naturalSquadOVR(team)||"--"}</strong></div>
         <div><span>PLAYERS</span><strong>${team.players.length}</strong></div>
         <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
         <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
       </div>
-      <div class="biggest-signing"><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
+      <div class="result-intel-grid">
+        <div><span>MVP SIGNING</span><strong>${mvp?esc(mvp.player.name):"—"}</strong><b>${mvp?`OVR ${playerOverall(mvp.player)}`:"—"}</b></div>
+        <div><span>BEST VALUE</span><strong>${value?esc(value.player.name):"—"}</strong><b>${value?(value.price===0?"FREE":"$"+value.price.toLocaleString()):"—"}</b></div>
+        <div><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
+        <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
+      </div>
       <div class="final-roster">${roster}</div>
     </article>`;
 }
@@ -1373,7 +1545,9 @@ function createFullHistory(){
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
+    const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
+    if(!wasComplete)playSfx("result");
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
@@ -1383,9 +1557,12 @@ function showAuctionComplete(){
         <button id="shareResultsButton" class="primary-button restart-button share-action"><span>SHARE / SAVE RESULT</span><b>↗</b></button>
         <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
       </div>
+      ${createResultsComparison()}
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
+    window.scrollTo({top:0,behavior:"auto"});
+    requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"auto"}));
     document.getElementById("formationBuilderButton").addEventListener("click",openFormationBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
@@ -1544,6 +1721,32 @@ function changeFormation(name){
     sanitizeFormationAssignments(n);
     renderFormationBuilder();saveGame();
 }
+function autoBestXI(){
+    const n=formationTeamNumber,team=teamByNumber(n),shape=FORMATIONS[formationByTeam[n]||"4-3-3"];
+    const remaining=[...team.players];
+    const assignment={};
+    // Fill scarce positions first (GK/defensive specialists naturally rise to the top),
+    // then maximize position-adjusted OVR with primary/canonical fit bonuses.
+    const slotOrder=shape.map((slot,index)=>{
+        const viable=remaining.filter(p=>canonicalFit(p,slot.label)).length;
+        const primary=remaining.filter(p=>primaryFit(p,slot.label)).length;
+        return {slot,index,scarcity:primary*2+viable};
+    }).sort((a,b)=>a.scarcity-b.scarcity || a.index-b.index);
+    for(const item of slotOrder){
+        if(!remaining.length)break;
+        const ranked=[...remaining].map(p=>{
+            const score=effectiveOVR(p,item.slot.label)+(primaryFit(p,item.slot.label)?7:canonicalFit(p,item.slot.label)?3:0);
+            return {p,score};
+        }).sort((a,b)=>b.score-a.score || playerOverall(b.p)-playerOverall(a.p));
+        const pick=ranked[0]?.p;if(!pick)continue;
+        assignment[item.index]=pick.id;
+        remaining.splice(remaining.findIndex(p=>p.id===pick.id),1);
+    }
+    formationAssignments[n]=assignment;
+    selectedFormationPlayerId=null;
+    playSfx("confirm");
+    renderFormationBuilder();saveGame();
+}
 function resetCurrentFormation(){
     formationAssignments[formationTeamNumber]={};
     selectedFormationPlayerId=null;
@@ -1578,7 +1781,7 @@ function movePlayerToSlot(playerId,slotIndex){
         sourceSlot:sourceSlot!==undefined?Number(sourceSlot):null,
         displacedId:targetPlayer&&targetPlayer.id!==playerId?targetPlayer.id:null
     };
-    playSfx("drop");
+    playSfx(targetPlayer&&targetPlayer.id!==playerId?"swap":"drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -1850,13 +2053,45 @@ function clearSelectedFormationPlayer(){
   renderFormationBuilder();
   saveGame();
 }
+function setFormationDbQuery(value){
+    formationDbQuery=value||"";renderFormationBuilder();
+    requestAnimationFrame(()=>{const input=document.querySelector(".database-toolbar input");if(input){input.focus();input.setSelectionRange(formationDbQuery.length,formationDbQuery.length);}});
+}
+function setFormationDbPosition(value){formationDbPosition=value||"ALL";renderFormationBuilder();}
+function setFormationDbSort(value){formationDbSort=value||"ovr";renderFormationBuilder();}
+function formationDatabasePlayers(team){
+    const q=formationDbQuery.trim().toLowerCase();
+    return [...team.players].filter(p=>{
+        const queryOk=!q||p.name.toLowerCase().includes(q);
+        const positionOk=formationDbPosition==="ALL"||positionGroup(primaryPosition(p))===formationDbPosition;
+        return queryOk&&positionOk;
+    }).sort((a,b)=>{
+        if(formationDbSort==="name")return a.name.localeCompare(b.name);
+        if(formationDbSort==="position")return primaryPosition(a).localeCompare(primaryPosition(b))||playerOverall(b)-playerOverall(a);
+        return playerOverall(b)-playerOverall(a);
+    });
+}
 function createPlayerInfoSidebar(team){
   const player=team.players.find(p=>p.id===selectedFormationPlayerId);
   if(playerDatabaseHidden) return "";
-  if(!player) return `<aside class="player-info-panel" style="${teamVars(team)}">
-    <div class="player-info-top"><div><span class="player-info-code">PLAYER // DATABASE</span></div></div>
-    <div class="player-info-empty"><div class="player-info-empty-icon">+</div><strong>SELECT A PLAYER</strong><span>Click, press, or begin dragging a player to inspect their data and best positions.</span></div>
-  </aside>`;
+  if(!player){
+    const database=formationDatabasePlayers(team);
+    return `<aside class="player-info-panel player-database-browser" style="${teamVars(team)}">
+      <div class="player-info-top"><div><span class="player-info-code">PLAYER // DATABASE</span><strong class="database-count">${database.length}</strong></div></div>
+      <div class="database-toolbar">
+        <input type="search" value="${esc(formationDbQuery)}" placeholder="SEARCH SQUAD..." oninput="setFormationDbQuery(this.value)">
+        <select onchange="setFormationDbPosition(this.value)">
+          ${["ALL","ATTACK","MIDFIELD","DEFENCE","GK"].map(x=>`<option value="${x}" ${formationDbPosition===x?"selected":""}>${x}</option>`).join("")}
+        </select>
+        <select onchange="setFormationDbSort(this.value)">
+          <option value="ovr" ${formationDbSort==="ovr"?"selected":""}>OVR ↓</option>
+          <option value="name" ${formationDbSort==="name"?"selected":""}>NAME A-Z</option>
+          <option value="position" ${formationDbSort==="position"?"selected":""}>POSITION</option>
+        </select>
+      </div>
+      <div class="database-roster">${database.length?database.map(p=>`<button onclick="selectFormationPlayerOnly(${p.id})"><img src="${p.image}" alt=""><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // OVR ${playerOverall(p)}</small></span><b>${playerOverall(p)}</b></button>`).join(""):`<div class="history-empty">NO MATCHING PLAYERS</div>`}</div>
+    </aside>`;
+  }
   const s=playerStats(player);
   const stat=(label,value)=>`<div class="player-stat-row"><div class="player-stat-label"><span>${label}</span><strong>${value}</strong></div><div class="player-stat-track"><i style="width:${Math.max(0,Math.min(100,value))}%"></i></div></div>`;
   return `<aside class="player-info-panel" style="${teamVars(team)}">
@@ -1888,6 +2123,7 @@ function renderFormationBuilder(){
             ${[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
           </div>
           <div class="formation-actions">
+            <button class="formation-auto" onclick="autoBestXI()">⚡ AUTO BEST XI</button>
             <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
             <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
                     <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
