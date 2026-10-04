@@ -525,11 +525,10 @@ function chemistrySvg(teamNumber){
         x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}"
         class="chem-link ${chemistryTier(l.value)}"
         data-a-id="${l.a.p.id}" data-b-id="${l.b.p.id}"
+        aria-label="${esc(l.a.p.name)} and ${esc(l.b.p.name)} chemistry ${l.value}, ${esc(l.relation.label)}"
         onpointerenter="showChemistryTooltip(event,this)"
         onpointermove="moveChemistryTooltip(event)"
-        onpointerleave="hideChemistryTooltip()">
-        <title>${esc(l.a.p.name)} × ${esc(l.b.p.name)} — ${l.value} // ${esc(l.relation.label)}</title>
-      </line>`).join("")}</svg>`;
+        onpointerleave="hideChemistryTooltip()"></line>`).join("")}</svg>`;
 }
 
 let chemistryTooltipEl=null;
@@ -615,78 +614,65 @@ function onlyTeamWithSpace(){
     if(t2Full && !t1Full) return 1;
     return null;
 }
-function getContrastColor(hex) {
-    hex = String(hex || "").replace("#", "").trim();
-
-    if (hex.length === 3) {
-        hex = hex.split("").map(c => c + c).join("");
-    }
-
-    if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
-        return "#ffffff";
-    }
-
-    const r = parseInt(hex.slice(0, 2), 16) / 255;
-    const g = parseInt(hex.slice(2, 4), 16) / 255;
-    const b = parseInt(hex.slice(4, 6), 16) / 255;
-
-    const linearize = value =>
-        value <= 0.03928
-            ? value / 12.92
-            : Math.pow((value + 0.055) / 1.055, 2.4);
-
-    const R = linearize(r);
-    const G = linearize(g);
-    const B = linearize(b);
-
-    const luminance =
-        (0.2126 * R) +
-        (0.7152 * G) +
-        (0.0722 * B);
-
-    // Compare contrast against white and dark text.
-    const whiteContrast = (1.0 + 0.05) / (luminance + 0.05);
-    const darkContrast = (luminance + 0.05) / (0.04 + 0.05);
-
-    return whiteContrast >= darkContrast
-        ? "#ffffff"
-        : "#07111f";
+function normalizeHexColor(hex){
+    let h=String(hex||"").replace("#","").trim();
+    if(h.length===3)h=h.split("").map(c=>c+c).join("");
+    return /^[0-9a-fA-F]{6}$/.test(h)?`#${h.toLowerCase()}`:"#19a7ff";
 }
-
-function teamVars(team) {
-    const color = team?.color || "#19a7ff";
-    const text = getContrastColor(color);
-
+function hexRgb(hex){
+    const h=normalizeHexColor(hex).slice(1);
+    return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function relativeLuminance(hex){
+    const [r,g,b]=hexRgb(hex).map(v=>v/255).map(v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4));
+    return .2126*r+.7152*g+.0722*b;
+}
+function contrastRatio(a,b){
+    const l1=relativeLuminance(a),l2=relativeLuminance(b);
+    return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
+}
+function mixHexColors(a,b,amount){
+    const aa=hexRgb(a),bb=hexRgb(b);
+    const c=aa.map((v,i)=>Math.round(v+(bb[i]-v)*amount));
+    return `#${c.map(v=>v.toString(16).padStart(2,"0")).join("")}`;
+}
+function accessibleTeamAccent(hex){
+    const raw=normalizeHexColor(hex);
+    let accent=raw;
+    // The site is predominantly navy/black. Preserve the chosen hue whenever it
+    // is already visible; only lift very dark colors (including pure black) until
+    // borders, labels and highlights have reliable contrast against the UI.
+    const uiDark="#06111c";
+    for(let i=0;i<12 && contrastRatio(accent,uiDark)<4.6;i++){
+        accent=mixHexColors(accent,"#ffffff",.14);
+    }
+    return accent;
+}
+function getContrastColor(hex){
+    const color=normalizeHexColor(hex);
+    const light="#f7fbff",dark="#06111c";
+    return contrastRatio(color,light)>=contrastRatio(color,dark)?light:dark;
+}
+function teamVars(team){
+    const raw=normalizeHexColor(team?.color||"#19a7ff");
+    const accent=accessibleTeamAccent(raw);
+    const onAccent=getContrastColor(accent);
     return [
-        `--team:${color}`,
-        `--team-color:${color}`,
-        `--team-text:${text}`,
-        `--team-contrast:${text}`,
-        `--team-soft:${hexToRgba(color, .14)}`,
-        `--team-glow:${hexToRgba(color, .28)}`
+        `--team-raw:${raw}`,
+        `--team:${accent}`,
+        `--team-color:${accent}`,
+        `--team-accent:${accent}`,
+        `--team-text:#f5f9fd`,
+        `--team-on:${onAccent}`,
+        `--team-contrast:${onAccent}`,
+        `--team-soft:${hexToRgba(accent,.16)}`,
+        `--team-glow:${hexToRgba(accent,.34)}`
     ].join(";");
 }
-
-function hexToRgba(hex, a) {
-    const h = String(hex || "").replace("#", "").trim();
-    const normalized = h.length === 3
-        ? h.split("").map(x => x + x).join("")
-        : h;
-
-    const n = parseInt(normalized, 16);
-
-    if (Number.isNaN(n)) {
-        return `rgba(20,156,255,${a})`;
-    }
-
-    return `rgba(
-        ${(n >> 16) & 255},
-        ${(n >> 8) & 255},
-        ${n & 255},
-        ${a}
-    )`;
+function hexToRgba(hex,a){
+    const [r,g,b]=hexRgb(hex);
+    return `rgba(${r},${g},${b},${a})`;
 }
-
 
 const GAME_MODES={
     quick:{budget:5000,increment:50,maxPlayers:5},
@@ -1074,7 +1060,7 @@ function showCoinFlip(){
       <div class="overlay-kicker">OPENING PRIORITY // RANDOMIZED</div>
       <div class="coin" style="${teamVars(t)}"><span>BL</span></div>
       <div class="overlay-eyebrow">FIRST BID CONTROL</div>
-      <h2 style="color:${t.color}">${esc(t.name)}</h2>
+      <h2 style="${teamVars(t)};color:var(--team)">${esc(t.name)}</h2>
       <p>WON THE INITIAL DRAW</p>`);
     setTimeout(()=>{hideOverlay();startNextAuction();},1800);
 }
@@ -1105,7 +1091,7 @@ function showForcedAssignment(teamNumber,resuming=false){
       <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
       <h2>${esc(currentPlayer.name)}</h2>
-      <p><strong style="color:${fullTeam.color}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
+      <p><strong style="color:${accessibleTeamAccent(fullTeam.color)}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
       <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
     const delay=resuming?500:1500;
     setTimeout(()=>{hideOverlay();setTimeout(()=>{
@@ -1242,7 +1228,7 @@ function displayBiddingTurn(teamNumber){
         <div class="panel-code">LIVE VALUATION // ACTIVE</div>
         <div class="current-bid-label">CURRENT BID</div>
         <div class="current-bid">$${currentBid.toLocaleString()}</div>
-        <div class="bid-holder">CONTROLLED BY <strong style="color:${holder.color}">${esc(holder.name)}</strong></div>
+        <div class="bid-holder">CONTROLLED BY <strong style="color:${accessibleTeamAccent(holder.color)}">${esc(holder.name)}</strong></div>
         ${moneyInput("nextBid",min,min)}
         ${createQuickBidButtons("nextBid")}
         <button id="placeBidButton" class="primary-button team-action"><span>PLACE BID</span><b>→</b></button>
@@ -1313,7 +1299,7 @@ function displayZeroBudgetChoice(n){
       ${turnIndicator("AUCTION CONTROL",rich)}
       <div class="bid-panel" style="${teamVars(rich)}">
         <div class="panel-code">ZERO-BUDGET PROTOCOL</div>
-        <p><strong style="color:${broke.color}">${esc(broke.name)}</strong> has no remaining budget. Buy ${esc(currentPlayer.name)}, or pass and they receive the player for free.</p>
+        <p><strong style="color:${accessibleTeamAccent(broke.color)}">${esc(broke.name)}</strong> has no remaining budget. Buy ${esc(currentPlayer.name)}, or pass and they receive the player for free.</p>
         ${moneyInput("controlBid",bidIncrement,bidIncrement)}
         ${createQuickBidButtons("controlBid")}
         <button id="buyPlayerButton" class="primary-button team-action"><span>BUY PLAYER</span><b>→</b></button>
@@ -1335,9 +1321,9 @@ function enableEnterKey(input,action){input.addEventListener("keydown",e=>{if(e.
 function createAuctionHistoryPanel(){
     const latest=[...auctionHistory].reverse().slice(0,6);
     const rows=latest.length?latest.map(x=>`
-      <div class="history-row" style="--row-team:${x.teamColor}">
+      <div class="history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
         <img src="${x.player.image}" alt="${esc(x.player.name)}">
-        <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="color:${x.teamColor}">${esc(x.teamName)}</b></span></div>
+        <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="color:${accessibleTeamAccent(x.teamColor)}">${esc(x.teamName)}</b></span></div>
         <div class="history-price">${x.price===0?"FREE":"$"+x.price.toLocaleString()}</div>
       </div>`).join(""):`<div class="history-empty">AWAITING FIRST TRANSFER...</div>`;
     return `<section class="auction-history-panel">
@@ -1381,9 +1367,9 @@ function createFinalTeamCard(team,n){
 }
 function createFullHistory(){
     if(!auctionHistory.length)return `<div class="history-empty">NO COMPLETED AUCTIONS</div>`;
-    return auctionHistory.map(x=>`<div class="final-history-row" style="--row-team:${x.teamColor}">
+    return auctionHistory.map(x=>`<div class="final-history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
       <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img src="${x.player.image}" alt="${esc(x.player.name)}">
-      <div><strong>${esc(x.player.name)}</strong><span style="color:${x.teamColor}">${esc(x.teamName)}</span></div>
+      <div><strong>${esc(x.player.name)}</strong><span style="color:${accessibleTeamAccent(x.teamColor)}">${esc(x.teamName)}</span></div>
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
