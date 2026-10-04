@@ -448,112 +448,111 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
 }
 .formation-player-card img,.bench-player-card img{-webkit-user-drag:none;user-select:none}
 
+
 /* =========================================================
    FORMATION PANELS — EQUAL HEIGHT
    ========================================================= */
-
 @media (min-width: 1101px) {
-
-    .formation-layout {
-        align-items: stretch;
+    .formation-layout {align-items:stretch}
+    .formation-pitch-v2,.player-info-panel,.bench-panel{
+        height:920px;min-height:920px;max-height:920px;box-sizing:border-box;
     }
-
-    /* Pitch */
-    .formation-pitch-v2 {
-        height: 920px;
-        min-height: 920px;
-        max-height: 920px;
-        box-sizing: border-box;
+    .player-info-panel{overflow-y:auto}
+    .bench-panel{display:flex;flex-direction:column;overflow:hidden}
+    .bench-heading{flex:0 0 auto}
+    .bench-list{
+        flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:8px;
+        overflow-y:auto;overflow-x:hidden;padding-right:5px;overflow-anchor:none;
+        scroll-behavior:auto;overscroll-behavior:contain;
     }
-
-    /* Player Database */
-    .player-info-panel {
-        height: 920px;
-        min-height: 920px;
-        max-height: 920px;
-        box-sizing: border-box;
-        overflow-y: auto;
+    .bench-player{
+        flex:0 0 76px;width:100%;height:76px;min-height:76px;max-height:76px;
+        box-sizing:border-box;overflow:hidden;display:flex;align-items:center;gap:12px;padding:8px;
     }
-
-    /* Reserves */
-    .bench-panel {
-        height: 920px;
-        min-height: 920px;
-        max-height: 920px;
-        box-sizing: border-box;
-
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+    .bench-player img{
+        flex:0 0 auto;width:58px;height:60px;min-width:58px;min-height:60px;
+        max-width:58px;max-height:60px;object-fit:cover;
     }
+    .bench-player>span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:13px}
+    .bench-player>b{flex:0 0 auto;font-size:8px}
+}
 
-    .bench-heading {
-        flex: 0 0 auto;
-    }
-
-    /* Only the list scrolls */
-    .bench-list {
-        flex: 1 1 auto;
-        min-height: 0;
-
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-
-        overflow-y: auto;
-        overflow-x: hidden;
-
-        padding-right: 5px;
-
-        overflow-anchor: none;
-        scroll-behavior: auto;
-        overscroll-behavior: contain;
-    }
-
-    /* Larger, fixed-size reserve cards */
-    .bench-player {
-        flex: 0 0 76px;
-
-        width: 100%;
-        height: 76px;
-        min-height: 76px;
-        max-height: 76px;
-
-        box-sizing: border-box;
-        overflow: hidden;
-
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 8px;
-    }
-
-    .bench-player img {
-        flex: 0 0 auto;
-
-        width: 58px;
-        height: 60px;
-
-        min-width: 58px;
-        min-height: 60px;
-        max-width: 58px;
-        max-height: 60px;
-
-        object-fit: cover;
-    }
-
-    .bench-player > span {
-        min-width: 0;
-
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-
-        font-size: 13px;
-    }
-
-    .bench-player > b {
-        flex: 0 0 auto;
-        font-size: 8px;
-    }
+/* =========================================================
+   TEAM BUILDER POINTER DRAG — no native drag bitmap/jitter
+   ========================================================= */
+.formation-player-token,.bench-player{
+    -webkit-user-drag:none!important;
+    user-select:none;
+    touch-action:none;
+}
+.formation-player-token img,.bench-player img{
+    -webkit-user-drag:none!important;
+    pointer-events:none;
+}
+.formation-pointer-dragging,
+.formation-pointer-dragging *{
+    cursor:grabbing!important;
+}
+.formation-player-token.pointer-drag-source,
+.bench-player.pointer-drag-source{
+    opacity:.42!important;
+    transform:none!important;
+    filter:brightness(.72) saturate(.75)!important;
+}
+.formation-pointer-preview{
+    position:fixed;
+    left:0;top:0;
+    z-index:1000000;
+    width:92px;
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    will-change:left,top;
+    filter:drop-shadow(0 10px 16px rgba(0,0,0,.45));
+}
+.formation-pointer-ring{
+    width:76px;height:76px;
+    margin:0 auto;
+    padding:3px;
+    border-radius:50%;
+    box-sizing:border-box;
+    background:#03101b;
+    border:2px solid #23c8ff;
+    box-shadow:0 0 0 2px rgba(99,39,255,.75),0 0 20px rgba(35,200,255,.7);
+}
+.formation-pointer-ring img{
+    display:block;
+    width:100%;height:100%;
+    border-radius:50%;
+    object-fit:cover;
+    object-position:center top;
+}
+.formation-pointer-preview>span{
+    display:block;
+    width:max-content;
+    max-width:118px;
+    margin:5px auto 0;
+    padding:3px 7px;
+    background:rgba(1,8,14,.94);
+    border:1px solid rgba(35,200,255,.7);
+    color:#e7f8ff;
+    font:900 10px "Barlow Condensed";
+    letter-spacing:.5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.formation-slot.pointer-drop-target{
+    transform:translate(-50%,-50%)!important;
+    border-color:#56eaff!important;
+    box-shadow:0 0 0 2px rgba(86,234,255,.35),0 0 24px rgba(86,234,255,.65)!important;
+}
+.bench-panel.pointer-drop-target{
+    outline:2px solid #56eaff;
+    outline-offset:-4px;
+    box-shadow:inset 0 0 28px rgba(86,234,255,.12);
+}
+/* Native drag classes are intentionally neutralized in Team Builder. */
+.formation-slot.drag-over,
+.formation-slot.drag-over.drag-canonical-target{
+    transform:translate(-50%,-50%)!important;
 }
