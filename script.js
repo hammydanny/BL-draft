@@ -7,7 +7,6 @@ let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder =
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
 let draftMode = "auction";
 let selectedPlayerIds = new Set(players.map(player => player.id));
-let watchlistedPlayerIds = new Set();
 let playerPoolPositionFilter = "ALL";
 let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
@@ -51,7 +50,6 @@ function playSfx(name){
     else if(name==="toggle"){tone(360,.035,"square",.008);tone(540,.04,"square",.008,.025);}
     else if(name==="result"){tone(330,.06,"triangle",.012);tone(495,.075,"triangle",.012,.05);tone(660,.10,"sine",.014,.10);}
     else if(name==="outbid"){tone(690,.04,"square",.014);tone(520,.05,"triangle",.012,.035);tone(820,.07,"sine",.011,.07);}
-    else if(name==="watch"){tone(740,.04,"sine",.010);tone(980,.08,"triangle",.010,.035);}
     else if(name==="swap"){tone(430,.04,"triangle",.012);tone(640,.05,"triangle",.012,.035);tone(430,.06,"sine",.010,.075);}
     else if(name==="warning"){tone(180,.07,"square",.012);tone(140,.10,"sine",.010,.055);}
 }
@@ -83,7 +81,6 @@ document.addEventListener("keydown",unlockAudio,{capture:true});
 document.addEventListener("click",e=>{
     const b=e.target.closest("button");
     if(!b || b.id==="soundToggle" || b.hasAttribute("data-sound-toggle"))return;
-    if(b.classList.contains("pool-watch")||b.classList.contains("current-watch"))return;
     if(b.id==="placeBidButton"||b.id==="placeOpeningBid"||b.id==="passButton"||b.id==="buyPlayerButton"||b.id==="controlPassButton")return;
     const text=(b.textContent||"").toLowerCase();
     if(text.includes("back")||text.includes("main menu"))playSfx("back");
@@ -864,8 +861,7 @@ function renderPlayerPool(){
 
     grid.innerHTML=visiblePlayers.map(player => {
         const selected=selectedPlayerIds.has(player.id);
-        const watched=watchlistedPlayerIds.has(player.id);
-        return `<div class="pool-player-card ${selected?"selected":""} ${watched?"watchlisted":""}" data-player-id="${player.id}">
+        return `<div class="pool-player-card ${selected?"selected":""}" data-player-id="${player.id}">
             <button type="button" class="pool-select-hit" aria-pressed="${selected}" aria-label="${selected?"Remove":"Add"} ${esc(player.name)} from auction pool">
               <div class="pool-player-check">${selected?"✓":"+"}</div>
               <img src="${player.image}" alt="${esc(player.name)}">
@@ -874,7 +870,6 @@ function renderPlayerPool(){
                   <strong>${esc(player.name)}</strong>
               </div>
             </button>
-            <button type="button" class="pool-watch ${watched?"active":""}" data-watch-id="${player.id}" title="${watched?"Remove from":"Add to"} shortlist" aria-pressed="${watched}">${watched?"★":"☆"}</button>
         </div>`;
     }).join("");
 
@@ -887,30 +882,10 @@ function renderPlayerPool(){
             saveSetupPreferences();
         });
     });
-    grid.querySelectorAll(".pool-watch").forEach(button=>{
-        button.addEventListener("click",event=>{
-            event.stopPropagation();
-            toggleWatchlistPlayer(Number(button.dataset.watchId),true);
-        });
-    });
-
     empty.classList.toggle("hidden", visiblePlayers.length !== 0);
     updatePoolStatus();
 }
 
-function toggleWatchlistPlayer(id,rerenderPool=false){
-    if(watchlistedPlayerIds.has(id))watchlistedPlayerIds.delete(id);
-    else watchlistedPlayerIds.add(id);
-    playSfx("watch");
-    if(rerenderPool)renderPlayerPool();
-    const button=document.querySelector(`[data-current-watch="${id}"]`);
-    if(button){
-        const active=watchlistedPlayerIds.has(id);
-        button.classList.toggle("active",active);
-        button.innerHTML=`${active?"★":"☆"} ${active?"SHORTLISTED":"SHORTLIST"}`;
-    }
-    if(uiState.screen==="auction")saveGame();else saveSetupPreferences();
-}
 function updatePoolStatus(){
     const count=document.getElementById("selectedPlayerCount");
     const requirement=document.getElementById("poolRequirement");
@@ -990,7 +965,6 @@ function saveSetupPreferences(){
                 bidIncrement:document.getElementById("bidIncrement").value,
                 maxPlayers:document.getElementById("maxPlayers").value,
                 selected:[...selectedPlayerIds],
-                watchlisted:[...watchlistedPlayerIds],
                 poolPosition:playerPoolPositionFilter,
                 poolGroup:playerPoolGroupFilter,
                 poolSort:playerPoolSort
@@ -1006,7 +980,6 @@ function saveGame(){
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
-            watchlistedPlayerIds:[...watchlistedPlayerIds],
             team1:{...team1,players:serializePlayerList(team1.players)},
             team2:{...team2,players:serializePlayerList(team2.players)},
             auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
@@ -1026,7 +999,6 @@ function restoreSetup(saved){
     document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
     if(Array.isArray(s.selected))selectedPlayerIds=new Set(s.selected);
-    if(Array.isArray(s.watchlisted))watchlistedPlayerIds=new Set(s.watchlisted);
     playerPoolPositionFilter=s.poolPosition||"ALL";
     playerPoolGroupFilter=s.poolGroup||"all";
     playerPoolSort=s.poolSort||"id";
@@ -1051,7 +1023,6 @@ function restoreGame(saved){
     currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
     remainingPlayers=hydratePlayers(saved.remainingPlayerIds);
     selectedPlayerIds=new Set(saved.selectedPlayerIds||players.map(p=>p.id));
-    watchlistedPlayerIds=new Set(saved.watchlistedPlayerIds||[]);
     team1={...saved.team1,players:hydratePlayers(saved.team1?.players)};
     team2={...saved.team2,players:hydratePlayers(saved.team2?.players)};
     auctionHistory=(saved.auctionHistory||[]).map(x=>({...x,player:players.find(p=>p.id===x.playerId)})).filter(x=>x.player);
@@ -1130,6 +1101,11 @@ function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
+    // Start with an empty auction command area so no player card can flash behind
+    // the opening overlays from a previous or newly-created auction state.
+    auctionContent.innerHTML="";
+    gameOverlay.classList.add("hidden");
+    gameOverlay.classList.remove("overlay-out");
     setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();showCoinFlip();
 }
@@ -1162,7 +1138,7 @@ function showCoinFlip(){
       <div class="overlay-eyebrow">FIRST BID CONTROL</div>
       <h2 style="${teamVars(t)};color:var(--team)">${esc(t.name)}</h2>
       <p>WON THE INITIAL DRAW</p>`);
-    setTimeout(()=>{hideOverlay();startNextAuction();},1800);
+    setTimeout(()=>hideOverlay(startNextAuction),1800);
 }
 
 function startNextAuction(){
@@ -1194,10 +1170,10 @@ function showForcedAssignment(teamNumber,resuming=false){
       <p><strong style="color:${accessibleTeamAccent(fullTeam.color)}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
       <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
     const delay=resuming?500:1500;
-    setTimeout(()=>{hideOverlay();setTimeout(()=>{
+    setTimeout(()=>hideOverlay(()=>{
         if(currentPlayer && !isTeamFull(teamNumber)) awardPlayerFree(teamNumber,true);
         else if(isTeamFull(1)&&isTeamFull(2)) showAuctionComplete();
-    },260);},delay);
+    }),delay);
 }
 
 function awardPlayerFree(teamNumber,forced=false){
@@ -1223,18 +1199,16 @@ function showPlayerReveal(){
     playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image ${watchlistedPlayerIds.has(currentPlayer.id)?"watchlisted-reveal":""}"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}">${watchlistedPlayerIds.has(currentPlayer.id)?`<span class="reveal-watch-badge">★ SHORTLIST TARGET</span>`:""}</div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);
-    setTimeout(()=>{hideOverlay();displayOpeningBid();},1500);
+    setTimeout(()=>hideOverlay(displayOpeningBid),1500);
 }
 
 function createPlayerCard(){
-    const watched=watchlistedPlayerIds.has(currentPlayer.id);
-    return `<div class="current-player ${watched?"watchlisted-target":""}">
+    return `<div class="current-player">
       <div class="card-index">${String(auctionNumber).padStart(2,"0")}</div>
-      <button class="current-watch ${watched?"active":""}" data-current-watch="${currentPlayer.id}" onclick="toggleWatchlistPlayer(${currentPlayer.id})" type="button">${watched?"★ SHORTLISTED":"☆ SHORTLIST"}</button>
       <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
       <div class="player-card-bottom">
         <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
@@ -1479,8 +1453,22 @@ function updatePlayersRemaining(){
     playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;
     playersRemainingDisplay.classList.remove("counter-pop");void playersRemainingDisplay.offsetWidth;playersRemainingDisplay.classList.add("counter-pop");
 }
-function showOverlay(html){overlayContent.innerHTML=html;gameOverlay.classList.remove("hidden");}
-function hideOverlay(){gameOverlay.classList.add("overlay-out");setTimeout(()=>{gameOverlay.classList.add("hidden");gameOverlay.classList.remove("overlay-out");},250);}
+let overlayHideTimer=null;
+function showOverlay(html){
+    clearTimeout(overlayHideTimer);
+    overlayContent.innerHTML=html;
+    gameOverlay.classList.remove("hidden","overlay-out");
+}
+function hideOverlay(onHidden=null){
+    clearTimeout(overlayHideTimer);
+    gameOverlay.classList.add("overlay-out");
+    overlayHideTimer=setTimeout(()=>{
+        gameOverlay.classList.add("hidden");
+        gameOverlay.classList.remove("overlay-out");
+        overlayHideTimer=null;
+        if(typeof onHidden==="function")onHidden();
+    },250);
+}
 
 function getTeamHistory(n){return auctionHistory.filter(x=>x.teamNumber===n);}
 function getMostExpensiveSigning(n){
