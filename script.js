@@ -373,8 +373,17 @@ function tacticalNeighbors(placed){
 }
 function formationChemistry(teamNumber){
     const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
-    const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
-    const links=tacticalNeighbors(placed).map(e=>({...e,value:playerChemistry(e.a.p,e.b.p)}));
+    // Formation adjacency is fixed by all tactical slots, not by whichever slots
+    // happen to be occupied while the user is still building the XI.
+    const formationNodes=shape.map((slot,index)=>({slot,index}));
+    const formationEdges=tacticalNeighbors(formationNodes);
+    const links=formationEdges.map(edge=>{
+        const aId=ass[edge.a.index],bId=ass[edge.b.index];
+        if(!aId||!bId)return null;
+        const aPlayer=team.players.find(p=>p.id===aId),bPlayer=team.players.find(p=>p.id===bId);
+        if(!aPlayer||!bPlayer)return null;
+        return {a:{...edge.a,p:aPlayer},b:{...edge.b,p:bPlayer},d:edge.d,value:playerChemistry(aPlayer,bPlayer)};
+    }).filter(Boolean);
     const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
     return {overall,links};
 }
@@ -1355,21 +1364,41 @@ function clearLiveFormationTargets(){
     document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
 }
 
+let activeFormationDragPreview=null;
+function buildFormationDragPreview(source){
+    clearFormationDragPreview();
+    const img=source.querySelector("img");
+    const preview=document.createElement("div");
+    preview.className="formation-drag-preview";
+    if(img) preview.innerHTML=`<img src="${img.src}" alt=""><span>MOVE</span>`;
+    document.body.appendChild(preview);
+    activeFormationDragPreview=preview;
+    return preview;
+}
+function clearFormationDragPreview(){
+    if(activeFormationDragPreview){
+        activeFormationDragPreview.remove();
+        activeFormationDragPreview=null;
+    }
+}
 function startFormationDrag(event,id){
     draggedFormationPlayerId=id;
     selectedFormationPlayerId=id;
     event.dataTransfer.effectAllowed="move";
     event.dataTransfer.setData("text/plain",String(id));
     const source=event.currentTarget;
-    const rect=source.getBoundingClientRect();
-    event.dataTransfer.setDragImage(source,Math.max(1,Math.min(rect.width/2,event.clientX-rect.left)),Math.max(1,Math.min(rect.height/2,event.clientY-rect.top)));
+    const preview=buildFormationDragPreview(source);
+    event.dataTransfer.setDragImage(preview,42,42);
     updateLiveFormationTargets(id);
     playSfx("select");
     requestAnimationFrame(()=>source.classList.add("dragging"));
+    setTimeout(clearFormationDragPreview,0);
 }
 function endFormationDrag(event){
     event.currentTarget.classList.remove("dragging");
+    clearFormationDragPreview();
     clearLiveFormationTargets();
+    document.querySelectorAll(".formation-slot.drag-over").forEach(x=>x.classList.remove("drag-over"));
     draggedFormationPlayerId=null;
 }
 function allowFormationDrop(event){
