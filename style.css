@@ -1070,3 +1070,88 @@ body{
   .auction-command-center .pass-button{margin-top:5px;padding:8px}
   .auction-history-panel{margin-top:10px}
 }
+
+
+/* =========================================================
+   V10 // FEATURED AUCTION PLAYER EMPHASIS
+   ========================================================= */
+@media (min-width:1100px){
+  .auction-command-grid{
+    grid-template-columns:minmax(225px,.92fr) minmax(560px,650px) minmax(225px,.92fr);
+    gap:14px;
+  }
+  .auction-command-center{max-width:650px}
+  .auction-command-center .current-player{
+    width:100%;
+    display:grid;
+    grid-template-columns:220px minmax(0,1fr);
+    min-height:250px;
+    margin:0 auto 9px;
+  }
+  .auction-command-center .player-image-container{
+    height:250px!important;
+    min-height:250px;
+  }
+  .auction-command-center .player-image{
+    object-position:center top;
+  }
+  .auction-command-center .player-card-bottom{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:15px 16px;
+    border-top:0;
+    border-left:2px solid var(--blue);
+  }
+  .auction-command-center .player-card-name{
+    margin:3px 0 2px;
+    font-size:34px;
+    line-height:.9;
+  }
+  .auction-command-center .player-card-label{font-size:10px}
+  .auction-command-center .current-player .position-badges{margin-top:6px}
+  .auction-command-center .current-player .stat-strip{
+    grid-template-columns:repeat(4,1fr);
+    gap:4px;
+    margin-top:10px;
+  }
+  .auction-command-center .current-player .stat-strip>*{padding:6px 3px}
+  .auction-command-center .current-watch{left:10px;top:10px}
+  .auction-command-center .card-index{right:10px;top:10px}
+}
+@media (min-width:1100px) and (max-height:820px){
+  .auction-command-center .current-player{
+    grid-template-columns:180px minmax(0,1fr)!important;
+    min-height:188px!important;
+  }
+  .auction-command-center .player-image-container{
+    height:188px!important;
+    min-height:188px!important;
+  }
+  .auction-command-center .player-card-bottom{padding:10px 13px!important}
+  .auction-command-center .player-card-name{font-size:29px!important}
+  .auction-command-center .current-player .stat-strip{
+    grid-template-columns:repeat(4,1fr)!important;
+    margin-top:7px!important;
+  }
+}
+@media (min-width:1500px) and (min-height:821px){
+  .auction-command-grid{
+    grid-template-columns:minmax(260px,1fr) minmax(640px,720px) minmax(260px,1fr);
+  }
+  .auction-command-center{max-width:720px}
+  .auction-command-center .current-player{
+    grid-template-columns:255px minmax(0,1fr);
+    min-height:285px;
+  }
+  .auction-command-center .player-image-container{
+    height:285px!important;
+    min-height:285px;
+  }
+  .auction-command-center .player-card-name{font-size:38px}
+}
+
+/* The Team Builder database is once again a focused profile panel. */
+.player-info-panel:not(.player-database-browser) .player-info-empty{
+  min-height:420px;
+}
