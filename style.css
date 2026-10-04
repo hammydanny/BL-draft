@@ -447,3 +447,10 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
   opacity:.28!important;transform:none!important;filter:grayscale(.2) brightness(.85)!important;box-shadow:none!important;
 }
 .formation-player-card img,.bench-player-card img{-webkit-user-drag:none;user-select:none}
+
+/* TEAM BUILDER // DRAG STABILITY */
+.formation-drag-preview{position:fixed;left:12px;top:12px;z-index:999999;width:84px;height:84px;box-sizing:border-box;padding:3px;border-radius:50%;background:#020a12;border:3px solid #19a7ff;box-shadow:0 0 0 3px rgba(108,31,255,.35),0 0 22px rgba(25,167,255,.55);pointer-events:none;overflow:visible}
+.formation-drag-preview img{display:block;width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center top}
+.formation-drag-preview span{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);padding:2px 5px;background:#020a12;border:1px solid #19a7ff;color:#bfeeff;font:900 7px "Barlow Condensed";letter-spacing:1px;white-space:nowrap}
+.formation-player-token.dragging,.bench-player.dragging{opacity:.38!important;transform:none!important;filter:brightness(.75)!important}
+.formation-slot.drag-over,.formation-slot.drag-over.drag-canonical-target{transform:translate(-50%,-50%)!important}
