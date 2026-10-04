@@ -887,3 +887,56 @@ body{
 .share-team-head span {
     color: var(--team-color);
 }
+
+
+/* =========================================================
+   TEAM COLOR CONTRAST SYSTEM // V8
+   Raw team colors remain identity choices; --team is a visible accent that is
+   automatically lifted only when a color is too dark for the navy interface.
+   ========================================================= */
+.team-action,
+.primary-button.team-action{
+    color:var(--team-on)!important;
+    background:linear-gradient(
+        100deg,
+        var(--team),
+        color-mix(in srgb,var(--team),white 18%)
+    )!important;
+}
+.team-action span,.team-action b{color:inherit!important}
+
+.coin{
+    color:var(--team-on)!important;
+}
+
+/* Accent text lives on dark panels, so it uses the contrast-safe accent rather
+   than the foreground color intended for filled team-color buttons. */
+.team-tracker h3,
+.final-team-card h3,
+.share-team h3,
+.formation-control-panel strong,
+.player-info-panel .player-info-id{
+    color:var(--team)!important;
+}
+
+/* Instruction/status copy should remain readable regardless of team hue. */
+.turn-indicator strong,
+.formation-instructions strong,
+.sold-panel h2{
+    color:var(--team-text)!important;
+}
+
+/* Keep borders/labels visible for black and near-black teams. */
+.team-tracker,
+.final-team-card,
+.share-team,
+.bid-panel,
+.sold-panel,
+.turn-indicator,
+.formation-control-panel,
+.formation-instructions,
+.player-info-panel,
+.bench-panel,
+.formation-pitch-v2{
+    border-color:var(--team-soft);
+}
