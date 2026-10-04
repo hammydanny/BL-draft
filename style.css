@@ -448,9 +448,112 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
 }
 .formation-player-card img,.bench-player-card img{-webkit-user-drag:none;user-select:none}
 
-/* TEAM BUILDER // DRAG STABILITY */
-.formation-drag-preview{position:fixed;left:12px;top:12px;z-index:999999;width:84px;height:84px;box-sizing:border-box;padding:3px;border-radius:50%;background:#020a12;border:3px solid #19a7ff;box-shadow:0 0 0 3px rgba(108,31,255,.35),0 0 22px rgba(25,167,255,.55);pointer-events:none;overflow:visible}
-.formation-drag-preview img{display:block;width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center top}
-.formation-drag-preview span{position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);padding:2px 5px;background:#020a12;border:1px solid #19a7ff;color:#bfeeff;font:900 7px "Barlow Condensed";letter-spacing:1px;white-space:nowrap}
-.formation-player-token.dragging,.bench-player.dragging{opacity:.38!important;transform:none!important;filter:brightness(.75)!important}
-.formation-slot.drag-over,.formation-slot.drag-over.drag-canonical-target{transform:translate(-50%,-50%)!important}
+/* =========================================================
+   FORMATION PANELS — EQUAL HEIGHT
+   ========================================================= */
+
+@media (min-width: 1101px) {
+
+    .formation-layout {
+        align-items: stretch;
+    }
+
+    /* Pitch */
+    .formation-pitch-v2 {
+        height: 920px;
+        min-height: 920px;
+        max-height: 920px;
+        box-sizing: border-box;
+    }
+
+    /* Player Database */
+    .player-info-panel {
+        height: 920px;
+        min-height: 920px;
+        max-height: 920px;
+        box-sizing: border-box;
+        overflow-y: auto;
+    }
+
+    /* Reserves */
+    .bench-panel {
+        height: 920px;
+        min-height: 920px;
+        max-height: 920px;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .bench-heading {
+        flex: 0 0 auto;
+    }
+
+    /* Only the list scrolls */
+    .bench-list {
+        flex: 1 1 auto;
+        min-height: 0;
+
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        padding-right: 5px;
+
+        overflow-anchor: none;
+        scroll-behavior: auto;
+        overscroll-behavior: contain;
+    }
+
+    /* Larger, fixed-size reserve cards */
+    .bench-player {
+        flex: 0 0 76px;
+
+        width: 100%;
+        height: 76px;
+        min-height: 76px;
+        max-height: 76px;
+
+        box-sizing: border-box;
+        overflow: hidden;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+    }
+
+    .bench-player img {
+        flex: 0 0 auto;
+
+        width: 58px;
+        height: 60px;
+
+        min-width: 58px;
+        min-height: 60px;
+        max-width: 58px;
+        max-height: 60px;
+
+        object-fit: cover;
+    }
+
+    .bench-player > span {
+        min-width: 0;
+
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        font-size: 13px;
+    }
+
+    .bench-player > b {
+        flex: 0 0 auto;
+        font-size: 8px;
+    }
+}
