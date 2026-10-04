@@ -556,3 +556,27 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
 .formation-slot.drag-over.drag-canonical-target{
     transform:translate(-50%,-50%)!important;
 }
+
+
+/* =========================================================
+   TEAM BUILDER DRAG FINAL STABILITY
+   Keep absolutely-positioned formation buttons anchored.
+   ========================================================= */
+.formation-slot:active:not(:disabled){
+    transform:translate(-50%,-50%)!important;
+}
+.formation-slot.pointer-drag-origin,
+.formation-slot.pointer-drag-origin:hover,
+.formation-slot.pointer-drag-origin:active{
+    transform:translate(-50%,-50%)!important;
+    transition:none!important;
+    z-index:8;
+}
+.formation-slot.pointer-drag-origin .formation-player-token{
+    transform:none!important;
+}
+.bench-player.pointer-drag-source,
+.bench-player.pointer-drag-source:active{
+    transform:none!important;
+    transition:none!important;
+}
