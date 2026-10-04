@@ -988,13 +988,10 @@ body{
 .bid-pressure-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:9px 0 2px}
 .bid-pressure-row span{padding:6px;background:#020910;border:1px solid #12314a;color:#678399;font-size:8px;font-weight:800;letter-spacing:.7px}
 .bid-pressure-row b{display:block;margin-top:2px;color:#dcebf6;font-size:10px}
-.current-watch{position:absolute;z-index:4;left:8px;top:8px;padding:4px 7px;color:#7993a8;background:rgba(1,7,13,.9);border:1px solid #183f5c;font-size:8px;font-weight:900;letter-spacing:.8px}
-.current-watch.active{color:#ffe76e;border-color:#ffe76e;box-shadow:0 0 12px rgba(255,231,110,.25)}
-.current-player.watchlisted-target{border-color:#ffe76e;box-shadow:0 0 0 1px rgba(255,231,110,.13),0 20px 55px rgba(0,0,0,.5)}
 @media(max-width:1099px){.auction-command-grid{display:flex;flex-direction:column;gap:10px}.auction-command-grid>.side-team{width:min(100%,760px);margin:0 auto}.auction-command-grid>.side-team.team-1{order:1}.auction-command-center{order:2}.auction-command-grid>.side-team.team-2{order:3}.side-team .mini-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));max-height:210px}.auction-history-panel{margin-top:16px}}
 
 /* =========================================================
-   PLAYER DATABASE FILTERS + SHORTLIST
+   PLAYER DATABASE FILTERS
    ========================================================= */
 .player-database-toolbar{display:grid;grid-template-columns:minmax(220px,1.4fr) minmax(420px,2fr) auto;align-items:end}
 .pool-filter-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px}
@@ -1003,9 +1000,6 @@ body{
 .pool-filter-grid select:focus,.database-toolbar select:focus{border-color:var(--blue)}
 .pool-player-card{position:relative;padding:0!important}
 .pool-select-hit{display:block;width:100%;height:100%;padding:0;color:inherit;text-align:left;background:transparent;border:0}
-.pool-watch{position:absolute;z-index:5;right:7px;top:7px;width:29px;height:29px;padding:0;color:#7b94a8;background:rgba(1,7,13,.9);border:1px solid #183b5b;font-size:16px;line-height:27px;text-align:center}
-.pool-watch:hover,.pool-watch.active{color:#ffe76e;border-color:#ffe76e;box-shadow:0 0 13px rgba(255,231,110,.3)}
-.pool-player-card.watchlisted:before{content:"SHORTLIST";position:absolute;z-index:4;left:7px;top:7px;padding:3px 5px;color:#ffe76e;background:rgba(1,7,13,.9);border-left:2px solid #ffe76e;font-size:7px;font-weight:900;letter-spacing:1px;pointer-events:none}
 @media(max-width:900px){.player-database-toolbar{grid-template-columns:1fr}.pool-filter-grid{grid-template-columns:1fr 1fr 1fr}}
 @media(max-width:600px){.pool-filter-grid{grid-template-columns:1fr}.bid-pressure-row{grid-template-columns:1fr}}
 
@@ -1039,9 +1033,7 @@ body{
 /* AUCTION MOMENT FEEDBACK */
 .current-bid{animation:bidNumberPulse .28s ease-out}
 @keyframes bidNumberPulse{0%{transform:scale(.92);opacity:.55;text-shadow:0 0 0 transparent}65%{transform:scale(1.035);opacity:1;text-shadow:0 0 20px var(--team-glow)}100%{transform:none;text-shadow:none}}
-.reveal-image{position:relative}.reveal-image.watchlisted-reveal{border-color:#ffe76e;box-shadow:0 0 0 1px rgba(255,231,110,.2),0 0 45px rgba(255,231,110,.22)}
-.reveal-watch-badge{position:absolute;left:8px;right:8px;bottom:8px;padding:5px;color:#ffe76e;background:rgba(1,7,13,.9);border:1px solid rgba(255,231,110,.55);font-size:9px;font-weight:900;letter-spacing:1.4px}
-.empty-slot{transition:color .12s ease,text-shadow .12s ease}.formation-slot:not(.occupied):hover .empty-slot{color:#8be7ff;text-shadow:0 0 13px #19a7ff}
+.reveal-image{position:relative}.empty-slot{transition:color .12s ease,text-shadow .12s ease}.formation-slot:not(.occupied):hover .empty-slot{color:#8be7ff;text-shadow:0 0 13px #19a7ff}
 
 /* Short desktop screens: keep teams + player + bid controls inside one viewport. */
 @media (min-width:1100px) and (max-height:820px){
@@ -1116,8 +1108,7 @@ body{
     margin-top:10px;
   }
   .auction-command-center .current-player .stat-strip>*{padding:6px 3px}
-  .auction-command-center .current-watch{left:10px;top:10px}
-  .auction-command-center .card-index{right:10px;top:10px}
+  .auction-command-center .auction-command-center .card-index{right:10px;top:10px}
 }
 @media (min-width:1100px) and (max-height:820px){
   .auction-command-center .current-player{
