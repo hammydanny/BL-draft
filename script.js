@@ -189,7 +189,7 @@ function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,
 function statStrip(player,compact=false){
     const s=playerStats(player);
     return `<div class="stat-strip ${compact?"compact":""}">
-      <b><i>OVR</i>${s.ovr}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
+      <b><i>OVR</i>${playerOverall(player)}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
       <span><i>SPD</i>${s.spd}</span><span><i>DEF</i>${s.def}</span><span><i>PAS</i>${s.pas}</span>
       <span><i>DRI</i>${s.dri}</span><span><i>GK</i>${s.gk}</span>
     </div>`;
@@ -262,14 +262,24 @@ function calculatePositionOVR(player,position){
   const s=playerStats(player), pos=normalizePosition(position), w=POSITION_WEIGHTS[pos];
   return Math.max(1,Math.min(100,Math.round(Object.entries(w).reduce((n,[k,v])=>n+(Number(s[k])||0)*v,0))));
 }
-function playerOverall(player){ return player ? calculatePositionOVR(player,primaryPosition(player)) : 0; }
+function playerOverall(player){
+  if(!player)return 0;
+  const stated=Number(playerStats(player).ovr);
+  return Number.isFinite(stated)?Math.max(1,Math.min(100,Math.round(stated))):calculatePositionOVR(player,primaryPosition(player));
+}
 function effectiveOVR(player,slotLabel){
   if(!player||!slotLabel)return 0;
-  const base=calculatePositionOVR(player,slotLabel);
-  if(primaryFit(player,slotLabel)) return base;
-  if(canonicalFit(player,slotLabel)) return Math.max(1,base-2);
+  const overall=playerOverall(player);
+  const naturalRaw=calculatePositionOVR(player,primaryPosition(player));
+  const slotRaw=calculatePositionOVR(player,slotLabel);
+  // Component attributes only nudge the current-canon OVR for a specific role.
+  // They no longer replace the player's actual overall standing.
+  const roleDelta=Math.max(-4,Math.min(4,Math.round((slotRaw-naturalRaw)*0.35)));
+  let score=overall+roleDelta;
+  if(primaryFit(player,slotLabel)) return Math.max(1,Math.min(100,score));
+  if(canonicalFit(player,slotLabel)) return Math.max(1,Math.min(100,score-1));
   const pg=positionGroup(primaryPosition(player)), sg=positionGroup(slotLabel);
-  return Math.max(1,base-(pg===sg?5:11));
+  return Math.max(1,Math.min(100,score-(pg===sg?4:9)));
 }
 function positionGroup(position){
   const p=normalizePosition(position);
@@ -281,7 +291,7 @@ function positionGroup(position){
 function positionRatingGrid(player){
   const order=["GK","CB","LB","RB","LWB","RWB","DM","CM","AM","LM","RM","LW","RW","ST","CF"];
   return `<div class="position-rating-grid">${order.map(pos=>{
-    const score=calculatePositionOVR(player,pos);
+    const score=effectiveOVR(player,pos);
     const canon=canonicalFit(player,pos), primary=primaryFit(player,pos);
     return `<div class="position-rating ${canon?"canon":""} ${primary?"primary":""}"><span>${pos}</span><strong>${score}</strong></div>`;
   }).join("")}</div>`;
@@ -2074,34 +2084,36 @@ function formationDatabasePlayers(team){
 function createPlayerInfoSidebar(team){
   const player=team.players.find(p=>p.id===selectedFormationPlayerId);
   if(playerDatabaseHidden) return "";
-  if(!player){
-    const database=formationDatabasePlayers(team);
-    return `<aside class="player-info-panel player-database-browser" style="${teamVars(team)}">
-      <div class="player-info-top"><div><span class="player-info-code">PLAYER // DATABASE</span><strong class="database-count">${database.length}</strong></div></div>
-      <div class="database-toolbar">
-        <input type="search" value="${esc(formationDbQuery)}" placeholder="SEARCH SQUAD..." oninput="setFormationDbQuery(this.value)">
-        <select onchange="setFormationDbPosition(this.value)">
-          ${["ALL","ATTACK","MIDFIELD","DEFENCE","GK"].map(x=>`<option value="${x}" ${formationDbPosition===x?"selected":""}>${x}</option>`).join("")}
-        </select>
-        <select onchange="setFormationDbSort(this.value)">
-          <option value="ovr" ${formationDbSort==="ovr"?"selected":""}>OVR ↓</option>
-          <option value="name" ${formationDbSort==="name"?"selected":""}>NAME A-Z</option>
-          <option value="position" ${formationDbSort==="position"?"selected":""}>POSITION</option>
-        </select>
-      </div>
-      <div class="database-roster">${database.length?database.map(p=>`<button onclick="selectFormationPlayerOnly(${p.id})"><img src="${p.image}" alt=""><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // OVR ${playerOverall(p)}</small></span><b>${playerOverall(p)}</b></button>`).join(""):`<div class="history-empty">NO MATCHING PLAYERS</div>`}</div>
-    </aside>`;
-  }
-  const s=playerStats(player);
+  if(!player) return `<aside class="player-info-panel" style="${teamVars(team)}">
+    <div class="player-info-top"><div><span class="player-info-code">PLAYER // DATABASE</span></div></div>
+    <div class="player-info-empty">
+      <div class="player-info-empty-icon">+</div>
+      <strong>SELECT A PLAYER</strong>
+      <span>Click, press, or begin dragging a player to inspect their current OVR, attributes and best positions.</span>
+    </div>
+  </aside>`;
+
+  const st=playerStats(player);
   const stat=(label,value)=>`<div class="player-stat-row"><div class="player-stat-label"><span>${label}</span><strong>${value}</strong></div><div class="player-stat-track"><i style="width:${Math.max(0,Math.min(100,value))}%"></i></div></div>`;
   return `<aside class="player-info-panel" style="${teamVars(team)}">
-    <div class="player-info-top"><div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
-    <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button></div>
-    ${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);const pos=slot?.label||primaryPosition(player);return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${slot?effectiveOVR(player,pos):playerOverall(player)}</strong></div></div>`})()}
+    <div class="player-info-top">
+      <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
+      <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button>
+    </div>
+    ${(()=>{
+      const slot=currentPlayerSlot(formationTeamNumber,player.id);
+      const pos=slot?.label||primaryPosition(player);
+      return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${slot?effectiveOVR(player,pos):playerOverall(player)}</strong></div></div>`;
+    })()}
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
-    <div class="player-info-section current-position-rating">${(()=>{const slot=currentPlayerSlot(formationTeamNumber,player.id);const pos=slot?.label||primaryPosition(player);return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${slot?effectiveOVR(player,pos):playerOverall(player)}</b></div>`})()}</div>
-    <div class="player-info-section"><div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
-      ${stat("OFF",s.off)}${stat("SHO",s.sho)}${stat("SPD",s.spd)}${stat("DEF",s.def)}${stat("PAS",s.pas)}${stat("DRI",s.dri)}${stat("GK",s.gk)}
+    <div class="player-info-section current-position-rating">${(()=>{
+      const slot=currentPlayerSlot(formationTeamNumber,player.id);
+      const pos=slot?.label||primaryPosition(player);
+      return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${slot?effectiveOVR(player,pos):playerOverall(player)}</b></div>`;
+    })()}</div>
+    <div class="player-info-section">
+      <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
+      ${stat("OFF",st.off)}${stat("SHO",st.sho)}${stat("SPD",st.spd)}${stat("DEF",st.def)}${stat("PAS",st.pas)}${stat("DRI",st.dri)}${stat("GK",st.gk)}
     </div>
   </aside>`;
 }
