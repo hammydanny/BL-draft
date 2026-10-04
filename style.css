@@ -940,3 +940,133 @@ body{
 .formation-pitch-v2{
     border-color:var(--team-soft);
 }
+
+
+/* =========================================================
+   GAMEPLAY + PRESENTATION V9 // AUCTION COMMAND CENTER
+   ========================================================= */
+@media (min-width:1100px){
+  #auction-screen{padding:14px 18px 42px}
+  #auction-screen .game-header{max-width:1540px}
+  .auction-command-shell{max-width:1540px;margin:0 auto}
+  .auction-command-grid{
+    display:grid;grid-template-columns:minmax(245px,1fr) minmax(420px,540px) minmax(245px,1fr);
+    gap:14px;align-items:start;margin-top:14px
+  }
+  .auction-command-grid>.side-team{position:sticky;top:12px;height:calc(100vh - 105px);max-height:760px;min-height:570px}
+  .auction-command-center{width:100%;max-width:540px;margin:0 auto}
+  .auction-command-center .current-player{width:230px;margin-bottom:9px}
+  .auction-command-center .player-image-container{height:clamp(205px,29vh,315px)}
+  .auction-command-center .player-card-bottom{padding:9px 11px}
+  .auction-command-center .stat-strip{margin-top:6px}
+  .auction-command-center .turn-indicator{margin-bottom:6px;padding:8px 11px}
+  .auction-command-center .bid-panel,.auction-command-center .sold-panel{padding:14px 16px}
+  .auction-command-center .current-bid{font-size:42px}
+  .auction-command-center .primary-button{margin-top:10px;padding:12px 15px}
+  .auction-command-center .pass-button{padding:10px}
+  .auction-history-panel{max-width:1540px;margin-top:14px}
+}
+.team-tracker.side-team{display:flex;flex-direction:column;padding:14px;overflow:hidden}
+.team-tracker.side-team .team-live-state{flex:0 0 auto;margin:-2px 0 7px;color:#58758b;font-size:9px;font-weight:900;letter-spacing:1.6px}
+.team-tracker.side-team.is-turn{border-color:var(--team);box-shadow:0 0 0 1px var(--team-soft),0 15px 40px rgba(0,0,0,.28),inset 0 0 42px var(--team-soft)}
+.team-tracker.side-team.is-turn .team-live-state{color:var(--team);text-shadow:0 0 12px var(--team-glow)}
+.team-tracker.side-team.is-leader:not(.is-turn) .team-live-state{color:var(--team)}
+.team-economy-grid{display:grid;grid-template-columns:1fr 76px;gap:6px;margin-top:10px}
+.team-economy-grid>div{padding:8px;background:#020910;border:1px solid #102b40}
+.team-economy-grid span{display:block;color:#58758b;font-size:8px;font-weight:800;letter-spacing:1px}
+.team-economy-grid strong{display:block;margin-top:2px;color:var(--team);font:900 21px "Barlow Condensed"}
+.strategy-warning,.strategy-clear{margin-top:7px;padding:6px 7px;font-size:8px;font-weight:900;letter-spacing:1px}
+.strategy-warning{color:#ff879c;background:rgba(255,49,93,.08);border-left:2px solid #ff315d}
+.strategy-clear{color:#5f829a;background:#03101a;border-left:2px solid #173b56}
+.side-team .mini-roster{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:5px;margin-top:9px;overflow:auto;padding-right:3px;scrollbar-width:thin;scrollbar-color:var(--team) #03101a}
+.side-team .mini-roster::-webkit-scrollbar{width:7px}.side-team .mini-roster::-webkit-scrollbar-track{background:#03101a}.side-team .mini-roster::-webkit-scrollbar-thumb{background:linear-gradient(var(--team),color-mix(in srgb,var(--team),white 28%));border:1px solid #03101a}
+.side-team .mini-player-card{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;min-height:49px;overflow:visible}
+.side-team .mini-player-card img{width:42px;height:48px;object-fit:cover}
+.side-team .mini-player-card>span{min-width:0;padding:4px 6px;text-align:left}
+.side-team .mini-player-card strong{display:block;overflow:hidden;color:#dcecf8;font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.side-team .mini-player-card small{display:block;margin-top:2px;color:#58758b;font-size:8px;font-weight:800;letter-spacing:.5px}
+.bid-pressure-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:9px 0 2px}
+.bid-pressure-row span{padding:6px;background:#020910;border:1px solid #12314a;color:#678399;font-size:8px;font-weight:800;letter-spacing:.7px}
+.bid-pressure-row b{display:block;margin-top:2px;color:#dcebf6;font-size:10px}
+.current-watch{position:absolute;z-index:4;left:8px;top:8px;padding:4px 7px;color:#7993a8;background:rgba(1,7,13,.9);border:1px solid #183f5c;font-size:8px;font-weight:900;letter-spacing:.8px}
+.current-watch.active{color:#ffe76e;border-color:#ffe76e;box-shadow:0 0 12px rgba(255,231,110,.25)}
+.current-player.watchlisted-target{border-color:#ffe76e;box-shadow:0 0 0 1px rgba(255,231,110,.13),0 20px 55px rgba(0,0,0,.5)}
+@media(max-width:1099px){.auction-command-grid{display:flex;flex-direction:column;gap:10px}.auction-command-grid>.side-team{width:min(100%,760px);margin:0 auto}.auction-command-grid>.side-team.team-1{order:1}.auction-command-center{order:2}.auction-command-grid>.side-team.team-2{order:3}.side-team .mini-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));max-height:210px}.auction-history-panel{margin-top:16px}}
+
+/* =========================================================
+   PLAYER DATABASE FILTERS + SHORTLIST
+   ========================================================= */
+.player-database-toolbar{display:grid;grid-template-columns:minmax(220px,1.4fr) minmax(420px,2fr) auto;align-items:end}
+.pool-filter-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px}
+.pool-filter-grid label{margin:0;color:#5e7b90;font-size:8px;font-weight:900;letter-spacing:1px}
+.pool-filter-grid select,.database-toolbar select{width:100%;margin-top:4px;padding:9px 8px;color:#d7eaf8;background:#020a12;border:1px solid #173b56;font:700 11px "Rajdhani";outline:none}
+.pool-filter-grid select:focus,.database-toolbar select:focus{border-color:var(--blue)}
+.pool-player-card{position:relative;padding:0!important}
+.pool-select-hit{display:block;width:100%;height:100%;padding:0;color:inherit;text-align:left;background:transparent;border:0}
+.pool-watch{position:absolute;z-index:5;right:7px;top:7px;width:29px;height:29px;padding:0;color:#7b94a8;background:rgba(1,7,13,.9);border:1px solid #183b5b;font-size:16px;line-height:27px;text-align:center}
+.pool-watch:hover,.pool-watch.active{color:#ffe76e;border-color:#ffe76e;box-shadow:0 0 13px rgba(255,231,110,.3)}
+.pool-player-card.watchlisted:before{content:"SHORTLIST";position:absolute;z-index:4;left:7px;top:7px;padding:3px 5px;color:#ffe76e;background:rgba(1,7,13,.9);border-left:2px solid #ffe76e;font-size:7px;font-weight:900;letter-spacing:1px;pointer-events:none}
+@media(max-width:900px){.player-database-toolbar{grid-template-columns:1fr}.pool-filter-grid{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:600px){.pool-filter-grid{grid-template-columns:1fr}.bid-pressure-row{grid-template-columns:1fr}}
+
+/* =========================================================
+   TEAM BUILDER FINISHING PASS
+   ========================================================= */
+.chemistry-lines.chem-inspecting .chem-link:not(.chem-active){opacity:.16!important}
+.chemistry-lines.chem-inspecting .chem-link.chem-active{opacity:1!important;stroke-width:5!important;filter:drop-shadow(0 0 8px currentColor)}
+.formation-actions .formation-auto{color:#9df6ff;border-color:#1c7896;background:linear-gradient(120deg,rgba(25,167,255,.12),rgba(90,65,255,.08))}
+.player-database-browser{display:flex;flex-direction:column;overflow:hidden}
+.database-count{color:var(--team);font:900 18px "Barlow Condensed"}
+.database-toolbar{display:grid;grid-template-columns:1fr 92px 105px;gap:5px;padding:9px;border-bottom:1px solid #15324a}
+.database-toolbar input{min-width:0;padding:9px;font-size:11px}
+.database-toolbar select{margin:0;padding:8px 5px;font-size:9px}
+.database-roster{flex:1;min-height:0;overflow:auto;padding:8px;scrollbar-width:thin;scrollbar-color:var(--team) #03101a}
+.database-roster button{display:grid;grid-template-columns:42px minmax(0,1fr) 32px;align-items:center;width:100%;gap:7px;padding:5px;margin-bottom:5px;color:#d8eaf7;text-align:left;background:#020910;border:1px solid #12314a}
+.database-roster button:hover{border-color:var(--team);background:var(--team-soft)}
+.database-roster img{width:42px;height:48px;object-fit:cover}.database-roster span{min-width:0}.database-roster strong,.database-roster small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.database-roster strong{font-size:10px}.database-roster small{margin-top:2px;color:#5f7a8f;font-size:8px}.database-roster b{color:var(--team);font:900 17px "Barlow Condensed"}
+
+/* =========================================================
+   RESULTS INTELLIGENCE V9
+   ========================================================= */
+.results-comparison{margin:0 0 14px;padding:13px;background:linear-gradient(145deg,#061421,#020810);border:1px solid #15344c;text-align:left}
+.comparison-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid #15344c}.comparison-head span{color:var(--blue);font-size:9px;font-weight:900;letter-spacing:1.6px}.comparison-head strong{font:900 20px "Barlow Condensed"}
+.comparison-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.comparison-grid>div{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:5px;padding:8px;background:#020910;border:1px solid #102a3e}.comparison-grid>div>span{grid-column:1/-1;color:#59758b;font-size:8px;font-weight:900;letter-spacing:1px}.comparison-grid b{font:900 18px "Barlow Condensed"}.comparison-grid b:last-child{text-align:right}.comparison-grid em{color:#48667c;font-size:7px;font-style:normal;font-weight:900;text-align:center;letter-spacing:.7px}
+.final-stats-v9{grid-template-columns:repeat(4,1fr)!important}.result-intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}.result-intel-grid>div{position:relative;min-width:0;padding:8px 42px 8px 8px;background:#020910;border:1px solid #112d45}.result-intel-grid span{display:block;color:#5b778c;font-size:8px;font-weight:900;letter-spacing:1px}.result-intel-grid strong{display:block;overflow:hidden;margin-top:2px;color:#dcecf7;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.result-intel-grid b{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--team);font:900 13px "Barlow Condensed"}.result-intel-grid b.chemical{color:#ffe65a}.result-intel-grid b.elite{color:#43ff9a}.result-intel-grid b.strong{color:#31d7ff}.result-intel-grid b.link{color:#9c8cff}.result-intel-grid b.weak{color:#ff496d}
+@media(max-width:850px){.comparison-grid{grid-template-columns:1fr 1fr}.final-stats-v9{grid-template-columns:1fr 1fr!important}}
+@media(max-width:520px){.comparison-grid,.result-intel-grid{grid-template-columns:1fr}}
+
+
+/* AUCTION MOMENT FEEDBACK */
+.current-bid{animation:bidNumberPulse .28s ease-out}
+@keyframes bidNumberPulse{0%{transform:scale(.92);opacity:.55;text-shadow:0 0 0 transparent}65%{transform:scale(1.035);opacity:1;text-shadow:0 0 20px var(--team-glow)}100%{transform:none;text-shadow:none}}
+.reveal-image{position:relative}.reveal-image.watchlisted-reveal{border-color:#ffe76e;box-shadow:0 0 0 1px rgba(255,231,110,.2),0 0 45px rgba(255,231,110,.22)}
+.reveal-watch-badge{position:absolute;left:8px;right:8px;bottom:8px;padding:5px;color:#ffe76e;background:rgba(1,7,13,.9);border:1px solid rgba(255,231,110,.55);font-size:9px;font-weight:900;letter-spacing:1.4px}
+.empty-slot{transition:color .12s ease,text-shadow .12s ease}.formation-slot:not(.occupied):hover .empty-slot{color:#8be7ff;text-shadow:0 0 13px #19a7ff}
+
+/* Short desktop screens: keep teams + player + bid controls inside one viewport. */
+@media (min-width:1100px) and (max-height:820px){
+  .auction-command-grid{margin-top:9px;gap:10px}
+  .auction-command-grid>.side-team{height:calc(100vh - 92px);min-height:0;max-height:none}
+  .auction-command-center .current-player{
+    width:100%;display:grid;grid-template-columns:132px minmax(0,1fr);min-height:148px;margin-bottom:6px
+  }
+  .auction-command-center .player-image-container{height:148px!important}
+  .auction-command-center .player-card-bottom{display:flex;flex-direction:column;justify-content:center;padding:8px 11px;border-top:0;border-left:2px solid var(--blue)}
+  .auction-command-center .player-card-name{font-size:21px;line-height:.95}
+  .auction-command-center .player-card-label{font-size:8px}
+  .auction-command-center .position-badges{margin-top:4px}
+  .auction-command-center .stat-strip{margin-top:5px}
+  .auction-command-center .stat-strip span,.auction-command-center .stat-strip b{padding:3px 4px}
+  .auction-command-center .turn-indicator{padding:7px 10px;margin-bottom:5px}
+  .auction-command-center .turn-indicator strong{font-size:18px}
+  .auction-command-center .bid-panel,.auction-command-center .sold-panel{padding:11px 14px}
+  .auction-command-center .bid-panel p{margin:5px 0;font-size:11px!important}
+  .auction-command-center .current-bid{font-size:36px}
+  .auction-command-center .bid-holder{margin:3px 0 7px}
+  .auction-command-center .bid-pressure-row{margin:6px 0 1px}
+  .auction-command-center .money-input{margin-top:7px}
+  .auction-command-center .quick-bids{margin-top:4px}
+  .auction-command-center .primary-button{margin-top:7px;padding:10px 13px}
+  .auction-command-center .pass-button{margin-top:5px;padding:8px}
+  .auction-history-panel{margin-top:10px}
+}
