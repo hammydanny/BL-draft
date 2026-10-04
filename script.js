@@ -1381,9 +1381,11 @@ let formationPointerDrag=null;
 let suppressFormationClick=false;
 
 function createFormationPointerPreview(player,x,y){
+    // A browser interruption must never be able to leave multiple drag visuals alive.
+    document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
     const preview=document.createElement("div");
     preview.className="formation-pointer-preview";
-    preview.innerHTML=`<div class="formation-pointer-ring"><img src="${player.image}" alt=""></div><span>${esc(player.name)}</span>`;
+    preview.innerHTML=`<div class="formation-pointer-ring"><img src="${player.image}" alt="" draggable="false"></div><span>${esc(player.name)}</span>`;
     document.body.appendChild(preview);
     moveFormationPointerPreview(x,y);
     return preview;
@@ -1405,6 +1407,7 @@ function formationDropTargetAt(x,y){
 }
 function beginFormationPointerDrag(event,id){
     if(event.button!==undefined && event.button!==0)return;
+    if(formationPointerDrag)cleanupFormationPointerDrag();
     const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===id);
     if(!player)return;
     const source=event.currentTarget;
@@ -1420,6 +1423,15 @@ function beginFormationPointerDrag(event,id){
 function moveFormationPointerDrag(event){
     const d=formationPointerDrag;
     if(!d || d.pointerId!==event.pointerId)return;
+    // If right/middle click joins the primary drag, abort instead of letting the
+    // browser enter a mixed-button state that can strand duplicate visuals.
+    if(d.dragging && event.pointerType==="mouse" && (event.buttons & ~1)!==0){
+        event.preventDefault();
+        suppressFormationClick=true;
+        cleanupFormationPointerDrag();
+        setTimeout(()=>{suppressFormationClick=false},0);
+        return;
+    }
     const distance=Math.hypot(event.clientX-d.startX,event.clientY-d.startY);
     if(!d.dragging){
         if(distance<7)return;
@@ -1486,6 +1498,35 @@ document.addEventListener("pointermove",moveFormationPointerDrag,{passive:false}
 document.addEventListener("pointerup",finishFormationPointerDrag,{passive:false});
 document.addEventListener("pointercancel",cancelFormationPointerDrag);
 document.addEventListener("lostpointercapture",cancelFormationPointerDrag,true);
+
+function abortFormationDragForSecondaryInput(event){
+    if(!formationPointerDrag)return;
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    suppressFormationClick=true;
+    cleanupFormationPointerDrag();
+    setTimeout(()=>{suppressFormationClick=false},0);
+}
+
+// Mouse pointerdown is only guaranteed for the FIRST pressed button. mousedown
+// still fires when right-click is pressed while left-click is already held.
+document.addEventListener("mousedown",event=>{
+    if(formationPointerDrag && event.button!==0)abortFormationDragForSecondaryInput(event);
+},true);
+document.addEventListener("auxclick",event=>{
+    if(formationPointerDrag)abortFormationDragForSecondaryInput(event);
+},true);
+document.addEventListener("contextmenu",event=>{
+    if(formationPointerDrag){
+        abortFormationDragForSecondaryInput(event);
+        event.preventDefault();
+    }
+},true);
+
+// Never allow the browser's own image/HTML drag ghost inside Team Builder.
+document.addEventListener("dragstart",event=>{
+    if(event.target.closest?.("#formation-screen"))event.preventDefault();
+},true);
 
 // A pointerup is not guaranteed when the browser/tab loses focus (tab switch,
 // screenshot UI, browser chrome, app switch, etc.). Always tear the drag UI down.
