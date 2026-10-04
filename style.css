@@ -595,3 +595,164 @@ body.formation-pointer-dragging #formation-screen{
     -webkit-user-select:none!important;
     user-select:none!important;
 }
+
+
+/* =========================================================
+   CHEMISTRY OVERHAUL V6 // EXPLICIT FORMATION TOPOLOGY
+   ========================================================= */
+.chemistry-hud-v2{
+    display:grid;
+    grid-template-columns:150px minmax(245px,.85fr) minmax(330px,1.3fr);
+    gap:10px 14px;
+    align-items:stretch;
+}
+.chemistry-hud-v2 .chem-score{
+    display:flex;flex-direction:column;justify-content:center;
+    min-width:0;padding-right:14px;border-right:1px solid rgba(120,190,235,.12)
+}
+.chemistry-hud-v2 .chem-score strong{font-size:34px;line-height:.9}
+.chemistry-summary{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:5px;min-width:0
+}
+.chemistry-summary>div{
+    display:flex;flex-direction:column;justify-content:center;min-width:0;
+    padding:7px 8px;background:#03101a;border:1px solid rgba(83,155,204,.13)
+}
+.chemistry-summary span,.chemistry-featured span{
+    color:#56748a;font-size:6px;font-weight:900;letter-spacing:1px
+}
+.chemistry-summary strong{
+    margin-top:2px;color:#d9efff;font:900 18px "Barlow Condensed"
+}
+.chemistry-summary strong small{color:#527086;font-size:10px}
+.chemistry-featured{display:grid;grid-template-columns:1fr 1fr;gap:5px;min-width:0}
+.chemistry-featured>div{
+    position:relative;min-width:0;padding:7px 34px 7px 9px;background:#03101a;
+    border:1px solid rgba(83,155,204,.13)
+}
+.chemistry-featured strong{
+    display:block;overflow:hidden;margin-top:2px;color:#bcd6e8;
+    font:800 10px "Barlow Condensed";text-overflow:ellipsis;white-space:nowrap
+}
+.chemistry-featured b{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    font:900 18px "Barlow Condensed"
+}
+.chemistry-featured .best b{color:#56ffb0}
+.chemistry-featured .risk b{color:#ff718d}
+.chemistry-hud-v2 .chem-key{grid-column:1/-1;max-width:none;justify-content:flex-start;padding-top:1px}
+
+/* The SVG itself does not block player dragging; only actual line strokes can hover. */
+.chemistry-lines{pointer-events:none!important}
+.chem-link{
+    pointer-events:stroke!important;
+    cursor:help;
+    transition:stroke-width .12s ease,opacity .12s ease,filter .12s ease
+}
+.chem-link:hover{opacity:1!important;stroke-width:5!important;filter:drop-shadow(0 0 7px currentColor)}
+.chemistry-tooltip{
+    position:fixed;z-index:1000005;display:flex;align-items:flex-start;gap:9px;
+    width:min(330px,calc(100vw - 28px));padding:10px;
+    opacity:0;transform:translateY(3px);pointer-events:none;
+    background:rgba(2,10,17,.98);border:1px solid #235b7f;border-left:3px solid #20bfff;
+    box-shadow:0 14px 45px rgba(0,0,0,.5);transition:opacity .1s ease,transform .1s ease
+}
+.chemistry-tooltip.show{opacity:1;transform:none}
+.chem-tip-score{
+    flex:0 0 46px;height:46px;display:grid;place-items:center;border:1px solid #294b61;
+    background:#06131e;font:900 25px "Barlow Condensed"
+}
+.chem-tip-score.chemical{color:#ffe65a;border-color:#ffe65a;box-shadow:inset 0 0 16px rgba(255,230,90,.09)}
+.chem-tip-score.elite{color:#43ff9a;border-color:#43ff9a}
+.chem-tip-score.strong{color:#31d7ff;border-color:#31d7ff}
+.chem-tip-score.link{color:#9c8cff;border-color:#9c8cff}
+.chem-tip-score.weak{color:#ff496d;border-color:#ff496d}
+.chem-tip-copy{min-width:0}
+.chem-tip-copy span{display:block;color:#4ecaff;font-size:7px;font-weight:900;letter-spacing:1.2px}
+.chem-tip-copy strong{display:block;margin:2px 0;color:#eef8ff;font:900 14px "Barlow Condensed"}
+.chem-tip-copy small{display:block;color:#7591a4;font-size:8px;line-height:1.4}
+
+/* =========================================================
+   TEAM BUILDER INTERACTION POLISH // NO POSITION MOVEMENT
+   ========================================================= */
+.formation-slot{
+    transition:border-color .12s ease,box-shadow .12s ease,filter .12s ease!important
+}
+.formation-slot:hover:not(.pointer-drag-origin){
+    transform:translate(-50%,-50%)!important;
+    filter:brightness(1.06)
+}
+.formation-slot.selected{
+    border-color:#fff!important;
+    box-shadow:0 0 0 2px var(--team),0 0 24px var(--team-glow)!important
+}
+.formation-slot.canonical-target{
+    border-color:rgba(64,255,165,.55)
+}
+.formation-slot.primary-target,
+.formation-slot.drag-primary-target{
+    border-color:#55ffad!important;
+    box-shadow:0 0 0 2px rgba(85,255,173,.18),0 0 20px rgba(85,255,173,.23)!important
+}
+.formation-slot.drag-canonical-target:not(.drag-primary-target){
+    border-color:#2ebeff!important;
+    box-shadow:0 0 18px rgba(46,190,255,.2)!important
+}
+.formation-slot.pointer-swap-target{
+    border-color:#ffd85a!important;
+    box-shadow:0 0 0 2px rgba(255,216,90,.35),0 0 26px rgba(255,216,90,.42)!important
+}
+.formation-slot.pointer-swap-target:before{
+    content:"SWAP";position:absolute;z-index:20;left:50%;top:-18px;transform:translateX(-50%);
+    padding:2px 5px;background:#181301;border:1px solid #ffd85a;color:#ffe990;
+    font-size:6px;font-weight:900;letter-spacing:1px;pointer-events:none
+}
+.formation-slot.slot-landed{animation:slotLanded .4s ease-out}
+.formation-slot.slot-swapped{animation:slotSwapped .4s ease-out}
+@keyframes slotLanded{
+    0%{box-shadow:0 0 0 0 rgba(66,220,255,.75)}
+    45%{box-shadow:0 0 0 5px rgba(66,220,255,.2),0 0 32px rgba(66,220,255,.55)}
+    100%{box-shadow:0 0 0 0 transparent}
+}
+@keyframes slotSwapped{
+    0%{box-shadow:0 0 0 0 rgba(255,216,90,.7)}
+    45%{box-shadow:0 0 0 5px rgba(255,216,90,.17),0 0 28px rgba(255,216,90,.45)}
+    100%{box-shadow:0 0 0 0 transparent}
+}
+
+.bench-player{transition:border-color .12s ease,background .12s ease,box-shadow .12s ease!important}
+.bench-player:hover{transform:none!important;border-color:#2a668e;background:#061725}
+.bench-player.selected{
+    border-color:var(--team)!important;background:var(--team-soft)!important;
+    box-shadow:inset 3px 0 0 var(--team),0 0 18px var(--team-soft)
+}
+.bench-player-copy{
+    display:flex!important;flex-direction:column;align-items:flex-start;min-width:0!important;
+    overflow:hidden!important;white-space:normal!important
+}
+.bench-player-copy>strong{
+    display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:#dcecf8;font-size:11px
+}
+.bench-player-copy .position-badges{margin-top:3px}
+.bench-player-copy>small{
+    display:block;margin-top:3px;color:#52728a;font-size:6px;font-weight:800;letter-spacing:.7px
+}
+.bench-player.bench-arrived{animation:benchArrived .5s ease-out}
+@keyframes benchArrived{
+    0%{border-color:#ffd85a;box-shadow:inset 0 0 25px rgba(255,216,90,.25)}
+    100%{border-color:#16354e;box-shadow:none}
+}
+
+@media(max-width:980px){
+    .chemistry-hud-v2{grid-template-columns:130px 1fr}
+    .chemistry-featured{grid-column:1/-1}
+}
+@media(max-width:650px){
+    .chemistry-hud-v2{grid-template-columns:1fr}
+    .chemistry-hud-v2 .chem-score{border-right:0;border-bottom:1px solid rgba(120,190,235,.12);padding:0 0 8px}
+    .chemistry-summary,.chemistry-featured{grid-column:auto;grid-template-columns:1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){
+    .formation-slot.slot-landed,.formation-slot.slot-swapped,.bench-player.bench-arrived{animation:none!important}
+}
