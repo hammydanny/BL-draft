@@ -373,8 +373,17 @@ function tacticalNeighbors(placed){
 }
 function formationChemistry(teamNumber){
     const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
-    const placed=Object.entries(ass).map(([i,id])=>{const p=team.players.find(x=>x.id===id),slot=shape[+i];return p&&slot?{p,slot,index:+i}:null}).filter(Boolean);
-    const links=tacticalNeighbors(placed).map(e=>({...e,value:playerChemistry(e.a.p,e.b.p)}));
+    // Formation adjacency is fixed by all tactical slots, not by whichever slots
+    // happen to be occupied while the user is still building the XI.
+    const formationNodes=shape.map((slot,index)=>({slot,index}));
+    const formationEdges=tacticalNeighbors(formationNodes);
+    const links=formationEdges.map(edge=>{
+        const aId=ass[edge.a.index],bId=ass[edge.b.index];
+        if(!aId||!bId)return null;
+        const aPlayer=team.players.find(p=>p.id===aId),bPlayer=team.players.find(p=>p.id===bId);
+        if(!aPlayer||!bPlayer)return null;
+        return {a:{...edge.a,p:aPlayer},b:{...edge.b,p:bPlayer},d:edge.d,value:playerChemistry(aPlayer,bPlayer)};
+    }).filter(Boolean);
     const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
     return {overall,links};
 }
@@ -1333,11 +1342,8 @@ function selectBenchPlayer(id) {
     const benchList = document.querySelector('.bench-list');
     const scrollTop = benchList ? benchList.scrollTop : 0;
 
-    if (selectedFormationPlayerId === id) {
-        selectedFormationPlayerId = null;
-    } else {
-        selectedFormationPlayerId = id;
-    }
+    if (selectedFormationPlayerId === id) selectedFormationPlayerId = null;
+    else selectedFormationPlayerId = id;
 
     renderFormationBuilder();
     saveGame();
@@ -1346,11 +1352,7 @@ function selectBenchPlayer(id) {
         const newBenchList = document.querySelector('.bench-list');
         if (newBenchList) {
             newBenchList.scrollTop = scrollTop;
-
-            // Prevent the newly clicked reserve card from retaining focus
-            if (document.activeElement instanceof HTMLElement) {
-                document.activeElement.blur();
-            }
+            if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
         }
     });
 }
@@ -1375,39 +1377,111 @@ function clearLiveFormationTargets(){
     document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
 }
 
-function startFormationDrag(event,id){
-    draggedFormationPlayerId=id;
-    selectedFormationPlayerId=id;
-    event.dataTransfer.effectAllowed="move";
-    event.dataTransfer.setData("text/plain",String(id));
+let formationPointerDrag=null;
+let suppressFormationClick=false;
+
+function createFormationPointerPreview(player,x,y){
+    const preview=document.createElement("div");
+    preview.className="formation-pointer-preview";
+    preview.innerHTML=`<div class="formation-pointer-ring"><img src="${player.image}" alt=""></div><span>${esc(player.name)}</span>`;
+    document.body.appendChild(preview);
+    moveFormationPointerPreview(x,y);
+    return preview;
+}
+function moveFormationPointerPreview(x,y){
+    const preview=formationPointerDrag?.preview;
+    if(!preview)return;
+    preview.style.left=x+"px";
+    preview.style.top=y+"px";
+}
+function clearFormationPointerHover(){
+    document.querySelectorAll(".formation-slot.pointer-drop-target,.bench-panel.pointer-drop-target")
+      .forEach(el=>el.classList.remove("pointer-drop-target"));
+}
+function formationDropTargetAt(x,y){
+    const hit=document.elementFromPoint(x,y);
+    if(!hit)return null;
+    return hit.closest(".formation-slot,[data-formation-bench]");
+}
+function beginFormationPointerDrag(event,id){
+    if(event.button!==undefined && event.button!==0)return;
+    const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===id);
+    if(!player)return;
     const source=event.currentTarget;
-    const rect=source.getBoundingClientRect();
-    event.dataTransfer.setDragImage(source,Math.max(1,Math.min(rect.width/2,event.clientX-rect.left)),Math.max(1,Math.min(rect.height/2,event.clientY-rect.top)));
-    updateLiveFormationTargets(id);
-    playSfx("select");
-    requestAnimationFrame(()=>source.classList.add("dragging"));
+    formationPointerDrag={
+        id,player,source,pointerId:event.pointerId,
+        startX:event.clientX,startY:event.clientY,
+        dragging:false,preview:null,target:null
+    };
+    source.setPointerCapture?.(event.pointerId);
 }
-function endFormationDrag(event){
-    event.currentTarget.classList.remove("dragging");
-    clearLiveFormationTargets();
-    draggedFormationPlayerId=null;
-}
-function allowFormationDrop(event){
+function moveFormationPointerDrag(event){
+    const d=formationPointerDrag;
+    if(!d || d.pointerId!==event.pointerId)return;
+    const distance=Math.hypot(event.clientX-d.startX,event.clientY-d.startY);
+    if(!d.dragging){
+        if(distance<7)return;
+        d.dragging=true;
+        draggedFormationPlayerId=d.id;
+        selectedFormationPlayerId=d.id;
+        d.source.classList.add("pointer-drag-source");
+        d.preview=createFormationPointerPreview(d.player,event.clientX,event.clientY);
+        updateLiveFormationTargets(d.id);
+        playSfx("select");
+        document.body.classList.add("formation-pointer-dragging");
+    }
     event.preventDefault();
-    event.dataTransfer.dropEffect="move";
-    event.currentTarget.classList.add("drag-over");
+    moveFormationPointerPreview(event.clientX,event.clientY);
+    clearFormationPointerHover();
+    d.target=formationDropTargetAt(event.clientX,event.clientY);
+    if(d.target)d.target.classList.add("pointer-drop-target");
 }
-function leaveFormationDrop(event){event.currentTarget.classList.remove("drag-over");}
-function dropOnFormationSlot(event,slotIndex){
-    event.preventDefault();event.currentTarget.classList.remove("drag-over");
-    const id=Number(event.dataTransfer.getData("text/plain")||draggedFormationPlayerId);
-    if(id)movePlayerToSlot(id,slotIndex);
+function finishFormationPointerDrag(event){
+    const d=formationPointerDrag;
+    if(!d || d.pointerId!==event.pointerId)return;
+    try{d.source.releasePointerCapture?.(event.pointerId)}catch(_){}
+    if(!d.dragging){
+        formationPointerDrag=null;
+        return;
+    }
+    event.preventDefault();
+    suppressFormationClick=true;
+    const target=formationDropTargetAt(event.clientX,event.clientY)||d.target;
+    const id=d.id;
+    cleanupFormationPointerDrag();
+    if(target?.matches(".formation-slot")){
+        const slotIndex=Number(target.dataset.slotIndex);
+        if(Number.isInteger(slotIndex))movePlayerToSlot(id,slotIndex);
+    }else if(target?.matches("[data-formation-bench]")){
+        movePlayerToBench(id);
+    }
+    setTimeout(()=>{suppressFormationClick=false},0);
 }
-function dropOnBench(event){
-    event.preventDefault();event.currentTarget.classList.remove("drag-over");
-    const id=Number(event.dataTransfer.getData("text/plain")||draggedFormationPlayerId);
-    if(id)movePlayerToBench(id);
+function cancelFormationPointerDrag(event){
+    const d=formationPointerDrag;
+    if(!d || (event?.pointerId!=null && d.pointerId!==event.pointerId))return;
+    cleanupFormationPointerDrag();
 }
+function cleanupFormationPointerDrag(){
+    const d=formationPointerDrag;
+    if(d?.preview)d.preview.remove();
+    if(d?.source)d.source.classList.remove("pointer-drag-source");
+    clearFormationPointerHover();
+    clearLiveFormationTargets();
+    document.body.classList.remove("formation-pointer-dragging");
+    draggedFormationPlayerId=null;
+    formationPointerDrag=null;
+}
+document.addEventListener("pointermove",moveFormationPointerDrag,{passive:false});
+document.addEventListener("pointerup",finishFormationPointerDrag,{passive:false});
+document.addEventListener("pointercancel",cancelFormationPointerDrag);
+document.addEventListener("click",event=>{
+    if(!suppressFormationClick)return;
+    if(event.target.closest(".formation-player-token,.bench-player")){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+    }
+},true);
 
 function togglePlayerDatabase(){
   playerDatabaseHidden=!playerDatabaseHidden;
@@ -1503,11 +1577,11 @@ function renderFormationBuilder(){
                const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
                const currentFit=p&&canonicalFit(p,s.label);
                return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
-                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}"
+                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}" data-slot-index="${i}"
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
-                  ${p?`<div class="formation-player-token" draggable="true" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                  ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
                          <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
                        </div>`:`<span class="empty-slot">+</span>`}
                </button>`;
@@ -1516,13 +1590,12 @@ function renderFormationBuilder(){
 
           ${createPlayerInfoSidebar(team)}
 
-          <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}"
-                 ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnBench(event)">
+          <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}" data-formation-bench>
             <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
-                    onclick="selectBenchPlayer(${p.id})" draggable="true"
-                    ondragstart="startFormationDrag(event,${p.id})" ondragend="endFormationDrag(event)">
+                    onclick="selectBenchPlayer(${p.id})" draggable="false"
+                    onpointerdown="beginFormationPointerDrag(event,${p.id})">
                     <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
