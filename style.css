@@ -580,3 +580,18 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
     transform:none!important;
     transition:none!important;
 }
+
+
+/* =========================================================
+   TEAM BUILDER SECONDARY-CLICK / GHOST HARDENING
+   ========================================================= */
+#formation-screen img,
+#formation-screen .formation-player-token,
+#formation-screen .bench-player{
+    -webkit-user-drag:none!important;
+    user-drag:none!important;
+}
+body.formation-pointer-dragging #formation-screen{
+    -webkit-user-select:none!important;
+    user-select:none!important;
+}
