@@ -1411,7 +1411,9 @@ function beginFormationPointerDrag(event,id){
     formationPointerDrag={
         id,player,source,pointerId:event.pointerId,
         startX:event.clientX,startY:event.clientY,
-        dragging:false,preview:null,target:null
+        dragging:false,preview:null,target:null,
+        originSlot:source.closest(".formation-slot"),
+        finishing:false
     };
     source.setPointerCapture?.(event.pointerId);
 }
@@ -1425,6 +1427,7 @@ function moveFormationPointerDrag(event){
         draggedFormationPlayerId=d.id;
         selectedFormationPlayerId=d.id;
         d.source.classList.add("pointer-drag-source");
+        if(d.originSlot)d.originSlot.classList.add("pointer-drag-origin");
         d.preview=createFormationPointerPreview(d.player,event.clientX,event.clientY);
         updateLiveFormationTargets(d.id);
         playSfx("select");
@@ -1439,6 +1442,7 @@ function moveFormationPointerDrag(event){
 function finishFormationPointerDrag(event){
     const d=formationPointerDrag;
     if(!d || d.pointerId!==event.pointerId)return;
+    d.finishing=true;
     try{d.source.releasePointerCapture?.(event.pointerId)}catch(_){}
     if(!d.dragging){
         formationPointerDrag=null;
@@ -1459,13 +1463,19 @@ function finishFormationPointerDrag(event){
 }
 function cancelFormationPointerDrag(event){
     const d=formationPointerDrag;
-    if(!d || (event?.pointerId!=null && d.pointerId!==event.pointerId))return;
+    if(!d || d.finishing || (event?.pointerId!=null && d.pointerId!==event.pointerId))return;
     cleanupFormationPointerDrag();
 }
 function cleanupFormationPointerDrag(){
     const d=formationPointerDrag;
     if(d?.preview)d.preview.remove();
+    // Safety cleanup also removes any orphaned preview left by an interrupted tab/window action.
+    document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
     if(d?.source)d.source.classList.remove("pointer-drag-source");
+    if(d?.originSlot)d.originSlot.classList.remove("pointer-drag-origin");
+    document.querySelectorAll(".pointer-drag-source,.pointer-drag-origin").forEach(el=>{
+        el.classList.remove("pointer-drag-source","pointer-drag-origin");
+    });
     clearFormationPointerHover();
     clearLiveFormationTargets();
     document.body.classList.remove("formation-pointer-dragging");
@@ -1475,6 +1485,16 @@ function cleanupFormationPointerDrag(){
 document.addEventListener("pointermove",moveFormationPointerDrag,{passive:false});
 document.addEventListener("pointerup",finishFormationPointerDrag,{passive:false});
 document.addEventListener("pointercancel",cancelFormationPointerDrag);
+document.addEventListener("lostpointercapture",cancelFormationPointerDrag,true);
+
+// A pointerup is not guaranteed when the browser/tab loses focus (tab switch,
+// screenshot UI, browser chrome, app switch, etc.). Always tear the drag UI down.
+window.addEventListener("blur",()=>cancelFormationPointerDrag());
+window.addEventListener("pagehide",()=>cancelFormationPointerDrag());
+document.addEventListener("visibilitychange",()=>{
+    if(document.hidden)cancelFormationPointerDrag();
+});
+
 document.addEventListener("click",event=>{
     if(!suppressFormationClick)return;
     if(event.target.closest(".formation-player-token,.bench-player")){
