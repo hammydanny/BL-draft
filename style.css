@@ -509,15 +509,21 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
     will-change:left,top;
     filter:drop-shadow(0 10px 16px rgba(0,0,0,.45));
 }
-.formation-pointer-ring{
-    width:76px;height:76px;
+.formation-pointer-ring {
+    width:76px;
+    height:76px;
     margin:0 auto;
     padding:3px;
     border-radius:50%;
     box-sizing:border-box;
+
     background:#03101b;
-    border:2px solid #23c8ff;
-    box-shadow:0 0 0 2px rgba(99,39,255,.75),0 0 20px rgba(35,200,255,.7);
+
+    border:2px solid var(--team);
+
+    box-shadow:
+        0 0 0 2px var(--team-soft),
+        0 0 20px var(--team-glow);
 }
 .formation-pointer-ring img{
     display:block;
@@ -526,30 +532,34 @@ button:hover:not(:disabled){filter:brightness(1.08)}button:active:not(:disabled)
     object-fit:cover;
     object-position:center top;
 }
-.formation-pointer-preview>span{
+.formation-pointer-preview>span {
     display:block;
     width:max-content;
     max-width:118px;
     margin:5px auto 0;
     padding:3px 7px;
     background:rgba(1,8,14,.94);
-    border:1px solid rgba(35,200,255,.7);
-    color:#e7f8ff;
+
+    border:1px solid var(--team-glow);
+    color:var(--team-text);
+
     font:900 12px "Barlow Condensed";
     letter-spacing:.5px;
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
 }
-.formation-slot.pointer-drop-target{
+.formation-slot.pointer-drop-target {
     transform:translate(-50%,-50%)!important;
-    border-color:#56eaff!important;
-    box-shadow:0 0 0 2px rgba(86,234,255,.35),0 0 24px rgba(86,234,255,.65)!important;
+    border-color:var(--team)!important;
+    box-shadow:
+        0 0 0 2px var(--team-soft),
+        0 0 24px var(--team-glow)!important;
 }
-.bench-panel.pointer-drop-target{
-    outline:2px solid #56eaff;
+.bench-panel.pointer-drop-target {
+    outline:2px solid var(--team);
     outline-offset:-4px;
-    box-shadow:inset 0 0 28px rgba(86,234,255,.12);
+    box-shadow:inset 0 0 28px var(--team-soft);
 }
 /* Native drag classes are intentionally neutralized in Team Builder. */
 .formation-slot.drag-over,
@@ -812,3 +822,68 @@ body{
 .chemistry-featured strong{font-size:12px!important}
 .chemistry-summary span,.chemistry-featured span{font-size:8px!important}
 .chem-key,.chem-key span{font-size:9px!important}
+
+/* =========================================================
+   ADAPTIVE TEAM COLOR TEXT
+   Prevents light team colors from producing invisible text.
+   ========================================================= */
+
+.team-tracker,
+.bid-panel,
+.sold-panel,
+.turn-indicator,
+.final-team-card,
+.share-team,
+.formation-control-panel,
+.formation-instructions,
+.player-info-panel,
+.bench-panel,
+.formation-pitch-v2 {
+    --team-text: #ffffff;
+    --team-contrast: #ffffff;
+}
+
+/* Text that sits directly on a team-colored surface */
+.team-action,
+.primary-button.team-action,
+.turn-indicator,
+.team-tracker .team-accent,
+.final-team-card .team-accent,
+.formation-control-panel,
+.formation-instructions {
+    color: var(--team-text);
+}
+
+/* Team-colored headings / labels */
+.team-tracker h3,
+.final-team-card h3,
+.share-team h3,
+.formation-control-panel strong,
+.formation-instructions strong,
+.player-info-panel .player-info-id {
+    color: var(--team-text);
+}
+
+/* Team-colored buttons */
+.team-action {
+    color:var(--team-text);
+    background:linear-gradient(
+        100deg,
+        var(--team),
+        color-mix(in srgb,var(--team),white 18%)
+    );
+    box-shadow:0 8px 28px var(--team-glow);
+}
+
+/* Icons / arrows inside team-colored buttons */
+.team-action b,
+.team-action span {
+    color: inherit;
+}
+
+/* Player/roster elements that use the team accent */
+.team-tracker .team-code,
+.final-team-card .final-team-top > span,
+.share-team-head span {
+    color: var(--team-color);
+}
