@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=team-color-tooltip-v8">
+    <link rel="stylesheet" href="style.css?v=gameplay-presentation-v9">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
@@ -140,12 +140,44 @@
                 <div class="preset-note">Presets are quick selections. You can still add or remove any character manually.</div>
             </div>
 
-            <div class="player-pool-toolbar">
+            <div class="player-pool-toolbar player-database-toolbar">
                 <div class="player-search-wrap">
                     <span>⌕</span>
                     <input type="search" id="playerSearch" placeholder="SEARCH PLAYERS..." autocomplete="off">
                 </div>
-
+                <div class="pool-filter-grid">
+                    <label>GROUP
+                        <select id="playerGroupFilter">
+                            <option value="all">ALL</option>
+                            <option value="blue-lock-project">BLUE LOCK PROJECT</option>
+                            <option value="world-five">WORLD FIVE</option>
+                            <option value="u20-match">JAPAN U-20</option>
+                            <option value="nel-stars">NEL STARS</option>
+                            <option value="world-cup-new">U-20 WC NEW</option>
+                        </select>
+                    </label>
+                    <label>ROLE
+                        <select id="playerPositionFilter">
+                            <option value="ALL">ALL</option>
+                            <option value="ATTACK">ATTACK</option>
+                            <option value="MIDFIELD">MIDFIELD</option>
+                            <option value="DEFENCE">DEFENCE</option>
+                            <option value="GK">GK</option>
+                        </select>
+                    </label>
+                    <label>SORT
+                        <select id="playerSort">
+                            <option value="id">PLAYER ID</option>
+                            <option value="ovr">OVR ↓</option>
+                            <option value="sho">SHOOTING ↓</option>
+                            <option value="spd">SPEED ↓</option>
+                            <option value="pas">PASSING ↓</option>
+                            <option value="dri">DRIBBLING ↓</option>
+                            <option value="def">DEFENCE ↓</option>
+                            <option value="name">NAME A-Z</option>
+                        </select>
+                    </label>
+                </div>
                 <div class="pool-actions">
                     <button type="button" id="selectAllPlayers">SELECT ALL</button>
                     <button type="button" id="clearAllPlayers">CLEAR ALL</button>
@@ -261,7 +293,7 @@
         </div>
     </footer>
 
-    <script src="players.js?v=team-color-tooltip-v8"></script>
-    <script src="script.js?v=team-color-tooltip-v8"></script>
+    <script src="players.js?v=gameplay-presentation-v9"></script>
+    <script src="script.js?v=gameplay-presentation-v9"></script>
 </body>
 </html>
