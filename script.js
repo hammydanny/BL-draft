@@ -615,11 +615,76 @@ function onlyTeamWithSpace(){
     if(t2Full && !t1Full) return 1;
     return null;
 }
-function teamVars(team){ return `--team:${team.color};--team-soft:${hexToRgba(team.color,.14)};--team-glow:${hexToRgba(team.color,.28)}`; }
-function hexToRgba(hex,a){
-    const h=hex.replace("#","");
-    const n=parseInt(h.length===3?h.split("").map(x=>x+x).join(""):h,16);
-    return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+function getContrastColor(hex) {
+    hex = String(hex || "").replace("#", "").trim();
+
+    if (hex.length === 3) {
+        hex = hex.split("").map(c => c + c).join("");
+    }
+
+    if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
+        return "#ffffff";
+    }
+
+    const r = parseInt(hex.slice(0, 2), 16) / 255;
+    const g = parseInt(hex.slice(2, 4), 16) / 255;
+    const b = parseInt(hex.slice(4, 6), 16) / 255;
+
+    const linearize = value =>
+        value <= 0.03928
+            ? value / 12.92
+            : Math.pow((value + 0.055) / 1.055, 2.4);
+
+    const R = linearize(r);
+    const G = linearize(g);
+    const B = linearize(b);
+
+    const luminance =
+        (0.2126 * R) +
+        (0.7152 * G) +
+        (0.0722 * B);
+
+    // Compare contrast against white and dark text.
+    const whiteContrast = (1.0 + 0.05) / (luminance + 0.05);
+    const darkContrast = (luminance + 0.05) / (0.04 + 0.05);
+
+    return whiteContrast >= darkContrast
+        ? "#ffffff"
+        : "#07111f";
+}
+
+function teamVars(team) {
+    const color = team?.color || "#19a7ff";
+    const text = getContrastColor(color);
+
+    return [
+        `--team:${color}`,
+        `--team-color:${color}`,
+        `--team-text:${text}`,
+        `--team-contrast:${text}`,
+        `--team-soft:${hexToRgba(color, .14)}`,
+        `--team-glow:${hexToRgba(color, .28)}`
+    ].join(";");
+}
+
+function hexToRgba(hex, a) {
+    const h = String(hex || "").replace("#", "").trim();
+    const normalized = h.length === 3
+        ? h.split("").map(x => x + x).join("")
+        : h;
+
+    const n = parseInt(normalized, 16);
+
+    if (Number.isNaN(n)) {
+        return `rgba(20,156,255,${a})`;
+    }
+
+    return `rgba(
+        ${(n >> 16) & 255},
+        ${(n >> 8) & 255},
+        ${n & 255},
+        ${a}
+    )`;
 }
 
 
@@ -1061,7 +1126,7 @@ function awardPlayerFree(teamNumber,forced=false){
         <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
         <div class="sold-word">${forced?"ASSIGNED":"SOLD"}</div>
         <div class="sold-to">${forced?"ROSTER SPACE AVAILABLE":"SIGNED BY"}</div>
-        <h2 style="color:${winner.color}">${esc(winner.name)}</h2>
+        <h2 style="color:var(--team-text)">${esc(winner.name)}</h2>
         <div class="winning-price">FREE</div>
         <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
       </div>`);
@@ -1220,7 +1285,7 @@ function awardPlayer(n){
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">TRANSFER COMPLETE</div>
         <div class="sold-word">SOLD</div><div class="sold-to">SIGNED BY</div>
-        <h2 style="color:${winner.color}">${esc(winner.name)}</h2>
+        <h2 style="color:var(--team-text)">${esc(winner.name)}</h2>
         <div class="winning-price">${price===0?"FREE":"$"+price.toLocaleString()}</div>
         <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
       </div>`);
@@ -1234,7 +1299,7 @@ function renderSoldState(last){
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">${last.automatic?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
         <div class="sold-word">${last.automatic?"ASSIGNED":"SOLD"}</div><div class="sold-to">${last.automatic?"ROSTER SPACE AVAILABLE":"SIGNED BY"}</div>
-        <h2 style="color:${winner.color}">${esc(winner.name)}</h2>
+        <h2 style="color:var(--team-text)">${esc(winner.name)}</h2>
         <div class="winning-price">${last.price===0?"FREE":"$"+last.price.toLocaleString()}</div>
         <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
       </div>`);
