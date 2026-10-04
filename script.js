@@ -112,6 +112,7 @@ let benchCollapsed = false;
 let draggedFormationPlayerId = null;
 let formationInitialized = false;
 let playerDatabaseHidden = false;
+let formationMoveFx=null;
 
 document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("randomDraftGame").addEventListener("click", startRandomDraft);
@@ -275,122 +276,304 @@ function positionRatingGrid(player){
 }
 
 
-const CHEMISTRY_HISTORY = [
-  // First Selection
-  ["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"],
-  ["Seishiro Nagi","Reo Mikage","Zantetsu Tsurugi"],
-  ["Junichi Wanima","Keisuke Wanima"],
-  // Second Selection combinations / clear teams
-  ["Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Meguru Bachira","Yoichi Isagi"],
-  ["Seishiro Nagi","Shoei Baro","Hyoma Chigiri","Zantetsu Tsurugi","Jin Kiyora"],
-  ["Tabito Karasu","Eita Otoya","Kenyu Yukimiya"],
-  ["Ryusei Shido","Reo Mikage","Ranze Kurona","Gurimu Igarashi"],
-  // Third Selection / Blue Lock Eleven environment
-  ["Yoichi Isagi","Rin Itoshi","Meguru Bachira","Hyoma Chigiri","Seishiro Nagi","Shoei Baro","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Yo Hiori","Jyubei Aryu","Gin Gagamaru","Ikki Niko"],
-  // Japan U-20
-  ["Sae Itoshi","Oliver Aiku","Shuto Sendo","Gen Fukaku","Kazuma Nio","Miroku Darai","Teppei Neru","Kento Cho","Teru Kitsunezato"],
-  // NEL clubs
-  ["Noel Noa","Michael Kaiser","Alexis Ness","Benedict Grim","Yoichi Isagi","Rensuke Kunigami","Kenyu Yukimiya","Gin Gagamaru","Ranze Kurona","Jingo Raichi","Yo Hiori","Jin Kiyora","Gurimu Igarashi","Teppei Neru"],
-  ["Lavinho","Meguru Bachira","Eita Otoya"],
-  ["Chris Prince","Agi","Seishiro Nagi","Reo Mikage","Hyoma Chigiri","Kazuma Nio","Junichi Wanima"],
-  ["Marc Snuffy","Don Lorenzo","Shoei Baro","Oliver Aiku","Ikki Niko","Jyubei Aryu","Gen Fukaku","Shuto Sendo"],
-  ["Julien Loki","Rin Itoshi","Ryusei Shido","Charles Chevalier","Tabito Karasu","Aoshi Tokimitsu","Nijiro Nanase","Zantetsu Tsurugi"]
+
+// ============================================================================
+// CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 363
+// ----------------------------------------------------------------------------
+// Blue Lock does NOT publish an official 0-100 chemistry statistic.
+// These scores are a fan-game model. Strong overrides are based on demonstrated
+// combinations, chemical reactions, tactical systems, or clear incompatibility.
+// Generic fallback scores come from repeated shared-team history.
+// ============================================================================
+
+const CHEMISTRY_CONTEXTS = [
+  {name:"TEAM Z",score:79,players:["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"]},
+  {name:"TEAM V",score:84,players:["Seishiro Nagi","Reo Mikage","Zantetsu Tsurugi"]},
+  {name:"SECOND SELECTION // ISAGI UNIT",score:85,players:["Yoichi Isagi","Seishiro Nagi","Shoei Baro","Hyoma Chigiri"]},
+  {name:"SECOND SELECTION // RIN UNIT",score:84,players:["Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Meguru Bachira","Yoichi Isagi"]},
+  {name:"SECOND SELECTION // KARASU UNIT",score:84,players:["Tabito Karasu","Eita Otoya","Kenyu Yukimiya"]},
+  {name:"SECOND SELECTION // SHIDO UNIT",score:81,players:["Ryusei Shido","Gurimu Igarashi","Reo Mikage","Ranze Kurona"]},
+  {name:"THIRD SELECTION // A1",score:82,players:["Rin Itoshi","Ryusei Shido","Yoichi Isagi","Yo Hiori","Nijiro Nanase"]},
+  {name:"BLUE LOCK ELEVEN",score:80,players:["Yoichi Isagi","Rin Itoshi","Meguru Bachira","Hyoma Chigiri","Seishiro Nagi","Shoei Baro","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Yo Hiori","Jyubei Aryu","Gin Gagamaru","Ikki Niko","Reo Mikage"]},
+  {name:"JAPAN U-20 // ORIGINAL",score:80,players:["Sae Itoshi","Oliver Aiku","Shuto Sendo","Gen Fukaku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato"]},
+  {name:"BASTARD MÜNCHEN",score:83,players:["Noel Noa","Michael Kaiser","Alexis Ness","Benedict Grim","Yoichi Isagi","Rensuke Kunigami","Kenyu Yukimiya","Gin Gagamaru","Ranze Kurona","Jingo Raichi","Yo Hiori","Jin Kiyora","Gurimu Igarashi","Teppei Neru"]},
+  {name:"FC BARCHA",score:83,players:["Lavinho","Meguru Bachira","Eita Otoya"]},
+  {name:"MANSHINE CITY",score:82,players:["Chris Prince","Agi","Seishiro Nagi","Reo Mikage","Hyoma Chigiri","Kazuma Nio","Junichi Wanima"]},
+  {name:"UBERS",score:84,players:["Marc Snuffy","Don Lorenzo","Shoei Baro","Oliver Aiku","Ikki Niko","Jyubei Aryu","Gen Fukaku","Shuto Sendo"]},
+  {name:"PARIS X GEN",score:82,players:["Julien Loki","Rin Itoshi","Ryusei Shido","Charles Chevalier","Tabito Karasu","Aoshi Tokimitsu","Nijiro Nanase","Zantetsu Tsurugi"]},
+  {name:"JAPAN U-20 // WORLD CUP",score:79,players:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Yo Hiori","Tabito Karasu","Meguru Bachira","Hyoma Chigiri","Ranze Kurona","Jin Kiyora","Kenyu Yukimiya","Zantetsu Tsurugi","Oliver Aiku","Jyubei Aryu","Ikki Niko","Gin Gagamaru","Reo Mikage","Nijiro Nanase"]}
 ];
-const CHEMISTRY_SPECIAL = {
-  "Yo Hiori|Yoichi Isagi":99,
-  "Charles Chevalier|Ryusei Shido":99,
-  "Reo Mikage|Seishiro Nagi":99,
-  "Alexis Ness|Michael Kaiser":98,
-  "Eita Otoya|Tabito Karasu":97,
-  "Ryusei Shido|Sae Itoshi":98,
-  "Meguru Bachira|Yoichi Isagi":97,
-  "Ranze Kurona|Yoichi Isagi":96,
-  "Aoshi Tokimitsu|Rin Itoshi":94,
-  "Jyubei Aryu|Rin Itoshi":94,
-  "Nijiro Nanase|Rin Itoshi":94,
-  "Don Lorenzo|Marc Snuffy":97,
-  "Don Lorenzo|Oliver Aiku":94,
-  "Ikki Niko|Oliver Aiku":93,
-  "Jyubei Aryu|Oliver Aiku":92,
-  "Hyoma Chigiri|Rensuke Kunigami":91,
-  "Hyoma Chigiri|Yoichi Isagi":92,
-  "Seishiro Nagi|Yoichi Isagi":94,
-  "Rin Itoshi|Yoichi Isagi":88,
-  "Michael Kaiser|Yoichi Isagi":76,
-  "Rin Itoshi|Ryusei Shido":58,
-  "Rin Itoshi|Sae Itoshi":64
-};
+
+const CHEMISTRY_SPECIAL_PAIRS = [
+  // Proven elite / named combinations
+  ["Yoichi Isagi","Yo Hiori",99,"CHEMICAL REACTION","Ubers: shared metavision and the no-look final pass/finish created a goal neither player pre-signalled."],
+  ["Ryusei Shido","Sae Itoshi",99,"MATCH MADE IN HEAVEN","Japan U-20: Sae immediately unlocked Shido's penalty-area instincts and supplied both of his goals."],
+  ["Ryusei Shido","Charles Chevalier",99,"CHEMICAL REACTION","PXG: Charles' contrarian passing repeatedly targets Shido's extreme penalty-area movement."],
+  ["Yoichi Isagi","Ranze Kurona",98,"PLANET HOTLINE","Bastard München: rapid orbiting one-twos were built specifically around Isagi's movement and Kurona's turning speed."],
+  ["Tabito Karasu","Eita Otoya",98,"ASSASSIN × NINJA","Their play compatibility is repeatedly emphasized; short exchanges and off-ball movement let them read each other at speed."],
+  ["Tabito Karasu","Yo Hiori",97,"CROW × ICE","Former youth teammates; in the France U-20 match Karasu deliberately built the move that Hiori finished for Japan's equalizer."],
+  ["Seishiro Nagi","Reo Mikage",96,"ESTABLISHED DUO","Their creator-finisher understanding is exceptional from Team V through Manshine, though over-reliance has also limited their growth."],
+  ["Ranze Kurona","Jin Kiyora",95,"DOG HUNT","Chapter 363: Kurona presses Teddy Knight while Kiyora seals the escape route, stopping England's automated sequence."],
+  ["Jin Kiyora","Michael Kaiser",95,"BORDERLINE PASS","PXG: Kiyora's extreme-backspin pass stopped perfectly for Kaiser's Magnus, directly creating Kaiser's goal."],
+  ["Yoichi Isagi","Meguru Bachira",94,"MONSTER LINK","Team Z and the Second Selection established deep mutual reading; Bachira repeatedly trusted Isagi to see the same attacking picture."],
+  ["Yoichi Isagi","Seishiro Nagi",94,"SECOND-SELECTION REACTION","Their improvised combinations repeatedly converted each other's weapons into unpredictable scoring routes."],
+  ["Yoichi Isagi","Shoei Baro",93,"MUTUAL DEVOURING","Second Selection: Isagi explicitly describes how he and Baro devoured one another to create unforeseeable chemical reactions."],
+  ["Michael Kaiser","Yoichi Isagi",92,"RIVAL ALLIANCE","PXG: after prolonged conflict, Kaiser reset his ego and partnered with Isagi to break the genius-led defense."],
+  ["Alexis Ness","Yoichi Isagi",91,"AWAKENED PASS","Chapter 293: Isagi alone read Ness' awakened pass and converted it into the Neo Egoist League-winning goal."],
+  ["Michael Kaiser","Alexis Ness",90,"FRACTURED ELITE DUO","Years of rehearsed one-twos made them highly compatible, but Kaiser rejects the dependency late in the PXG match."],
+  ["Yoichi Isagi","Hyoma Chigiri",90,"SPEED REACTION","After the 3v3, Isagi chooses Chigiri specifically because his speed can enter the team's devouring chemical reaction without disappearing."],
+  ["Rin Itoshi","Nijiro Nanase",90,"RIN SUPPORT ROUTE","Nanase deliberately trains to become useful to Rin and functions as a dedicated support option in PXG."],
+  ["Oliver Aiku","Ikki Niko",90,"UBERS DEFENSIVE CORE","Both read attacks early and operate inside Ubers' synchronized defensive structure."],
+  ["Don Lorenzo","Oliver Aiku",91,"UBERS DEFENSIVE CORE","Lorenzo's elite man-marking and Aiku's reading anchor Ubers' layered defensive system."],
+  ["Marc Snuffy","Don Lorenzo",98,"MENTOR CORE","Snuffy built Lorenzo's football career and Ubers system around his rare defensive and ball-carrying qualities."],
+  ["Marc Snuffy","Shoei Baro",91,"SUCCESSOR SYSTEM","Snuffy designs Ubers' attack around Baro and later recognizes him as the club's future king."],
+  ["Rin Itoshi","Yoichi Isagi",89,"RIVAL READ","They frequently process the same decisive space at an elite level, but their egos make direct cooperation unstable."],
+  ["Rin Itoshi","Jyubei Aryu",89,"TOP-3 UNIT","Second Selection: Aryu is a core member of Rin's dominant top-three unit and follows his field control cleanly."],
+  ["Rin Itoshi","Aoshi Tokimitsu",89,"TOP-3 UNIT","Second Selection: Tokimitsu's physical pressure complements Rin's control in the top-three unit."],
+  ["Rensuke Kunigami","Hyoma Chigiri",88,"TEAM Z / RIVALRY UNIT","Team Z familiarity plus the Second Selection gives them proven complementary power-and-speed experience."],
+  ["Meguru Bachira","Eita Otoya",88,"BARCHA ATTACK","NEL: both operate in Barcha's free-flowing attacking system, with Otoya providing off-ball routes around Bachira's dribbling."],
+  ["Don Lorenzo","Ikki Niko",89,"UBERS DEFENSIVE SYSTEM","Niko's reading and Lorenzo's man-marking function inside the same coordinated Ubers defensive rotations."],
+  ["Oliver Aiku","Jyubei Aryu",88,"UBERS DEFENSIVE SYSTEM","Aiku's reading and Aryu's reach/aerial coverage repeatedly share the Ubers back line."],
+  ["Don Lorenzo","Shoei Baro",88,"UBERS TRANSITION","Lorenzo carries through pressure while Baro is the attack's designated finishing point."],
+  ["Chris Prince","Seishiro Nagi",85,"MANSHINE DEVELOPMENT","Chris develops Nagi physically, but Nagi struggles to convert the training into independent reproducible creation."],
+  ["Agi","Seishiro Nagi",86,"MANSHINE DEVELOPMENT","Agi actively tries to draw out Nagi's creativity, though he opposes Nagi falling back into dependence on Reo."],
+  ["Reo Mikage","Hyoma Chigiri",86,"MANSHINE LINK","Both are established Manshine starters and can connect possession to Chigiri's wide-speed route."],
+  ["Noel Noa","Yoichi Isagi",86,"MASTER / PROTÉGÉ","Noa gives Isagi rational guidance and occasionally enters the same match structure, but they are not a fixed attacking duo."],
+  ["Noel Noa","Michael Kaiser",87,"BASTARD SYSTEM","Kaiser is the established ace of Noa's rational Bastard München structure, though Noa does not build every play around him."],
+  ["Charles Chevalier","Rin Itoshi",87,"PXG DUAL SYSTEM","Charles can supply Rin's system, but his contrarian personality is more naturally excited by Shido's chaos."],
+  ["Charles Chevalier","Tabito Karasu",86,"PXG MIDFIELD","They share PXG's midfield structure and can circulate into either striker system."],
+  ["Yo Hiori","Nijiro Nanase",86,"THIRD-SELECTION LINK","Friendly Team A1 teammates who repeatedly function as clean support options around the central striker."],
+  ["Yoichi Isagi","Nijiro Nanase",84,"THIRD-SELECTION LINK","Team A1 gave them direct combination experience, though no signature duo developed."],
+  ["Tabito Karasu","Yoichi Isagi",86,"TACTICAL FRICTION","They can read and use each other's movement, but chapter 337 shows a genuine philosophical/tactical clash over how Japan should attack."],
+
+  // Explicitly poor or unstable links
+  ["Rin Itoshi","Ryusei Shido",58,"INCOMPATIBLE EGOS","Ego states they failed to spark a chemical reaction; PXG initially required separate systems, and they still clash after the France match."],
+  ["Rin Itoshi","Sae Itoshi",62,"FRACTURED BROTHERS","They once combined naturally as children, but their shared dream collapsed and their current football relationship is openly hostile."],
+  ["Rensuke Kunigami","Ryusei Shido",60,"PERSONAL CONFLICT","Shido eliminated Kunigami from the Second Selection path; their later encounters are defined more by confrontation than combination."],
+  ["Sae Itoshi","Bunny Iglesias",58,"INTENSE RIVALRY","Sae is shown reacting bitterly to Bunny and his U-20 World Cup motivation is tied to confronting that rivalry."],
+  ["Yoichi Isagi","Vivien Hugo",56,"PHILOSOPHY CLASH","France U-20: Hugo repeatedly challenges Isagi's ego philosophy and tries to redirect his idea of what a striker should be."]
+];
+
+const CHEMISTRY_SPECIAL = Object.fromEntries(
+  CHEMISTRY_SPECIAL_PAIRS.map(([a,b,score,label,reason])=>[
+    [a,b].sort().join("|"),{score,label,reason}
+  ])
+);
+
 function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
-function sharedHistoryCount(a,b){
-    return CHEMISTRY_HISTORY.reduce((n,g)=>n+(g.includes(a.name)&&g.includes(b.name)?1:0),0);
+function sharedChemistryContexts(a,b){
+    return CHEMISTRY_CONTEXTS.filter(c=>c.players.includes(a.name)&&c.players.includes(b.name));
 }
-function playerChemistry(a,b){
-    if(!a||!b||a.id===b.id)return 0;
+function chemistryRelation(a,b){
+    if(!a||!b||a.id===b.id)return {score:0,label:"NO LINK",reason:"A player cannot form chemistry with themself.",contexts:[]};
     const special=CHEMISTRY_SPECIAL[chemistryKey(a,b)];
-    if(special!=null)return special;
-    const shared=sharedHistoryCount(a,b);
-    if(shared>=3)return 92;
-    if(shared===2)return 88;
-    if(shared===1)return 83;
-    return 55;
-}
-function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":"weak";}
-function tacticalNeighbors(placed){
-    if(placed.length<2)return [];
-    const sorted=[...placed].sort((a,b)=>a.slot.y-b.slot.y || a.slot.x-b.slot.x);
-    const rows=[];
-    sorted.forEach(p=>{
-        let row=rows.find(r=>Math.abs(r.y-p.slot.y)<=9);
-        if(!row){row={y:p.slot.y,players:[]};rows.push(row);}
-        row.players.push(p);
-        row.y=row.players.reduce((n,x)=>n+x.slot.y,0)/row.players.length;
-    });
-    rows.sort((a,b)=>a.y-b.y);
-    rows.forEach(r=>r.players.sort((a,b)=>a.slot.x-b.slot.x));
-    const keys=new Set(),edges=[];
-    const add=(a,b)=>{
-        if(!a||!b||a===b)return;
-        const key=[a.index,b.index].sort((x,y)=>x-y).join("-");
-        if(keys.has(key))return;
-        keys.add(key);edges.push({a,b,d:Math.hypot(a.slot.x-b.slot.x,a.slot.y-b.slot.y)});
-    };
-    rows.forEach(row=>{
-        for(let i=0;i<row.players.length-1;i++)add(row.players[i],row.players[i+1]);
-    });
-    for(let r=0;r<rows.length-1;r++){
-        const aRow=rows[r].players,bRow=rows[r+1].players;
-        aRow.forEach(a=>{
-            const ranked=[...bRow].map(b=>({b,dx:Math.abs(a.slot.x-b.slot.x)})).sort((x,y)=>x.dx-y.dx);
-            if(ranked[0])add(a,ranked[0].b);
-            if(ranked[1] && ranked[1].dx<=ranked[0].dx+10 && ranked[1].dx<=22)add(a,ranked[1].b);
-        });
-        bRow.forEach(b=>{
-            const ranked=[...aRow].map(a=>({a,dx:Math.abs(a.slot.x-b.slot.x)})).sort((x,y)=>x.dx-y.dx);
-            if(ranked[0])add(ranked[0].a,b);
-        });
+    const contexts=sharedChemistryContexts(a,b);
+    if(special)return {...special,contexts:contexts.map(c=>c.name)};
+    if(contexts.length){
+        const ordered=[...contexts].sort((x,y)=>y.score-x.score);
+        const score=Math.min(91,ordered[0].score+Math.min(6,(ordered.length-1)*2));
+        return {
+            score,
+            label:ordered.length>1?"REPEATED TEAM HISTORY":"SHARED TEAM HISTORY",
+            reason:`Shared competitive history: ${ordered.map(c=>c.name).join(" + ")}.`,
+            contexts:ordered.map(c=>c.name)
+        };
     }
-    return edges;
+    return {
+        score:55,
+        label:"UNPROVEN LINK",
+        reason:"No sustained shared on-field system has been demonstrated in Blue Lock through chapter 363.",
+        contexts:[]
+    };
 }
+function playerChemistry(a,b){return chemistryRelation(a,b).score;}
+function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":"weak";}
+function chemistryTierLabel(v){return v>=95?"CHEMICAL":v>=90?"ELITE":v>=82?"STRONG":v>=70?"LINK":"WEAK";}
+
+// Explicit tactical adjacency. Position-to-position links never change merely
+// because the XI is incomplete. Slot numbers match FORMATIONS below.
+const FORMATION_CHEMISTRY_EDGES = {
+  "4-3-3":[
+    [0,2],[0,3],[1,2],[2,3],[3,4],
+    [1,5],[2,5],[2,6],[3,6],[3,7],[4,7],
+    [5,6],[6,7],
+    [5,8],[5,9],[6,8],[6,9],[6,10],[7,9],[7,10],
+    [8,9],[9,10]
+  ],
+  "4-2-3-1":[
+    [0,2],[0,3],[1,2],[2,3],[3,4],
+    [1,5],[2,5],[2,6],[3,5],[3,6],[4,6],[5,6],
+    [5,7],[5,8],[6,8],[6,9],[7,8],[8,9],
+    [7,10],[8,10],[9,10]
+  ],
+  "4-4-2":[
+    [0,2],[0,3],[1,2],[2,3],[3,4],
+    [1,5],[2,5],[2,6],[3,7],[3,8],[4,8],
+    [5,6],[6,7],[7,8],
+    [5,9],[6,9],[6,10],[7,9],[7,10],[8,10],[9,10]
+  ],
+  "4-1-3-2":[
+    [0,2],[0,3],[1,2],[2,3],[3,4],
+    [1,6],[2,5],[3,5],[4,8],
+    [5,6],[5,7],[5,8],[6,7],[7,8],
+    [6,9],[7,9],[7,10],[8,10],[9,10]
+  ],
+  "4-3-2-1":[
+    [0,2],[0,3],[1,2],[2,3],[3,4],
+    [1,5],[2,5],[2,6],[3,6],[3,7],[4,7],
+    [5,6],[6,7],
+    [5,8],[6,8],[6,9],[7,9],[8,9],[8,10],[9,10]
+  ],
+  "3-4-3":[
+    [0,1],[0,2],[0,3],[1,2],[2,3],
+    [1,4],[1,5],[2,5],[2,6],[3,6],[3,7],
+    [4,5],[5,6],[6,7],
+    [4,8],[5,8],[5,9],[6,9],[6,10],[7,10],[8,9],[9,10]
+  ],
+  "3-5-2":[
+    [0,1],[0,2],[0,3],[1,2],[2,3],
+    [1,4],[1,5],[2,5],[2,6],[2,7],[3,7],[3,8],
+    [4,5],[5,6],[6,7],[7,8],
+    [4,9],[5,9],[6,9],[6,10],[7,10],[8,10],[9,10]
+  ],
+  "3-4-2-1":[
+    [0,1],[0,2],[0,3],[1,2],[2,3],
+    [1,4],[1,5],[2,5],[2,6],[3,6],[3,7],
+    [4,5],[5,6],[6,7],
+    [4,8],[5,8],[5,9],[6,8],[6,9],[7,9],[8,9],[8,10],[9,10]
+  ],
+  "5-3-2":[
+    [0,2],[0,3],[0,4],[1,2],[2,3],[3,4],[4,5],
+    [1,6],[2,6],[2,7],[3,7],[4,7],[4,8],[5,8],
+    [6,7],[7,8],
+    [6,9],[7,9],[7,10],[8,10],[9,10]
+  ],
+  "5-2-3":[
+    [0,2],[0,3],[0,4],[1,2],[2,3],[3,4],[4,5],
+    [1,6],[2,6],[3,6],[3,7],[4,7],[5,7],[6,7],
+    [6,8],[6,9],[7,9],[7,10],[8,9],[9,10]
+  ]
+};
+
 function formationChemistry(teamNumber){
-    const team=teamByNumber(teamNumber),shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"],ass=formationAssignments[teamNumber]||{};
-    // Formation adjacency is fixed by all tactical slots, not by whichever slots
-    // happen to be occupied while the user is still building the XI.
-    const formationNodes=shape.map((slot,index)=>({slot,index}));
-    const formationEdges=tacticalNeighbors(formationNodes);
-    const links=formationEdges.map(edge=>{
-        const aId=ass[edge.a.index],bId=ass[edge.b.index];
+    const team=teamByNumber(teamNumber);
+    const formation=formationByTeam[teamNumber]||"4-3-3";
+    const shape=FORMATIONS[formation];
+    const ass=formationAssignments[teamNumber]||{};
+    const edgePairs=FORMATION_CHEMISTRY_EDGES[formation]||[];
+    const links=edgePairs.map(([ai,bi])=>{
+        const aId=ass[ai],bId=ass[bi];
         if(!aId||!bId)return null;
-        const aPlayer=team.players.find(p=>p.id===aId),bPlayer=team.players.find(p=>p.id===bId);
+        const aPlayer=team.players.find(p=>p.id===aId);
+        const bPlayer=team.players.find(p=>p.id===bId);
         if(!aPlayer||!bPlayer)return null;
-        return {a:{...edge.a,p:aPlayer},b:{...edge.b,p:bPlayer},d:edge.d,value:playerChemistry(aPlayer,bPlayer)};
+        const relation=chemistryRelation(aPlayer,bPlayer);
+        return {
+            a:{index:ai,slot:shape[ai],p:aPlayer},
+            b:{index:bi,slot:shape[bi],p:bPlayer},
+            value:relation.score,
+            relation
+        };
     }).filter(Boolean);
+
     const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
-    return {overall,links};
+    const sorted=[...links].sort((x,y)=>y.value-x.value);
+    const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
+    links.forEach(l=>counts[chemistryTier(l.value)]++);
+    return {
+        overall,
+        links,
+        counts,
+        activeLinks:links.length,
+        possibleLinks:edgePairs.length,
+        top:sorted[0]||null,
+        weakest:sorted.length?sorted[sorted.length-1]:null
+    };
 }
+
 function chemistrySvg(teamNumber){
     const c=formationChemistry(teamNumber);
-    return `<svg class="chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${c.links.map(l=>`<line x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}" class="chem-link ${chemistryTier(l.value)}"><title>${esc(l.a.p.name)} × ${esc(l.b.p.name)} — ${l.value}</title></line>`).join("")}</svg>`;
+    return `<svg class="chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Player chemistry links">${c.links.map(l=>`
+      <line
+        x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}"
+        class="chem-link ${chemistryTier(l.value)}"
+        data-a-id="${l.a.p.id}" data-b-id="${l.b.p.id}"
+        onpointerenter="showChemistryTooltip(event,this)"
+        onpointermove="moveChemistryTooltip(event)"
+        onpointerleave="hideChemistryTooltip()">
+        <title>${esc(l.a.p.name)} × ${esc(l.b.p.name)} — ${l.value} // ${esc(l.relation.label)}</title>
+      </line>`).join("")}</svg>`;
 }
+
+let chemistryTooltipEl=null;
+function showChemistryTooltip(event,line){
+    const team=teamByNumber(formationTeamNumber);
+    const a=team.players.find(p=>p.id===Number(line.dataset.aId));
+    const b=team.players.find(p=>p.id===Number(line.dataset.bId));
+    if(!a||!b)return;
+    const r=chemistryRelation(a,b);
+    if(!chemistryTooltipEl){
+        chemistryTooltipEl=document.createElement("div");
+        chemistryTooltipEl.className="chemistry-tooltip";
+        document.body.appendChild(chemistryTooltipEl);
+    }
+    chemistryTooltipEl.innerHTML=`
+      <div class="chem-tip-score ${chemistryTier(r.score)}">${r.score}</div>
+      <div class="chem-tip-copy">
+        <span>${esc(chemistryTierLabel(r.score))} // ${esc(r.label)}</span>
+        <strong>${esc(a.name)} × ${esc(b.name)}</strong>
+        <small>${esc(r.reason)}</small>
+      </div>`;
+    chemistryTooltipEl.classList.add("show");
+    moveChemistryTooltip(event);
+}
+function moveChemistryTooltip(event){
+    if(!chemistryTooltipEl)return;
+    const pad=14;
+    let x=event.clientX+18,y=event.clientY+18;
+    const rect=chemistryTooltipEl.getBoundingClientRect();
+    if(x+rect.width>window.innerWidth-pad)x=event.clientX-rect.width-18;
+    if(y+rect.height>window.innerHeight-pad)y=event.clientY-rect.height-18;
+    chemistryTooltipEl.style.left=Math.max(pad,x)+"px";
+    chemistryTooltipEl.style.top=Math.max(pad,y)+"px";
+}
+function hideChemistryTooltip(){
+    chemistryTooltipEl?.classList.remove("show");
+}
+
+function chemistryLinkName(link){
+    return link?`${link.a.p.name} × ${link.b.p.name}`:"—";
+}
+function chemistryHud(teamNumber,team){
+    const c=formationChemistry(teamNumber);
+    const top=c.top,weak=c.weakest;
+    return `<div class="chemistry-hud chemistry-hud-v2" style="${teamVars(team)}">
+      <div class="chem-score">
+        <span>TEAM CHEMISTRY</span>
+        <strong>${c.overall||"--"}</strong>
+        <small>FAN MODEL // CANON GAMEPLAY THROUGH CH.363</small>
+      </div>
+      <div class="chemistry-summary">
+        <div><span>ACTIVE LINKS</span><strong>${c.activeLinks}<small> / ${c.possibleLinks}</small></strong></div>
+        <div><span>CHEMICAL</span><strong>${c.counts.chemical}</strong></div>
+        <div><span>ELITE</span><strong>${c.counts.elite}</strong></div>
+        <div><span>STRONG</span><strong>${c.counts.strong}</strong></div>
+      </div>
+      <div class="chemistry-featured">
+        <div class="best"><span>BEST ACTIVE LINK</span><strong>${top?esc(chemistryLinkName(top)):"ADD PLAYERS"}</strong><b>${top?top.value:"--"}</b></div>
+        <div class="risk"><span>LOWEST ACTIVE LINK</span><strong>${weak?esc(chemistryLinkName(weak)):"ADD PLAYERS"}</strong><b>${weak?weak.value:"--"}</b></div>
+      </div>
+      <div class="chem-key">
+        <b>LINE KEY</b>
+        <span><i class="chemical"></i>95+</span>
+        <span><i class="elite"></i>90+</span>
+        <span><i class="strong"></i>82+</span>
+        <span><i class="link"></i>70+</span>
+        <span><i class="weak"></i>&lt;70</span>
+      </div>
+    </div>`;
+}
+
 function currentPlayerSlot(teamNumber,id){
     const ass=formationAssignments[teamNumber]||{},shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
     const k=Object.keys(ass).find(k=>ass[k]===id);return k==null?null:shape[+k]||null;
@@ -1308,9 +1491,15 @@ function movePlayerToSlot(playerId,slotIndex){
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
     if(targetPlayer && targetPlayer.id!==playerId){
         if(sourceSlot!==undefined) formationAssignments[n][sourceSlot]=targetPlayer.id;
-        // If dragged from bench, the displaced player naturally moves to bench.
+        // Dragging from reserves onto an occupied slot sends that player to reserves.
     }
     formationAssignments[n][slotIndex]=playerId;
+    formationMoveFx={
+        movedId:playerId,
+        targetSlot:slotIndex,
+        sourceSlot:sourceSlot!==undefined?Number(sourceSlot):null,
+        displacedId:targetPlayer&&targetPlayer.id!==playerId?targetPlayer.id:null
+    };
     playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
@@ -1322,6 +1511,32 @@ function movePlayerToBench(playerId){
     playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
+}
+function applyFormationMoveFx(){
+    if(!formationMoveFx)return;
+    const fx=formationMoveFx;
+    formationMoveFx=null;
+    requestAnimationFrame(()=>{
+        const landed=document.querySelector(`.formation-slot[data-slot-index="${fx.targetSlot}"]`);
+        if(landed){
+            landed.classList.add("slot-landed");
+            setTimeout(()=>landed.classList.remove("slot-landed"),420);
+        }
+        if(fx.displacedId && fx.sourceSlot!==null){
+            const swapped=document.querySelector(`.formation-slot[data-slot-index="${fx.sourceSlot}"]`);
+            if(swapped){
+                swapped.classList.add("slot-swapped");
+                setTimeout(()=>swapped.classList.remove("slot-swapped"),420);
+            }
+        }else if(fx.displacedId){
+            const benchCard=document.querySelector(`.bench-player[data-player-id="${fx.displacedId}"]`);
+            if(benchCard){
+                benchCard.classList.add("bench-arrived");
+                benchCard.scrollIntoView?.({block:"nearest"});
+                setTimeout(()=>benchCard.classList.remove("bench-arrived"),520);
+            }
+        }
+    });
 }
 function clickFormationSlot(slotIndex){
     const n=formationTeamNumber;
@@ -1397,8 +1612,8 @@ function moveFormationPointerPreview(x,y){
     preview.style.top=y+"px";
 }
 function clearFormationPointerHover(){
-    document.querySelectorAll(".formation-slot.pointer-drop-target,.bench-panel.pointer-drop-target")
-      .forEach(el=>el.classList.remove("pointer-drop-target"));
+    document.querySelectorAll(".formation-slot.pointer-drop-target,.formation-slot.pointer-swap-target,.bench-panel.pointer-drop-target")
+      .forEach(el=>el.classList.remove("pointer-drop-target","pointer-swap-target"));
 }
 function formationDropTargetAt(x,y){
     const hit=document.elementFromPoint(x,y);
@@ -1449,7 +1664,10 @@ function moveFormationPointerDrag(event){
     moveFormationPointerPreview(event.clientX,event.clientY);
     clearFormationPointerHover();
     d.target=formationDropTargetAt(event.clientX,event.clientY);
-    if(d.target)d.target.classList.add("pointer-drop-target");
+    if(d.target){
+        d.target.classList.add("pointer-drop-target");
+        if(d.target.matches(".formation-slot.occupied"))d.target.classList.add("pointer-swap-target");
+    }
 }
 function finishFormationPointerDrag(event){
     const d=formationPointerDrag;
@@ -1576,6 +1794,7 @@ function createPlayerInfoSidebar(team){
 }
 
 function renderFormationBuilder(){
+    hideChemistryTooltip();
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     const slots=FORMATIONS[activeFormation];
@@ -1618,7 +1837,7 @@ function renderFormationBuilder(){
           </details>
         </div>
 
-        ${(()=>{const c=formationChemistry(formationTeamNumber);return `<div class="chemistry-hud" style="${teamVars(team)}"><div class="chem-score"><span>TEAM CHEMISTRY</span><strong>${c.overall||"--"}</strong><small>DIRECT TACTICAL LINKS ONLY</small></div><div class="chem-key"><b>CHEMISTRY KEY</b><span><i class="chemical"></i>95+ CHEMICAL</span><span><i class="elite"></i>90+ ELITE</span><span><i class="strong"></i>82+ STRONG</span><span><i class="link"></i>70+ LINK</span><span><i class="weak"></i>&lt;70 WEAK</span></div></div>`})()}
+        ${chemistryHud(formationTeamNumber,team)}
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
@@ -1655,16 +1874,21 @@ function renderFormationBuilder(){
             <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
+                    data-player-id="${p.id}"
                     onclick="selectBenchPlayer(${p.id})" draggable="false"
                     onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                    <img src="${p.image}" alt="${esc(p.name)}"><span>${esc(p.name)}${positionBadges(p,true)}</span><b>DRAG</b>
+                    <img src="${p.image}" alt="${esc(p.name)}">
+                    <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small></span>
+                    <b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
           </aside>
         </div>
       </div>`;
+    applyFormationMoveFx();
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
+    hideChemistryTooltip();
     formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     showAuctionComplete();
     window.scrollTo({top:0,behavior:"smooth"});
