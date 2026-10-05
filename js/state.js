@@ -11,6 +11,8 @@ let selectedPlayerIds = new Set(players.map(player => player.id));
 let playerPoolPositionFilter = "ALL";
 let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
+let playerPoolCategoryState = {};
+let playerPoolManualOverrides = {};
 let formationDbQuery = "";
 let formationDbPosition = "ALL";
 let formationDbSort = "ovr";
