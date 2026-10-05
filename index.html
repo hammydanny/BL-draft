@@ -178,17 +178,19 @@
 
             <div class="setup-section-title">PLAYER POOL</div>
 
-            <div class="preset-section">
-                <div class="preset-label">QUICK SELECT // PRESETS</div>
-                <div class="preset-buttons">
-                    <button type="button" data-preset="all">ALL PLAYERS</button>
-                    <button type="button" data-preset="blue-lock-project">BLUE LOCK PROJECT</button>
-                    <button type="button" data-preset="world-five">WORLD FIVE</button>
-                    <button type="button" data-preset="u20-match">JAPAN U-20 MATCH</button>
-                    <button type="button" data-preset="nel-stars">NEL STARS</button>
-                    <button type="button" data-preset="world-cup-new">U-20 WC NEWCOMERS</button>
+            <div class="preset-section category-section">
+                <div class="preset-label">PLAYER CATEGORIES // COMBINE ANY GROUPS</div>
+                <div class="pool-category-grid">
+                    <label><input type="checkbox" data-pool-category="blue-lock-project" checked><span>BLUE LOCK PROJECT<small>ORIGINAL BLUE LOCK PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="original-u20" checked><span>ORIGINAL JAPAN U-20<small>SAE + U-20 MATCH SQUAD</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-five" checked><span>WORLD FIVE<small>SECOND SELECTION WORLD TEAM</small></span></label>
+                    <label><input type="checkbox" data-pool-category="master-strikers" checked><span>MASTER STRIKERS<small>NEL MASTER PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="new-gen-11" checked><span>NEW GENERATION XI<small>KNOWN NG11 THROUGH CH.363</small></span></label>
+                    <label><input type="checkbox" data-pool-category="nel-foreign" checked><span>NEL FOREIGN PLAYERS<small>OVERSEAS NEL CAST</small></span></label>
+                    <label><input type="checkbox" data-pool-category="japan-world-cup" checked><span>JAPAN U-20 WORLD CUP<small>CURRENT JAPAN SELECTION</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-cup-new" checked><span>U-20 WC NEWCOMERS<small>NEW INTERNATIONAL PLAYERS</small></span></label>
                 </div>
-                <div class="preset-note">Presets are quick selections. You can still add or remove any character manually.</div>
+                <div class="preset-note">Categories combine as a union. If a player belongs to multiple checked groups, removing one group will not remove that player while another checked group still includes them. Individual player toggles act as manual overrides.</div>
             </div>
 
             <div class="player-pool-toolbar player-database-toolbar">
@@ -201,9 +203,12 @@
                         <select id="playerGroupFilter">
                             <option value="all">ALL</option>
                             <option value="blue-lock-project">BLUE LOCK PROJECT</option>
+                            <option value="original-u20">ORIGINAL JAPAN U-20</option>
                             <option value="world-five">WORLD FIVE</option>
-                            <option value="u20-match">JAPAN U-20</option>
-                            <option value="nel-stars">NEL STARS</option>
+                            <option value="master-strikers">MASTER STRIKERS</option>
+                            <option value="new-gen-11">NEW GENERATION XI</option>
+                            <option value="nel-foreign">NEL FOREIGN PLAYERS</option>
+                            <option value="japan-world-cup">JAPAN U-20 WORLD CUP</option>
                             <option value="world-cup-new">U-20 WC NEW</option>
                         </select>
                     </label>
@@ -231,6 +236,7 @@
                 </div>
                 <div class="pool-actions">
                     <button type="button" id="selectAllPlayers">SELECT ALL</button>
+                    <button type="button" id="invertPlayers">INVERT</button>
                     <button type="button" id="clearAllPlayers">CLEAR ALL</button>
                 </div>
             </div>
