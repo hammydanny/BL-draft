@@ -990,413 +990,6 @@ body{
 .bid-pressure-row b{display:block;margin-top:2px;color:#dcebf6;font-size:10px}
 @media(max-width:1099px){.auction-command-grid{display:flex;flex-direction:column;gap:10px}.auction-command-grid>.side-team{width:min(100%,760px);margin:0 auto}.auction-command-grid>.side-team.team-1{order:1}.auction-command-center{order:2}.auction-command-grid>.side-team.team-2{order:3}.side-team .mini-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));max-height:210px}.auction-history-panel{margin-top:16px}}
 
-/* ==================================================
-   LORE DATABASE
-================================================== */
-
-.lore-screen{
-    min-height:100vh;
-    padding:35px 20px;
-}
-
-.lore-shell{
-    position:relative;
-    z-index:1;
-    width:min(760px,100%);
-    margin:0 auto;
-    padding:36px 38px;
-    background:linear-gradient(145deg,rgba(8,24,40,.93),rgba(1,6,12,.97));
-    border:1px solid rgba(73,177,255,.23);
-    box-shadow:0 35px 100px rgba(0,0,0,.55);
-    clip-path:polygon(
-        0 0,
-        calc(100% - 32px) 0,
-        100% 32px,
-        100% 100%,
-        32px 100%,
-        0 calc(100% - 32px)
-    );
-}
-
-.lore-header{
-    margin-bottom:28px;
-}
-
-.lore-header h1{
-    margin:20px 0 8px;
-    font-size:clamp(50px,9vw,84px);
-    font-style:italic;
-    font-weight:900;
-    line-height:.8;
-    letter-spacing:-3px;
-}
-
-.lore-header h1 span{
-    color:var(--blue);
-}
-
-.lore-header p{
-    margin:0;
-    color:#66849d;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:3px;
-}
-
-.lore-actions{
-    display:grid;
-    gap:8px;
-}
-
-.lore-action{
-    min-height:70px;
-}
-
-.lore-content-shell{
-    width:min(1200px,100%);
-    margin:0 auto;
-}
-
-.lore-page-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:20px;
-    margin-bottom:20px;
-}
-
-.lore-page-header h1{
-    margin:10px 0 4px;
-    font-size:clamp(42px,7vw,72px);
-    font-style:italic;
-    font-weight:900;
-    line-height:.8;
-}
-
-.lore-page-header p{
-    margin:0;
-    color:#5e7b92;
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:2px;
-}
-
-.lore-controls input{
-    width:min(320px,100%);
-    padding:12px 14px;
-    color:#dcecf8;
-    background:#030b13;
-    border:1px solid #173b57;
-    outline:none;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:1px;
-}
-
-.lore-controls input:focus{
-    border-color:var(--blue);
-    box-shadow:0 0 20px rgba(20,156,255,.08);
-}
-
-.character-lore-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-}
-
-.character-lore-card{
-    display:grid;
-    grid-template-columns:130px 1fr;
-    min-width:0;
-    overflow:hidden;
-    background:linear-gradient(145deg,#071724,#020a11);
-    border:1px solid #16384f;
-}
-
-.character-lore-image-wrap{
-    min-height:100%;
-    background:#02070c;
-}
-
-.character-lore-image{
-    width:100%;
-    height:100%;
-    min-height:220px;
-    object-fit:cover;
-    display:block;
-}
-
-.character-lore-main{
-    min-width:0;
-    padding:14px;
-}
-
-.character-lore-heading{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.lore-kicker{
-    display:block;
-    color:var(--blue);
-    font-size:8px;
-    font-weight:800;
-    letter-spacing:2px;
-}
-
-.character-lore-heading h2{
-    margin:3px 0 6px;
-    color:#eaf5fd;
-    font:900 24px/1 "Barlow Condensed";
-    font-style:italic;
-}
-
-.character-lore-ovr{
-    text-align:right;
-    flex:0 0 auto;
-}
-
-.character-lore-ovr span{
-    display:block;
-    color:#526d82;
-    font-size:8px;
-    font-weight:800;
-    letter-spacing:1.5px;
-}
-
-.character-lore-ovr strong{
-    color:var(--blue);
-    font:900 32px/1 "Barlow Condensed";
-}
-
-.character-lore-description{
-    margin:10px 0;
-    color:#819aad;
-    font-size:11px;
-    line-height:1.5;
-}
-
-.character-lore-stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:4px;
-    margin-top:10px;
-}
-
-.character-lore-stats div{
-    padding:6px 5px;
-    text-align:center;
-    background:#030b13;
-    border:1px solid #112c40;
-}
-
-.character-lore-stats span{
-    display:block;
-    color:#4f6a7e;
-    font-size:7px;
-    font-weight:800;
-    letter-spacing:1px;
-}
-
-.character-lore-stats strong{
-    color:#d9eaf5;
-    font:900 15px/1 "Barlow Condensed";
-}
-
-.character-lore-chemistry{
-    margin-top:12px;
-    padding-top:10px;
-    border-top:1px solid rgba(73,177,255,.1);
-}
-
-.lore-subheading{
-    margin-bottom:6px;
-    color:var(--blue);
-    font-size:8px;
-    font-weight:800;
-    letter-spacing:2px;
-}
-
-.character-chemistry-link{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    margin-top:5px;
-    padding:7px 8px;
-    background:#030b13;
-    border:1px solid #102d42;
-}
-
-.character-chemistry-link strong{
-    display:block;
-    color:#cfe4f3;
-    font-size:10px;
-}
-
-.character-chemistry-link span{
-    display:block;
-    margin-top:2px;
-    color:#58748a;
-    font-size:8px;
-}
-
-.character-chemistry-link b{
-    color:var(--blue);
-    font:900 20px/1 "Barlow Condensed";
-}
-
-.character-team-contexts{
-    display:flex;
-    flex-wrap:wrap;
-    gap:4px;
-    margin-top:7px;
-}
-
-.character-team-contexts span{
-    padding:4px 6px;
-    color:#6f889c;
-    background:rgba(20,156,255,.05);
-    border:1px solid #112d42;
-    font-size:7px;
-    font-weight:800;
-    letter-spacing:.7px;
-}
-
-.chemistry-lore-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:9px;
-}
-
-.chemistry-lore-card{
-    padding:15px;
-    background:linear-gradient(145deg,#071724,#020a11);
-    border:1px solid #16384f;
-}
-
-.chemistry-lore-heading{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-}
-
-.chemistry-lore-heading h2{
-    margin:4px 0;
-    color:#eaf5fd;
-    font:900 25px/1 "Barlow Condensed";
-    font-style:italic;
-}
-
-.chemistry-lore-label{
-    color:#68839a;
-    font-size:8px;
-    font-weight:800;
-    letter-spacing:1.5px;
-}
-
-.chemistry-lore-score{
-    min-width:52px;
-    padding:7px;
-    text-align:center;
-    background:#030b13;
-    border:1px solid #15364d;
-}
-
-.chemistry-lore-score span{
-    display:block;
-    color:#4e6b80;
-    font-size:7px;
-    font-weight:800;
-    letter-spacing:1px;
-}
-
-.chemistry-lore-score strong{
-    color:var(--blue);
-    font:900 28px/1 "Barlow Condensed";
-}
-
-.chemistry-lore-description{
-    margin:12px 0;
-    color:#819aad;
-    font-size:11px;
-    line-height:1.5;
-}
-
-.chemistry-lore-characters{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    padding-top:9px;
-    border-top:1px solid rgba(73,177,255,.1);
-}
-
-.chemistry-lore-characters span{
-    padding:5px 7px;
-    color:#7894a9;
-    background:#030b13;
-    border:1px solid #112c40;
-    font-size:8px;
-    font-weight:700;
-}
-
-.lore-empty{
-    grid-column:1/-1;
-    padding:40px;
-    text-align:center;
-    color:#58758a;
-    background:#030b13;
-    border:1px solid #15344b;
-    font-size:10px;
-    font-weight:800;
-    letter-spacing:2px;
-}
-
-.lore-muted{
-    color:#4c667b;
-    font-size:8px;
-    font-weight:700;
-    letter-spacing:1px;
-}
-
-@media(max-width:900px){
-    .character-lore-grid,
-    .chemistry-lore-grid{
-        grid-template-columns:1fr;
-    }
-
-    .lore-page-header{
-        align-items:stretch;
-        flex-direction:column;
-    }
-
-    .lore-controls input{
-        width:100%;
-    }
-}
-
-@media(max-width:560px){
-    .character-lore-card{
-        grid-template-columns:1fr;
-    }
-
-    .character-lore-image{
-        height:230px;
-        min-height:230px;
-    }
-
-    .character-lore-stats{
-        grid-template-columns:repeat(4,1fr);
-    }
-
-    .lore-shell{
-        padding:27px 20px;
-    }
-}
-
 /* =========================================================
    PLAYER DATABASE FILTERS
    ========================================================= */
@@ -1909,4 +1502,387 @@ body{
 @media print{
   .share-mini-pitch{height:270px}
   .share-pitch-player img{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+}
+
+
+/* =========================================================
+   V15 // BLUE LOCK SCROLL SYSTEM
+   ========================================================= */
+html,
+body,
+.share-screen,
+.lore-screen,
+.bench-list,
+.standalone-pool-grid,
+.player-pool-grid{
+  scrollbar-width:thin;
+  scrollbar-color:#169eff #020811;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.share-screen::-webkit-scrollbar,
+.lore-screen::-webkit-scrollbar{
+  width:11px;
+  height:11px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+.share-screen::-webkit-scrollbar-track,
+.lore-screen::-webkit-scrollbar-track{
+  background:#020811;
+  border-left:1px solid #0b263a;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+.share-screen::-webkit-scrollbar-thumb,
+.lore-screen::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#32d9ff 0%,#149cff 48%,#614cff 100%);
+  border:2px solid #020811;
+  border-radius:0;
+  box-shadow:inset 0 0 0 1px rgba(207,246,255,.18),0 0 12px rgba(20,156,255,.32);
+}
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+.share-screen::-webkit-scrollbar-thumb:hover,
+.lore-screen::-webkit-scrollbar-thumb:hover{
+  background:linear-gradient(180deg,#79eaff 0%,#29b8ff 45%,#8068ff 100%);
+}
+
+/* =========================================================
+   V15 // COMPACT CATEGORY MATRIX
+   ========================================================= */
+.category-section{padding:9px 10px!important}
+.category-section .preset-label{margin-bottom:5px!important;font-size:8px!important}
+.pool-category-grid{
+  grid-template-columns:repeat(8,minmax(0,1fr))!important;
+  gap:4px!important;
+}
+.pool-category-grid span{
+  min-height:36px!important;
+  padding:6px 6px 6px 24px!important;
+  font-size:8px!important;
+  letter-spacing:.4px!important;
+}
+.pool-category-grid span:before{
+  left:7px!important;
+  width:10px!important;
+  height:10px!important;
+}
+.pool-category-grid small{display:none!important}
+.pool-category-grid label[data-selection-state="partial"] span{
+  color:#c3d8e6;
+  border-color:#7a6cff;
+  background:linear-gradient(120deg,rgba(122,108,255,.12),rgba(20,156,255,.06));
+  box-shadow:inset 3px 0 #7a6cff;
+}
+.pool-category-grid label[data-selection-state="partial"] span:before{
+  background:linear-gradient(90deg,#7a6cff 50%,transparent 50%);
+  border-color:#968aff;
+}
+.category-section .preset-note{
+  margin-top:5px!important;
+  font-size:8px!important;
+  line-height:1.3;
+}
+
+/* =========================================================
+   V15 // LORE DATABASE + RELIABLE PLAYER PORTRAITS
+   ========================================================= */
+.lore-screen{min-height:100vh;padding:30px 20px}
+.lore-shell{
+  width:min(760px,100%);margin:0 auto;padding:34px 36px;
+  background:linear-gradient(145deg,rgba(8,24,40,.95),rgba(1,6,12,.98));
+  border:1px solid rgba(73,177,255,.23);box-shadow:0 35px 100px rgba(0,0,0,.55)
+}
+.lore-header{margin-bottom:25px}
+.lore-header h1,.lore-page-header h1{
+  margin:16px 0 7px;font-style:italic;font-weight:900;line-height:.82;letter-spacing:-2px
+}
+.lore-header h1{font-size:clamp(48px,8vw,82px)}
+.lore-header h1 span{color:var(--blue)}
+.lore-header p,.lore-page-header p{margin:0;color:#66849d;font-size:10px;font-weight:700;letter-spacing:2px}
+.lore-actions{display:grid;gap:7px}
+.lore-content-shell{width:min(1220px,100%);margin:0 auto}
+.lore-page-header{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:18px}
+.lore-page-header h1{font-size:clamp(42px,7vw,70px)}
+.lore-controls input{
+  width:min(330px,100%);padding:11px 13px;color:#dcecf8;background:#030b13;
+  border:1px solid #173b57;outline:none;font-size:11px;font-weight:700
+}
+.lore-controls input:focus{border-color:var(--blue);box-shadow:0 0 20px rgba(20,156,255,.1)}
+.character-lore-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.character-lore-card{
+  display:grid;grid-template-columns:150px 1fr;min-width:0;overflow:hidden;
+  background:linear-gradient(145deg,#071724,#020a11);border:1px solid #16384f
+}
+.character-lore-image-wrap{
+  position:relative;display:grid;place-items:center;min-height:280px;overflow:hidden;
+  background:radial-gradient(circle at 50% 30%,rgba(20,156,255,.12),transparent 55%),#02070c
+}
+.character-lore-image-wrap:before{
+  content:attr(data-fallback);position:absolute;color:#17344a;font:900 52px "Barlow Condensed";
+  letter-spacing:-2px
+}
+.character-lore-image{
+  position:relative;z-index:1;display:block;width:100%;height:100%;max-height:360px;
+  object-fit:contain;object-position:center;background:#02070c
+}
+.character-lore-image.image-fallback,.character-lore-image.lore-image-broken{opacity:0}
+.character-lore-main{min-width:0;padding:13px}
+.character-lore-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.lore-kicker{display:block;color:var(--blue);font-size:8px;font-weight:800;letter-spacing:1.6px}
+.character-lore-heading h2,.chemistry-lore-heading h2{
+  margin:3px 0 5px;color:#eaf5fd;font:900 24px/1 "Barlow Condensed";font-style:italic
+}
+.character-lore-ovr{text-align:right;flex:0 0 auto}
+.character-lore-ovr span{display:block;color:#526d82;font-size:8px;font-weight:800}
+.character-lore-ovr strong{color:var(--blue);font:900 31px/1 "Barlow Condensed"}
+.character-lore-description{margin:9px 0;color:#90a9bb;font-size:11px;line-height:1.48}
+.character-lore-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.character-lore-stats div{padding:5px;text-align:center;background:#030b13;border:1px solid #112c40}
+.character-lore-stats span{display:block;color:#557084;font-size:7px;font-weight:800}
+.character-lore-stats strong{color:#d9eaf5;font:900 15px/1 "Barlow Condensed"}
+.character-lore-chemistry{margin-top:10px;padding-top:9px;border-top:1px solid rgba(73,177,255,.1)}
+.lore-subheading{margin-bottom:5px;color:var(--blue);font-size:8px;font-weight:800;letter-spacing:1.6px}
+.character-chemistry-link{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;padding:6px 7px;
+  background:#030b13;border:1px solid #102d42
+}
+.character-chemistry-link strong{display:block;color:#cfe4f3;font-size:10px}
+.character-chemistry-link span{display:block;margin-top:2px;color:#58748a;font-size:8px}
+.character-chemistry-link b{font:900 19px/1 "Barlow Condensed"}
+.character-chemistry-link b.chemical{color:#ffe65a}.character-chemistry-link b.elite{color:#43ff9a}
+.character-chemistry-link b.strong{color:#31d7ff}.character-chemistry-link b.link{color:#9c8cff}.character-chemistry-link b.weak{color:#ff496d}
+.character-team-contexts{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.character-team-contexts span,.chemistry-lore-characters span{
+  padding:4px 6px;color:#718da1;background:rgba(20,156,255,.05);border:1px solid #112d42;
+  font-size:7px;font-weight:800
+}
+.chemistry-lore-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.chemistry-lore-card{padding:14px;background:linear-gradient(145deg,#071724,#020a11);border:1px solid #16384f}
+.chemistry-lore-heading{display:flex;justify-content:space-between;gap:10px}
+.chemistry-lore-label{color:#68839a;font-size:8px;font-weight:800}
+.chemistry-lore-score{min-width:52px;padding:7px;text-align:center;background:#030b13;border:1px solid #15364d}
+.chemistry-lore-score span{display:block;color:#4e6b80;font-size:7px;font-weight:800}
+.chemistry-lore-score strong{font:900 28px/1 "Barlow Condensed"}
+.chemistry-lore-score.chemical strong{color:#ffe65a}.chemistry-lore-score.elite strong{color:#43ff9a}
+.chemistry-lore-score.strong strong{color:#31d7ff}.chemistry-lore-score.link strong{color:#9c8cff}.chemistry-lore-score.weak strong{color:#ff496d}
+.chemistry-lore-description{margin:10px 0;color:#819aad;font-size:11px;line-height:1.45}
+.chemistry-lore-characters{display:flex;flex-wrap:wrap;gap:4px;padding-top:8px;border-top:1px solid rgba(73,177,255,.1)}
+.lore-empty{grid-column:1/-1;padding:35px;text-align:center;color:#58758a;background:#030b13;border:1px solid #15344b}
+
+/* =========================================================
+   V15 // STANDALONE GLOBAL TEAM BUILDER
+   ========================================================= */
+.menu-builder-action{border-color:#225b80!important;background:linear-gradient(90deg,rgba(20,156,255,.08),rgba(88,54,255,.04))!important}
+.standalone-builder-label{
+  display:flex;flex-direction:column;justify-content:center;min-width:145px;padding:9px 13px;
+  background:#06111c;border:1px solid #1a587c
+}
+.standalone-builder-label span{color:#4c7893;font-size:7px;font-weight:900;letter-spacing:1.5px}
+.standalone-builder-label strong{color:#dff7ff;font:900 17px "Barlow Condensed"}
+.standalone-pool-panel{
+  margin-bottom:10px;padding:11px;background:#030c15;border:1px solid #17415d;border-left:3px solid var(--blue)
+}
+.standalone-pool-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:8px}
+.standalone-pool-head span{display:block;color:#5790b0;font-size:7px;font-weight:900;letter-spacing:1.5px}
+.standalone-pool-head strong{display:block;margin-top:2px;color:#e2f4ff;font:900 17px "Barlow Condensed"}
+.standalone-pool-head small{color:#4f7188;font-size:8px;font-weight:700}
+.standalone-pool-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) 120px 105px auto auto auto;gap:5px}
+.standalone-pool-toolbar input,.standalone-pool-toolbar select,.standalone-pool-toolbar button{
+  min-width:0;padding:8px 9px;color:#a9c2d3;background:#06121d;border:1px solid #17405c;
+  font-size:9px;font-weight:800
+}
+.standalone-pool-grid{
+  display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;max-height:220px;
+  margin-top:7px;padding-right:3px;overflow:auto
+}
+.standalone-pool-player{
+  display:grid;grid-template-columns:38px minmax(0,1fr) 18px;align-items:center;gap:6px;
+  min-width:0;padding:5px;text-align:left;color:#7694aa;background:#030a11;border:1px solid #12344c
+}
+.standalone-pool-player img{width:38px;height:42px;object-fit:cover;object-position:center top}
+.standalone-pool-player span{min-width:0}.standalone-pool-player strong{
+  display:block;overflow:hidden;color:#cbe1ef;font-size:9px;text-overflow:ellipsis;white-space:nowrap
+}
+.standalone-pool-player small{display:block;margin-top:2px;color:#507087;font-size:7px}
+.standalone-pool-player>b{color:#365c75;font-size:14px;text-align:center}
+.standalone-pool-player.selected{border-color:#20bfff;background:rgba(20,156,255,.1);box-shadow:inset 2px 0 #20bfff}
+.standalone-pool-player.selected>b{color:#59dcff}
+
+/* Share screen empty/incomplete formation rendering */
+.share-v14-metrics strong small{font-size:9px;color:#668299}
+.share-pitch-empty{
+  position:absolute;z-index:2;width:34px;height:34px;transform:translate(-50%,-50%);
+  display:grid;place-items:center;border:1px dashed #456579;border-radius:50%;background:rgba(2,8,14,.55)
+}
+.share-pitch-empty span{
+  position:absolute;bottom:36px;padding:1px 3px;color:#56768c;background:#020810;font-size:5px;font-weight:900
+}
+.share-pitch-empty b{color:#47697e;font:900 15px "Barlow Condensed"}
+.empty-share-pitch:before{border-color:rgba(160,196,218,.18)}
+
+/* =========================================================
+   V15 // MOBILE OVERHAUL
+   ========================================================= */
+@media(max-width:900px){
+  html,body{overflow-x:hidden}
+  .game-header{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:8px!important;padding:10px 12px!important
+  }
+  .game-header .header-status{display:none!important}
+  .game-header h1{font-size:clamp(28px,8vw,42px)!important}
+  .header-right-controls{gap:5px!important}
+  .players-remaining{font-size:11px!important}
+  .header-mini-actions button,.header-button{min-height:38px!important}
+
+  .setup-logo,.setup-box,#formation-content,.formation-header{width:100%!important;max-width:none!important}
+  #setup-screen{padding:12px!important}
+  .setup-box{padding:14px!important}
+  .team-config{grid-template-columns:48px 1fr!important}
+  .game-mode-grid{grid-template-columns:1fr 1fr!important}
+  .setup-box-wide .player-pool-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;max-height:480px!important}
+  .setup-box-wide .pool-player-card img{height:135px!important}
+  .player-pool-toolbar{grid-template-columns:1fr!important}
+  .pool-filter-grid{grid-template-columns:repeat(3,1fr)!important}
+  .pool-actions{display:grid!important;grid-template-columns:repeat(3,1fr)!important}
+  .pool-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+
+  /* Auction: bidding always comes first; team ledgers follow underneath. */
+  .auction-command-grid{
+    display:flex!important;flex-direction:column!important;gap:8px!important;padding:8px!important
+  }
+  .auction-command-center{order:1!important;width:100%!important;max-width:none!important}
+  .auction-command-grid>.side-team.team-1{order:2!important}
+  .auction-command-grid>.side-team.team-2{order:3!important}
+  .auction-command-grid>.side-team{width:100%!important;max-width:none!important}
+  .auction-command-center .current-player{
+    display:grid!important;grid-template-columns:150px minmax(0,1fr)!important;min-height:175px!important
+  }
+  .auction-command-center .player-image-container{height:175px!important;min-height:175px!important}
+  .auction-command-center .player-card-name{font-size:27px!important}
+  .auction-command-center .current-player .stat-strip{grid-template-columns:repeat(4,1fr)!important}
+  .auction-bid-panel,.opening-bid-panel{padding:11px!important}
+  .quick-bids{grid-template-columns:repeat(3,1fr)!important}
+  .side-team .mini-roster{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:230px!important;overflow:auto!important}
+
+  #formation-screen{padding:8px 8px 30px!important}
+  #formation-content{margin:10px auto!important}
+  .formation-topbar{align-items:stretch!important;flex-direction:column!important}
+  .formation-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important}
+  .formation-actions button{min-width:0!important;width:100%!important}
+  .formation-control-panel{grid-template-columns:1fr!important}
+  .formation-team-metrics{grid-template-columns:repeat(2,1fr)!important;grid-column:auto!important;grid-row:auto!important}
+  .formation-menu{width:100%!important}
+  .formation-menu summary{width:100%!important}
+  .chemistry-hud-v2{grid-template-columns:1fr!important}
+  .chemistry-hud-v2 .chem-score{border-right:0!important;border-bottom:1px solid rgba(120,190,235,.12);padding:0 0 7px!important}
+  .chemistry-summary,.chemistry-featured{grid-column:auto!important;grid-template-columns:1fr 1fr!important}
+  .formation-instructions{flex-direction:column!important;align-items:flex-start!important}
+  .formation-layout,.formation-layout.database-hidden,.formation-layout.bench-hidden{
+    display:flex!important;flex-direction:column!important;gap:8px!important
+  }
+  .football-pitch.formation-pitch-v2{
+    order:1!important;width:100%!important;height:auto!important;min-height:690px!important;max-height:none!important
+  }
+  .player-info-panel{order:2!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important}
+  .bench-panel{order:3!important;width:100%!important;height:auto!important;min-height:0!important;max-height:440px!important}
+  .bench-list{max-height:350px!important}
+  .formation-slot{width:72px!important;height:72px!important}
+  .formation-player-token img{width:58px!important;height:58px!important}
+  .formation-player-token strong{max-width:88px!important;font-size:10px!important}
+  .slot-position{font-size:8px!important}
+  .chemistry-lines{overflow:visible}
+  .standalone-pool-toolbar{grid-template-columns:1fr 1fr 1fr!important}
+  .standalone-pool-toolbar input{grid-column:1/-1}
+  .standalone-pool-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;max-height:250px!important}
+
+  .results-grid,.results-team-grid,.results-comparison{grid-template-columns:1fr!important}
+  .share-screen{padding:8px!important}
+  .share-shell{width:100%!important}
+  .share-toolbar{position:sticky;top:0;z-index:15;flex-direction:column!important;padding:6px;background:#02070d}
+  .share-toolbar>div{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%}
+  .share-toolbar button{width:100%!important}
+  .share-card{padding:12px!important}
+  .share-team-grid{grid-template-columns:1fr!important}
+  .share-mini-pitch{height:300px!important}
+  .share-reserves b{max-width:none!important}
+  .share-card-top h2{font-size:34px!important}
+  .share-versus{font-size:24px!important}
+
+  .lore-page-header{align-items:stretch!important;flex-direction:column!important}
+  .lore-controls input{width:100%!important}
+  .character-lore-grid,.chemistry-lore-grid{grid-template-columns:1fr!important}
+}
+
+@media(max-width:600px){
+  body{font-size:14px}
+  .menu-screen{padding:10px!important}
+  .menu-shell{width:100%!important;padding:22px 16px!important;clip-path:none!important}
+  .menu-title-wrap h1{font-size:46px!important;letter-spacing:-2px!important}
+  .menu-title-wrap p{font-size:9px!important;letter-spacing:1.2px!important}
+  .menu-actions button{min-height:52px!important;padding:12px!important}
+  .menu-footer-line{flex-direction:column!important;gap:4px!important}
+
+  .setup-logo h1{font-size:42px!important}
+  .team-config{grid-template-columns:1fr!important}
+  .team-config-number{display:none!important}
+  .settings-grid,.game-mode-grid{grid-template-columns:1fr!important}
+  .pool-filter-grid{grid-template-columns:1fr!important}
+  .pool-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .pool-category-grid span{min-height:32px!important;font-size:7px!important;padding-left:22px!important}
+  .setup-box-wide .player-pool-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .setup-box-wide .pool-player-card img{height:120px!important}
+
+  .game-header{padding:8px!important}
+  .game-header h1{font-size:30px!important}
+  .game-header-small{font-size:7px!important}
+  .header-right-controls{align-items:flex-end!important}
+  .header-mini-actions button{padding:8px!important}
+  .header-mini-actions button span{display:none!important}
+
+  .auction-command-center .current-player{
+    grid-template-columns:125px minmax(0,1fr)!important;min-height:150px!important
+  }
+  .auction-command-center .player-image-container{height:150px!important;min-height:150px!important}
+  .auction-command-center .player-card-name{font-size:24px!important}
+  .auction-command-center .current-player .stat-strip{grid-template-columns:repeat(4,1fr)!important}
+  .auction-command-center .current-player .stat-strip>*{padding:4px 2px!important}
+  .auction-command-center .player-card-bottom{padding:8px!important}
+  .bid-input-row,.opening-input-row{grid-template-columns:1fr!important}
+  .side-team .mini-roster{grid-template-columns:1fr!important}
+
+  .formation-actions{grid-template-columns:1fr 1fr!important}
+  .formation-team-metrics{grid-template-columns:1fr 1fr!important}
+  .chemistry-summary,.chemistry-featured{grid-template-columns:1fr 1fr!important}
+  .football-pitch.formation-pitch-v2{min-height:620px!important}
+  .formation-slot{width:62px!important;height:62px!important}
+  .formation-player-token img{width:50px!important;height:50px!important}
+  .formation-player-token strong{max-width:76px!important;font-size:8px!important}
+  .position-badges.compact i{min-width:19px!important;padding:2px 3px!important;font-size:7px!important}
+  .standalone-pool-head{align-items:flex-start;flex-direction:column!important}
+  .standalone-pool-toolbar{grid-template-columns:1fr 1fr!important}
+  .standalone-pool-toolbar input{grid-column:1/-1}
+  .standalone-pool-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+  .share-card-top{align-items:flex-start!important}
+  .share-card-top>strong{font-size:38px!important}
+  .share-v14-metrics{grid-template-columns:1fr 1fr!important}
+  .share-mini-pitch{height:270px!important}
+  .share-pitch-player{width:46px!important}
+  .share-pitch-player img{width:38px!important;height:38px!important}
+  .share-pitch-player>b{font-size:5px!important}
+  .share-v14-bottom{grid-template-columns:1fr!important}
+
+  .lore-screen{padding:12px 8px!important}
+  .lore-shell{padding:22px 16px!important}
+  .lore-header h1{font-size:48px!important}
+  .character-lore-card{grid-template-columns:105px minmax(0,1fr)!important}
+  .character-lore-image-wrap{min-height:230px!important}
+  .character-lore-image{max-height:280px!important}
+  .character-lore-heading h2{font-size:20px!important}
+  .character-lore-description{font-size:10px!important}
+  .character-lore-stats{grid-template-columns:repeat(4,1fr)!important}
+  .chemistry-lore-heading h2{font-size:20px!important}
 }
