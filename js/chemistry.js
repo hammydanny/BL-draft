@@ -12,6 +12,8 @@
 
 const CHEMISTRY_CONTEXTS = [
   {name:"TEAM Z",score:79,players:["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"]},
+  {name:"TEAM Y // NIKO-OKAWA ROUTE",score:88,players:["Ikki Niko","Hibiki Okawa"]},
+  {name:"TEAM W // WANIMA TWINS",score:96,players:["Junichi Wanima","Keisuke Wanima"]},
   {name:"TEAM V",score:84,players:["Seishiro Nagi","Reo Mikage","Zantetsu Tsurugi"]},
   {name:"SECOND SELECTION // ISAGI UNIT",score:85,players:["Yoichi Isagi","Seishiro Nagi","Shoei Baro","Hyoma Chigiri"]},
   {name:"SECOND SELECTION // RIN UNIT",score:84,players:["Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Meguru Bachira","Yoichi Isagi"]},
@@ -35,6 +37,8 @@ const CHEMISTRY_CONTEXTS = [
 
 const CHEMISTRY_SPECIAL_PAIRS = [
   // Proven elite / named combinations
+  ["Junichi Wanima","Keisuke Wanima",99,"TWIN SYNCHRONIZATION","Team W's core duo can understand each other almost perfectly without words and specialize in synchronized combination play."],
+  ["Ikki Niko","Hibiki Okawa",91,"HIDDEN PLAYMAKER × ACE","Team Y used Niko as the deep-lying organizer feeding Okawa as the visible finishing threat; Niko directly assisted Okawa against Team Z."],
   ["Yoichi Isagi","Yo Hiori",99,"CHEMICAL REACTION","Ubers: shared metavision and the no-look final pass/finish created a goal neither player pre-signalled."],
   ["Ryusei Shido","Sae Itoshi",99,"MATCH MADE IN HEAVEN","Japan U-20: Sae immediately unlocked Shido's penalty-area instincts and supplied both of his goals."],
   ["Ryusei Shido","Charles Chevalier",99,"CHEMICAL REACTION","PXG: Charles' contrarian passing repeatedly targets Shido's extreme penalty-area movement."],
@@ -109,6 +113,8 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Agi","Teddy Knight",72,"SYSTEM FRICTION","They share England U-20, but Agi is removed for allowing his individual ego to disrupt Fox's system while Teddy remains its ideal obedient star."],
 
   // Explicitly poor or unstable links
+  ["Junichi Wanima","Hyoma Chigiri",55,"BAD BLOOD","They share high-school history, but Junichi's treatment of Chigiri and Team W's attempt to exploit his fear make this a poor trust relationship rather than useful chemistry."],
+  ["Keisuke Wanima","Hyoma Chigiri",55,"BAD BLOOD","They share high-school history, but Keisuke joins the psychological pressure on Chigiri instead of functioning as a trusted partner."],
   ["Sae Itoshi","Shuto Sendo",67,"DISMISSIVE PLAYMAKER","Sae repeatedly belittles Sendo's finishing during the original U-20 match; they can occupy the same attack, but trust and mutual respect are poor."],
   ["Ryusei Shido","Shuto Sendo",48,"HOSTILE TEAMMATES","Shido physically attacks Sendo before the U-20 match and Sae's preference for Shido further worsens the relationship."],
   ["Seishiro Nagi","Shoei Baro",80,"VOLATILE TEAM WHITE","They can function in the same Second Selection attack, but their constant clashes and competing egos make the partnership unstable."],
@@ -130,7 +136,9 @@ const SHARED_TEAM_FLOOR_EXCEPTIONS = new Set([
   ["Rin Itoshi","Ryusei Shido"].sort().join("|"),
   ["Sae Itoshi","Shuto Sendo"].sort().join("|"),
   ["Ryusei Shido","Shuto Sendo"].sort().join("|"),
-  ["Rensuke Kunigami","Ryusei Shido"].sort().join("|")
+  ["Rensuke Kunigami","Ryusei Shido"].sort().join("|"),
+  ["Junichi Wanima","Hyoma Chigiri"].sort().join("|"),
+  ["Keisuke Wanima","Hyoma Chigiri"].sort().join("|")
 ]);
 
 function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
