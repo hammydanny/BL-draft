@@ -98,48 +98,56 @@ function showAuctionComplete(){
 }
 function shareFormationSnapshot(n){
     const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3";
-    const existing={...(formationAssignments[n]||{})};
-    const deployment=formationDeploymentLimit(n);
-    const assignment=Object.keys(existing).length?existing:solveBestFormationAssignment(n,formation);
-    const active=Object.keys(existing).length
+    const assignment={...(formationAssignments[n]||{})};
+    const shape=FORMATIONS[formation]||FORMATIONS["4-3-3"];
+    const deployedCount=Object.values(assignment).filter(Boolean).length;
+    const active=deployedCount
       ?activeFormationSlotIndices(n)
       :new Set(preferredActiveSlotIndicesForFormation(n,formation));
     const chemistry=formationChemistryForAssignment(n,assignment,formation,active);
     const ovr=formationTeamOVRForAssignment(n,assignment,formation);
     const captainId=formationCaptainByTeam[n]&&Object.values(assignment).includes(formationCaptainByTeam[n])
       ?formationCaptainByTeam[n]
-      :recommendedCaptainForAssignment(n,assignment)?.id||null;
+      :null;
     const used=new Set(Object.values(assignment));
     const reserves=team.players.filter(p=>!used.has(p.id));
-    return {team,formation,assignment,chemistry,ovr,captainId,reserves,deployment,autoPreview:!Object.keys(existing).length};
+    return {
+      team,formation,assignment,chemistry,ovr,captainId,reserves,
+      deployment:formationDeploymentLimit(n),
+      deployedCount,
+      complete:deployedCount>=Math.min(11,team.players.length),
+      shape
+    };
 }
 function createShareTeam(team,n){
     const spent=startingBudget-team.budget,snap=shareFormationSnapshot(n);
-    const slots=FORMATIONS[snap.formation]||FORMATIONS["4-3-3"];
     const captain=team.players.find(p=>p.id===snap.captainId)||null;
-    const pitchPlayers=Object.entries(snap.assignment).map(([i,id])=>{
-        const slot=slots[Number(i)],player=team.players.find(p=>p.id===id);
-        return slot&&player?{slot,player,isCaptain:player.id===snap.captainId}:null;
-    }).filter(Boolean);
-    return `<article class="share-team share-team-v14" style="${teamVars(team)}">
-      <div class="share-team-head"><div><span>SQUAD 0${n} // ${snap.autoPreview?"AUTO PREVIEW":"FORMATION"} ${snap.formation}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
+    const target=Math.min(11,team.players.length);
+    const stateLabel=snap.deployedCount===0?"NO FORMATION BUILT":snap.complete?"FORMATION COMPLETE":`INCOMPLETE ${snap.deployedCount}/${target}`;
+    return `<article class="share-team share-team-v15" style="${teamVars(team)}">
+      <div class="share-team-head"><div><span>SQUAD 0${n} // ${stateLabel}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
       <div class="share-v14-metrics">
         <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
-        <div><span>CHEMISTRY</span><strong class="${chemistryTier(snap.chemistry.overall)}">${snap.chemistry.overall||"--"}</strong></div>
+        <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
         <div><span>CAPTAIN</span><strong>${captain?esc(captain.name):"—"}</strong></div>
-        <div><span>RESERVES</span><strong>${snap.reserves.length}</strong></div>
+        <div><span>DEPLOYED</span><strong>${snap.deployedCount}<small> / ${target}</small></strong></div>
       </div>
-      <div class="share-mini-pitch">
+      <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
         <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
-        ${pitchPlayers.map(({slot,player,isCaptain})=>`<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-          ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
-        </div>`).join("")}
+        ${snap.shape.map((slot,i)=>{
+          const player=team.players.find(p=>p.id===snap.assignment[i]);
+          if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
+          const isCaptain=player.id===snap.captainId;
+          return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
+            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
+          </div>`;
+        }).join("")}
       </div>
       <div class="share-v14-bottom">
         <div class="share-money compact"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
         <div class="share-chem-note"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
       </div>
-      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 function openShareScreen(){
