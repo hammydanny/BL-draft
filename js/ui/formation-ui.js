@@ -76,6 +76,7 @@ function createPlayerInfoSidebar(team){
 
 function renderFormationBuilder(){
     hideChemistryTooltip();
+    const standalone=formationTeamNumber===0;
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     const slots=FORMATIONS[activeFormation];
@@ -92,7 +93,9 @@ function renderFormationBuilder(){
       <div class="formation-v2-shell">
         <div class="formation-topbar">
           <div class="formation-team-tabs">
-            ${[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
+            ${standalone
+              ?`<div class="standalone-builder-label"><span>STANDALONE</span><strong>GLOBAL XI</strong></div>`
+              :[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
           </div>
           <div class="formation-actions">
             <button class="formation-auto" onclick="autoBestXI()">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
@@ -102,9 +105,11 @@ function renderFormationBuilder(){
           </div>
         </div>
 
+        ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
+
         <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
           <div class="formation-identity">
-            <span>FORMATION // ${esc(team.name)}</span>
+            <span>${standalone?"GLOBAL TEAM // FORMATION":`FORMATION // ${esc(team.name)}`}</span>
             <strong>${activeFormation}</strong>
           </div>
           <div class="formation-team-metrics">
@@ -165,7 +170,9 @@ function renderFormationBuilder(){
           ${createPlayerInfoSidebar(team)}
 
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}" data-formation-bench>
-            <div class="bench-heading"><div><span>RESERVES</span><small>${team.players.length>11?"PLAYERS OUTSIDE THE XI STAY HERE":"DROP HERE TO BENCH"}</small></div><strong>${bench.length}</strong></div>
+            <div class="bench-heading"><div><span>RESERVES</span><small>${standalone
+  ?(team.players.length>11?"SELECTED PLAYERS OUTSIDE THE XI":"SELECT MORE THAN 11 TO CREATE RESERVES")
+  :(team.players.length>11?"PLAYERS OUTSIDE THE XI STAY HERE":"DROP HERE TO BENCH")}</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
                     data-player-id="${p.id}"
@@ -180,10 +187,17 @@ function renderFormationBuilder(){
         </div>
       </div>`;
     applyFormationMoveFx();
+    if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
     hideChemistryTooltip();
+    if(formationTeamNumber===0||uiState.screen==="standalone-builder"){
+        if(typeof leaveStandaloneBuilder==="function")leaveStandaloneBuilder();
+        else goToMainMenu();
+        return;
+    }
     formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    configureFormationHeader?.(false);
     showAuctionComplete();
     window.scrollTo({top:0,behavior:"smooth"});
 });
