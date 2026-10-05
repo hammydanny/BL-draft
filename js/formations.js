@@ -86,11 +86,14 @@ const CAPTAIN_LEADERSHIP = {
 };
 
 function formationDeploymentLimit(n){return Math.min(11,teamByNumber(n).players.length);}
-function preferredActiveSlotIndices(n){
-    const formation=formationByTeam[n]||"4-3-3";
+function preferredActiveSlotIndicesForFormation(n,formationName){
+    const formation=formationName||formationByTeam[n]||"4-3-3";
     const shape=FORMATIONS[formation]||[];
     const priority=FORMATION_ACTIVE_PRIORITY[formation]||shape.map((_,i)=>i);
     return priority.slice(0,formationDeploymentLimit(n));
+}
+function preferredActiveSlotIndices(n){
+    return preferredActiveSlotIndicesForFormation(n,formationByTeam[n]||"4-3-3");
 }
 function activeFormationSlotIndices(n){
     const limit=formationDeploymentLimit(n);
@@ -104,22 +107,28 @@ function activeFormationSlotIndices(n){
     priority.forEach(i=>{if(!active.includes(i)&&active.length<limit)active.push(i);});
     return new Set(active.slice(0,limit));
 }
-function formationTeamOVR(n){
-    const team=teamByNumber(n),shape=FORMATIONS[formationByTeam[n]||"4-3-3"],ass=formationAssignments[n]||{};
-    const ratings=Object.entries(ass).map(([slot,id])=>{
+function formationTeamOVRForAssignment(n,assignment,formationName=formationByTeam[n]||"4-3-3"){
+    const team=teamByNumber(n),shape=FORMATIONS[formationName]||FORMATIONS["4-3-3"];
+    const ratings=Object.entries(assignment||{}).map(([slot,id])=>{
         const player=team.players.find(p=>p.id===id),pos=shape[Number(slot)]?.label;
         return player&&pos?effectiveOVR(player,pos):null;
     }).filter(Number.isFinite);
     return ratings.length?Math.round(ratings.reduce((a,b)=>a+b,0)/ratings.length):0;
+}
+function formationTeamOVR(n){
+    return formationTeamOVRForAssignment(n,formationAssignments[n]||{},formationByTeam[n]||"4-3-3");
 }
 function formationCaptain(n){
     const id=formationCaptainByTeam?.[n];
     return id?teamByNumber(n).players.find(p=>p.id===id)||null:null;
 }
 function captainRecommendationScore(player){return playerOverall(player)+(CAPTAIN_LEADERSHIP[player.name]||0);}
-function recommendedFormationCaptain(n){
-    const ids=assignedIds(n);
+function recommendedCaptainForAssignment(n,assignment){
+    const ids=new Set(Object.values(assignment||{}).filter(Boolean));
     return teamByNumber(n).players.filter(p=>ids.has(p.id)).sort((a,b)=>captainRecommendationScore(b)-captainRecommendationScore(a)||playerOverall(b)-playerOverall(a))[0]||null;
+}
+function recommendedFormationCaptain(n){
+    return recommendedCaptainForAssignment(n,formationAssignments[n]||{});
 }
 function ensureFormationCaptain(n,autoAssign=false){
     const captain=formationCaptain(n),deployed=assignedIds(n);
@@ -134,23 +143,112 @@ function setFormationCaptain(playerId){
     formationCaptainByTeam[n]=formationCaptainByTeam[n]===playerId?null:playerId;
     playSfx("confirm");renderFormationBuilder();saveGame();
 }
-function formationAssignmentScore(n,assignment){
-    const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3",shape=FORMATIONS[formation];
+function formationRoleScore(player,label){
+    const effective=effectiveOVR(player,label);
+    let fit=primaryFit(player,label)?8:canonicalFit(player,label)?3:-7;
+    if(label==="GK" && !canonicalFit(player,"GK"))fit-=18;
+    if(["CB","LB","RB"].includes(label) && positionGroup(primaryPosition(player))==="ATTACK")fit-=4;
+    return effective+fit;
+}
+function formationChemistryScoreValue(value){
+    let bonus=(value-70)*.18;
+    if(value>=95)bonus+=2;
+    else if(value>=90)bonus+=1;
+    if(value<70)bonus-=(70-value)*.12;
+    return bonus;
+}
+function formationAssignmentScore(n,assignment,formationName=formationByTeam[n]||"4-3-3"){
+    const team=teamByNumber(n),shape=FORMATIONS[formationName]||FORMATIONS["4-3-3"];
     let score=0;
-    Object.entries(assignment).forEach(([slot,id])=>{
+    Object.entries(assignment||{}).forEach(([slot,id])=>{
         const i=Number(slot),player=team.players.find(p=>p.id===id),label=shape[i]?.label;
-        if(!player||!label)return;
-        score+=effectiveOVR(player,label)+(primaryFit(player,label)?5:canonicalFit(player,label)?2:0);
+        if(player&&label)score+=formationRoleScore(player,label);
     });
-    (FORMATION_CHEMISTRY_EDGES[formation]||[]).forEach(([a,b])=>{
-        const pa=team.players.find(p=>p.id===assignment[a]),pb=team.players.find(p=>p.id===assignment[b]);
-        if(!pa||!pb)return;
-        const chem=chemistryRelation(pa,pb).score;
-        score+=(chem-70)*.10;
-        if(chem>=95)score+=1.2;
-        else if(chem<70)score-=(70-chem)*.05;
+    (FORMATION_CHEMISTRY_EDGES[formationName]||[]).forEach(([a,b])=>{
+        const pa=team.players.find(p=>p.id===assignment?.[a]),pb=team.players.find(p=>p.id===assignment?.[b]);
+        if(pa&&pb)score+=formationChemistryScoreValue(chemistryRelation(pa,pb).score);
     });
     return score;
+}
+function incrementalFormationCandidateScore(n,formationName,assignment,slotIndex,player){
+    const team=teamByNumber(n),shape=FORMATIONS[formationName],label=shape[slotIndex]?.label;
+    let score=formationRoleScore(player,label);
+    (FORMATION_CHEMISTRY_EDGES[formationName]||[]).forEach(([a,b])=>{
+        let other=null;
+        if(a===slotIndex)other=b;
+        else if(b===slotIndex)other=a;
+        if(other===null||assignment[other]==null)return;
+        const teammate=team.players.find(p=>p.id===assignment[other]);
+        if(teammate)score+=formationChemistryScoreValue(chemistryRelation(player,teammate).score);
+    });
+    return score;
+}
+function refineFormationAssignment(n,formationName,initial){
+    const team=teamByNumber(n);
+    let assignment={...initial};
+    for(let iteration=0;iteration<10;iteration++){
+        let bestScore=formationAssignmentScore(n,assignment,formationName),best=null;
+        const slots=Object.keys(assignment).map(Number);
+        for(let i=0;i<slots.length;i++)for(let j=i+1;j<slots.length;j++){
+            const a=slots[i],b=slots[j],test={...assignment};
+            [test[a],test[b]]=[test[b],test[a]];
+            const score=formationAssignmentScore(n,test,formationName);
+            if(score>bestScore+.02){bestScore=score;best=test;}
+        }
+        const used=new Set(Object.values(assignment));
+        const reserves=team.players.filter(p=>!used.has(p.id));
+        for(const slot of slots)for(const candidate of reserves){
+            const test={...assignment,[slot]:candidate.id};
+            const score=formationAssignmentScore(n,test,formationName);
+            if(score>bestScore+.02){bestScore=score;best=test;}
+        }
+        if(!best)break;
+        assignment=best;
+    }
+    return assignment;
+}
+function solveBestFormationAssignment(n,formationName=formationByTeam[n]||"4-3-3"){
+    const team=teamByNumber(n),shape=FORMATIONS[formationName]||FORMATIONS["4-3-3"];
+    const active=preferredActiveSlotIndicesForFormation(n,formationName);
+    if(!active.length||!team.players.length)return {};
+
+    // Hardest/scarcest roles are solved first so unique GKs/defenders are not consumed elsewhere.
+    const ordered=active.map(index=>{
+        const label=shape[index].label;
+        const primary=team.players.filter(p=>primaryFit(p,label)).length;
+        const canonical=team.players.filter(p=>canonicalFit(p,label)).length;
+        return {index,label,scarcity:primary*3+canonical};
+    }).sort((a,b)=>a.scarcity-b.scarcity||(["GK","CB","DM","ST"].includes(a.label)?-1:1)||a.index-b.index);
+
+    // Beam search keeps several competing lineups alive instead of locking in one greedy pick.
+    let beam=[{assignment:{},used:new Set(),score:0}];
+    const BEAM_WIDTH=220,CANDIDATES_PER_SLOT=Math.min(10,team.players.length);
+    for(const item of ordered){
+        const next=[];
+        for(const state of beam){
+            const candidates=team.players
+              .filter(p=>!state.used.has(p.id))
+              .map(p=>({p,inc:incrementalFormationCandidateScore(n,formationName,state.assignment,item.index,p)}))
+              .sort((a,b)=>b.inc-a.inc||playerOverall(b.p)-playerOverall(a.p))
+              .slice(0,CANDIDATES_PER_SLOT);
+            for(const {p,inc} of candidates){
+                const used=new Set(state.used);used.add(p.id);
+                next.push({assignment:{...state.assignment,[item.index]:p.id},used,score:state.score+inc});
+            }
+        }
+        next.sort((a,b)=>b.score-a.score);
+        beam=next.slice(0,BEAM_WIDTH);
+    }
+    if(!beam.length)return {};
+    // Re-rank complete beam states with the exact full scoring function, then locally polish.
+    beam.sort((a,b)=>formationAssignmentScore(n,b.assignment,formationName)-formationAssignmentScore(n,a.assignment,formationName));
+    let best=refineFormationAssignment(n,formationName,beam[0].assignment);
+    // Give a few alternate top beams a refinement pass so a slightly weaker partial path can win globally.
+    for(const candidate of beam.slice(1,Math.min(10,beam.length))){
+        const refined=refineFormationAssignment(n,formationName,candidate.assignment);
+        if(formationAssignmentScore(n,refined,formationName)>formationAssignmentScore(n,best,formationName)+.02)best=refined;
+    }
+    return best;
 }
 
 function openFormationBuilder(){
@@ -169,9 +267,7 @@ function openFormationBuilder(){
     window.scrollTo({top:0,behavior:"smooth"});
 }
 function autoFillFormation(n){
-    const team=teamByNumber(n),active=preferredActiveSlotIndices(n);
-    formationAssignments[n]={};
-    team.players.slice(0,active.length).forEach((p,i)=>formationAssignments[n][active[i]]=p.id);
+    formationAssignments[n]=solveBestFormationAssignment(n,formationByTeam[n]||"4-3-3");
     ensureFormationCaptain(n,true);
 }
 function sanitizeFormationAssignments(n){
@@ -206,53 +302,8 @@ function changeFormation(name){
     renderFormationBuilder();saveGame();
 }
 function autoBestXI(){
-    const n=formationTeamNumber,team=teamByNumber(n),shape=FORMATIONS[formationByTeam[n]||"4-3-3"];
-    const active=preferredActiveSlotIndices(n);
-    const remaining=[...team.players];
-    let assignment={};
-
-    // Phase 1: fill the hardest active roles first using role-adjusted OVR.
-    const slotOrder=active.map(index=>{
-        const slot=shape[index];
-        const viable=remaining.filter(p=>canonicalFit(p,slot.label)).length;
-        const primary=remaining.filter(p=>primaryFit(p,slot.label)).length;
-        return {slot,index,scarcity:primary*2+viable};
-    }).sort((a,b)=>a.scarcity-b.scarcity||a.index-b.index);
-    for(const item of slotOrder){
-        if(!remaining.length)break;
-        const ranked=[...remaining].map(p=>({
-            p,
-            score:effectiveOVR(p,item.slot.label)+(primaryFit(p,item.slot.label)?5:canonicalFit(p,item.slot.label)?2:0)
-        })).sort((a,b)=>b.score-a.score||playerOverall(b.p)-playerOverall(a.p));
-        const pick=ranked[0]?.p;if(!pick)continue;
-        assignment[item.index]=pick.id;
-        remaining.splice(remaining.findIndex(p=>p.id===pick.id),1);
-    }
-
-    // Phase 2: local search improves both role quality and demonstrated chemistry.
-    // It can swap deployed players or replace one with a reserve if the total XI is better.
-    for(let iteration=0;iteration<6;iteration++){
-        const current=formationAssignmentScore(n,assignment);
-        let bestScore=current,best=null;
-        const slots=Object.keys(assignment).map(Number);
-        for(let i=0;i<slots.length;i++)for(let j=i+1;j<slots.length;j++){
-            const a=slots[i],b=slots[j],test={...assignment};
-            [test[a],test[b]]=[test[b],test[a]];
-            const score=formationAssignmentScore(n,test);
-            if(score>bestScore+.05){bestScore=score;best=test;}
-        }
-        const used=new Set(Object.values(assignment));
-        const reserves=team.players.filter(p=>!used.has(p.id));
-        for(const slot of slots)for(const candidate of reserves){
-            const test={...assignment,[slot]:candidate.id};
-            const score=formationAssignmentScore(n,test);
-            if(score>bestScore+.05){bestScore=score;best=test;}
-        }
-        if(!best)break;
-        assignment=best;
-    }
-
-    formationAssignments[n]=assignment;
+    const n=formationTeamNumber;
+    formationAssignments[n]=solveBestFormationAssignment(n,formationByTeam[n]||"4-3-3");
     ensureFormationCaptain(n,true);
     selectedFormationPlayerId=null;
     playSfx("confirm");
