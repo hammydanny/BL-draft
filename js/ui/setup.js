@@ -84,7 +84,15 @@ function recomputeSelectedPlayersFromCategories(){
 function renderPoolCategoryControls(){
     ensurePoolCategoryState();
     document.querySelectorAll("[data-pool-category]").forEach(input=>{
-        input.checked=!!playerPoolCategoryState[input.dataset.poolCategory];
+        const ids=PLAYER_POOL_CATEGORY_IDS[input.dataset.poolCategory]||new Set();
+        const selectedCount=[...ids].filter(id=>selectedPlayerIds.has(id)).length;
+        input.checked=ids.size>0&&selectedCount===ids.size;
+        input.indeterminate=selectedCount>0&&selectedCount<ids.size;
+        const label=input.closest("label");
+        if(label){
+            label.dataset.selectionState=input.checked?"all":input.indeterminate?"partial":"none";
+            label.title=`${selectedCount}/${ids.size} players selected`;
+        }
     });
 }
 function setPoolCategoryEnabled(key,enabled){
@@ -196,8 +204,11 @@ document.getElementById("selectAllPlayers").addEventListener("click", () => {
     recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
 });
 document.getElementById("invertPlayers").addEventListener("click", () => {
-    players.forEach(p=>playerPoolManualOverrides[p.id]=!selectedPlayerIds.has(p.id));
-    recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
+    const previous=new Set(selectedPlayerIds);
+    players.forEach(p=>playerPoolManualOverrides[p.id]=!previous.has(p.id));
+    recomputeSelectedPlayersFromCategories();
+    renderPlayerPool();
+    saveSetupPreferences();
 });
 document.getElementById("clearAllPlayers").addEventListener("click", () => {
     Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=false);
