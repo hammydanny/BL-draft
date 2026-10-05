@@ -25,6 +25,7 @@ function loadStandaloneBuilderState(){
             formationCaptainByTeam[0]=saved.captainId||null;
             standaloneBuilderRole=saved.role||"ALL";
             standaloneBuilderSort=saved.sort||"ovr";
+            standalonePoolHidden=!!saved.poolHidden;
         }
     }catch(e){}
     standaloneBuilderSyncTeam();
@@ -37,7 +38,8 @@ function saveStandaloneBuilderState(){
             assignment:formationAssignments[0]||{},
             captainId:formationCaptainByTeam[0]||null,
             role:standaloneBuilderRole,
-            sort:standaloneBuilderSort
+            sort:standaloneBuilderSort,
+            poolHidden:standalonePoolHidden
         }));
     }catch(e){}
 }
@@ -93,6 +95,34 @@ function standaloneBuilderPoolPlayers(){
     });
     return list;
 }
+function autoBestStandaloneTeam(){
+    standaloneBuilderSyncTeam();
+    if(!standaloneBuilderTeam.players.length){
+        showSiteError(
+            "Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.",
+            "SELECT A ROSTER"
+        );
+        return;
+    }
+    const formation=formationByTeam[0]||"4-3-3";
+    const best=solveBestFormationAssignment(0,formation);
+    if(!Object.keys(best).length){
+        showSiteError("No valid lineup could be generated from the selected roster.","AUTO BEST TEAM");
+        return;
+    }
+    formationAssignments[0]=best;
+    ensureFormationCaptain(0,true);
+    selectedFormationPlayerId=null;
+    playSfx("confirm");
+    saveStandaloneBuilderState();
+    renderFormationBuilder();
+}
+function toggleStandalonePoolVisibility(){
+    standalonePoolHidden=!standalonePoolHidden;
+    saveStandaloneBuilderState();
+    renderFormationBuilder();
+}
+
 function standalonePoolCard(player){
     const selected=standaloneBuilderPlayerIds.has(player.id);
     return `<button type="button" class="standalone-pool-player ${selected?"selected":""}" data-standalone-player="${player.id}" aria-pressed="${selected}">
@@ -102,10 +132,21 @@ function standalonePoolCard(player){
     </button>`;
 }
 function standalonePoolMarkup(){
+    if(standalonePoolHidden){
+        return `<section class="standalone-pool-panel standalone-pool-collapsed">
+          <div class="standalone-pool-head">
+            <div><span>GLOBAL PLAYER POOL</span><strong>${standaloneBuilderPlayerIds.size} SELECTED</strong></div>
+            <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle>SHOW PLAYER POOL</button>
+          </div>
+        </section>`;
+    }
     return `<section class="standalone-pool-panel">
       <div class="standalone-pool-head">
         <div><span>GLOBAL PLAYER POOL</span><strong>${standaloneBuilderPlayerIds.size} SELECTED</strong></div>
-        <small>SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</small>
+        <div class="standalone-pool-head-actions">
+          <small>SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</small>
+          <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle>HIDE PLAYER POOL</button>
+        </div>
       </div>
       <div class="standalone-pool-toolbar">
         <input id="standalonePoolSearch" type="search" value="${esc(standaloneBuilderQuery)}" placeholder="SEARCH PLAYERS..." autocomplete="off">
@@ -149,6 +190,7 @@ function bindStandalonePoolCards(){
 }
 function bindStandaloneBuilderPoolUI(){
     if(formationTeamNumber!==0)return;
+    document.querySelectorAll("[data-standalone-pool-toggle]").forEach(button=>{button.onclick=toggleStandalonePoolVisibility;});
     const search=document.getElementById("standalonePoolSearch");
     const role=document.getElementById("standalonePoolRole");
     const sort=document.getElementById("standalonePoolSort");
