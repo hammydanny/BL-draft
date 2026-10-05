@@ -28,25 +28,12 @@
             </div>
 
             <div class="menu-actions">
-                <button id="menuNewAuction" class="menu-primary" type="button">
-                    <span>NEW AUCTION</span><b>→</b>
-                </button>
-
-                <button id="menuResumeAuction" class="menu-action hidden" type="button">
-                    <span>RESUME AUCTION</span><b>CONTINUE</b>
-                </button>
-
-                <button id="menuLore" class="menu-action" type="button">
-                    <span>LORE</span><b>DATABASE</b>
-                </button>
-
-                <button id="menuHowToPlay" class="menu-action" type="button">
-                    <span>HOW TO PLAY</span><b>RULES</b>
-                </button>
-
-                <button id="menuAbout" class="menu-action" type="button">
-                    <span>ABOUT</span><b>INFO</b>
-                </button>
+                <button id="menuNewAuction" class="menu-primary" type="button"><span>NEW AUCTION</span><b>→</b></button>
+                <button id="menuResumeAuction" class="menu-action hidden" type="button"><span>RESUME AUCTION</span><b>CONTINUE</b></button>
+                <button id="menuStandaloneBuilder" class="menu-action menu-builder-action" type="button"><span>TEAM BUILDER</span><b>BUILD ONE SQUAD</b></button>
+                <button id="menuLore" class="menu-action" type="button"><span>LORE</span><b>DATABASE</b></button>
+                <button id="menuHowToPlay" class="menu-action" type="button"><span>HOW TO PLAY</span><b>RULES</b></button>
+                <button id="menuAbout" class="menu-action" type="button"><span>ABOUT</span><b>INFO</b></button>
             </div>
 
             <div class="menu-footer-line">
@@ -57,93 +44,54 @@
     </section>
 
     <section id="lore-menu-screen" class="lore-screen hidden">
-    <div class="lore-shell">
-        <div class="lore-header">
-            <button id="loreBackToMenu" class="setup-back-button" type="button">
-                ← MAIN MENU
-            </button>
-
-            <div class="menu-code">BL // DATABASE</div>
-
-            <h1>BLUE LOCK <span>LORE</span></h1>
-            <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p>
-        </div>
-
-        <div class="lore-actions">
-            <button id="loreCharacters" class="menu-action lore-action" type="button">
-                <span>CHARACTERS</span>
-                <b>PLAYER DATABASE</b>
-            </button>
-
-            <button id="loreChemistry" class="menu-action lore-action" type="button">
-                <span>CHEMISTRY</span>
-                <b>RELATIONSHIP DATABASE</b>
-            </button>
-        </div>
-    </div>
-</section>
-
-
-<section id="character-lore-screen" class="lore-screen hidden">
-    <div class="lore-content-shell">
-
-        <div class="lore-page-header">
-            <div>
-                <button id="charactersBackToLore" class="setup-back-button" type="button">
-                    ← LORE
-                </button>
-
-                <div class="menu-code">BL // CHARACTER DATABASE</div>
-                <h1>CHARACTERS</h1>
-                <p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p>
+        <div class="lore-shell">
+            <div class="lore-header">
+                <button id="loreBackToMenu" class="setup-back-button" type="button">← MAIN MENU</button>
+                <div class="menu-code">BL // DATABASE</div>
+                <h1>BLUE LOCK <span>LORE</span></h1>
+                <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p>
             </div>
-
-            <div class="lore-controls">
-                <input
-                    id="characterLoreSearch"
-                    type="search"
-                    placeholder="SEARCH CHARACTERS..."
-                    autocomplete="off"
-                >
+            <div class="lore-actions">
+                <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
+                <button id="loreChemistry" class="menu-action lore-action" type="button"><span>CHEMISTRY</span><b>RELATIONSHIP DATABASE</b></button>
             </div>
         </div>
+    </section>
 
-        <div id="characterLoreGrid" class="character-lore-grid"></div>
-
-    </div>
-</section>
-
-
-<section id="chemistry-lore-screen" class="lore-screen hidden">
-    <div class="lore-content-shell">
-
-        <div class="lore-page-header">
-            <div>
-                <button id="chemistryBackToLore" class="setup-back-button" type="button">
-                    ← LORE
-                </button>
-
-                <div class="menu-code">BL // CHEMISTRY DATABASE</div>
-                <h1>CHEMISTRY</h1>
-                <p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p>
+    <section id="character-lore-screen" class="lore-screen hidden">
+        <div class="lore-content-shell">
+            <div class="lore-page-header">
+                <div>
+                    <button id="charactersBackToLore" class="setup-back-button" type="button">← LORE</button>
+                    <div class="menu-code">BL // CHARACTER DATABASE</div>
+                    <h1>CHARACTERS</h1>
+                    <p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p>
+                </div>
+                <div class="lore-controls">
+                    <input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off">
+                </div>
             </div>
-
-            <div class="lore-controls">
-                <input
-                    id="chemistryLoreSearch"
-                    type="search"
-                    placeholder="SEARCH CHEMISTRY..."
-                    autocomplete="off"
-                >
-            </div>
+            <div id="characterLoreGrid" class="character-lore-grid"></div>
         </div>
+    </section>
 
-        <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
+    <section id="chemistry-lore-screen" class="lore-screen hidden">
+        <div class="lore-content-shell">
+            <div class="lore-page-header">
+                <div>
+                    <button id="chemistryBackToLore" class="setup-back-button" type="button">← LORE</button>
+                    <div class="menu-code">BL // CHEMISTRY DATABASE</div>
+                    <h1>CHEMISTRY</h1>
+                    <p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p>
+                </div>
+                <div class="lore-controls">
+                    <input id="chemistryLoreSearch" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off">
+                </div>
+            </div>
+            <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
+        </div>
+    </section>
 
-    </div>
-</section>
-    
-    
     <section id="setup-screen" class="hidden">
         <div class="setup-logo">
             <button id="setupBackToMenu" class="setup-back-button" type="button">← MAIN MENU</button>
@@ -334,10 +282,10 @@
     <section id="formation-screen" class="hidden">
         <header class="game-header formation-header">
             <div>
-                <div class="game-header-small">BL // SQUAD DEPLOYMENT</div>
-                <h1>FORMATION <span>BUILDER</span></h1>
+                <div id="formationHeaderCode" class="game-header-small">BL // SQUAD DEPLOYMENT</div>
+                <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
             </div>
-            <div class="header-status"><i></i> TACTICAL MODE</div>
+            <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
             <div class="header-right-controls">
                 <button id="backToResults" class="header-button compact-control">← RESULTS</button>
                 <div class="header-mini-actions">
@@ -413,6 +361,7 @@
     <script defer src="js/ui/auction-ui.js"></script>
     <script defer src="js/ui/menu.js"></script>
     <script defer src="js/ui/setup.js"></script>
+    <script defer src="js/standalone-builder.js"></script>
     <script defer src="js/ui/formation-ui.js"></script>
 </body>
 </html>
