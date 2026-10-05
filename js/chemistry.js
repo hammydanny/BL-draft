@@ -20,6 +20,7 @@ const CHEMISTRY_CONTEXTS = [
   {name:"THIRD SELECTION // A1",score:82,players:["Rin Itoshi","Ryusei Shido","Yoichi Isagi","Yo Hiori","Nijiro Nanase"]},
   {name:"BLUE LOCK ELEVEN",score:80,players:["Yoichi Isagi","Rin Itoshi","Meguru Bachira","Hyoma Chigiri","Seishiro Nagi","Shoei Baro","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Yo Hiori","Jyubei Aryu","Gin Gagamaru","Ikki Niko","Reo Mikage"]},
   {name:"JAPAN U-20 // ORIGINAL",score:80,players:["Sae Itoshi","Oliver Aiku","Shuto Sendo","Gen Fukaku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato"]},
+  {name:"JAPAN U-20 // MATCH SQUAD",score:78,players:["Sae Itoshi","Ryusei Shido","Oliver Aiku","Shuto Sendo","Gen Fukaku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato"]},
   {name:"BASTARD MÜNCHEN",score:83,players:["Noel Noa","Michael Kaiser","Alexis Ness","Benedict Grim","Yoichi Isagi","Rensuke Kunigami","Kenyu Yukimiya","Gin Gagamaru","Ranze Kurona","Jingo Raichi","Yo Hiori","Jin Kiyora","Gurimu Igarashi","Teppei Neru"]},
   {name:"FC BARCHA",score:83,players:["Lavinho","Meguru Bachira","Eita Otoya"]},
   {name:"MANSHINE CITY",score:82,players:["Chris Prince","Agi","Seishiro Nagi","Reo Mikage","Hyoma Chigiri","Kazuma Nio","Junichi Wanima"]},
@@ -124,18 +125,41 @@ const CHEMISTRY_SPECIAL = Object.fromEntries(
   ])
 );
 
+const SHARED_TEAM_CHEMISTRY_FLOOR = 70;
+const SHARED_TEAM_FLOOR_EXCEPTIONS = new Set([
+  ["Rin Itoshi","Ryusei Shido"].sort().join("|"),
+  ["Sae Itoshi","Shuto Sendo"].sort().join("|"),
+  ["Ryusei Shido","Shuto Sendo"].sort().join("|"),
+  ["Rensuke Kunigami","Ryusei Shido"].sort().join("|")
+]);
+
 function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
 function sharedChemistryContexts(a,b){
     return CHEMISTRY_CONTEXTS.filter(c=>c.players.includes(a.name)&&c.players.includes(b.name));
 }
 function chemistryRelation(a,b){
     if(!a||!b||a.id===b.id)return {score:0,label:"NO LINK",reason:"A player cannot form chemistry with themself.",contexts:[]};
-    const special=CHEMISTRY_SPECIAL[chemistryKey(a,b)];
+    const key=chemistryKey(a,b);
+    const special=CHEMISTRY_SPECIAL[key];
     const contexts=sharedChemistryContexts(a,b);
-    if(special)return {...special,contexts:contexts.map(c=>c.name)};
+    if(special){
+        const contextNames=contexts.map(c=>c.name);
+        // Shared competitive experience creates a minimum baseline, but only when
+        // canon has not explicitly shown the pairing to be dysfunctional.
+        if(contexts.length && special.score<SHARED_TEAM_CHEMISTRY_FLOOR && !SHARED_TEAM_FLOOR_EXCEPTIONS.has(key)){
+            return {
+                ...special,
+                score:SHARED_TEAM_CHEMISTRY_FLOOR,
+                label:`TEAMMATE FLOOR // ${special.label}`,
+                reason:`They have genuine shared-match experience, so their baseline is ${SHARED_TEAM_CHEMISTRY_FLOOR} despite the weaker individual relationship. ${special.reason}`,
+                contexts:contextNames
+            };
+        }
+        return {...special,contexts:contextNames};
+    }
     if(contexts.length){
         const ordered=[...contexts].sort((x,y)=>y.score-x.score);
-        const score=Math.min(91,ordered[0].score+Math.min(6,(ordered.length-1)*2));
+        const score=Math.max(SHARED_TEAM_CHEMISTRY_FLOOR,Math.min(91,ordered[0].score+Math.min(6,(ordered.length-1)*2)));
         return {
             score,
             label:ordered.length>1?"REPEATED TEAM HISTORY":"SHARED TEAM HISTORY",
@@ -225,7 +249,10 @@ function formationChemistry(teamNumber){
     const shape=FORMATIONS[formation];
     const ass=formationAssignments[teamNumber]||{};
     const edgePairs=FORMATION_CHEMISTRY_EDGES[formation]||[];
-    const links=edgePairs.map(([ai,bi])=>{
+    const activeSlots=typeof activeFormationSlotIndices==="function"?activeFormationSlotIndices(teamNumber):new Set(shape.map((_,i)=>i));
+    const eligibleEdges=edgePairs.filter(([a,b])=>activeSlots.has(a)&&activeSlots.has(b));
+
+    const links=eligibleEdges.map(([ai,bi])=>{
         const aId=ass[ai],bId=ass[bi];
         if(!aId||!bId)return null;
         const aPlayer=team.players.find(p=>p.id===aId);
@@ -240,7 +267,23 @@ function formationChemistry(teamNumber){
         };
     }).filter(Boolean);
 
-    const overall=links.length?Math.round(links.reduce((n,l)=>n+l.value,0)/links.length):0;
+    const deployed=Object.entries(ass).map(([i,id])=>({index:Number(i),player:team.players.find(p=>p.id===id)})).filter(x=>x.player);
+    const knownPairs=[];
+    for(let i=0;i<deployed.length;i++)for(let j=i+1;j<deployed.length;j++){
+        const a=deployed[i].player,b=deployed[j].player,key=chemistryKey(a,b);
+        const relation=chemistryRelation(a,b);
+        if(relation.contexts.length||CHEMISTRY_SPECIAL[key])knownPairs.push(relation.score);
+    }
+
+    const tacticalWeight=l=>l.value<70?1.18:l.value>=95?1.08:1;
+    const weightTotal=links.reduce((n,l)=>n+tacticalWeight(l),0);
+    const tacticalAverage=weightTotal?links.reduce((n,l)=>n+l.value*tacticalWeight(l),0)/weightTotal:0;
+    const familiarityAverage=knownPairs.length?knownPairs.reduce((a,b)=>a+b,0)/knownPairs.length:0;
+    let overall=0;
+    if(tacticalAverage&&familiarityAverage)overall=Math.round(tacticalAverage*.86+familiarityAverage*.14);
+    else overall=Math.round(tacticalAverage||familiarityAverage||0);
+    overall=Math.max(0,Math.min(100,overall));
+
     const sorted=[...links].sort((x,y)=>y.value-x.value);
     const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
     links.forEach(l=>counts[chemistryTier(l.value)]++);
@@ -249,7 +292,10 @@ function formationChemistry(teamNumber){
         links,
         counts,
         activeLinks:links.length,
-        possibleLinks:edgePairs.length,
+        possibleLinks:eligibleEdges.length,
+        knownPairs:knownPairs.length,
+        deployedCount:deployed.length,
+        coverage:eligibleEdges.length?Math.round(links.length/eligibleEdges.length*100):0,
         top:sorted[0]||null,
         weakest:sorted.length?sorted[sorted.length-1]:null
     };
@@ -322,7 +368,7 @@ function chemistryHud(teamNumber,team){
         <small>FAN MODEL // CANON GAMEPLAY THROUGH CH.363</small>
       </div>
       <div class="chemistry-summary">
-        <div><span>ACTIVE LINKS</span><strong>${c.activeLinks}<small> / ${c.possibleLinks}</small></strong></div>
+        <div><span>TACTICAL LINKS</span><strong>${c.activeLinks}<small> / ${c.possibleLinks}</small></strong></div>
         <div><span>CHEMICAL</span><strong>${c.counts.chemical}</strong></div>
         <div><span>ELITE</span><strong>${c.counts.elite}</strong></div>
         <div><span>STRONG</span><strong>${c.counts.strong}</strong></div>
