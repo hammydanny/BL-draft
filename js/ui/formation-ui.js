@@ -99,9 +99,10 @@ function renderFormationBuilder(){
           </div>
           <div class="formation-actions">
             <button class="formation-auto" onclick="${standalone&&typeof autoBestStandaloneTeam==='function'?'autoBestStandaloneTeam()':'autoBestXI()'}">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
+            ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ SHARE TEAM</button>`:""}
             <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
             <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
-                    <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
+            <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
           </div>
         </div>
 
