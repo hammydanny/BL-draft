@@ -253,13 +253,19 @@ function solveBestFormationAssignment(n,formationName=formationByTeam[n]||"4-3-3
 
 function openFormationBuilder(){
     uiState={screen:"formation",phase:"formation",turn:null};
+    if(formationTeamNumber!==1&&formationTeamNumber!==2)formationTeamNumber=1;
     auctionScreen.classList.add("hidden");
     formationScreen.classList.remove("hidden");
+    formationScreen.classList.remove("standalone-builder-mode");
+    if(typeof configureFormationHeader==="function")configureFormationHeader(false);
     selectedFormationPlayerId=null;
-    if(!formationByTeam || typeof formationByTeam!=="object") formationByTeam={1:"4-3-3",2:"4-3-3"};
-    [1,2].forEach(n=>{if(!formationByTeam[n]||!FORMATIONS[formationByTeam[n]])formationByTeam[n]="4-3-3";});
+    if(!formationByTeam || typeof formationByTeam!=="object") formationByTeam={0:"4-3-3",1:"4-3-3",2:"4-3-3"};
+    [0,1,2].forEach(n=>{if(!formationByTeam[n]||!FORMATIONS[formationByTeam[n]])formationByTeam[n]="4-3-3";});
     if(!formationInitialized){
-        formationTeamNumber=1;formationByTeam={1:"4-3-3",2:"4-3-3"};formationAssignments={1:{},2:{}};formationCaptainByTeam={1:null,2:null};
+        formationTeamNumber=1;
+        formationByTeam={0:formationByTeam[0]||"4-3-3",1:"4-3-3",2:"4-3-3"};
+        formationAssignments={0:formationAssignments[0]||{},1:{},2:{}};
+        formationCaptainByTeam={0:formationCaptainByTeam[0]||null,1:null,2:null};
         formationInitialized=true;
     }else [1,2].forEach(n=>sanitizeFormationAssignments(n));
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
@@ -282,6 +288,7 @@ function sanitizeFormationAssignments(n){
     ensureFormationCaptain(n,false);
 }
 function switchFormationTeam(n){
+    if(n!==1&&n!==2)return;
     formationTeamNumber=n;
     activeFormation=formationByTeam[n]||"4-3-3";
     selectedFormationPlayerId=null;
