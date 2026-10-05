@@ -32,6 +32,7 @@ let formationTeamNumber = 1;
 let activeFormation = "4-3-3";
 let formationByTeam = { 1:"4-3-3", 2:"4-3-3" };
 let formationAssignments = { 1: {}, 2: {} };
+let formationCaptainByTeam = { 1:null, 2:null };
 let selectedFormationPlayerId = null;
 let benchCollapsed = false;
 let draggedFormationPlayerId = null;
