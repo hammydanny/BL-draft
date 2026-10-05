@@ -1218,24 +1218,22 @@ body{
 .captain-badge{
   position:absolute;
   z-index:8;
-  left:-8px;
-  top:-7px;
+  left:7px;
+  top:7px;
+  transform:translate(-35%,-35%);
   display:grid;
   place-items:center;
-  width:22px;
-  height:22px;
+  width:20px;
+  height:20px;
   border-radius:50%;
   color:#101000;
   background:#ffe269;
   border:2px solid #fff3a8;
-  box-shadow:0 0 14px rgba(255,226,105,.55);
-  font:900 12px "Barlow Condensed";
+  box-shadow:0 0 12px rgba(255,226,105,.5);
+  font:900 11px "Barlow Condensed";
   pointer-events:none;
 }
-.formation-slot.captain-slot{
-  border-color:#ffe269!important;
-  box-shadow:0 0 0 2px rgba(255,226,105,.18),0 0 24px rgba(255,226,105,.28)!important;
-}
+/* Captain status is shown by the close badge only; no slot-border treatment. */
 
 /* When a roster contains fewer than eleven players, the unused parts of the
    11-a-side shape become quiet optional positions rather than fake empty starters.
@@ -1259,4 +1257,249 @@ body{
 @media(max-width:700px){
   .formation-team-metrics{grid-template-columns:1fr 1fr}
   .formation-team-metrics .captain-metric{grid-column:1/-1}
+}
+
+
+/* =========================================================
+   V14 // CATEGORY-BASED PLAYER POOL
+   ========================================================= */
+.category-section{padding:13px}
+.pool-category-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.pool-category-grid label{
+  position:relative;
+  display:block;
+  min-width:0;
+  cursor:pointer;
+}
+.pool-category-grid input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.pool-category-grid span{
+  display:flex;
+  min-height:56px;
+  flex-direction:column;
+  justify-content:center;
+  padding:9px 10px 9px 32px;
+  color:#7898ae;
+  background:#05111c;
+  border:1px solid #163b57;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.7px;
+  transition:border-color .12s ease,background .12s ease,color .12s ease,box-shadow .12s ease;
+}
+.pool-category-grid span:before{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:50%;
+  width:13px;
+  height:13px;
+  transform:translateY(-50%);
+  border:1px solid #315b78;
+  background:#020810;
+  box-shadow:inset 0 0 0 3px #020810;
+}
+.pool-category-grid small{
+  display:block;
+  margin-top:3px;
+  color:#49657a;
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+.pool-category-grid input:checked+span{
+  color:#e6f8ff;
+  border-color:#1fb7f0;
+  background:linear-gradient(120deg,rgba(20,156,255,.14),rgba(86,55,255,.06));
+  box-shadow:inset 3px 0 #1fb7f0;
+}
+.pool-category-grid input:checked+span:before{
+  background:#1fb7f0;
+  border-color:#73e4ff;
+  box-shadow:inset 0 0 0 3px #04121d,0 0 9px rgba(31,183,240,.45);
+}
+.pool-category-grid input:checked+span small{color:#6f9fba}
+.pool-actions{display:flex;gap:5px}
+.pool-actions button{flex:1}
+@media(max-width:1000px){.pool-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.pool-category-grid{grid-template-columns:1fr}}
+
+/* =========================================================
+   V14 // SHARE SCREEN: FORMATION + CHEMISTRY + RESERVES
+   ========================================================= */
+.share-team-v14{display:flex;flex-direction:column}
+.share-v14-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  margin:9px 0;
+}
+.share-v14-metrics>div{
+  min-width:0;
+  padding:7px 8px;
+  background:#020810;
+  border:1px solid #102b40;
+}
+.share-v14-metrics span{
+  display:block;
+  color:#5d768b;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.share-v14-metrics strong{
+  display:block;
+  overflow:hidden;
+  margin-top:2px;
+  color:#e5f5ff;
+  font:900 15px "Barlow Condensed";
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.share-v14-metrics strong.chemical{color:#ffe65a}
+.share-v14-metrics strong.elite{color:#43ff9a}
+.share-v14-metrics strong.strong{color:#31d7ff}
+.share-v14-metrics strong.link{color:#9c8cff}
+.share-v14-metrics strong.weak{color:#ff496d}
+.share-mini-pitch{
+  position:relative;
+  height:300px;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.018) 50%,transparent 50%),
+    linear-gradient(180deg,#082432,#051824);
+  background-size:25% 100%,100% 100%;
+  border:1px solid #25485e;
+}
+.share-mini-pitch:before{
+  content:"";
+  position:absolute;
+  inset:4%;
+  border:1px solid rgba(210,237,255,.28);
+}
+.share-mini-pitch:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:4%;
+  bottom:4%;
+  width:1px;
+  background:rgba(210,237,255,.18);
+}
+.share-pitch-half{
+  position:absolute;left:4%;right:4%;top:50%;height:1px;background:rgba(210,237,255,.25)
+}
+.share-pitch-circle{
+  position:absolute;left:50%;top:50%;width:70px;height:70px;
+  transform:translate(-50%,-50%);border:1px solid rgba(210,237,255,.25);border-radius:50%
+}
+.share-pitch-player{
+  position:absolute;
+  z-index:2;
+  width:54px;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.share-pitch-player>span{
+  display:block;
+  width:max-content;
+  margin:0 auto 2px;
+  padding:1px 4px;
+  color:#8fdcff;
+  background:#020810;
+  font-size:6px;
+  font-weight:900;
+}
+.share-pitch-player img{
+  display:block;
+  width:44px;
+  height:44px;
+  margin:auto;
+  object-fit:cover;
+  border-radius:50%;
+  border:2px solid var(--team);
+  box-shadow:0 0 10px var(--team-glow);
+}
+.share-pitch-player>b{
+  display:block;
+  overflow:hidden;
+  margin-top:2px;
+  padding:2px 3px;
+  color:#eef8ff;
+  background:rgba(2,8,14,.92);
+  font-size:6px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.share-pitch-player>i{
+  position:absolute;
+  z-index:3;
+  right:1px;
+  top:9px;
+  display:grid;
+  place-items:center;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  color:#191500;
+  background:#ffe269;
+  border:1px solid #fff0a0;
+  font:900 8px "Barlow Condensed";
+  font-style:normal;
+}
+.share-v14-bottom{
+  display:grid;
+  grid-template-columns:1fr 1.4fr;
+  gap:6px;
+  margin-top:6px;
+}
+.share-money.compact{margin:0}
+.share-chem-note{
+  position:relative;
+  min-width:0;
+  padding:7px 40px 7px 8px;
+  background:#020810;
+  border:1px solid #102b40;
+}
+.share-chem-note span{display:block;color:#5d768b;font-size:7px;font-weight:900}
+.share-chem-note strong{
+  display:block;overflow:hidden;margin-top:2px;color:#e2f1fb;font-size:9px;text-overflow:ellipsis;white-space:nowrap
+}
+.share-chem-note>b{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font:900 16px "Barlow Condensed"
+}
+.share-chem-note>b.chemical{color:#ffe65a}.share-chem-note>b.elite{color:#43ff9a}
+.share-chem-note>b.strong{color:#31d7ff}.share-chem-note>b.link{color:#9c8cff}.share-chem-note>b.weak{color:#ff496d}
+.share-reserves{
+  margin-top:7px;
+  padding-top:6px;
+  border-top:1px solid #143149;
+}
+.share-reserves>span{
+  display:block;margin-bottom:4px;color:#607e94;font-size:7px;font-weight:900;letter-spacing:1px
+}
+.share-reserves>div{display:flex;flex-wrap:wrap;gap:4px}
+.share-reserves b{
+  display:flex;align-items:center;gap:4px;min-width:0;max-width:150px;
+  padding:3px 5px;color:#bcd2e0;background:#020810;border:1px solid #102b40;
+  font-size:7px;font-weight:800
+}
+.share-reserves img{width:18px;height:18px;object-fit:cover}
+.share-reserves i{margin-left:auto;color:var(--team);font-style:normal}
+@media(max-width:760px){
+  .share-v14-metrics{grid-template-columns:1fr 1fr}
+  .share-mini-pitch{height:270px}
+  .share-v14-bottom{grid-template-columns:1fr}
+}
+@media print{
+  .share-mini-pitch{height:270px}
+  .share-pitch-player img{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
