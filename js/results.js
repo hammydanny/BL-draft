@@ -75,6 +75,7 @@ function createFullHistory(){
 }
 function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
+    updateGlobalBackButton?.();
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     if(!wasComplete)playSfx("result");
     playersRemainingDisplay.innerHTML="COMPLETE";
@@ -162,7 +163,8 @@ function openShareScreen(){
         <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
       </div></div>`;
     document.body.appendChild(screen);
-    document.getElementById("closeShareScreen").onclick=()=>screen.remove();
+    updateGlobalBackButton?.();
+    document.getElementById("closeShareScreen").onclick=()=>{screen.remove();updateGlobalBackButton?.();};
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
 }
@@ -185,4 +187,109 @@ function restartAuction(){
         saveSetupPreferences();showResumeCard(null);refreshMainMenu();
         window.scrollTo({top:0,behavior:"smooth"});
     });
+}
+
+
+function createStandaloneShareTeam(){
+    const team=standaloneBuilderTeam;
+    const snap=shareFormationSnapshot(0);
+    const captain=team.players.find(p=>p.id===snap.captainId)||null;
+    const target=Math.min(11,team.players.length);
+    const stateLabel=snap.deployedCount===0
+      ?"NO FORMATION BUILT"
+      :snap.complete
+        ?"FORMATION COMPLETE"
+        :`INCOMPLETE ${snap.deployedCount}/${target}`;
+
+    return `<article class="share-team share-team-v15 standalone-share-team" style="${teamVars(team)}">
+      <div class="share-team-head">
+        <div><span>GLOBAL XI // ${stateLabel}</span><h3>${esc(team.name)}</h3></div>
+        <b>${team.players.length}</b>
+      </div>
+      <div class="share-v14-metrics">
+        <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
+        <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
+        <div><span>CAPTAIN</span><strong>${captain?esc(captain.name):"—"}</strong></div>
+        <div><span>DEPLOYED</span><strong>${snap.deployedCount}<small> / ${target}</small></strong></div>
+      </div>
+      <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
+        <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
+        ${snap.shape.map((slot,i)=>{
+          const player=team.players.find(p=>p.id===snap.assignment[i]);
+          if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
+          const isCaptain=player.id===snap.captainId;
+          return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
+            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
+          </div>`;
+        }).join("")}
+      </div>
+      <div class="standalone-share-summary">
+        <div><span>FORMATION</span><strong>${snap.formation}</strong></div>
+        <div><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
+      </div>
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
+    </article>`;
+}
+
+async function copyStandaloneShareSummary(){
+    const snap=shareFormationSnapshot(0);
+    const captain=standaloneBuilderTeam.players.find(p=>p.id===snap.captainId);
+    const starters=Object.values(snap.assignment)
+      .map(id=>standaloneBuilderTeam.players.find(p=>p.id===id))
+      .filter(Boolean)
+      .map(p=>p.name)
+      .join(", ");
+    const reserves=snap.reserves.map(p=>p.name).join(", ");
+    const text=`BLUE LOCK DRAFT // GLOBAL XI
+FORMATION ${snap.formation} // OVR ${snap.ovr||"--"} // CHEM ${snap.chemistry.overall||"--"} // C ${captain?.name||"—"}
+STARTERS: ${starters||"NONE"}
+RESERVES: ${reserves||"NONE"}
+
+Developed by hammydanny@Github // With the support of syaafibwn@Github`;
+    try{
+        await navigator.clipboard.writeText(text);
+        const b=document.getElementById("copyStandaloneShare");
+        if(b){b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
+    }catch(e){
+        showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");
+    }
+}
+
+function openStandaloneShareScreen(){
+    standaloneBuilderSyncTeam();
+    saveStandaloneBuilderState();
+    document.getElementById("shareScreen")?.remove();
+
+    const screen=document.createElement("section");
+    screen.id="shareScreen";
+    screen.className="share-screen standalone-share-screen";
+    screen.innerHTML=`<div class="share-shell standalone-share-shell">
+      <div class="share-toolbar">
+        <button id="closeShareScreen">← TEAM BUILDER</button>
+        <div>
+          <button id="copyStandaloneShare">COPY SUMMARY</button>
+          <button id="printShareResult">SAVE / PRINT</button>
+        </div>
+      </div>
+      <div id="shareCard" class="share-card standalone-share-card">
+        <div class="share-card-top">
+          <div><span>BL // STANDALONE SQUAD REPORT</span><h2>GLOBAL <b>XI</b></h2></div>
+          <strong>TEAM</strong>
+        </div>
+        <div class="standalone-share-grid">${createStandaloneShareTeam()}</div>
+        <div class="share-card-footer">
+          <span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span>
+          <span>UNOFFICIAL FAN PROJECT // 2026</span>
+        </div>
+      </div>
+    </div>`;
+    document.body.appendChild(screen);
+    updateGlobalBackButton?.();
+
+    document.getElementById("closeShareScreen").onclick=()=>{
+        screen.remove();
+        updateGlobalBackButton?.();
+    };
+    document.getElementById("printShareResult").onclick=()=>window.print();
+    document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
 }
