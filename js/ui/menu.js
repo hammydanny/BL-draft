@@ -2,9 +2,22 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 function setVisibleScreen(screen){
-    [menuScreen,setupScreen,auctionScreen,formationScreen].forEach(el=>el&&el.classList.add("hidden"));
-    if(screen)screen.classList.remove("hidden");
-    window.scrollTo({top:0,behavior:"smooth"});
+    [
+        menuScreen,
+        setupScreen,
+        auctionScreen,
+        formationScreen,
+        document.getElementById("lore-menu-screen"),
+        document.getElementById("character-lore-screen"),
+        document.getElementById("chemistry-lore-screen")
+    ].forEach(el => el && el.classList.add("hidden"));
+
+    if(screen) screen.classList.remove("hidden");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 function refreshMainMenu(){
     const saved=loadSavedData();
