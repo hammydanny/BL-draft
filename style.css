@@ -2698,3 +2698,66 @@ body::-webkit-scrollbar-thumb:hover,
     min-height:310px!important;
   }
 }
+
+
+/* =========================================================
+   V20 // PLAYER POOL SIZING ONLY
+   Restore the previous full portrait-card dimensions.
+   ========================================================= */
+.setup-box-wide .player-pool-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:8px!important;
+  max-height:620px!important;
+  align-items:start!important;
+}
+
+.setup-box-wide .pool-player-card{
+  min-height:218px!important;
+}
+
+.setup-box-wide .pool-select-hit{
+  display:flex!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:216px!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+}
+
+.setup-box-wide .pool-player-card img{
+  width:100%!important;
+  height:168px!important;
+  min-height:168px!important;
+  flex:0 0 168px!important;
+}
+
+.setup-box-wide .pool-player-info{
+  min-height:48px!important;
+}
+
+@media(max-width:1180px){
+  .setup-box-wide .player-pool-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:760px){
+  .setup-box-wide .player-pool-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    max-height:520px!important;
+  }
+
+  .setup-box-wide .pool-player-card{
+    min-height:190px!important;
+  }
+
+  .setup-box-wide .pool-select-hit{
+    min-height:188px!important;
+  }
+
+  .setup-box-wide .pool-player-card img{
+    height:142px!important;
+    min-height:142px!important;
+    flex-basis:142px!important;
+  }
+}
