@@ -28,6 +28,10 @@ function saveSetupPreferences(){
     }catch(e){}
 }
 function saveGame(){
+    if(uiState.screen==="standalone-builder"){
+        if(typeof saveStandaloneBuilderState==="function")saveStandaloneBuilderState();
+        return;
+    }
     if(uiState.screen==="setup"){saveSetupPreferences();return;}
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
