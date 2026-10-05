@@ -18,8 +18,6 @@ function saveSetupPreferences(){
                 bidIncrement:document.getElementById("bidIncrement").value,
                 maxPlayers:document.getElementById("maxPlayers").value,
                 selected:[...selectedPlayerIds],
-                poolCategories:{...playerPoolCategoryState},
-                poolManualOverrides:{...playerPoolManualOverrides},
                 poolPosition:playerPoolPositionFilter,
                 poolGroup:playerPoolGroupFilter,
                 poolSort:playerPoolSort
@@ -42,6 +40,7 @@ function saveGame(){
             team1:{...team1,players:serializePlayerList(team1.players)},
             team2:{...team2,players:serializePlayerList(team2.players)},
             auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
+            auctionUndoStack,auctionRedoStack,
             formationTeamNumber,activeFormation,formationByTeam,formationAssignments,formationCaptainByTeam,benchCollapsed,formationInitialized
         }));
     }catch(e){}
@@ -57,19 +56,9 @@ function restoreSetup(saved){
     });
     document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
-    if(s.poolCategories&&typeof s.poolCategories==="object"){
-        playerPoolCategoryState={...s.poolCategories};
-        playerPoolManualOverrides={...(s.poolManualOverrides||{})};
-        recomputeSelectedPlayersFromCategories();
-    }else if(Array.isArray(s.selected)){
-        // Backward-compatible migration from the pre-category save format.
-        playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES||{}).map(k=>[k,false]));
-        playerPoolManualOverrides=Object.fromEntries(s.selected.map(id=>[id,true]));
-        recomputeSelectedPlayersFromCategories();
-    }
-    if(typeof renderPoolCategoryControls==="function")renderPoolCategoryControls();
+    if(Array.isArray(s.selected))selectedPlayerIds=new Set(s.selected);
     playerPoolPositionFilter=s.poolPosition||"ALL";
-    playerPoolGroupFilter=(s.poolGroup==="all"||PLAYER_POOL_CATEGORY_IDS?.[s.poolGroup])?s.poolGroup:"all";
+    playerPoolGroupFilter=(s.poolGroup==="all"||PLAYER_PRESETS?.[s.poolGroup])?s.poolGroup:"all";
     playerPoolSort=s.poolSort||"id";
     if(document.getElementById("playerPositionFilter"))document.getElementById("playerPositionFilter").value=playerPoolPositionFilter;
     if(document.getElementById("playerGroupFilter"))document.getElementById("playerGroupFilter").value=playerPoolGroupFilter;
@@ -95,6 +84,8 @@ function restoreGame(saved){
     team1={...saved.team1,players:hydratePlayers(saved.team1?.players)};
     team2={...saved.team2,players:hydratePlayers(saved.team2?.players)};
     auctionHistory=(saved.auctionHistory||[]).map(x=>({...x,player:players.find(p=>p.id===x.playerId)})).filter(x=>x.player);
+    auctionUndoStack=Array.isArray(saved.auctionUndoStack)?saved.auctionUndoStack:[];
+    auctionRedoStack=Array.isArray(saved.auctionRedoStack)?saved.auctionRedoStack:[];
     formationTeamNumber=saved.formationTeamNumber||1;
     formationByTeam=saved.formationByTeam||{1:saved.activeFormation||"4-3-3",2:saved.activeFormation||"4-3-3"};
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
@@ -105,6 +96,7 @@ function restoreGame(saved){
     menuScreen.classList.add("hidden");setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
     resumeCurrentView();
+    updateGlobalBackButton?.();
 }
 function resumeCurrentView(){
     if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}
