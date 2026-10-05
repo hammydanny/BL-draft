@@ -36,7 +36,7 @@ function saveGame(){
             team1:{...team1,players:serializePlayerList(team1.players)},
             team2:{...team2,players:serializePlayerList(team2.players)},
             auctionHistory:auctionHistory.map(x=>({...x,playerId:x.player.id,player:undefined})),
-            formationTeamNumber,activeFormation,formationByTeam,formationAssignments,benchCollapsed,formationInitialized
+            formationTeamNumber,activeFormation,formationByTeam,formationAssignments,formationCaptainByTeam,benchCollapsed,formationInitialized
         }));
     }catch(e){}
 }
@@ -83,6 +83,7 @@ function restoreGame(saved){
     formationByTeam=saved.formationByTeam||{1:saved.activeFormation||"4-3-3",2:saved.activeFormation||"4-3-3"};
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     formationAssignments=saved.formationAssignments||{1:{},2:{}};
+    formationCaptainByTeam=saved.formationCaptainByTeam||{1:null,2:null};
     benchCollapsed=!!saved.benchCollapsed;formationInitialized=!!saved.formationInitialized;
     uiState=saved.uiState||{screen:"auction",phase:"opening",turn:null};
     menuScreen.classList.add("hidden");setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
