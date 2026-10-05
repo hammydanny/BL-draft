@@ -3,21 +3,13 @@
 
 function setVisibleScreen(screen){
     [
-        menuScreen,
-        setupScreen,
-        auctionScreen,
-        formationScreen,
+        menuScreen,setupScreen,auctionScreen,formationScreen,
         document.getElementById("lore-menu-screen"),
         document.getElementById("character-lore-screen"),
         document.getElementById("chemistry-lore-screen")
-    ].forEach(el => el && el.classList.add("hidden"));
-
-    if(screen) screen.classList.remove("hidden");
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    ].forEach(el=>el&&el.classList.add("hidden"));
+    if(screen)screen.classList.remove("hidden");
+    window.scrollTo({top:0,behavior:"smooth"});
 }
 function refreshMainMenu(){
     const saved=loadSavedData();
@@ -32,7 +24,11 @@ function refreshMainMenu(){
     }
 }
 function goToMainMenu(){
-    if(uiState.screen==="auction"||uiState.screen==="formation")saveGame();
+    if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
+    if(uiState.screen==="standalone-builder"){
+        formationScreen.classList.remove("standalone-builder-mode");
+        if(typeof configureFormationHeader==="function")configureFormationHeader(false);
+    }
     hideSiteError();
     const info=document.getElementById("infoModal");if(info)info.classList.add("hidden");
     const confirm=document.getElementById("confirmModal");if(confirm)confirm.classList.add("hidden");
