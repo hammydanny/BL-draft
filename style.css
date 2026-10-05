@@ -1886,3 +1886,250 @@ body::-webkit-scrollbar-thumb:hover,
   .character-lore-stats{grid-template-columns:repeat(4,1fr)!important}
   .chemistry-lore-heading h2{font-size:20px!important}
 }
+
+
+/* =========================================================
+   V16 // DESKTOP TEAM SETUP BALANCE
+   ========================================================= */
+@media (min-width:901px){
+  .setup-box-wide{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:14px;
+  }
+  .setup-box-wide > *{grid-column:1/-1}
+  .setup-box-wide > .team-config{
+    grid-column:auto;
+    width:100%;
+    margin-top:13px;
+    min-width:0;
+  }
+  .setup-box-wide > .team-config-1{grid-column:1}
+  .setup-box-wide > .team-config-2{grid-column:2}
+}
+@media (max-width:900px){
+  .setup-box-wide{display:block!important}
+}
+
+/* =========================================================
+   V16 // LORE MENU: LARGE DATABASE CHOICES
+   ========================================================= */
+.lore-actions{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+}
+.lore-actions .lore-action{
+  position:relative;
+  display:flex!important;
+  min-height:150px!important;
+  flex-direction:column;
+  align-items:flex-start!important;
+  justify-content:flex-end!important;
+  overflow:hidden;
+  padding:20px!important;
+  text-align:left!important;
+  border:1px solid #1d597f!important;
+  background:
+    linear-gradient(145deg,rgba(20,156,255,.13),rgba(3,10,17,.96) 58%)!important;
+  box-shadow:inset 3px 0 #159fff,0 14px 35px rgba(0,0,0,.22)!important;
+}
+.lore-actions .lore-action:nth-child(2){
+  background:
+    linear-gradient(145deg,rgba(115,83,255,.13),rgba(3,10,17,.96) 58%)!important;
+  border-color:#493c8d!important;
+  box-shadow:inset 3px 0 #795cff,0 14px 35px rgba(0,0,0,.22)!important;
+}
+.lore-actions .lore-action:before{
+  position:absolute;
+  right:14px;
+  top:6px;
+  color:rgba(92,175,226,.11);
+  font:900 74px/1 "Barlow Condensed";
+  pointer-events:none;
+}
+.lore-actions .lore-action:nth-child(1):before{content:"01"}
+.lore-actions .lore-action:nth-child(2):before{content:"02";color:rgba(136,111,255,.12)}
+.lore-actions .lore-action span{
+  position:relative;
+  z-index:1;
+  color:#edf9ff!important;
+  font:900 27px/1 "Barlow Condensed"!important;
+  letter-spacing:.6px!important;
+}
+.lore-actions .lore-action b{
+  position:relative;
+  z-index:1;
+  margin-top:6px;
+  color:#69bde9!important;
+  font-size:10px!important;
+  letter-spacing:1.7px!important;
+}
+.lore-actions .lore-action:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.1);
+}
+
+/* =========================================================
+   V16 // CHARACTER DATABASE: CONSISTENT PORTRAIT STAGE
+   ========================================================= */
+.character-lore-grid{
+  gap:14px!important;
+}
+.character-lore-card{
+  position:relative;
+  grid-template-columns:176px minmax(0,1fr)!important;
+  align-items:start!important;
+  min-height:270px;
+  overflow:hidden;
+  border-color:#1a425d!important;
+  background:
+    linear-gradient(120deg,rgba(20,156,255,.035),transparent 32%),
+    linear-gradient(145deg,#071724,#020a11)!important;
+}
+.character-lore-card:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:2px;
+  background:linear-gradient(#28cfff,#168fff,#704dff);
+}
+.character-lore-image-wrap{
+  align-self:start!important;
+  width:158px!important;
+  height:214px!important;
+  min-height:214px!important;
+  margin:14px 0 14px 14px!important;
+  overflow:hidden!important;
+  border:1px solid #17405c;
+  background:
+    radial-gradient(circle at 50% 34%,rgba(20,156,255,.16),transparent 54%),
+    linear-gradient(180deg,#071724,#02070c)!important;
+}
+.character-lore-image{
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  padding:7px!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  background:transparent!important;
+}
+.character-lore-main{
+  padding:15px 16px 15px 14px!important;
+}
+.character-lore-heading{
+  min-height:52px;
+}
+.character-lore-description{
+  min-height:64px;
+}
+.character-lore-stats{
+  margin-top:10px;
+}
+.character-lore-card:hover{
+  border-color:#246389!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.2),inset 0 0 28px rgba(20,156,255,.025);
+}
+
+/* =========================================================
+   V16 // STANDALONE PLAYER POOL VISIBILITY
+   ========================================================= */
+.standalone-pool-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+  min-width:0;
+}
+.standalone-pool-toggle{
+  flex:0 0 auto;
+  min-height:34px;
+  padding:8px 11px;
+  color:#9bdfff;
+  background:#061522;
+  border:1px solid #1e638b;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.standalone-pool-toggle:hover{
+  color:#e7f9ff;
+  border-color:#2bc7ff;
+  box-shadow:0 0 13px rgba(32,190,255,.18);
+}
+.standalone-pool-collapsed{
+  padding:8px 11px!important;
+}
+.standalone-pool-collapsed .standalone-pool-head{
+  margin:0!important;
+  align-items:center!important;
+}
+
+/* =========================================================
+   V16 // HOW TO PLAY READABILITY
+   ========================================================= */
+.info-card:has(#infoModalTitle){
+  max-height:min(88vh,900px);
+}
+.info-body{
+  scrollbar-width:thin;
+  scrollbar-color:#149cff #020811;
+}
+.info-body::-webkit-scrollbar{width:8px}
+.info-body::-webkit-scrollbar-track{background:#020811}
+.info-body::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#32d9ff,#149cff,#654eff);
+  border:2px solid #020811;
+}
+
+/* =========================================================
+   V16 // RESPONSIVE FINISHING
+   ========================================================= */
+@media (max-width:900px){
+  .lore-actions{
+    grid-template-columns:1fr!important;
+  }
+  .lore-actions .lore-action{
+    min-height:105px!important;
+  }
+  .character-lore-card{
+    grid-template-columns:145px minmax(0,1fr)!important;
+  }
+  .character-lore-image-wrap{
+    width:127px!important;
+    height:180px!important;
+    min-height:180px!important;
+    margin:11px 0 11px 11px!important;
+  }
+  .standalone-pool-head-actions{
+    align-items:flex-end;
+    flex-direction:column;
+    gap:5px;
+  }
+}
+@media (max-width:520px){
+  .character-lore-card{
+    grid-template-columns:1fr!important;
+  }
+  .character-lore-image-wrap{
+    width:calc(100% - 24px)!important;
+    height:220px!important;
+    min-height:220px!important;
+    margin:12px!important;
+  }
+  .character-lore-main{
+    padding-top:4px!important;
+  }
+  .character-lore-description{
+    min-height:0;
+  }
+  .standalone-pool-head-actions{
+    width:100%;
+    align-items:stretch;
+  }
+  .standalone-pool-toggle{
+    width:100%;
+  }
+}
