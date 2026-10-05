@@ -21,6 +21,7 @@ let standaloneBuilderPlayerIds = new Set();
 let standaloneBuilderQuery = "";
 let standaloneBuilderRole = "ALL";
 let standaloneBuilderSort = "ovr";
+let standalonePoolHidden = false;
 const STANDALONE_SAVE_KEY="blStandaloneBuilderV1";
 let formationDbQuery = "";
 let formationDbPosition = "ALL";
