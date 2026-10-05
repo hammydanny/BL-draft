@@ -15,6 +15,8 @@ let selectedPlayerIds = new Set(players.map(player => player.id));
 let playerPoolPositionFilter = "ALL";
 let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
+let playerPoolCategoryState = {};
+let playerPoolManualOverrides = {};
 
 // Standalone single-squad builder state. This is intentionally separate from
 // auction teams so experimenting here never mutates a saved draft.
