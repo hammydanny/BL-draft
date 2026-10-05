@@ -64,12 +64,12 @@ const players = [
     { id: 60, name: "Haneru Shindo", image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:77, off:80, sho:79, spd:82, def:59, pas:72, dri:78, gk:44 } },
     { id: 61, name: "Bunny Iglesias", image: "images/bunny-iglesias.jpg", primaryPosition: "FW", positions: ["FW", "SS"] , stats: { ovr:95, off:96, sho:95, spd:94, def:70, pas:87, dri:94, gk:56 } },
     { id: 62, name: "Innocent Onazi", image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"] , stats: { ovr:90, off:93, sho:91, spd:88, def:70, pas:83, dri:87, gk:54 } },
-    { id: 63, name: "Godwin Kuso", image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"] , stats: { ovr:89, off:91, sho:84, spd:84, def:75, pas:93, dri:89, gk:55 } },
+    { id: 63, name: "Godwin Kuso", image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"] , stats: { ovr:86, off:87, sho:81, spd:82, def:72, pas:89, dri:86, gk:52 } },
     { id: 64, name: "Vivien Hugo", image: "images/vivien-hugo.jpg", primaryPosition: "CM", positions: ["CM"] , stats: { ovr:95, off:91, sho:88, spd:89, def:88, pas:95, dri:94, gk:65 } },
-    { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:91, off:91, sho:87, spd:93, def:72, pas:88, dri:91, gk:54 } },
+    { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:86, off:87, sho:83, spd:89, def:68, pas:84, dri:87, gk:50 } },
     { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:91, off:92, sho:90, spd:88, def:73, pas:91, dri:89, gk:56 } },
     { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
-    { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:88, off:90, sho:89, spd:87, def:68, pas:83, dri:86, gk:52 } }
+    { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:86, sho:85, spd:84, def:65, pas:79, dri:82, gk:49 } }
 ];
 
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
