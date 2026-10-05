@@ -243,17 +243,15 @@ const FORMATION_CHEMISTRY_EDGES = {
   ]
 };
 
-function formationChemistry(teamNumber){
+function formationChemistryForAssignment(teamNumber,ass,formation=formationByTeam[teamNumber]||"4-3-3",activeSlotsInput=null){
     const team=teamByNumber(teamNumber);
-    const formation=formationByTeam[teamNumber]||"4-3-3";
     const shape=FORMATIONS[formation];
-    const ass=formationAssignments[teamNumber]||{};
     const edgePairs=FORMATION_CHEMISTRY_EDGES[formation]||[];
-    const activeSlots=typeof activeFormationSlotIndices==="function"?activeFormationSlotIndices(teamNumber):new Set(shape.map((_,i)=>i));
+    const activeSlots=activeSlotsInput||new Set(shape.map((_,i)=>i));
     const eligibleEdges=edgePairs.filter(([a,b])=>activeSlots.has(a)&&activeSlots.has(b));
 
     const links=eligibleEdges.map(([ai,bi])=>{
-        const aId=ass[ai],bId=ass[bi];
+        const aId=ass?.[ai],bId=ass?.[bi];
         if(!aId||!bId)return null;
         const aPlayer=team.players.find(p=>p.id===aId);
         const bPlayer=team.players.find(p=>p.id===bId);
@@ -267,7 +265,7 @@ function formationChemistry(teamNumber){
         };
     }).filter(Boolean);
 
-    const deployed=Object.entries(ass).map(([i,id])=>({index:Number(i),player:team.players.find(p=>p.id===id)})).filter(x=>x.player);
+    const deployed=Object.entries(ass||{}).map(([i,id])=>({index:Number(i),player:team.players.find(p=>p.id===id)})).filter(x=>x.player);
     const knownPairs=[];
     for(let i=0;i<deployed.length;i++)for(let j=i+1;j<deployed.length;j++){
         const a=deployed[i].player,b=deployed[j].player,key=chemistryKey(a,b);
@@ -299,6 +297,13 @@ function formationChemistry(teamNumber){
         top:sorted[0]||null,
         weakest:sorted.length?sorted[sorted.length-1]:null
     };
+}
+function formationChemistry(teamNumber){
+    const formation=formationByTeam[teamNumber]||"4-3-3";
+    const activeSlots=typeof activeFormationSlotIndices==="function"
+      ?activeFormationSlotIndices(teamNumber)
+      :new Set((FORMATIONS[formation]||[]).map((_,i)=>i));
+    return formationChemistryForAssignment(teamNumber,formationAssignments[teamNumber]||{},formation,activeSlots);
 }
 
 function chemistrySvg(teamNumber){
