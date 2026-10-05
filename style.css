@@ -2133,3 +2133,350 @@ body::-webkit-scrollbar-thumb:hover,
     width:100%;
   }
 }
+
+
+/* =========================================================
+   V17 // GLOBAL BACK CONTROL
+   ========================================================= */
+.global-back-button{
+  position:fixed;
+  z-index:900;
+  left:14px;
+  top:14px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  padding:8px 11px;
+  color:#a9dfff;
+  background:rgba(2,9,16,.94);
+  border:1px solid #1a5a82;
+  box-shadow:0 8px 28px rgba(0,0,0,.38),inset 2px 0 #159fff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1px;
+  backdrop-filter:blur(6px);
+}
+.global-back-button:hover{
+  color:#eefaff;
+  border-color:#35caff;
+  box-shadow:0 8px 30px rgba(0,0,0,.42),0 0 16px rgba(21,159,255,.18),inset 2px 0 #35caff;
+}
+.global-back-button span{font-size:8px}
+
+/* =========================================================
+   V17 // AUCTION UNDO / REDO
+   ========================================================= */
+.auction-history-controls{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.auction-history-button{
+  min-width:68px;
+  min-height:36px;
+  padding:8px 9px!important;
+  color:#79b9dc!important;
+  background:#06131e!important;
+  border:1px solid #17445f!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.8px!important;
+}
+.auction-history-button:hover:not(:disabled){
+  color:#e3f8ff!important;
+  border-color:#22baff!important;
+  box-shadow:0 0 13px rgba(34,186,255,.16);
+}
+.auction-history-button:disabled{
+  opacity:.3!important;
+  cursor:not-allowed!important;
+  filter:saturate(.4);
+}
+
+/* =========================================================
+   V17 // RESTORED QUICK PRESET POOL
+   ========================================================= */
+.preset-section:not(.category-section){
+  padding:10px 11px!important;
+}
+.preset-buttons{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+.preset-buttons button{
+  min-height:38px!important;
+  padding:7px 8px!important;
+  font-size:8px!important;
+  letter-spacing:.65px!important;
+}
+.preset-buttons button.active{
+  color:#eafaff!important;
+  border-color:#24bfff!important;
+  background:linear-gradient(120deg,rgba(20,156,255,.16),rgba(83,65,255,.07))!important;
+  box-shadow:inset 3px 0 #24bfff,0 0 15px rgba(36,191,255,.1)!important;
+}
+
+/* =========================================================
+   V17 // CHARACTER DATABASE PORTRAITS MATCH AUCTION CROPPING
+   ========================================================= */
+.character-lore-card{
+  grid-template-columns:168px minmax(0,1fr)!important;
+}
+.character-lore-image-wrap{
+  width:150px!important;
+  height:205px!important;
+  min-height:205px!important;
+  margin:12px 0 12px 12px!important;
+  overflow:hidden!important;
+  background:#000!important;
+  border:1px solid #17405c!important;
+}
+.character-lore-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  padding:0!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  background:#000!important;
+}
+.character-lore-image.image-fallback,
+.character-lore-image.lore-image-broken{
+  opacity:0!important;
+}
+
+/* =========================================================
+   V17 // FORMATION / SHARE SPACING
+   ========================================================= */
+.share-mini-pitch{
+  min-height:340px!important;
+}
+.share-pitch-player{
+  width:50px!important;
+}
+.share-pitch-player img{
+  width:46px!important;
+  height:46px!important;
+}
+.formation-player-token{
+  isolation:isolate;
+}
+.formation-slot.occupied{
+  z-index:4;
+}
+
+/* =========================================================
+   V17 // RESPONSIVE CONTROLS
+   ========================================================= */
+@media(max-width:1000px){
+  .preset-buttons{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .auction-history-button{min-width:46px!important}
+  .auction-history-button span{display:none}
+}
+@media(max-width:700px){
+  .global-back-button{
+    left:8px;top:8px;min-height:32px;padding:7px 8px;
+  }
+  .global-back-button span{display:none}
+  .preset-buttons{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .character-lore-card{grid-template-columns:112px minmax(0,1fr)!important}
+  .character-lore-image-wrap{
+    width:96px!important;height:132px!important;min-height:132px!important;margin:9px 0 9px 9px!important
+  }
+  .share-mini-pitch{min-height:300px!important}
+}
+@media(max-width:520px){
+  .character-lore-card{grid-template-columns:1fr!important}
+  .character-lore-image-wrap{
+    width:calc(100% - 24px)!important;
+    height:240px!important;
+    min-height:240px!important;
+    margin:12px!important;
+  }
+  .character-lore-image{
+    object-position:center center!important;
+  }
+}
+
+
+/* =========================================================
+   V18 // RESTORE FULL PLAYER-POOL PORTRAIT CARDS
+   ========================================================= */
+.setup-box-wide .player-pool-grid{
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:8px!important;
+  max-height:620px!important;
+  align-items:start!important;
+}
+.setup-box-wide .pool-player-card{
+  display:block!important;
+  min-height:218px!important;
+  overflow:hidden!important;
+  background:#020810!important;
+  border:1px solid #153850!important;
+  clip-path:polygon(0 0,calc(100% - 11px) 0,100% 11px,100% 100%,0 100%)!important;
+}
+.setup-box-wide .pool-select-hit{
+  display:flex!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:216px!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  padding:0!important;
+}
+.setup-box-wide .pool-player-card img{
+  display:block!important;
+  width:100%!important;
+  height:168px!important;
+  flex:0 0 168px!important;
+  object-fit:cover!important;
+  object-position:center top!important;
+  background:#02070d!important;
+}
+.setup-box-wide .pool-player-info{
+  display:block!important;
+  min-height:48px!important;
+  padding:7px 8px 8px!important;
+  border-top:2px solid transparent!important;
+  background:linear-gradient(180deg,#06121d,#020810)!important;
+}
+.setup-box-wide .pool-player-card.selected .pool-player-info{
+  border-top-color:var(--blue)!important;
+}
+.setup-box-wide .pool-player-info span{
+  display:block!important;
+  overflow:hidden!important;
+  color:#66869c!important;
+  font-size:7px!important;
+  font-weight:800!important;
+  letter-spacing:.8px!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.setup-box-wide .pool-player-info strong{
+  display:block!important;
+  overflow:hidden!important;
+  margin-top:2px!important;
+  color:#eef8ff!important;
+  font:900 14px/1.05 "Barlow Condensed"!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  text-transform:uppercase!important;
+}
+.setup-box-wide .pool-player-check{
+  right:7px!important;
+  top:7px!important;
+  width:25px!important;
+  height:25px!important;
+}
+
+/* =========================================================
+   V18 // LORE PORTRAITS USE THE AUCTION PORTRAIT RATIO/CROP
+   ========================================================= */
+.character-lore-card{
+  grid-template-columns:184px minmax(0,1fr)!important;
+}
+.character-lore-image-wrap{
+  width:176px!important;
+  height:200px!important; /* same 220:250 proportion as desktop auction art */
+  min-height:200px!important;
+  margin:13px 0 13px 8px!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+.character-lore-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  padding:0!important;
+  object-fit:cover!important;
+  object-position:center top!important;
+  background:#000!important;
+}
+
+/* =========================================================
+   V18 // FORMATION TOKEN SAFETY
+   Prevent labels/portraits from visually colliding even in dense shapes.
+   ========================================================= */
+.formation-player-token{
+  width:92px!important;
+  max-width:92px!important;
+}
+.formation-player-token img{
+  display:block;
+  margin-inline:auto;
+}
+.formation-player-token strong{
+  display:block!important;
+  width:92px!important;
+  max-width:92px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.share-pitch-player{
+  width:58px!important;
+}
+.share-pitch-player>b{
+  width:72px!important;
+  max-width:72px!important;
+  margin-left:-7px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+
+@media(max-width:1180px){
+  .setup-box-wide .player-pool-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:760px){
+  .setup-box-wide .player-pool-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    max-height:520px!important;
+  }
+  .setup-box-wide .pool-player-card{
+    min-height:190px!important;
+  }
+  .setup-box-wide .pool-select-hit{
+    min-height:188px!important;
+  }
+  .setup-box-wide .pool-player-card img{
+    height:142px!important;
+    flex-basis:142px!important;
+  }
+  .character-lore-card{
+    grid-template-columns:150px minmax(0,1fr)!important;
+  }
+  .character-lore-image-wrap{
+    width:140px!important;
+    height:159px!important;
+    min-height:159px!important;
+    margin:10px 0 10px 8px!important;
+  }
+  .formation-player-token{
+    width:78px!important;
+    max-width:78px!important;
+  }
+  .formation-player-token strong{
+    width:78px!important;
+    max-width:78px!important;
+  }
+}
+@media(max-width:520px){
+  .character-lore-card{
+    grid-template-columns:1fr!important;
+  }
+  .character-lore-image-wrap{
+    width:176px!important;
+    height:200px!important;
+    min-height:200px!important;
+    margin:12px auto 5px!important;
+  }
+}
