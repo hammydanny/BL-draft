@@ -1146,3 +1146,117 @@ body{
 .player-info-panel:not(.player-database-browser) .player-info-empty{
   min-height:420px;
 }
+
+/* =========================================================
+   TEAM BUILDER CORE V13 // OVR, CAPTAIN, PARTIAL SQUADS
+   ========================================================= */
+.formation-control-v13{
+  display:grid;
+  grid-template-columns:minmax(160px,.75fr) minmax(360px,1.35fr) auto;
+  gap:12px;
+  align-items:center;
+}
+.formation-identity{min-width:0}
+.formation-team-metrics{
+  display:grid;
+  grid-template-columns:90px 100px 88px minmax(150px,1fr);
+  gap:6px;
+  min-width:0;
+}
+.formation-team-metrics>div{
+  min-width:0;
+  padding:7px 9px;
+  background:#020a12;
+  border:1px solid rgba(68,139,186,.18);
+}
+.formation-team-metrics span{
+  display:block;
+  color:#5b788e;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.formation-team-metrics strong{
+  display:block;
+  overflow:hidden;
+  margin-top:2px;
+  color:var(--team)!important;
+  font:900 20px "Barlow Condensed";
+  line-height:1;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.formation-team-metrics strong small{color:#6f8ba0;font-size:11px}
+.formation-team-metrics .captain-metric strong{font-size:13px;color:#ffe269!important}
+
+.player-captain-control{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin:0 10px 10px;
+  padding:8px 9px;
+  background:#020a12;
+  border:1px solid #15334b;
+}
+.player-captain-control>div{min-width:0}
+.player-captain-control span{display:block;color:#5d7a90;font-size:8px;font-weight:900;letter-spacing:1px}
+.player-captain-control strong{display:block;margin-top:2px;color:#cfe5f4;font:900 12px "Barlow Condensed"}
+.player-captain-control button{
+  flex:0 0 auto;
+  padding:7px 9px;
+  color:#ffe269;
+  background:#171203;
+  border:1px solid #806b18;
+  font:900 9px "Rajdhani";
+  letter-spacing:.8px;
+}
+.player-captain-control button:disabled{opacity:.35;cursor:not-allowed}
+.player-captain-control.active{border-color:#b99d2a;box-shadow:inset 3px 0 0 #ffe269}
+.player-captain-control.active button{background:#ffe269;color:#151000;border-color:#ffe269}
+
+.captain-badge{
+  position:absolute;
+  z-index:8;
+  left:-8px;
+  top:-7px;
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  color:#101000;
+  background:#ffe269;
+  border:2px solid #fff3a8;
+  box-shadow:0 0 14px rgba(255,226,105,.55);
+  font:900 12px "Barlow Condensed";
+  pointer-events:none;
+}
+.formation-slot.captain-slot{
+  border-color:#ffe269!important;
+  box-shadow:0 0 0 2px rgba(255,226,105,.18),0 0 24px rgba(255,226,105,.28)!important;
+}
+
+/* When a roster contains fewer than eleven players, the unused parts of the
+   11-a-side shape become quiet optional positions rather than fake empty starters.
+   They remain clickable/draggable so the user can relocate a deployed player. */
+.formation-slot.partial-inactive:not(.occupied){
+  opacity:.24;
+  border-style:dashed;
+  filter:saturate(.45);
+}
+.formation-slot.partial-inactive:not(.occupied) .empty-slot{font-size:25px;color:#476276}
+.formation-slot.partial-inactive:not(.occupied):hover,
+.formation-slot.partial-inactive.pointer-drop-target{
+  opacity:.72;
+  filter:none;
+}
+
+@media(max-width:1180px){
+  .formation-control-v13{grid-template-columns:1fr auto}
+  .formation-team-metrics{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:700px){
+  .formation-team-metrics{grid-template-columns:1fr 1fr}
+  .formation-team-metrics .captain-metric{grid-column:1/-1}
+}
