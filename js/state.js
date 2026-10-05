@@ -7,12 +7,14 @@ let bidIncrement = 50, maxPlayers = 15, startingBudget = 15000;
 let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder = null;
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
 let draftMode = "auction";
+let auctionUndoStack = [];
+let auctionRedoStack = [];
+let auctionHistoryRestoring = false;
+const AUCTION_UNDO_LIMIT = 60;
 let selectedPlayerIds = new Set(players.map(player => player.id));
 let playerPoolPositionFilter = "ALL";
 let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
-let playerPoolCategoryState = {};
-let playerPoolManualOverrides = {};
 
 // Standalone single-squad builder state. This is intentionally separate from
 // auction teams so experimenting here never mutates a saved draft.
