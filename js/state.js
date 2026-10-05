@@ -13,6 +13,15 @@ let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
 let playerPoolCategoryState = {};
 let playerPoolManualOverrides = {};
+
+// Standalone single-squad builder state. This is intentionally separate from
+// auction teams so experimenting here never mutates a saved draft.
+let standaloneBuilderTeam = { name:"GLOBAL XI", color:"#19a7ff", budget:0, players:[] };
+let standaloneBuilderPlayerIds = new Set();
+let standaloneBuilderQuery = "";
+let standaloneBuilderRole = "ALL";
+let standaloneBuilderSort = "ovr";
+const STANDALONE_SAVE_KEY="blStandaloneBuilderV1";
 let formationDbQuery = "";
 let formationDbPosition = "ALL";
 let formationDbSort = "ovr";
@@ -32,9 +41,9 @@ const formationContent = document.getElementById("formation-content");
 
 let formationTeamNumber = 1;
 let activeFormation = "4-3-3";
-let formationByTeam = { 1:"4-3-3", 2:"4-3-3" };
-let formationAssignments = { 1: {}, 2: {} };
-let formationCaptainByTeam = { 1:null, 2:null };
+let formationByTeam = { 0:"4-3-3", 1:"4-3-3", 2:"4-3-3" };
+let formationAssignments = { 0:{}, 1: {}, 2: {} };
+let formationCaptainByTeam = { 0:null, 1:null, 2:null };
 let selectedFormationPlayerId = null;
 let benchCollapsed = false;
 let draggedFormationPlayerId = null;
@@ -82,7 +91,7 @@ function hideSiteError(){
 }
 
 
-function teamByNumber(n){ return n === 1 ? team1 : team2; }
+function teamByNumber(n){ return n === 0 ? standaloneBuilderTeam : (n === 1 ? team1 : team2); }
 function isTeamFull(n){ return teamByNumber(n).players.length >= maxPlayers; }
 function otherTeamNumber(n){ return n === 1 ? 2 : 1; }
 function onlyTeamWithSpace(){
