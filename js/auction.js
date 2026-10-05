@@ -21,7 +21,7 @@ function getValidatedSetup(){
 }
 
 function resetDraftState(setup){
-    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};
+    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};formationCaptainByTeam={1:null,2:null};
     bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;
     team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
     team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
