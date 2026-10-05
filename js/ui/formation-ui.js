@@ -150,7 +150,7 @@ function renderFormationBuilder(){
                const currentFit=p&&canonicalFit(p,s.label);
                const partialInactive=team.players.length<11&&!p&&!activeSlots.has(i);
                const isCaptain=p&&formationCaptainByTeam[formationTeamNumber]===p.id;
-               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""} ${partialInactive?"partial-inactive":""} ${isCaptain?"captain-slot":""}"
+               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""} ${partialInactive?"partial-inactive":""}"
                     style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}" data-slot-index="${i}"
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
