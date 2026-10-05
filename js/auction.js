@@ -1,1 +1,204 @@
+// BLUE LOCK DRAFT // AUCTION LOGIC
+// Split from the former root script.js. Classic scripts share the same global scope.
+
+function getValidatedSetup(){
+    const n1=document.getElementById("team1Name").value.trim();
+    const n2=document.getElementById("team2Name").value.trim();
+    const budget=Number(document.getElementById("budget").value);
+    const setupBidIncrement=Number(document.getElementById("bidIncrement").value);
+    const setupMaxPlayers=Number(document.getElementById("maxPlayers").value);
+
+    if(!n1||!n2) return showSiteError("Please enter names for both teams.","SETUP INCOMPLETE");
+    if(budget<=0) return showSiteError("Starting budget must be greater than $0.","INVALID BUDGET");
+    if(setupBidIncrement<=0) return showSiteError("Bid interval must be greater than $0.","INVALID BID INTERVAL");
+    if(setupMaxPlayers<=0) return showSiteError("Maximum players must be greater than 0.","INVALID TEAM SIZE");
+
+    const selectedPlayers=players.filter(player => selectedPlayerIds.has(player.id));
+    const requiredPlayers=setupMaxPlayers*2;
+    if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
+    if(selectedPlayers.length<requiredPlayers) return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
+    return {n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,selectedPlayers};
+}
+
+function resetDraftState(setup){
+    formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};
+    bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;
+    team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
+    team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
+    remainingPlayers=[...setup.selectedPlayers];auctionHistory=[];auctionNumber=0;
+    currentPlayer=null;currentBid=0;currentBidder=null;
+}
+
+function startGame(){
+    const setup=getValidatedSetup();if(!setup)return;
+    resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
+    uiState={screen:"auction",phase:"coin",turn:null};saveGame();
+    // Start with an empty auction command area so no player card can flash behind
+    // the opening overlays from a previous or newly-created auction state.
+    auctionContent.innerHTML="";
+    gameOverlay.classList.add("hidden");
+    gameOverlay.classList.remove("overlay-out");
+    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();showCoinFlip();
+}
+
+function shufflePlayers(list){
+    const shuffled=[...list];
+    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+    return shuffled;
+}
+
+function startRandomDraft(){
+    const setup=getValidatedSetup();if(!setup)return;
+    resetDraftState(setup);draftMode="random";
+    const shuffled=shufflePlayers(setup.selectedPlayers);
+    team1.players=shuffled.slice(0,maxPlayers);team2.players=shuffled.slice(maxPlayers,maxPlayers*2);
+    remainingPlayers=shuffled.slice(maxPlayers*2);
+    auctionHistory=[
+        ...team1.players.map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true})),
+        ...team2.players.map((player,index)=>({auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true}))
+    ];
+    auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
+    uiState={screen:"auction",phase:"complete",turn:null};
+    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    updatePlayersRemaining();showAuctionComplete();
+}
+
+function showCoinFlip(){
+    const t=teamByNumber(startingTeam);
+    showOverlay(`
+      <div class="overlay-kicker">OPENING PRIORITY // RANDOMIZED</div>
+      <div class="coin" style="${teamVars(t)}"><span>BL</span></div>
+      <div class="overlay-eyebrow">FIRST BID CONTROL</div>
+      <h2 style="${teamVars(t)};color:var(--team)">${esc(t.name)}</h2>
+      <p>WON THE INITIAL DRAW</p>`);
+    setTimeout(()=>hideOverlay(startNextAuction),1800);
+}
+
+function startNextAuction(){
+    uiState={screen:"auction",phase:"next",turn:null};
+    if(remainingPlayers.length===0 || (isTeamFull(1) && isTeamFull(2))){
+        showAuctionComplete(); return;
+    }
+    const i=Math.floor(Math.random()*remainingPlayers.length);
+    currentPlayer=remainingPlayers.splice(i,1)[0];
+    currentBid=0; currentBidder=null; auctionNumber++;
+    updatePlayersRemaining();
+    saveGame();
+
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){ showForcedAssignment(forcedTeam); return; }
+
+    showPlayerReveal();
+}
+
+function showForcedAssignment(teamNumber,resuming=false){
+    uiState={screen:"auction",phase:"forced",turn:teamNumber};saveGame();
+    const team=teamByNumber(teamNumber);
+    const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
+    showOverlay(`
+      <div class="overlay-kicker">ROSTER CAPACITY PROTOCOL // ${String(auctionNumber).padStart(2,"0")}</div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
+      <h2>${esc(currentPlayer.name)}</h2>
+      <p><strong style="color:${accessibleTeamAccent(fullTeam.color)}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
+      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
+    const delay=resuming?500:1500;
+    setTimeout(()=>hideOverlay(()=>{
+        if(currentPlayer && !isTeamFull(teamNumber)) awardPlayerFree(teamNumber,true);
+        else if(isTeamFull(1)&&isTeamFull(2)) showAuctionComplete();
+    }),delay);
+}
+
+function awardPlayerFree(teamNumber,forced=false){
+    const winner=teamByNumber(teamNumber);
+    winner.players.push(currentPlayer);
+    auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
+    startingTeam=otherTeamNumber(startingTeam);
+    uiState={screen:"auction",phase:"sold",turn:teamNumber};saveGame();
+    playSfx("sold");triggerFx("sold",forced?"ASSIGNED":"SOLD");
+    renderAuctionScreen(`
+      <div class="sold-panel" style="${teamVars(winner)}">
+        <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
+        <div class="sold-word">${forced?"ASSIGNED":"SOLD"}</div>
+        <div class="sold-to">${forced?"ROSTER SPACE AVAILABLE":"SIGNED BY"}</div>
+        <h2 style="color:var(--team-text)">${esc(winner.name)}</h2>
+        <div class="winning-price">FREE</div>
+        <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
+      </div>`);
+    document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
+}
+
+function showPlayerReveal(){
+    playSfx("reveal");
+    showOverlay(`
+      <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="overlay-eyebrow">PLAYER SELECTED</div>
+      <h2>${esc(currentPlayer.name)}</h2>
+      <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);
+    setTimeout(()=>hideOverlay(displayOpeningBid),1500);
+}
+
+function placeOpeningBid(){
+    const forcedTeam=onlyTeamWithSpace();
+    if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
+    const bid=Number(document.getElementById("openingBid").value), starter=teamByNumber(startingTeam);
+    if(!validateBid(bid,starter,0)) return;
+    currentBid=bid; currentBidder=startingTeam;
+    playSfx("bid");triggerFx("bid");
+    const other=startingTeam===1?2:1;
+    if(teamByNumber(other).budget===0){awardPlayer(startingTeam);return;}
+    displayBiddingTurn(other);
+}
+
+function placeBid(n){
+    const team=teamByNumber(n), bid=Number(document.getElementById("nextBid").value);
+    if(!validateBid(bid,team,currentBid)) return;
+    const previousBidder=currentBidder;
+    currentBid=bid; currentBidder=n;
+    playSfx(previousBidder&&previousBidder!==n?"outbid":"bid");triggerFx("bid");
+    displayBiddingTurn(n===1?2:1);
+}
+
+function validateBid(bid,team,minimum){
+    if(bid<=minimum){showSiteError(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`,"BID REJECTED");return false;}
+    if(bid%bidIncrement!==0){showSiteError(`Bids must be in intervals of $${bidIncrement}.`,"INVALID BID INTERVAL");return false;}
+    if(bid>team.budget){showSiteError(`${team.name} only has $${team.budget.toLocaleString()} remaining.`,"INSUFFICIENT BUDGET");return false;}
+    if(team.players.length>=maxPlayers){showSiteError(`${team.name}'s roster is full.`,"ROSTER FULL");return false;}
+    return true;
+}
+
+function passBid(){playSfx("pass");awardPlayer(currentBidder);}
+
+function awardPlayer(n){
+    if(isTeamFull(n)){
+        const other=otherTeamNumber(n);
+        if(!isTeamFull(other)){awardPlayerFree(other,true);return;}
+        showAuctionComplete();return;
+    }
+    const winner=teamByNumber(n), price=currentBid;
+    winner.budget-=price; winner.players.push(currentPlayer);
+    auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
+    startingTeam=startingTeam===1?2:1;
+    uiState={screen:"auction",phase:"sold",turn:n};saveGame();
+    playSfx("sold");triggerFx("sold","SOLD");
+    renderAuctionScreen(`
+      <div class="sold-panel" style="${teamVars(winner)}">
+        <div class="sold-stamp">TRANSFER COMPLETE</div>
+        <div class="sold-word">SOLD</div><div class="sold-to">SIGNED BY</div>
+        <h2 style="color:var(--team-text)">${esc(winner.name)}</h2>
+        <div class="winning-price">${price===0?"FREE":"$"+price.toLocaleString()}</div>
+        <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
+      </div>`);
+    document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
+}
+
+function buyWithControl(n){
+    const team=teamByNumber(n),bid=Number(document.getElementById("controlBid").value);
+    if(!validateBid(bid,team,0)) return;
+    currentBid=bid;currentBidder=n;playSfx("bid");triggerFx("bid");awardPlayer(n);
+}
+
+function passWithControl(n){playSfx("pass");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
 
