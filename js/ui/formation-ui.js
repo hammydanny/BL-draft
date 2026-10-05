@@ -54,6 +54,14 @@ function createPlayerInfoSidebar(team){
       return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${slot?effectiveOVR(player,pos):playerOverall(player)}</strong></div></div>`;
     })()}
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
+    ${(()=>{
+      const deployed=assignedIds(formationTeamNumber).has(player.id);
+      const isCaptain=formationCaptainByTeam[formationTeamNumber]===player.id;
+      return `<div class="player-captain-control ${isCaptain?"active":""}">
+        <div><span>CAPTAIN ROLE</span><strong>${isCaptain?"CURRENT CAPTAIN":deployed?"AVAILABLE":"DEPLOY PLAYER FIRST"}</strong></div>
+        <button type="button" ${deployed?`onclick="setFormationCaptain(${player.id})"`:"disabled"}>${isCaptain?"REMOVE C":"SET CAPTAIN"}</button>
+      </div>`;
+    })()}
     <div class="player-info-section current-position-rating">${(()=>{
       const slot=currentPlayerSlot(formationTeamNumber,player.id);
       const pos=slot?.label||primaryPosition(player);
@@ -75,6 +83,10 @@ function renderFormationBuilder(){
     const used=assignedIds(formationTeamNumber);
     const bench=team.players.filter(p=>!used.has(p.id));
     const selectedPlayer=team.players.find(p=>p.id===selectedFormationPlayerId);
+    const deploymentLimit=formationDeploymentLimit(formationTeamNumber);
+    const activeSlots=activeFormationSlotIndices(formationTeamNumber);
+    const teamOvr=formationTeamOVR(formationTeamNumber);
+    const captain=formationCaptain(formationTeamNumber);
 
     formationContent.innerHTML=`
       <div class="formation-v2-shell">
@@ -83,17 +95,23 @@ function renderFormationBuilder(){
             ${[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
           </div>
           <div class="formation-actions">
-            <button class="formation-auto" onclick="autoBestXI()">⚡ AUTO BEST XI</button>
+            <button class="formation-auto" onclick="autoBestXI()">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
             <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
             <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
                     <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
           </div>
         </div>
 
-        <div class="formation-control-panel" style="${teamVars(team)}">
-          <div>
+        <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
+          <div class="formation-identity">
             <span>FORMATION // ${esc(team.name)}</span>
             <strong>${activeFormation}</strong>
+          </div>
+          <div class="formation-team-metrics">
+            <div><span>TEAM OVR</span><strong>${teamOvr||"--"}</strong></div>
+            <div><span>DEPLOYED</span><strong>${used.size}<small> / ${deploymentLimit}</small></strong></div>
+            <div><span>RESERVES</span><strong>${bench.length}</strong></div>
+            <div class="captain-metric"><span>CAPTAIN</span><strong>${captain?esc(captain.name):"UNASSIGNED"}</strong></div>
           </div>
           <details class="formation-menu">
             <summary><span>CHANGE FORMATION</span><b>${activeFormation}</b><i>⌄</i></summary>
@@ -130,14 +148,16 @@ function renderFormationBuilder(){
                const canonicalTarget=selectedPlayer&&canonicalFit(selectedPlayer,s.label);
                const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
                const currentFit=p&&canonicalFit(p,s.label);
-               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""}"
+               const partialInactive=team.players.length<11&&!p&&!activeSlots.has(i);
+               const isCaptain=p&&formationCaptainByTeam[formationTeamNumber]===p.id;
+               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""} ${partialInactive?"partial-inactive":""} ${isCaptain?"captain-slot":""}"
                     style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}" data-slot-index="${i}"
                     onclick="clickFormationSlot(${i})"
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                         <img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
-                       </div>`:`<span class="empty-slot">+</span>`}
+                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<img src="${p.image}" alt="${esc(p.name)}"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
+                       </div>`:`<span class="empty-slot">${partialInactive?"·":"+"}</span>`}
                </button>`;
             }).join("")}
           </div>
@@ -145,7 +165,7 @@ function renderFormationBuilder(){
           ${createPlayerInfoSidebar(team)}
 
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}" data-formation-bench>
-            <div class="bench-heading"><div><span>RESERVES</span><small>DROP HERE TO BENCH</small></div><strong>${bench.length}</strong></div>
+            <div class="bench-heading"><div><span>RESERVES</span><small>${team.players.length>11?"PLAYERS OUTSIDE THE XI STAY HERE":"DROP HERE TO BENCH"}</small></div><strong>${bench.length}</strong></div>
             <div class="bench-list">
               ${bench.length?bench.map(p=>`<button class="bench-player ${p.id===selectedFormationPlayerId?"selected":""}"
                     data-player-id="${p.id}"
