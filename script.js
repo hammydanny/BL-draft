@@ -771,7 +771,7 @@ function openInfoModal(type){
         title.textContent="ABOUT";
         body.innerHTML=`
           <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK DRAFT</h3>
-          <p>A local two-player auction team builder developed by <strong>hammydanny</strong>, with the support of <strong>syaafibwn</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
+          <p>A local two-player auction team builder developed by <strong>hammydanny@Github</strong>, with the support of <strong>syaafibwn@Github</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
           <div class="info-section"><span>STATUS</span><h3>UNOFFICIAL FAN PROJECT</h3>
           <p>This is a non-commercial fan-made project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock. Blue Lock and related characters and imagery belong to their respective rights holders.</p></div>`;
     }else{
