@@ -139,7 +139,7 @@ function renderSoldState(last){
         <div class="winning-price">${last.price===0?"FREE":"$"+last.price.toLocaleString()}</div>
         <button id="nextPlayerButton" class="primary-button team-action"><span>NEXT PLAYER</span><b>→</b></button>
       </div>`);
-    document.getElementById("nextPlayerButton").addEventListener("click",startNextAuction);
+    document.getElementById("nextPlayerButton").addEventListener("click",advanceToNextAuction);
 }
 
 function displayZeroBudgetChoice(n){
@@ -183,7 +183,24 @@ function createAuctionHistoryPanel(){
     </section>`;
 }
 
+function ensureAuctionHistoryControls(){
+    const actions=auctionScreen.querySelector(".header-mini-actions");
+    if(!actions)return;
+    if(!document.getElementById("auctionUndoButton")){
+        const wrap=document.createElement("div");
+        wrap.className="auction-history-controls";
+        wrap.innerHTML=`
+          <button id="auctionUndoButton" class="compact-control auction-history-button" type="button" disabled>↶ <span>UNDO</span></button>
+          <button id="auctionRedoButton" class="compact-control auction-history-button" type="button" disabled>↷ <span>REDO</span></button>`;
+        actions.insertBefore(wrap,actions.firstChild);
+        document.getElementById("auctionUndoButton").addEventListener("click",undoAuctionAction);
+        document.getElementById("auctionRedoButton").addEventListener("click",redoAuctionAction);
+    }
+    updateAuctionUndoRedoControls();
+}
+
 function renderAuctionScreen(actionHTML){
+    ensureAuctionHistoryControls();
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
     auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
       <div class="auction-command-grid">
