@@ -1,4 +1,4 @@
-// BLUE LOCK AUCTION // VISUAL OVERHAUL
+// BLUE LOCK DRAFT // VISUAL OVERHAUL
 
 let team1 = { name:"", color:"#19a7ff", budget:0, players:[] };
 let team2 = { name:"", color:"#ff315d", budget:0, players:[] };
@@ -770,7 +770,7 @@ function openInfoModal(type){
         code.textContent="BL // PROJECT INFORMATION";
         title.textContent="ABOUT";
         body.innerHTML=`
-          <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK AUCTION</h3>
+          <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK DRAFT</h3>
           <p>A local two-player auction team builder developed by <strong>hammydanny</strong>, with the support of <strong>syaafibwn</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
           <div class="info-section"><span>STATUS</span><h3>UNOFFICIAL FAN PROJECT</h3>
           <p>This is a non-commercial fan-made project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock. Blue Lock and related characters and imagery belong to their respective rights holders.</p></div>`;
@@ -1585,7 +1585,7 @@ function openShareScreen(){
         <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>AUCTION</b></h2></div><strong>FINAL</strong></div>
         <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
         <div class="share-team-grid">${createShareTeam(team1,1)}${createShareTeam(team2,2)}</div>
-        <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY</b> // WITH THE SUPPORT OF <b>SYAAFIBWN</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
+        <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
       </div></div>`;
     document.body.appendChild(screen);
     document.getElementById("closeShareScreen").onclick=()=>screen.remove();
@@ -1594,7 +1594,7 @@ function openShareScreen(){
 }
 async function copyShareSummary(){
     const names=t=>t.players.map(p=>p.name).join(", ");
-    const text=`BLUE LOCK AUCTION // FINAL RESULT\n${team1.name}: ${names(team1)}\n${team2.name}: ${names(team2)}\n\nDeveloped by hammydanny // With the support of syaafibwn`;
+    const text=`BLUE LOCK DRAFT // FINAL RESULT\n${team1.name}: ${names(team1)}\n${team2.name}: ${names(team2)}\n\nDeveloped by hammydanny@Github // With the support of syaafibwn@github`;
     try{await navigator.clipboard.writeText(text);const b=document.getElementById("copyShareSummary");b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
     catch(e){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
 }
