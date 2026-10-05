@@ -25,90 +25,37 @@ document.querySelectorAll("[data-game-mode]").forEach(button=>{
     });
 });
 
-const PLAYER_POOL_CATEGORIES = {
-    "blue-lock-project":{
-        label:"BLUE LOCK PROJECT",
-        names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora"]
-    },
-    "original-u20":{
-        label:"ORIGINAL JAPAN U-20",
-        names:["Sae Itoshi","Gen Fukaku","Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato","Shuto Sendo","Ryusei Shido"]
-    },
-    "world-five":{
-        label:"WORLD FIVE",
-        names:["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"]
-    },
-    "master-strikers":{
-        label:"MASTER STRIKERS",
-        names:["Noel Noa","Lavinho","Chris Prince","Marc Snuffy","Julien Loki"]
-    },
-    "new-gen-11":{
-        label:"NEW GENERATION XI",
-        names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Julien Loki","Bunny Iglesias","Vivien Hugo","Teddy Knight"]
-    },
-    "nel-foreign":{
-        label:"NEL FOREIGN PLAYERS",
-        names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier"]
-    },
-    "japan-world-cup":{
-        label:"JAPAN U-20 WORLD CUP",
-        names:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Meguru Bachira","Hyoma Chigiri","Reo Mikage","Rensuke Kunigami","Eita Otoya","Oliver Aiku","Tabito Karasu","Gin Gagamaru","Jyubei Aryu","Kenyu Yukimiya","Ikki Niko","Yo Hiori","Shuto Sendo","Ranze Kurona","Zantetsu Tsurugi","Gen Fukaku","Jingo Raichi","Jin Kiyora","Nijiro Nanase","Shoei Baro"]
-    },
-    "world-cup-new":{
-        label:"U-20 WC NEWCOMERS",
-        names:["Rooke","Renoir","Haneru Shindo","Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs"]
-    }
+const presetNames = {
+    "all": players.map(p=>p.name),
+    "blue-lock-project": [
+        "Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri",
+        "Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura",
+        "Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi",
+        "Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu",
+        "Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora"
+    ],
+    "world-five": ["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"],
+    "u20-match": [
+        "Sae Itoshi","Gen Fukaku","Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki",
+        "Haru Hayate","Kento Cho","Teru Kitsunezato","Shuto Sendo","Ryusei Shido"
+    ],
+    "nel-stars": [
+        "Noel Noa","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi",
+        "Marc Snuffy","Don Lorenzo","Charles Chevalier","Julien Loki"
+    ],
+    "world-cup-new": [
+        "Rooke","Renoir","Haneru Shindo","Bunny Iglesias","Innocent Onazi","Godwin Kuso",
+        "Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs"
+    ]
 };
-const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CATEGORIES).map(([key,data])=>[
-    key,new Set(players.filter(p=>data.names.includes(p.name)).map(p=>p.id))
+const PLAYER_PRESETS=Object.fromEntries(Object.entries(presetNames).map(([key,names])=>[
+    key, players.filter(p=>names.includes(p.name)).map(p=>p.id)
 ]));
 
-function ensurePoolCategoryState(){
-    const keys=Object.keys(PLAYER_POOL_CATEGORIES);
-    if(!playerPoolCategoryState||typeof playerPoolCategoryState!=="object")playerPoolCategoryState={};
-    if(!playerPoolManualOverrides||typeof playerPoolManualOverrides!=="object")playerPoolManualOverrides={};
-    if(!keys.some(k=>Object.prototype.hasOwnProperty.call(playerPoolCategoryState,k))){
-        keys.forEach(k=>playerPoolCategoryState[k]=true);
-    }else keys.forEach(k=>{if(typeof playerPoolCategoryState[k]!=="boolean")playerPoolCategoryState[k]=false;});
-}
-function categoryBaseSelected(playerId){
-    return Object.entries(playerPoolCategoryState).some(([key,enabled])=>enabled&&PLAYER_POOL_CATEGORY_IDS[key]?.has(playerId));
-}
-function recomputeSelectedPlayersFromCategories(){
-    ensurePoolCategoryState();
-    selectedPlayerIds=new Set(players.filter(player=>{
-        const manual=playerPoolManualOverrides[player.id];
-        return typeof manual==="boolean"?manual:categoryBaseSelected(player.id);
-    }).map(player=>player.id));
-}
-function renderPoolCategoryControls(){
-    ensurePoolCategoryState();
-    document.querySelectorAll("[data-pool-category]").forEach(input=>{
-        const ids=PLAYER_POOL_CATEGORY_IDS[input.dataset.poolCategory]||new Set();
-        const selectedCount=[...ids].filter(id=>selectedPlayerIds.has(id)).length;
-        input.checked=ids.size>0&&selectedCount===ids.size;
-        input.indeterminate=selectedCount>0&&selectedCount<ids.size;
-        const label=input.closest("label");
-        if(label){
-            label.dataset.selectionState=input.checked?"all":input.indeterminate?"partial":"none";
-            label.title=`${selectedCount}/${ids.size} players selected`;
-        }
-    });
-}
-function setPoolCategoryEnabled(key,enabled){
-    if(!PLAYER_POOL_CATEGORY_IDS[key])return;
-    ensurePoolCategoryState();
-    playerPoolCategoryState[key]=!!enabled;
-    // An explicit category action re-syncs its members to category logic.
-    // Overlapping players still remain selected if another enabled category includes them.
-    PLAYER_POOL_CATEGORY_IDS[key].forEach(id=>delete playerPoolManualOverrides[id]);
-    recomputeSelectedPlayersFromCategories();
-    renderPlayerPool();
-    saveSetupPreferences();
-}
 function playerMatchesPoolGroup(player,group){
     if(!group||group==="all")return true;
-    return !!PLAYER_POOL_CATEGORY_IDS[group]?.has(player.id);
+    const ids=PLAYER_PRESETS[group]||[];
+    return ids.includes(player.id);
 }
 function poolSortValue(player,key){
     if(key==="name")return player.name.toLowerCase();
@@ -155,14 +102,12 @@ function renderPlayerPool(){
     grid.querySelectorAll(".pool-select-hit").forEach(button => {
         button.addEventListener("click", () => {
             const id=Number(button.closest(".pool-player-card").dataset.playerId);
-            const next=!selectedPlayerIds.has(id);
-            playerPoolManualOverrides[id]=next;
-            recomputeSelectedPlayersFromCategories();
+            if(selectedPlayerIds.has(id)) selectedPlayerIds.delete(id);
+            else selectedPlayerIds.add(id);
             renderPlayerPool();
             saveSetupPreferences();
         });
     });
-    renderPoolCategoryControls();
     empty.classList.toggle("hidden", visiblePlayers.length !== 0);
     updatePoolStatus();
 }
@@ -176,19 +121,22 @@ function updatePoolStatus(){
     if(max<=0){
         requirement.textContent="ENTER A VALID TEAM SIZE";
         requirement.className="pool-requirement warning";
-    } else if(selected<needed){
+    }else if(selected<needed){
         requirement.textContent=`NEED ${needed} PLAYERS TO FILL BOTH TEAMS`;
         requirement.className="pool-requirement warning";
-    } else {
+    }else{
         requirement.textContent=`READY // ${selected} PLAYERS IN POOL`;
         requirement.className="pool-requirement ready";
     }
 }
 
-ensurePoolCategoryState();
-recomputeSelectedPlayersFromCategories();
-document.querySelectorAll("[data-pool-category]").forEach(input=>{
-    input.addEventListener("change",()=>setPoolCategoryEnabled(input.dataset.poolCategory,input.checked));
+document.querySelectorAll("[data-preset]").forEach(button=>{
+    button.addEventListener("click",()=>{
+        selectedPlayerIds=new Set(PLAYER_PRESETS[button.dataset.preset]||[]);
+        renderPlayerPool();
+        document.querySelectorAll("[data-preset]").forEach(b=>b.classList.toggle("active",b===button));
+        saveSetupPreferences();
+    });
 });
 ["playerPositionFilter","playerGroupFilter","playerSort"].forEach(id=>{
     document.getElementById(id)?.addEventListener("change",()=>{renderPlayerPool();saveSetupPreferences();});
@@ -199,21 +147,12 @@ document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("randomDraftGame").addEventListener("click", startRandomDraft);
 document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
 document.getElementById("selectAllPlayers").addEventListener("click", () => {
-    Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=true);
-    playerPoolManualOverrides={};
-    recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
-});
-document.getElementById("invertPlayers").addEventListener("click", () => {
-    const previous=new Set(selectedPlayerIds);
-    players.forEach(p=>playerPoolManualOverrides[p.id]=!previous.has(p.id));
-    recomputeSelectedPlayersFromCategories();
-    renderPlayerPool();
-    saveSetupPreferences();
+    selectedPlayerIds = new Set(players.map(player => player.id));
+    renderPlayerPool();saveSetupPreferences();
 });
 document.getElementById("clearAllPlayers").addEventListener("click", () => {
-    Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=false);
-    playerPoolManualOverrides={};
-    recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
+    selectedPlayerIds.clear();
+    renderPlayerPool();saveSetupPreferences();
 });
 document.getElementById("maxPlayers").addEventListener("input", updatePoolStatus);
 
