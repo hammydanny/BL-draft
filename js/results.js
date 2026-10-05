@@ -96,15 +96,50 @@ function showAuctionComplete(){
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
 }
+function shareFormationSnapshot(n){
+    const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3";
+    const existing={...(formationAssignments[n]||{})};
+    const deployment=formationDeploymentLimit(n);
+    const assignment=Object.keys(existing).length?existing:solveBestFormationAssignment(n,formation);
+    const active=Object.keys(existing).length
+      ?activeFormationSlotIndices(n)
+      :new Set(preferredActiveSlotIndicesForFormation(n,formation));
+    const chemistry=formationChemistryForAssignment(n,assignment,formation,active);
+    const ovr=formationTeamOVRForAssignment(n,assignment,formation);
+    const captainId=formationCaptainByTeam[n]&&Object.values(assignment).includes(formationCaptainByTeam[n])
+      ?formationCaptainByTeam[n]
+      :recommendedCaptainForAssignment(n,assignment)?.id||null;
+    const used=new Set(Object.values(assignment));
+    const reserves=team.players.filter(p=>!used.has(p.id));
+    return {team,formation,assignment,chemistry,ovr,captainId,reserves,deployment,autoPreview:!Object.keys(existing).length};
+}
 function createShareTeam(team,n){
-    const spent=startingBudget-team.budget,formation=formationByTeam[n]||"4-3-3";
-    const slots=FORMATIONS[formation]||FORMATIONS["4-3-3"];
-    const arranged=slots.map((slot,i)=>({slot,player:getFormationPlayer(n,i)})).filter(x=>x.player);
-    const list=arranged.length?arranged.map(x=>({p:x.player,pos:x.slot.label})):team.players.map(p=>({p,pos:"RES"}));
-    return `<article class="share-team" style="${teamVars(team)}">
-      <div class="share-team-head"><div><span>SQUAD 0${n} // ${arranged.length?formation:"DRAFTED ROSTER"}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
-      <div class="share-money"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
-      <div class="share-lineup">${list.map(x=>`<div class="share-player"><span>${x.pos}</span><img src="${x.p.image}" alt=""><strong>${esc(x.p.name)}</strong>${positionBadges(x.p,true)}</div>`).join("")}</div>
+    const spent=startingBudget-team.budget,snap=shareFormationSnapshot(n);
+    const slots=FORMATIONS[snap.formation]||FORMATIONS["4-3-3"];
+    const captain=team.players.find(p=>p.id===snap.captainId)||null;
+    const pitchPlayers=Object.entries(snap.assignment).map(([i,id])=>{
+        const slot=slots[Number(i)],player=team.players.find(p=>p.id===id);
+        return slot&&player?{slot,player,isCaptain:player.id===snap.captainId}:null;
+    }).filter(Boolean);
+    return `<article class="share-team share-team-v14" style="${teamVars(team)}">
+      <div class="share-team-head"><div><span>SQUAD 0${n} // ${snap.autoPreview?"AUTO PREVIEW":"FORMATION"} ${snap.formation}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
+      <div class="share-v14-metrics">
+        <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
+        <div><span>CHEMISTRY</span><strong class="${chemistryTier(snap.chemistry.overall)}">${snap.chemistry.overall||"--"}</strong></div>
+        <div><span>CAPTAIN</span><strong>${captain?esc(captain.name):"—"}</strong></div>
+        <div><span>RESERVES</span><strong>${snap.reserves.length}</strong></div>
+      </div>
+      <div class="share-mini-pitch">
+        <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
+        ${pitchPlayers.map(({slot,player,isCaptain})=>`<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
+          ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
+        </div>`).join("")}
+      </div>
+      <div class="share-v14-bottom">
+        <div class="share-money compact"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
+        <div class="share-chem-note"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
+      </div>
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 function openShareScreen(){
@@ -113,7 +148,7 @@ function openShareScreen(){
     screen.innerHTML=`<div class="share-shell">
       <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button></div></div>
       <div id="shareCard" class="share-card">
-        <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>AUCTION</b></h2></div><strong>FINAL</strong></div>
+        <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>DRAFT</b></h2></div><strong>FINAL</strong></div>
         <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
         <div class="share-team-grid">${createShareTeam(team1,1)}${createShareTeam(team2,2)}</div>
         <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
@@ -124,8 +159,12 @@ function openShareScreen(){
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
 }
 async function copyShareSummary(){
+    const line=n=>{
+        const snap=shareFormationSnapshot(n),captain=teamByNumber(n).players.find(p=>p.id===snap.captainId);
+        return `${teamByNumber(n).name} // ${snap.formation} // OVR ${snap.ovr||"--"} // CHEM ${snap.chemistry.overall||"--"} // C ${captain?.name||"—"} // RES ${snap.reserves.length}`;
+    };
     const names=t=>t.players.map(p=>p.name).join(", ");
-    const text=`BLUE LOCK DRAFT // FINAL RESULT\n${team1.name}: ${names(team1)}\n${team2.name}: ${names(team2)}\n\nDeveloped by hammydanny@Github // With the support of syaafibwn@github`;
+    const text=`BLUE LOCK DRAFT // FINAL RESULT\n${line(1)}\n${names(team1)}\n\n${line(2)}\n${names(team2)}\n\nDeveloped by hammydanny@Github // With the support of syaafibwn@github`;
     try{await navigator.clipboard.writeText(text);const b=document.getElementById("copyShareSummary");b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
     catch(e){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
 }
