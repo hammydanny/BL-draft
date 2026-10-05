@@ -18,6 +18,8 @@ function saveSetupPreferences(){
                 bidIncrement:document.getElementById("bidIncrement").value,
                 maxPlayers:document.getElementById("maxPlayers").value,
                 selected:[...selectedPlayerIds],
+                poolCategories:{...playerPoolCategoryState},
+                poolManualOverrides:{...playerPoolManualOverrides},
                 poolPosition:playerPoolPositionFilter,
                 poolGroup:playerPoolGroupFilter,
                 poolSort:playerPoolSort
@@ -51,9 +53,19 @@ function restoreSetup(saved){
     });
     document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
-    if(Array.isArray(s.selected))selectedPlayerIds=new Set(s.selected);
+    if(s.poolCategories&&typeof s.poolCategories==="object"){
+        playerPoolCategoryState={...s.poolCategories};
+        playerPoolManualOverrides={...(s.poolManualOverrides||{})};
+        recomputeSelectedPlayersFromCategories();
+    }else if(Array.isArray(s.selected)){
+        // Backward-compatible migration from the pre-category save format.
+        playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES||{}).map(k=>[k,false]));
+        playerPoolManualOverrides=Object.fromEntries(s.selected.map(id=>[id,true]));
+        recomputeSelectedPlayersFromCategories();
+    }
+    if(typeof renderPoolCategoryControls==="function")renderPoolCategoryControls();
     playerPoolPositionFilter=s.poolPosition||"ALL";
-    playerPoolGroupFilter=s.poolGroup||"all";
+    playerPoolGroupFilter=(s.poolGroup==="all"||PLAYER_POOL_CATEGORY_IDS?.[s.poolGroup])?s.poolGroup:"all";
     playerPoolSort=s.poolSort||"id";
     if(document.getElementById("playerPositionFilter"))document.getElementById("playerPositionFilter").value=playerPoolPositionFilter;
     if(document.getElementById("playerGroupFilter"))document.getElementById("playerGroupFilter").value=playerPoolGroupFilter;
