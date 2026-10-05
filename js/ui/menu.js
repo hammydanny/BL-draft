@@ -10,7 +10,57 @@ function setVisibleScreen(screen){
     ].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");
     window.scrollTo({top:0,behavior:"smooth"});
+    updateGlobalBackButton?.();
 }
+let globalBackButton=null;
+function ensureGlobalBackButton(){
+    if(globalBackButton&&document.body.contains(globalBackButton))return globalBackButton;
+    globalBackButton=document.createElement("button");
+    globalBackButton.id="globalBackButton";
+    globalBackButton.className="global-back-button hidden";
+    globalBackButton.type="button";
+    globalBackButton.innerHTML="← <span>BACK</span>";
+    globalBackButton.addEventListener("click",handleGlobalBack);
+    document.body.appendChild(globalBackButton);
+    return globalBackButton;
+}
+function updateGlobalBackButton(){
+    const button=ensureGlobalBackButton();
+    const onMenu=!menuScreen.classList.contains("hidden");
+    button.classList.toggle("hidden",onMenu);
+}
+function handleGlobalBack(){
+    const info=document.getElementById("infoModal");
+    if(info&&!info.classList.contains("hidden")){closeInfoModal();return;}
+    const confirm=document.getElementById("confirmModal");
+    if(confirm&&!confirm.classList.contains("hidden")){closeConfirm();return;}
+    const share=document.getElementById("shareScreen");
+    if(share){share.remove();return;}
+    if(!document.getElementById("character-lore-screen")?.classList.contains("hidden")||
+       !document.getElementById("chemistry-lore-screen")?.classList.contains("hidden")){
+        if(typeof openLoreMenu==="function")openLoreMenu();
+        else setVisibleScreen(document.getElementById("lore-menu-screen"));
+        return;
+    }
+    if(!document.getElementById("lore-menu-screen")?.classList.contains("hidden")){
+        setVisibleScreen(menuScreen);refreshMainMenu();return;
+    }
+    if(!setupScreen.classList.contains("hidden")){
+        saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();return;
+    }
+    if(!formationScreen.classList.contains("hidden")){
+        if(formationTeamNumber===0||uiState.screen==="standalone-builder"){
+            if(typeof leaveStandaloneBuilder==="function")leaveStandaloneBuilder();
+            else goToMainMenu();
+        }else document.getElementById("backToResults")?.click();
+        return;
+    }
+    if(!auctionScreen.classList.contains("hidden")){
+        goToMainMenu();return;
+    }
+    setVisibleScreen(menuScreen);refreshMainMenu();
+}
+
 function refreshMainMenu(){
     const saved=loadSavedData();
     const hasGame=!!saved?.gameActive;
@@ -72,7 +122,7 @@ function openInfoModal(type){
         title.textContent="HOW TO PLAY";
         body.innerHTML=`
           <div class="rule-grid">
-            <div class="rule"><b>01</b><span>BUILD THE PLAYER POOL</span><p>Choose roster size and auction rules, then use category checks, filters, Select All, Invert, Clear All or individual cards to define exactly who can appear.</p></div>
+            <div class="rule"><b>01</b><span>BUILD THE PLAYER POOL</span><p>Choose roster size and auction rules, then use the quick presets, search/role filters, Select All, Clear All or individual player cards to define exactly who can appear.</p></div>
             <div class="rule"><b>02</b><span>CHOOSE A DRAFT MODE</span><p>Initialize the live auction for two-player bidding, or use Random Draft to skip bidding and instantly create both squads from the selected pool.</p></div>
             <div class="rule"><b>03</b><span>OPENING BID</span><p>A coin flip chooses the first opener. Opening responsibility alternates by player. Enter a valid opening value that fits the bid interval and available budget.</p></div>
             <div class="rule"><b>04</b><span>BID OR PASS</span><p>The active side can raise or pass. Every raise must beat the current valuation, respect the interval and stay within that team's remaining capital.</p></div>
@@ -111,3 +161,6 @@ document.getElementById("confirmCancel").addEventListener("click",closeConfirm);
 document.getElementById("confirmAccept").addEventListener("click",()=>{const fn=pendingConfirmAction;closeConfirm();if(fn)fn();});
 document.getElementById("resumeSessionButton").addEventListener("click",()=>restoreGame(loadSavedData()));
 document.getElementById("discardSessionButton").addEventListener("click",()=>showConfirm("DISCARD SAVED AUCTION","This permanently removes the unfinished local auction from this browser.",()=>{clearSavedGame();showResumeCard(null);}));
+
+ensureGlobalBackButton();
+updateGlobalBackButton();
