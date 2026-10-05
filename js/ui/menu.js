@@ -26,8 +26,11 @@ function ensureGlobalBackButton(){
 }
 function updateGlobalBackButton(){
     const button=ensureGlobalBackButton();
-    const onMenu=!menuScreen.classList.contains("hidden");
-    button.classList.toggle("hidden",onMenu);
+    const shareOpen=!!document.getElementById("shareScreen");
+    const auctionVisible=!auctionScreen.classList.contains("hidden");
+    // Setup, Lore and Formation already have their own dedicated Back controls.
+    // Only surface the global Back where the page itself has no Back button.
+    button.classList.toggle("hidden",shareOpen||!auctionVisible);
 }
 function handleGlobalBack(){
     const info=document.getElementById("infoModal");
@@ -122,7 +125,7 @@ function openInfoModal(type){
         title.textContent="HOW TO PLAY";
         body.innerHTML=`
           <div class="rule-grid">
-            <div class="rule"><b>01</b><span>BUILD THE PLAYER POOL</span><p>Choose roster size and auction rules, then use the quick presets, search/role filters, Select All, Clear All or individual player cards to define exactly who can appear.</p></div>
+            <div class="rule"><b>01</b><span>BUILD THE PLAYER POOL</span><p>Choose roster size and auction rules, then combine the category checks, use search/role filters, Select All, Invert, Clear All or individual player cards to define exactly who can appear. Overlapping categories remain selected while any enabled category still includes that player.</p></div>
             <div class="rule"><b>02</b><span>CHOOSE A DRAFT MODE</span><p>Initialize the live auction for two-player bidding, or use Random Draft to skip bidding and instantly create both squads from the selected pool.</p></div>
             <div class="rule"><b>03</b><span>OPENING BID</span><p>A coin flip chooses the first opener. Opening responsibility alternates by player. Enter a valid opening value that fits the bid interval and available budget.</p></div>
             <div class="rule"><b>04</b><span>BID OR PASS</span><p>The active side can raise or pass. Every raise must beat the current valuation, respect the interval and stay within that team's remaining capital.</p></div>
