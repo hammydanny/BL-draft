@@ -525,8 +525,9 @@ function openAuctionTeamBuilder(){
     activeFormation=
         formationByTeam[formationTeamNumber]||"4-3-3";
 
-    renderTeamBuilder();
+    renderFormationBuilder();
     saveGame();
+    updateRoute("auctionTeamBuilder");
 
     window.scrollTo({
         top:0,
