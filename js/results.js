@@ -75,8 +75,8 @@ function createFullHistory(){
 }
 function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
-    updateGlobalBackButton?.();
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
+    updateGlobalBackButton?.();
     if(!wasComplete)playSfx("result");
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
