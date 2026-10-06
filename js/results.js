@@ -93,7 +93,7 @@ function showAuctionComplete(){
     </div>`;
     window.scrollTo({top:0,behavior:"auto"});
     requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"auto"}));
-    document.getElementById("formationBuilderButton").addEventListener("click",openFormationBuilder);
+    document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
 }
