@@ -1,6 +1,68 @@
 // BLUE LOCK DRAFT // FORMATION UI + APP BOOTSTRAP
 // Split from the former root script.js. Classic scripts share the same global scope.
+function waitForAutoBestPaint(){
+    return new Promise(resolve=>{
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(resolve);
+        });
+    });
+}
 
+function showAutoBestLoader(label="AUTO BEST"){
+    document.getElementById("autoBestLoader")?.remove();
+
+    const overlay=document.createElement("div");
+    overlay.id="autoBestLoader";
+    overlay.className="auto-best-loader";
+    overlay.setAttribute("role","status");
+    overlay.setAttribute("aria-live","polite");
+
+    overlay.innerHTML=`
+        <div class="auto-best-loader-grid"></div>
+        <div class="auto-best-loader-orbit orbit-a"></div>
+        <div class="auto-best-loader-orbit orbit-b"></div>
+        <div class="auto-best-loader-scan"></div>
+
+        <div class="auto-best-loader-content">
+            <div class="auto-best-loader-kicker">BLUE LOCK // TACTICAL COMPUTATION</div>
+
+            <div class="auto-best-loader-title">
+                <span>CALCULATING</span>
+                <i>...</i>
+            </div>
+
+            <div class="auto-best-loader-label">
+                ${esc(label)} // FORMATION + OVR + CHEMISTRY
+            </div>
+
+            <div class="auto-best-loader-progress">
+                <span></span>
+            </div>
+
+            <div class="auto-best-loader-status">
+                SCANNING FORMATIONS // OPTIMIZING XI // EVALUATING CHEMISTRY
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(()=>{
+        overlay.classList.add("is-visible");
+    });
+
+    return overlay;
+}
+
+function hideAutoBestLoader(overlay){
+    if(!overlay)return;
+
+    overlay.classList.remove("is-visible");
+
+    window.setTimeout(()=>{
+        overlay.remove();
+    },220);
+}
 function togglePlayerDatabase(){
   playerDatabaseHidden=!playerDatabaseHidden;
   renderFormationBuilder();
