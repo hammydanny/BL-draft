@@ -104,14 +104,11 @@ function autoBestStandaloneTeam(){
         );
         return;
     }
-    const formation=formationByTeam[0]||"4-3-3";
-    const best=solveBestFormationAssignment(0,formation);
-    if(!Object.keys(best).length){
+    const best=applyBestFormationAndAssignment(0);
+    if(!best){
         showSiteError("No valid lineup could be generated from the selected roster.","AUTO BEST TEAM");
         return;
     }
-    formationAssignments[0]=best;
-    ensureFormationCaptain(0,true);
     selectedFormationPlayerId=null;
     playSfx("confirm");
     saveStandaloneBuilderState();
