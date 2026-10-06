@@ -61,7 +61,7 @@ const players = [
     { id: 57, name: "Charles Chevalier", image: "images/charles-chevalier.jpg", primaryPosition: "CM", positions: ["CM", "AM"] , stats: { ovr:93, off:95, sho:85, spd:86, def:71, pas:98, dri:93, gk:51 } },
     { id: 58, name: "Rooke", image: "images/rooke.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:88, off:61, sho:59, spd:80, def:91, pas:82, dri:72, gk:92 } },
     { id: 59, name: "Renoir", image: "images/renoir.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:89, off:63, sho:61, spd:82, def:92, pas:84, dri:75, gk:93 } },
-    { id: 60, name: "Haneru Shindo", image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:77, off:80, sho:79, spd:82, def:59, pas:72, dri:78, gk:44 } },
+    { id: 60, name: "Haneru Shindo", image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:80, sho:79, spd:82, def:59, pas:72, dri:78, gk:44 } },
     { id: 61, name: "Bunny Iglesias", image: "images/bunny-iglesias.jpg", primaryPosition: "FW", positions: ["FW", "SS"] , stats: { ovr:95, off:96, sho:95, spd:94, def:70, pas:87, dri:94, gk:56 } },
     { id: 62, name: "Innocent Onazi", image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"] , stats: { ovr:90, off:93, sho:91, spd:88, def:70, pas:83, dri:87, gk:54 } },
     { id: 63, name: "Godwin Kuso", image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"] , stats: { ovr:86, off:87, sho:81, spd:82, def:72, pas:89, dri:86, gk:52 } },
