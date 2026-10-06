@@ -135,13 +135,9 @@ function ensureGlobalBackButton(){
     return globalBackButton;
 }
 function updateGlobalBackButton(){
-    const button=ensureGlobalBackButton();
-    const shareOpen=!!document.getElementById("shareScreen");
-    const auctionVisible=!auctionScreen.classList.contains("hidden");
-    const auctionResults=uiState?.screen==="auction"&&uiState?.phase==="complete";
-    // Setup, Lore, Formation and completed Results already have their own navigation/actions.
-    // Only surface the global Back during an active auction where the page itself has no Back control.
-    button.classList.toggle("hidden",shareOpen||!auctionVisible||auctionResults);
+    // Every current view already has contextual navigation (MENU, RESULTS, LORE, etc.).
+    // Keep the legacy global control available to old saved sessions, but never surface it.
+    ensureGlobalBackButton().classList.add("hidden");
 }
 function handleGlobalBack(){
     const info=document.getElementById("infoModal");
