@@ -85,8 +85,7 @@ function moneyInput(id,value,min){
 
 function bidPressureRow(team,minBid){
     const after=Math.max(0,team.budget-minBid);
-    const pct=team.budget?Math.round(minBid/team.budget*100):100;
-    return `<div class="bid-pressure-row"><span>MINIMUM <b>$${minBid.toLocaleString()}</b></span><span>AFTER MIN BID <b>$${after.toLocaleString()}</b></span><span>CAP PRESSURE <b>${Math.min(999,pct)}%</b></span></div>`;
+    return `<div class="bid-pressure-row"><span>MINIMUM <b>$${minBid.toLocaleString()}</b></span><span>AFTER MIN BID <b>$${after.toLocaleString()}</b></span></div>`;
 }
 
 function createQuickBidButtons(id){
