@@ -192,19 +192,31 @@ function renderFormationBuilder(){
 }
 document.getElementById("backToResults").addEventListener("click",()=>{
     hideChemistryTooltip();
+
     if(formationTeamNumber===0||uiState.screen==="standalone-builder"){
-        if(typeof leaveStandaloneBuilder==="function")leaveStandaloneBuilder();
-        else goToMainMenu();
+        if(typeof leaveStandaloneBuilder==="function"){
+            leaveStandaloneBuilder();
+        }else{
+            goToMainMenu();
+        }
         return;
     }
-    formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+
     configureFormationHeader?.(false);
+    setVisibleScreen(auctionScreen);
     showAuctionComplete();
-    window.scrollTo({top:0,behavior:"smooth"});
 });
 
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
-setVisibleScreen(menuScreen);
+history.replaceState(
+    {
+        blDraftRoute:"menu"
+    },
+    "",
+    window.location.href
+);
+
+setVisibleScreen(menuScreen,{skipHistory:true});
 refreshMainMenu();
