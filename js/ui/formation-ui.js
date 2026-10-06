@@ -272,13 +272,14 @@ document.getElementById("backToResults").addEventListener("click",()=>{
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
+const initialRoute=getRouteFromHash();
+
 history.replaceState(
     {
-        blDraftRoute:"menu"
+        blDraftRoute:initialRoute
     },
     "",
     window.location.href
 );
 
-setVisibleScreen(menuScreen,{skipHistory:true});
-refreshMainMenu();
+navigateToRoute(initialRoute,{skipHistory:true});
