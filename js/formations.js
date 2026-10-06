@@ -515,16 +515,61 @@ function changeFormation(name){
     sanitizeFormationAssignments(n);
     renderFormationBuilder();saveGame();
 }
-function autoBestXI(){
+async function autoBestXI(){
     const n=formationTeamNumber;
-    const best=applyBestFormationAndAssignment(n);
-    if(!best){
-        showSiteError("No valid lineup could be generated from this squad.","AUTO BEST TEAM");
+    const team=teamByNumber(n);
+
+    if(!team?.players?.length){
+        showSiteError(
+            "No players are available in this squad.",
+            "AUTO BEST TEAM"
+        );
         return;
     }
-    selectedFormationPlayerId=null;
-    playSfx("confirm");
-    renderFormationBuilder();saveGame();
+
+    const autoButton=document.querySelector(".formation-auto");
+
+    if(autoButton){
+        autoButton.disabled=true;
+    }
+
+    const loader=showAutoBestLoader(
+        team.name||`SQUAD 0${n}`
+    );
+
+    try{
+        // Let the browser paint the loading screen before the heavy search begins.
+        await waitForAutoBestPaint();
+
+        const best=applyBestFormationAndAssignment(n);
+
+        if(!best){
+            showSiteError(
+                "No valid lineup could be generated from this squad.",
+                "AUTO BEST TEAM"
+            );
+            return;
+        }
+
+        selectedFormationPlayerId=null;
+        playSfx("confirm");
+
+        // Render the calculated formation while the loading screen is still active.
+        renderFormationBuilder();
+        saveGame();
+    }catch(error){
+        console.error("Auto Best failed:",error);
+        showSiteError(
+            "The tactical calculation could not be completed.",
+            "AUTO BEST TEAM"
+        );
+    }finally{
+        if(autoButton){
+            autoButton.disabled=false;
+        }
+
+        hideAutoBestLoader(loader);
+    }
 }
 
 function resetCurrentFormation(){
