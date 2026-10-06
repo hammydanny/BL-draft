@@ -2761,3 +2761,13 @@ body::-webkit-scrollbar-thumb:hover,
     flex-basis:142px!important;
   }
 }
+
+
+/* =========================================================
+   v0.5 ALPHA // STANDALONE HEADER CLEANUP
+   The standalone builder already has its own ← MAIN MENU control.
+   Hide only the duplicate header MENU button in this mode.
+   ========================================================= */
+#formation-screen.standalone-builder-mode [data-main-menu]{
+  display:none!important;
+}
