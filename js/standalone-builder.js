@@ -73,11 +73,13 @@ function openStandaloneBuilder(){
     renderFormationBuilder();
     window.scrollTo({top:0,behavior:"smooth"});
 }
-function leaveStandaloneBuilder(){
+function leaveStandaloneBuilder(options={}){
     saveStandaloneBuilderState();
+
     formationScreen.classList.remove("standalone-builder-mode");
     configureFormationHeader(false);
-    setVisibleScreen(menuScreen);
+
+    setVisibleScreen(menuScreen,options);
     refreshMainMenu();
 }
 function standaloneBuilderPoolPlayers(){
