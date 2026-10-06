@@ -97,20 +97,48 @@ function standaloneBuilderPoolPlayers(){
     });
     return list;
 }
-function autoBestStandaloneTeam(){
+async function autoBestStandaloneTeam(){
     standaloneBuilderSyncTeam();
+
+    const autoButton=document.querySelector(".formation-auto");
+
+    if(autoButton){
+        autoButton.disabled=true;
+        autoButton.dataset.originalText=autoButton.innerHTML;
+        autoButton.innerHTML="◌ CALCULATING...";
+    }
+
     if(!standaloneBuilderTeam.players.length){
+        if(autoButton){
+            autoButton.disabled=false;
+            autoButton.innerHTML=autoButton.dataset.originalText||"⚡ AUTO BEST TEAM";
+        }
+
         showSiteError(
             "Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.",
             "SELECT A ROSTER"
         );
         return;
     }
+
+    // Give the browser time to display the calculating state.
+    await new Promise(resolve=>setTimeout(resolve,50));
+
     const best=applyBestFormationAndAssignment(0);
+
+    if(autoButton){
+        autoButton.disabled=false;
+        autoButton.innerHTML=autoButton.dataset.originalText||"⚡ AUTO BEST TEAM";
+    }
+
     if(!best){
-        showSiteError("No valid lineup could be generated from the selected roster.","AUTO BEST TEAM");
+        showSiteError(
+            "No valid lineup could be generated from this roster.",
+            "AUTO BEST TEAM"
+        );
         return;
     }
+
     selectedFormationPlayerId=null;
     playSfx("confirm");
     saveStandaloneBuilderState();
