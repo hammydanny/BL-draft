@@ -459,26 +459,79 @@ function applyBestFormationAndAssignment(n){
     return best;
 }
 
-function openFormationBuilder(){
-    uiState={screen:"formation",phase:"formation",turn:null};
-    if(formationTeamNumber!==1&&formationTeamNumber!==2)formationTeamNumber=1;
+function openAuctionTeamBuilder(){
+    uiState={
+        screen:"auction-team-builder",
+        phase:"team-builder",
+        turn:null
+    };
+
+    if(formationTeamNumber!==1&&formationTeamNumber!==2){
+        formationTeamNumber=1;
+    }
+
     auctionScreen.classList.add("hidden");
     formationScreen.classList.remove("hidden");
     formationScreen.classList.remove("standalone-builder-mode");
-    if(typeof configureFormationHeader==="function")configureFormationHeader(false);
+
+    if(typeof configureTeamBuilderHeader==="function"){
+        configureTeamBuilderHeader(false);
+    }
+
     selectedFormationPlayerId=null;
-    if(!formationByTeam || typeof formationByTeam!=="object") formationByTeam={0:"4-3-3",1:"4-3-3",2:"4-3-3"};
-    [0,1,2].forEach(n=>{if(!formationByTeam[n]||!FORMATIONS[formationByTeam[n]])formationByTeam[n]="4-3-3";});
+
+    if(!formationByTeam || typeof formationByTeam!=="object"){
+        formationByTeam={
+            0:"4-3-3",
+            1:"4-3-3",
+            2:"4-3-3"
+        };
+    }
+
+    [0,1,2].forEach(n=>{
+        if(
+            !formationByTeam[n]||
+            !FORMATIONS[formationByTeam[n]]
+        ){
+            formationByTeam[n]="4-3-3";
+        }
+    });
+
     if(!formationInitialized){
         formationTeamNumber=1;
-        formationByTeam={0:formationByTeam[0]||"4-3-3",1:"4-3-3",2:"4-3-3"};
-        formationAssignments={0:formationAssignments[0]||{},1:{},2:{}};
-        formationCaptainByTeam={0:formationCaptainByTeam[0]||null,1:null,2:null};
+        formationByTeam={
+            0:formationByTeam[0]||"4-3-3",
+            1:"4-3-3",
+            2:"4-3-3"
+        };
+
+        formationAssignments={
+            0:formationAssignments[0]||{},
+            1:{},
+            2:{}
+        };
+
+        formationCaptainByTeam={
+            0:formationCaptainByTeam[0]||null,
+            1:null,
+            2:null
+        };
+
         formationInitialized=true;
-    }else [1,2].forEach(n=>sanitizeFormationAssignments(n));
-    activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
-    renderFormationBuilder();saveGame();
-    window.scrollTo({top:0,behavior:"smooth"});
+    }else{
+        [1,2].forEach(n=>sanitizeFormationAssignments(n));
+    }
+
+    activeFormation=
+        formationByTeam[formationTeamNumber]||"4-3-3";
+
+    renderTeamBuilder();
+    saveGame();
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
 }
 function autoFillFormation(n){
     return applyBestFormationAndAssignment(n);
