@@ -1,18 +1,128 @@
 // BLUE LOCK DRAFT // MENU UI
-// Split from the former root script.js. Classic scripts share the same global scope.
+function getScreenRoute(screen){
+    if(screen===menuScreen)return "menu";
+    if(screen===setupScreen)return "setup";
+    if(screen===auctionScreen)return "auction";
+    if(screen===formationScreen){
+        return formationTeamNumber===0
+            ? "standalone-builder"
+            : "formation";
+    }
 
-function setVisibleScreen(screen){
+    if(screen?.id==="lore-menu-screen")return "lore";
+    if(screen?.id==="character-lore-screen")return "character-lore";
+    if(screen?.id==="chemistry-lore-screen")return "chemistry-lore";
+
+    return null;
+}
+
+function setVisibleScreen(screen, options={}){
     [
-        menuScreen,setupScreen,auctionScreen,formationScreen,
+        menuScreen,
+        setupScreen,
+        auctionScreen,
+        formationScreen,
         document.getElementById("lore-menu-screen"),
         document.getElementById("character-lore-screen"),
         document.getElementById("chemistry-lore-screen")
     ].forEach(el=>el&&el.classList.add("hidden"));
+
     if(screen)screen.classList.remove("hidden");
+
     window.scrollTo({top:0,behavior:"smooth"});
     updateGlobalBackButton?.();
+
+    if(!options.skipHistory){
+        const route=getScreenRoute(screen);
+
+        if(route && history.state?.blDraftRoute!==route){
+            history.pushState(
+                {
+                    blDraftRoute:route
+                },
+                "",
+                window.location.href
+            );
+        }
+    }
 }
 let globalBackButton=null;
+window.addEventListener("popstate",()=>{
+    const route=history.state?.blDraftRoute;
+
+    if(!route){
+        setVisibleScreen(menuScreen,{skipHistory:true});
+        refreshMainMenu();
+        return;
+    }
+
+    switch(route){
+        case "menu":
+            goToMainMenu({skipHistory:true});
+            break;
+
+        case "setup":
+            setVisibleScreen(setupScreen,{skipHistory:true});
+            renderPlayerPool();
+            break;
+
+        case "auction":
+            setVisibleScreen(auctionScreen,{skipHistory:true});
+
+            if(uiState?.phase==="complete"){
+                showAuctionComplete();
+            }else if(typeof renderAuctionScreen==="function"){
+                renderAuctionScreen();
+            }
+            break;
+
+        case "formation":
+            setVisibleScreen(formationScreen,{skipHistory:true});
+            formationScreen.classList.remove("standalone-builder-mode");
+            configureFormationHeader?.(false);
+            renderFormationBuilder();
+            break;
+
+        case "standalone-builder":
+            setVisibleScreen(formationScreen,{skipHistory:true});
+            formationScreen.classList.add("standalone-builder-mode");
+            configureFormationHeader?.(true);
+            renderFormationBuilder();
+            break;
+
+        case "lore":
+            if(typeof openLoreMenu==="function"){
+                openLoreMenu({skipHistory:true});
+            }else{
+                setVisibleScreen(
+                    document.getElementById("lore-menu-screen"),
+                    {skipHistory:true}
+                );
+            }
+            break;
+
+        case "character-lore":
+            setVisibleScreen(
+                document.getElementById("character-lore-screen"),
+                {skipHistory:true}
+            );
+            break;
+
+        case "chemistry-lore":
+            setVisibleScreen(
+                document.getElementById("chemistry-lore-screen"),
+                {skipHistory:true}
+            );
+            break;
+
+        default:
+            setVisibleScreen(menuScreen,{skipHistory:true});
+            refreshMainMenu();
+            break;
+    }
+});
+
+
 function ensureGlobalBackButton(){
     if(globalBackButton&&document.body.contains(globalBackButton))return globalBackButton;
     globalBackButton=document.createElement("button");
@@ -77,17 +187,30 @@ function refreshMainMenu(){
           `AUCTION ${String(saved.auctionNumber||0).padStart(2,"0")} // ${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers} VS ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
     }
 }
-function goToMainMenu(){
+function goToMainMenu(options={}){
     if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
+
     if(uiState.screen==="standalone-builder"){
         formationScreen.classList.remove("standalone-builder-mode");
-        if(typeof configureFormationHeader==="function")configureFormationHeader(false);
+
+        if(typeof configureFormationHeader==="function"){
+            configureFormationHeader(false);
+        }
     }
+
     hideSiteError();
-    const info=document.getElementById("infoModal");if(info)info.classList.add("hidden");
-    const confirm=document.getElementById("confirmModal");if(confirm)confirm.classList.add("hidden");
-    gameOverlay.classList.add("hidden");gameOverlay.classList.remove("overlay-out");
-    setVisibleScreen(menuScreen);refreshMainMenu();
+
+    const info=document.getElementById("infoModal");
+    if(info)info.classList.add("hidden");
+
+    const confirm=document.getElementById("confirmModal");
+    if(confirm)confirm.classList.add("hidden");
+
+    gameOverlay.classList.add("hidden");
+    gameOverlay.classList.remove("overlay-out");
+
+    setVisibleScreen(menuScreen,options);
+    refreshMainMenu();
 }
 document.querySelectorAll("[data-main-menu]").forEach(b=>b.addEventListener("click",goToMainMenu));
 
