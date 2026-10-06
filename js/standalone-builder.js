@@ -100,20 +100,7 @@ function standaloneBuilderPoolPlayers(){
 async function autoBestStandaloneTeam(){
     standaloneBuilderSyncTeam();
 
-    const autoButton=document.querySelector(".formation-auto");
-
-    if(autoButton){
-        autoButton.disabled=true;
-        autoButton.dataset.originalText=autoButton.innerHTML;
-        autoButton.innerHTML="◌ CALCULATING...";
-    }
-
     if(!standaloneBuilderTeam.players.length){
-        if(autoButton){
-            autoButton.disabled=false;
-            autoButton.innerHTML=autoButton.dataset.originalText||"⚡ AUTO BEST TEAM";
-        }
-
         showSiteError(
             "Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.",
             "SELECT A ROSTER"
@@ -121,28 +108,47 @@ async function autoBestStandaloneTeam(){
         return;
     }
 
-    // Give the browser time to display the calculating state.
-    await new Promise(resolve=>setTimeout(resolve,50));
-
-    const best=applyBestFormationAndAssignment(0);
+    const autoButton=document.querySelector(".formation-auto");
 
     if(autoButton){
-        autoButton.disabled=false;
-        autoButton.innerHTML=autoButton.dataset.originalText||"⚡ AUTO BEST TEAM";
+        autoButton.disabled=true;
     }
 
-    if(!best){
+    const loader=showAutoBestLoader("GLOBAL XI");
+
+    try{
+        // Let the browser actually paint the loading screen first.
+        await waitForAutoBestPaint();
+
+        const best=applyBestFormationAndAssignment(0);
+
+        if(!best){
+            showSiteError(
+                "No valid lineup could be generated from this roster.",
+                "AUTO BEST TEAM"
+            );
+            return;
+        }
+
+        selectedFormationPlayerId=null;
+        playSfx("confirm");
+        saveStandaloneBuilderState();
+
+        // Place the calculated players before removing the loader.
+        renderFormationBuilder();
+    }catch(error){
+        console.error("Standalone Auto Best failed:",error);
         showSiteError(
-            "No valid lineup could be generated from this roster.",
+            "The tactical calculation could not be completed.",
             "AUTO BEST TEAM"
         );
-        return;
-    }
+    }finally{
+        if(autoButton){
+            autoButton.disabled=false;
+        }
 
-    selectedFormationPlayerId=null;
-    playSfx("confirm");
-    saveStandaloneBuilderState();
-    renderFormationBuilder();
+        hideAutoBestLoader(loader);
+    }
 }
 function toggleStandalonePoolVisibility(){
     standalonePoolHidden=!standalonePoolHidden;
