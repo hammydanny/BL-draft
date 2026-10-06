@@ -1,22 +1,74 @@
 // BLUE LOCK DRAFT // MENU UI
+const APP_ROUTES={
+    menu:"#/",
+    lore:"#/lore",
+    standaloneTeamBuilder:"#/team-builder",
+    auction:"#/auction",
+    auctionResults:"#/auction/results",
+    auctionTeamBuilder:"#/auction/team-builder"
+};
+
+function routeHash(route){
+    return APP_ROUTES[route]||APP_ROUTES.menu;
+}
+
+function getRouteFromHash(){
+    const hash=window.location.hash||"#/";
+
+    if(hash==="#/"||hash==="#")return "menu";
+    if(hash==="#/lore")return "lore";
+    if(hash==="#/team-builder")return "standaloneTeamBuilder";
+    if(hash==="#/auction")return "auction";
+    if(hash==="#/auction/results")return "auctionResults";
+    if(hash==="#/auction/team-builder")return "auctionTeamBuilder";
+
+    return "menu";
+}
+
 function getScreenRoute(screen){
     if(screen===menuScreen)return "menu";
-    if(screen===setupScreen)return "setup";
-    if(screen===auctionScreen)return "auction";
+
+    // Setup is the entry point for the Auction route.
+    if(screen===setupScreen)return "auction";
+
+    if(screen===auctionScreen){
+        return uiState?.phase==="complete"
+            ?"auctionResults"
+            :"auction";
+    }
+
     if(screen===formationScreen){
         return formationTeamNumber===0
-            ? "standalone-builder"
-            : "formation";
+            ?"standaloneTeamBuilder"
+            :"auctionTeamBuilder";
     }
 
     if(screen?.id==="lore-menu-screen")return "lore";
-    if(screen?.id==="character-lore-screen")return "character-lore";
-    if(screen?.id==="chemistry-lore-screen")return "chemistry-lore";
+
+    // Keep these as internal Lore subviews rather than creating another
+    // top-level public route.
+    if(screen?.id==="character-lore-screen")return "lore";
+    if(screen?.id==="chemistry-lore-screen")return "lore";
 
     return null;
 }
 
-function setVisibleScreen(screen, options={}){
+function updateRoute(route,{replace=false}={}){
+    const url=new URL(window.location.href);
+    url.hash=routeHash(route);
+
+    const state={
+        blDraftRoute:route
+    };
+
+    if(replace){
+        history.replaceState(state,"",url);
+    }else{
+        history.pushState(state,"",url);
+    }
+}
+
+function setVisibleScreen(screen,options={}){
     [
         menuScreen,
         setupScreen,
@@ -36,91 +88,95 @@ function setVisibleScreen(screen, options={}){
         const route=getScreenRoute(screen);
 
         if(route && history.state?.blDraftRoute!==route){
-            history.pushState(
-                {
-                    blDraftRoute:route
-                },
-                "",
-                window.location.href
-            );
+            updateRoute(route);
         }
     }
 }
 let globalBackButton=null;
 window.addEventListener("popstate",()=>{
-    const route=history.state?.blDraftRoute;
+    navigateToRoute(getRouteFromHash(),{skipHistory:true});
+});
 
-    if(!route){
-        setVisibleScreen(menuScreen,{skipHistory:true});
-        refreshMainMenu();
-        return;
-    }
-
+function navigateToRoute(route,options={}){
     switch(route){
         case "menu":
-            goToMainMenu({skipHistory:true});
-            break;
-
-        case "setup":
-            setVisibleScreen(setupScreen,{skipHistory:true});
-            renderPlayerPool();
-            break;
-
-        case "auction":
-            setVisibleScreen(auctionScreen,{skipHistory:true});
-
-            if(uiState?.phase==="complete"){
-                showAuctionComplete();
-            }else if(typeof renderAuctionScreen==="function"){
-                renderAuctionScreen();
-            }
-            break;
-
-        case "formation":
-            setVisibleScreen(formationScreen,{skipHistory:true});
-            formationScreen.classList.remove("standalone-builder-mode");
-            configureFormationHeader?.(false);
-            renderFormationBuilder();
-            break;
-
-        case "standalone-builder":
-            setVisibleScreen(formationScreen,{skipHistory:true});
-            formationScreen.classList.add("standalone-builder-mode");
-            configureFormationHeader?.(true);
-            renderFormationBuilder();
+            goToMainMenu(options);
             break;
 
         case "lore":
             if(typeof openLoreMenu==="function"){
-                openLoreMenu({skipHistory:true});
+                openLoreMenu(options);
             }else{
                 setVisibleScreen(
                     document.getElementById("lore-menu-screen"),
-                    {skipHistory:true}
+                    options
                 );
             }
             break;
 
-        case "character-lore":
-            setVisibleScreen(
-                document.getElementById("character-lore-screen"),
-                {skipHistory:true}
-            );
+        case "standaloneTeamBuilder":
+            openStandaloneBuilder();
             break;
 
-        case "chemistry-lore":
-            setVisibleScreen(
-                document.getElementById("chemistry-lore-screen"),
-                {skipHistory:true}
-            );
+        case "auction":
+            if(uiState?.phase==="complete"){
+                setVisibleScreen(auctionScreen,options);
+                showAuctionComplete();
+                return;
+            }
+
+            if(loadSavedData()?.gameActive){
+                restoreGame(loadSavedData());
+            }else{
+                uiState={
+                    screen:"setup",
+                    phase:"setup",
+                    turn:null
+                };
+
+                setVisibleScreen(setupScreen,options);
+                renderPlayerPool();
+            }
+            break;
+
+        case "auctionResults":
+            if(uiState?.phase==="complete"){
+                setVisibleScreen(auctionScreen,options);
+                showAuctionComplete();
+            }else if(loadSavedData()?.gameActive){
+                restoreGame(loadSavedData());
+
+                if(uiState?.phase==="complete"){
+                    showAuctionComplete();
+                }else{
+                    navigateToRoute("auction",{skipHistory:false});
+                }
+            }else{
+                navigateToRoute("auction",{skipHistory:false});
+            }
+            break;
+
+        case "auctionTeamBuilder":
+            if(uiState?.phase==="complete"){
+                openAuctionTeamBuilder();
+            }else if(loadSavedData()?.gameActive){
+                restoreGame(loadSavedData());
+
+                if(uiState?.phase==="complete"){
+                    openAuctionTeamBuilder();
+                }else{
+                    navigateToRoute("auction",{skipHistory:false});
+                }
+            }else{
+                navigateToRoute("auction",{skipHistory:false});
+            }
             break;
 
         default:
-            setVisibleScreen(menuScreen,{skipHistory:true});
-            refreshMainMenu();
+            goToMainMenu(options);
             break;
     }
-});
+}
 
 
 function ensureGlobalBackButton(){
