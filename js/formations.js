@@ -254,44 +254,199 @@ function solveBestFormationAssignment(n,formationName=formationByTeam[n]||"4-3-3
     return best;
 }
 
-function evaluateFormationCandidate(n,formationName,assignment){
+function formationLineupMetrics(n,formationName,assignment){
     const team=teamByNumber(n),shape=FORMATIONS[formationName]||FORMATIONS["4-3-3"];
     const deployed=Object.entries(assignment||{}).map(([slot,id])=>{
-        const i=Number(slot),player=team.players.find(p=>p.id===id),label=shape[i]?.label;
-        return player&&label?{player,label}:null;
+        const index=Number(slot),player=team.players.find(p=>p.id===id),label=shape[index]?.label;
+        if(!player||!label)return null;
+        const effective=effectiveOVR(player,label);
+        const primary=primaryFit(player,label),canonical=canonicalFit(player,label);
+        let fitValue=primary?100:canonical?91:58;
+        if(label==="GK"&&!canonical)fitValue=18;
+        else if(["CB","LB","RB"].includes(label)&&positionGroup(primaryPosition(player))==="ATTACK")fitValue=Math.min(fitValue,42);
+        return {index,player,label,effective,primary,canonical,fitValue};
     }).filter(Boolean);
-    if(!deployed.length)return {score:-Infinity,roleAverage:0,teamOvr:0,chemistry:0,exactScore:-Infinity};
 
-    // Normalize role quality so formations with more chemistry edges do not win just
-    // because their graph contains more links. Chemistry then acts as a meaningful,
-    // but secondary, tie-breaker to positional quality.
-    const roleAverage=deployed.reduce((sum,x)=>sum+formationRoleScore(x.player,x.label),0)/deployed.length;
-    const teamOvr=formationTeamOVRForAssignment(n,assignment,formationName);
-    const activeSlots=new Set(preferredActiveSlotIndicesForFormation(n,formationName));
-    const chemistry=formationChemistryForAssignment(n,assignment,formationName,activeSlots).overall||0;
-    const chemistryWeight=deployed.length>=2?.28:0;
-    const score=roleAverage*(1-chemistryWeight)+chemistry*chemistryWeight;
-    return {score,roleAverage,teamOvr,chemistry,exactScore:formationAssignmentScore(n,assignment,formationName)};
+    if(!deployed.length){
+        return {
+            deployed:0,teamOvr:0,teamOvrRaw:0,chemistry:0,chemistryFloor:0,
+            fitScore:0,lineupFloor:0,primaryFits:0,canonicalFits:0,offPosition:0,
+            weakLinks:0,eliteLinks:0,composite:-Infinity
+        };
+    }
+
+    const ratings=deployed.map(x=>x.effective);
+    const teamOvrRaw=ratings.reduce((a,b)=>a+b,0)/ratings.length;
+    const teamOvr=Math.round(teamOvrRaw);
+    const sortedRatings=[...ratings].sort((a,b)=>a-b);
+    const floorCount=Math.min(3,sortedRatings.length);
+    const lineupFloor=sortedRatings.slice(0,floorCount).reduce((a,b)=>a+b,0)/floorCount;
+    const fitScore=deployed.reduce((sum,x)=>sum+x.fitValue,0)/deployed.length;
+    const primaryFits=deployed.filter(x=>x.primary).length;
+    const canonicalFits=deployed.filter(x=>x.canonical).length;
+    const offPosition=deployed.length-canonicalFits;
+
+    const activeSlots=new Set(deployed.map(x=>x.index));
+    const chem=formationChemistryForAssignment(n,assignment,formationName,activeSlots);
+    const links=chem.links||[];
+    const chemistry=links.length?(chem.overall||0):0;
+    const chemistryFloor=links.length?Math.min(...links.map(x=>x.value)):0;
+    const weakLinks=links.filter(x=>x.value<70).length;
+    const eliteLinks=links.filter(x=>x.value>=90).length;
+
+    // Final Auto Best score:
+    // - 50% position-adjusted team OVR
+    // - 28% tactical chemistry
+    // - 14% natural/canonical positional fit
+    // - 5% strength of the weakest portion of the XI
+    // - 3% weakest active chemistry link
+    //
+    // For tiny/partial squads with no active chemistry links, redistribute the
+    // chemistry weight across OVR / fit / lineup floor instead of punishing them.
+    let composite;
+    if(links.length){
+        composite=
+            teamOvrRaw*.50+
+            chemistry*.28+
+            fitScore*.14+
+            lineupFloor*.05+
+            chemistryFloor*.03;
+
+        // Small structural penalties stop a high average from hiding obvious
+        // tactical problems such as multiple improvised positions / weak links.
+        composite-=offPosition*0.38;
+        composite-=weakLinks*0.22;
+        composite+=Math.min(eliteLinks,4)*0.08;
+    }else{
+        composite=
+            teamOvrRaw*.66+
+            fitScore*.24+
+            lineupFloor*.10;
+        composite-=offPosition*0.42;
+    }
+
+    return {
+        deployed:deployed.length,
+        teamOvr,teamOvrRaw,chemistry,chemistryFloor,fitScore,lineupFloor,
+        primaryFits,canonicalFits,offPosition,weakLinks,eliteLinks,composite
+    };
 }
+
+function evaluateFormationCandidate(n,formationName,assignment){
+    const metrics=formationLineupMetrics(n,formationName,assignment);
+    return {
+        score:metrics.composite,
+        ...metrics,
+        exactScore:formationAssignmentScore(n,assignment,formationName)
+    };
+}
+
+function refineFormationByCompositeScore(n,formationName,initial,maxIterations=12){
+    const team=teamByNumber(n);
+    let assignment={...(initial||{})};
+    if(!Object.keys(assignment).length)return assignment;
+
+    for(let iteration=0;iteration<maxIterations;iteration++){
+        let bestMetrics=evaluateFormationCandidate(n,formationName,assignment);
+        let best=null;
+        const slots=Object.keys(assignment).map(Number);
+
+        // 1) Try every positional swap inside the XI.
+        for(let i=0;i<slots.length;i++){
+            for(let j=i+1;j<slots.length;j++){
+                const a=slots[i],b=slots[j],test={...assignment};
+                [test[a],test[b]]=[test[b],test[a]];
+                const metrics=evaluateFormationCandidate(n,formationName,test);
+                if(metrics.score>bestMetrics.score+.015){
+                    bestMetrics=metrics;best=test;
+                }
+            }
+        }
+
+        // 2) Try every reserve in every active slot.
+        const used=new Set(Object.values(assignment));
+        const reserves=team.players.filter(p=>!used.has(p.id));
+        for(const slot of slots){
+            for(const candidate of reserves){
+                const test={...assignment,[slot]:candidate.id};
+                const metrics=evaluateFormationCandidate(n,formationName,test);
+                if(metrics.score>bestMetrics.score+.015){
+                    bestMetrics=metrics;best=test;
+                }
+            }
+        }
+
+        if(!best)break;
+        assignment=best;
+    }
+    return assignment;
+}
+
+function bestLineupForFormation(n,formationName){
+    const team=teamByNumber(n);
+    if(!team?.players?.length)return null;
+
+    // Give every formation a full-strength search. This is deliberately more
+    // expensive than the old preview pass because Auto Best is an explicit action.
+    // The beam considers every squad player for every active slot, then the
+    // composite refinement directly optimizes the final OVR/chemistry/fit score.
+    const assignment=solveBestFormationAssignment(n,formationName,{
+        beamWidth:280,
+        candidatesPerSlot:team.players.length,
+        refineIterations:12,
+        refineAlternates:12
+    });
+    if(!Object.keys(assignment).length)return null;
+
+    const polished=refineFormationByCompositeScore(n,formationName,assignment,14);
+    return {
+        formation:formationName,
+        assignment:polished,
+        ...evaluateFormationCandidate(n,formationName,polished)
+    };
+}
+
+function betterAutoBestCandidate(candidate,best,currentFormation){
+    if(!best)return true;
+    const eps=.015;
+
+    if(candidate.score>best.score+eps)return true;
+    if(Math.abs(candidate.score-best.score)>eps)return false;
+
+    // Stable tie-break order: OVR -> chemistry -> fit -> lineup floor ->
+    // chemistry floor -> fewer improvised positions -> current formation.
+    if(candidate.teamOvrRaw>best.teamOvrRaw+.01)return true;
+    if(Math.abs(candidate.teamOvrRaw-best.teamOvrRaw)>.01)return false;
+
+    if(candidate.chemistry>best.chemistry)return true;
+    if(candidate.chemistry<best.chemistry)return false;
+
+    if(candidate.fitScore>best.fitScore+.01)return true;
+    if(Math.abs(candidate.fitScore-best.fitScore)>.01)return false;
+
+    if(candidate.lineupFloor>best.lineupFloor+.01)return true;
+    if(Math.abs(candidate.lineupFloor-best.lineupFloor)>.01)return false;
+
+    if(candidate.chemistryFloor>best.chemistryFloor)return true;
+    if(candidate.chemistryFloor<best.chemistryFloor)return false;
+
+    if(candidate.offPosition<best.offPosition)return true;
+    if(candidate.offPosition>best.offPosition)return false;
+
+    return candidate.formation===currentFormation&&best.formation!==currentFormation;
+}
+
 function solveBestFormationAndAssignment(n){
     const current=formationByTeam[n]||"4-3-3";
     let best=null;
-    Object.keys(FORMATIONS).forEach(formationName=>{
-        const assignment=solveBestFormationAssignment(n,formationName,{
-            beamWidth:80,candidatesPerSlot:8,refineIterations:5,refineAlternates:4
-        });
-        if(!Object.keys(assignment).length)return;
-        const metrics=evaluateFormationCandidate(n,formationName,assignment);
-        const candidate={formation:formationName,assignment,...metrics};
-        if(!best ||
-           candidate.score>best.score+.02 ||
-           (Math.abs(candidate.score-best.score)<=.02 && candidate.roleAverage>best.roleAverage+.02) ||
-           (Math.abs(candidate.score-best.score)<=.02 && Math.abs(candidate.roleAverage-best.roleAverage)<=.02 && candidate.chemistry>best.chemistry) ||
-           (Math.abs(candidate.score-best.score)<=.02 && Math.abs(candidate.roleAverage-best.roleAverage)<=.02 && candidate.chemistry===best.chemistry && candidate.teamOvr>best.teamOvr) ||
-           (Math.abs(candidate.score-best.score)<=.02 && Math.abs(candidate.roleAverage-best.roleAverage)<=.02 && candidate.chemistry===best.chemistry && candidate.teamOvr===best.teamOvr && formationName===current)){
-            best=candidate;
-        }
-    });
+
+    // Each formation gets its own complete "best XI" search first.
+    // Only after that do we compare the ten winning squads against one another.
+    for(const formationName of Object.keys(FORMATIONS)){
+        const candidate=bestLineupForFormation(n,formationName);
+        if(!candidate)continue;
+        if(betterAutoBestCandidate(candidate,best,current))best=candidate;
+    }
     return best;
 }
 function applyBestFormationAndAssignment(n){
