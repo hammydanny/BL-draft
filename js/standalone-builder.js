@@ -17,7 +17,7 @@ function loadStandaloneBuilderState(){
     if(standaloneBuilderLoaded)return;
     standaloneBuilderLoaded=true;
     try{
-        const saved=JSON.parse(localStorage.getItem(STANDALONE_SAVE_KEY)||"null");
+        const saved=normalizeStandaloneSave(JSON.parse(localStorage.getItem(STANDALONE_SAVE_KEY)||"null"));
         if(saved){
             standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id)));
             formationByTeam[0]=FORMATIONS[saved.formation]?saved.formation:"4-3-3";
@@ -33,6 +33,7 @@ function loadStandaloneBuilderState(){
 function saveStandaloneBuilderState(){
     try{
         localStorage.setItem(STANDALONE_SAVE_KEY,JSON.stringify({
+            schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
             playerIds:[...standaloneBuilderPlayerIds],
             formation:formationByTeam[0]||"4-3-3",
             assignment:formationAssignments[0]||{},
