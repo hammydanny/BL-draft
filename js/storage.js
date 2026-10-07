@@ -1,14 +1,116 @@
 // BLUE LOCK DRAFT // LOCAL STORAGE + SESSION RESTORE
 // Split from the former root script.js. Classic scripts share the same global scope.
 
+// Version the payloads, not the established localStorage keys.
+const AUCTION_SAVE_SCHEMA_VERSION=1;
+const STANDALONE_SAVE_SCHEMA_VERSION=1;
+
+function isSaveRecord(value){
+    return value!==null&&typeof value==="object"&&!Array.isArray(value);
+}
+function isSaveNumber(value){return Number.isFinite(value)&&value>=0;}
+function isSavePlayerList(value){
+    return Array.isArray(value)&&value.every(Number.isInteger);
+}
+function isSaveAssignment(value){
+    return isSaveRecord(value)&&Object.entries(value).every(([slot,id])=>
+        /^(?:[0-9]|10)$/.test(slot)&&(id===null||Number.isInteger(id))
+    );
+}
+function isSaveUI(value){
+    return isSaveRecord(value)&&["auction","formation","auction-team-builder"].includes(value.screen)&&
+        ["coin","opening","bidding","zero","forced","sold","next","complete","team-builder"].includes(value.phase)&&
+        (value.turn==null||value.turn===1||value.turn===2);
+}
+function isSaveTeam(value,playerKey){
+    return isSaveRecord(value)&&typeof value.name==="string"&&
+        typeof value.color==="string"&&isSaveNumber(value.budget)&&isSavePlayerList(value[playerKey]);
+}
+function isSaveHistory(value){
+    return Array.isArray(value)&&value.every(entry=>isSaveRecord(entry)&&
+        Number.isInteger(entry.playerId)&&[1,2].includes(entry.teamNumber)&&isSaveNumber(entry.price));
+}
+function isSaveSnapshot(value){
+    return isSaveRecord(value)&&isSaveTeam(value.team1,"playerIds")&&isSaveTeam(value.team2,"playerIds")&&
+        isSavePlayerList(value.remainingPlayerIds)&&isSaveHistory(value.auctionHistory)&&isSaveUI(value.uiState)&&
+        isSaveNumber(value.currentBid)&&isSaveNumber(value.auctionNumber)&&
+        (value.currentPlayerId==null||Number.isInteger(value.currentPlayerId))&&
+        (value.currentBidder==null||[1,2].includes(value.currentBidder))&&
+        (value.startingTeam==null||[1,2].includes(value.startingTeam));
+}
+
+// Missing schemaVersion means the legacy payload. Migration is in memory only.
+// Reject unsupported versions or malformed structures before they reach UI code.
+function normalizeAuctionSave(value){
+    if(!isSaveRecord(value)||
+       (value.schemaVersion!==undefined&&value.schemaVersion!==AUCTION_SAVE_SCHEMA_VERSION))return null;
+    if(value.gameActive!==undefined&&typeof value.gameActive!=="boolean")return null;
+    if(value.setup!==undefined){
+        const setup=value.setup;
+        if(!isSaveRecord(setup))return null;
+        if(setup.selected!==undefined&&!isSavePlayerList(setup.selected))return null;
+        for(const key of ["poolCategories","poolManualOverrides"]){
+            if(setup[key]!==undefined&&(!isSaveRecord(setup[key])||
+               !Object.values(setup[key]).every(v=>typeof v==="boolean")))return null;
+        }
+        for(const key of ["team1Name","team2Name","team1Color","team2Color","poolPosition","poolGroup","poolSort"]){
+            if(setup[key]!==undefined&&typeof setup[key]!=="string")return null;
+        }
+        for(const key of ["budget","bidIncrement","maxPlayers"]){
+            if(setup[key]!==undefined&&!isSaveNumber(Number(setup[key])))return null;
+        }
+    }
+    if(value.gameActive){
+        if(!isSaveTeam(value.team1,"players")||!isSaveTeam(value.team2,"players")||
+           !isSavePlayerList(value.remainingPlayerIds))return null;
+        for(const key of ["startingBudget","bidIncrement","maxPlayers","auctionNumber","currentBid"]){
+            if(!isSaveNumber(value[key]))return null;
+        }
+        if(value.bidIncrement<=0||value.maxPlayers<=0)return null;
+        if(value.currentPlayerId!=null&&!Number.isInteger(value.currentPlayerId))return null;
+        if(value.currentBidder!=null&&![1,2].includes(value.currentBidder))return null;
+        if(value.startingTeam!=null&&![1,2].includes(value.startingTeam))return null;
+        if(value.selectedPlayerIds!==undefined&&!isSavePlayerList(value.selectedPlayerIds))return null;
+        if(value.uiState!==undefined&&!isSaveUI(value.uiState))return null;
+        if(value.auctionHistory!==undefined&&!isSaveHistory(value.auctionHistory))return null;
+        for(const key of ["auctionUndoStack","auctionRedoStack"]){
+            if(value[key]!==undefined&&(!Array.isArray(value[key])||!value[key].every(isSaveSnapshot)))return null;
+        }
+        if(value.formationTeamNumber!==undefined&&![0,1,2].includes(value.formationTeamNumber))return null;
+        if(value.activeFormation!==undefined&&!Object.hasOwn(FORMATIONS,value.activeFormation))return null;
+        if(value.formationByTeam!==undefined&&(!isSaveRecord(value.formationByTeam)||
+           !Object.values(value.formationByTeam).every(name=>Object.hasOwn(FORMATIONS,name))))return null;
+        if(value.formationAssignments!==undefined&&(!isSaveRecord(value.formationAssignments)||
+           !Object.values(value.formationAssignments).every(isSaveAssignment)))return null;
+        if(value.formationCaptainByTeam!==undefined&&(!isSaveRecord(value.formationCaptainByTeam)||
+           !Object.values(value.formationCaptainByTeam).every(id=>id===null||Number.isInteger(id))))return null;
+    }
+    return {...value,schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+}
+
+function normalizeStandaloneSave(value){
+    if(!isSaveRecord(value)||
+       (value.schemaVersion!==undefined&&value.schemaVersion!==STANDALONE_SAVE_SCHEMA_VERSION))return null;
+    if(value.playerIds!==undefined&&!isSavePlayerList(value.playerIds))return null;
+    if(value.assignment!==undefined&&!isSaveAssignment(value.assignment))return null;
+    if(value.captainId!=null&&!Number.isInteger(value.captainId))return null;
+    for(const key of ["role","sort","formation"]){
+        if(value[key]!==undefined&&typeof value[key]!=="string")return null;
+    }
+    return {...value,schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
+        playerIds:(value.playerIds||[]).filter(id=>players.some(player=>player.id===id)),
+        formation:Object.hasOwn(FORMATIONS,value.formation)?value.formation:"4-3-3",
+        assignment:value.assignment||{}};
+}
+
 function serializePlayerList(list){return list.map(p=>p.id);}
 function hydratePlayers(ids=[]){return ids.map(id=>players.find(p=>p.id===id)).filter(Boolean);}
 function saveSetupPreferences(){
     try{
-        const existing=JSON.parse(localStorage.getItem(SAVE_KEY)||"{}");
-        if(existing.gameActive) return;
+        const existing=normalizeAuctionSave(JSON.parse(localStorage.getItem(SAVE_KEY)||"{}"));
+        if(!existing||existing.gameActive)return;
         localStorage.setItem(SAVE_KEY,JSON.stringify({
-            ...existing,gameActive:false,
+            ...existing,schemaVersion:AUCTION_SAVE_SCHEMA_VERSION,gameActive:false,
             setup:{
                 team1Name:document.getElementById("team1Name").value,
                 team2Name:document.getElementById("team2Name").value,
@@ -35,6 +137,7 @@ function saveGame(){
     if(uiState.screen==="setup"){saveSetupPreferences();return;}
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
+            schemaVersion:AUCTION_SAVE_SCHEMA_VERSION,
             gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
@@ -48,7 +151,7 @@ function saveGame(){
     }catch(e){}
 }
 function loadSavedData(){
-    try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){return null;}
+    try{return normalizeAuctionSave(JSON.parse(localStorage.getItem(SAVE_KEY)||"null"));}catch(e){return null;}
 }
 function clearSavedGame(){localStorage.removeItem(SAVE_KEY);}
 function restoreSetup(saved){
@@ -86,6 +189,7 @@ function showResumeCard(saved){
       `${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers}  •  ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
 }
 function restoreGame(saved){
+    saved=normalizeAuctionSave(saved);
     if(!saved?.gameActive)return;
     startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
     draftMode=saved.draftMode==="random"?"random":"auction";
@@ -108,7 +212,6 @@ function restoreGame(saved){
     menuScreen.classList.add("hidden");setupScreen.classList.add("hidden");formationScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
     resumeCurrentView();
-    updateGlobalBackButton?.();
 }
 function resumeCurrentView(){
     if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}
