@@ -76,7 +76,6 @@ function createFullHistory(){
 function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
-    updateGlobalBackButton?.();
     if(!wasComplete)playSfx("result");
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
@@ -163,8 +162,7 @@ function openShareScreen(){
         <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
       </div></div>`;
     document.body.appendChild(screen);
-    updateGlobalBackButton?.();
-    document.getElementById("closeShareScreen").onclick=()=>{screen.remove();updateGlobalBackButton?.();};
+    document.getElementById("closeShareScreen").onclick=()=>{screen.remove();};
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
 }
@@ -284,11 +282,9 @@ function openStandaloneShareScreen(){
       </div>
     </div>`;
     document.body.appendChild(screen);
-    updateGlobalBackButton?.();
 
     document.getElementById("closeShareScreen").onclick=()=>{
         screen.remove();
-        updateGlobalBackButton?.();
     };
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
