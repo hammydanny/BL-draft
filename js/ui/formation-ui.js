@@ -103,8 +103,6 @@ function createPlayerInfoSidebar(team){
     </div>
   </aside>`;
 
-  const st=playerStats(player);
-  const stat=(label,value)=>`<div class="player-stat-row"><div class="player-stat-label"><span>${label}</span><strong>${value}</strong></div><div class="player-stat-track"><i style="width:${Math.max(0,Math.min(100,value))}%"></i></div></div>`;
   return `<aside class="player-info-panel" style="${teamVars(team)}">
     <div class="player-info-top">
       <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
@@ -131,7 +129,7 @@ function createPlayerInfoSidebar(team){
     })()}</div>
     <div class="player-info-section">
       <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
-      ${stat("OFF",st.off)}${stat("SHO",st.sho)}${stat("SPD",st.spd)}${stat("DEF",st.def)}${stat("PAS",st.pas)}${stat("DRI",st.dri)}${stat("GK",st.gk)}
+      ${playerStatsRadar(player,"sidebar")}
     </div>
   </aside>`;
 }

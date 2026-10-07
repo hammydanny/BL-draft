@@ -101,7 +101,6 @@ function renderCharacterLore(){
     grid.innerHTML=filtered.map(player=>{
       const chemistry=getCharacterChemistry(player);
       const chemistryPreview=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score).slice(0,3);
-      const st=playerStats(player);
       return `<article class="character-lore-card">
         <div class="character-lore-image-wrap" data-fallback="${esc(loreImageFallback(player.name))}">
           <img src="${player.image}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy"
@@ -111,12 +110,7 @@ function renderCharacterLore(){
           <div class="character-lore-heading"><div><span class="lore-kicker">${esc(primaryPosition(player))}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
             <div class="character-lore-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong></div></div>
           <p class="character-lore-description">${esc(characterLoreDescription(player))}</p>
-          <div class="character-lore-stats">
-            <div><span>OFF</span><strong>${st.off}</strong></div><div><span>SHO</span><strong>${st.sho}</strong></div>
-            <div><span>SPD</span><strong>${st.spd}</strong></div><div><span>DEF</span><strong>${st.def}</strong></div>
-            <div><span>PAS</span><strong>${st.pas}</strong></div><div><span>DRI</span><strong>${st.dri}</strong></div>
-            <div><span>GK</span><strong>${st.gk}</strong></div>
-          </div>
+          ${playerStatsRadar(player,"lore")}
           <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
             ${chemistryPreview.length?chemistryPreview.map(link=>`<div class="character-chemistry-link"><div>
               <strong>${esc(link.characters.filter(name=>name!==player.name).join(" × "))}</strong><span>${esc(link.label)}</span>

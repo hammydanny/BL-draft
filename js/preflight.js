@@ -40,7 +40,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
         assert(/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
         assert(!/\btype\s*=\s*["']module["']/i.test(scriptTags[index]),'Keep classic scripts');
     }
-    const expected=['js/version.js','js/players.js','js/state.js','js/audio.js','js/chemistry.js',
+    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/app.js'];
@@ -105,8 +105,10 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.52');
+    assert.equal(data.APP_VERSION,'0.6');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
+    assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
+    assert(fs.existsSync(path.join(root,'scripts/preflight.js')),'Documented preflight entry point missing');
     assert.equal((html.match(/data-app-version/g)||[]).length,2,'Version label targets');
     for(const version of [data.AUCTION_SAVE_SCHEMA_VERSION,data.STANDALONE_SAVE_SCHEMA_VERSION])assert(Number.isInteger(version)&&version>0);
     assert(read('js/state.js').includes('"blAuctionSaveV2"'));
@@ -232,7 +234,7 @@ function appContext(initialStorage={},hash='#/'){
 check('All classic scripts bootstrap together (simulated platform)',()=>{
     for(const hash of ['#/','#/lore','#/team-builder','#/auction','#/auction/results','#/auction/team-builder']){
         const app=appContext({},hash);
-        assert(app.labels.every(el=>el.textContent==='V0.52 ALPHA // FAN PROJECT // 2026'));
+        assert(app.labels.every(el=>el.textContent===`${data.APP_VERSION_LABEL} // FAN PROJECT // 2026`));
         assert(app.run('typeof navigateToRoute==="function"&&typeof renderFormationBuilder==="function"'));
     }
 });
@@ -302,7 +304,7 @@ check('Legacy standalone restore, all-formation Auto Best, exact sharing (simula
         assert.equal(JSON.stringify({formationByTeam,formationAssignments,formationCaptainByTeam}),shapeBefore);
         applyBestFormationAndAssignment=auto;
         const visited=[];const evaluate=bestLineupForFormation;
-        bestLineupForFormation=(n,name)=>{visited.push(name);return evaluate(n,name);};
+        bestLineupForFormation=(n,name,search)=>{visited.push(name);return evaluate(n,name,search);};
         assert(applyBestFormationAndAssignment(0));
         assert.deepEqual(visited,Object.keys(FORMATIONS));
         bestLineupForFormation=evaluate;
@@ -311,6 +313,50 @@ check('Legacy standalone restore, all-formation Auto Best, exact sharing (simula
         assert(saved);assert.equal(saved.schemaVersion,STANDALONE_SAVE_SCHEMA_VERSION);
         assert.equal(saved.formation,formationByTeam[0]);
         assert.deepEqual(saved.assignment,formationAssignments[0]);
+    `);
+});
+
+check('Shared radar axes, source values, specialist grading and core UI replacement',()=>{
+    const app=appContext();
+    app.run(`
+        assert.deepEqual(PLAYER_RADAR_AXES.map(axis=>axis.label),['SPD','DEF','PAS','DRI','SHO','OFF']);
+        const gk=players.find(player=>player.name==='Gin Gagamaru');
+        const radar=playerStatsRadar(gk,'auction');
+        assert(radar.includes('is-specialist'));assert(radar.includes('GK</small> '+gk.stats.gk));
+        assert.equal((radar.match(/class="player-stats-axis"/g)||[]).length,6);
+        assert(!radar.includes('>OVR<'));
+        const outfield=players.find(player=>player.name==='Yoichi Isagi');
+        assert(playerStatsRadar(outfield,'lore').includes('is-outfield'));
+        for(const axis of PLAYER_RADAR_AXES)assert(radar.includes('>'+gk.stats[axis.key]+'</text>'));
+        for(const [value,grade] of [[100,'S'],[90,'S'],[89,'A'],[80,'A'],[79,'B'],[70,'B'],
+            [69,'C'],[60,'C'],[59,'D'],[50,'D'],[49,'E'],[40,'E'],[39,'F'],[30,'F'],[29,'G'],[0,'G']]){
+            assert.equal(goalkeeperStatGrade(value),grade);
+        }
+    `);
+    for(const file of ['js/ui/auction-ui.js','js/lore.js','js/ui/formation-ui.js']){
+        assert(read(file).includes('playerStatsRadar('),`${file}: shared radar missing`);
+        assert(!/statStrip\(|character-lore-stats|player-stat-row/.test(read(file)),`${file}: old core stat UI remains`);
+    }
+    assert(!/\.stat-strip|\.character-lore-stats|\.player-stat-(?:row|track|label)/.test(read('style.css')),'Unused core stat CSS remains');
+});
+check('Auto Best cached scoring equals live scoring and uses conservative OVR weights',()=>{
+    const app=appContext();
+    app.run(`
+        standaloneBuilderTeam.players=[8,1,28,40,26].map(id=>players.find(p=>p.id===id));
+        const before=JSON.stringify(standaloneBuilderTeam);
+        const search=createAutoBestSearchContext(0);
+        for(const name of Object.keys(FORMATIONS)){
+            const assignment={};
+            preferredActiveSlotIndicesForFormation(0,name).forEach((slot,i)=>{assignment[slot]=standaloneBuilderTeam.players[i].id;});
+            assert.deepEqual(evaluateFormationCandidate(0,name,assignment,search),evaluateFormationCandidate(0,name,assignment));
+            const m=formationLineupMetrics(0,name,assignment);
+            if(m.chemistry){
+                const expected=m.teamOvrRaw*.54+m.chemistry*.24+m.fitScore*.14+m.lineupFloor*.05+m.chemistryFloor*.03
+                    -m.offPosition*.38-m.weakLinks*.22+Math.min(m.eliteLinks,4)*.08;
+                assert.equal(m.composite,expected);
+            }
+        }
+        assert.equal(JSON.stringify(standaloneBuilderTeam),before,'Search context mutated roster');
     `);
 });
 

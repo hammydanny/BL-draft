@@ -74,14 +74,6 @@ const players = [
 
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
 
-function statStrip(player,compact=false){
-    const s=playerStats(player);
-    return `<div class="stat-strip ${compact?"compact":""}">
-      <b><i>OVR</i>${playerOverall(player)}</b><span><i>OFF</i>${s.off}</span><span><i>SHO</i>${s.sho}</span>
-      <span><i>SPD</i>${s.spd}</span><span><i>DEF</i>${s.def}</span><span><i>PAS</i>${s.pas}</span>
-      <span><i>DRI</i>${s.dri}</span><span><i>GK</i>${s.gk}</span>
-    </div>`;
-}
 function squadRatings(teamNumber){
     const team=teamByNumber(teamNumber), assignments=formationAssignments[teamNumber]||{}, shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
     const placed=Object.entries(assignments).map(([slot,id])=>{
