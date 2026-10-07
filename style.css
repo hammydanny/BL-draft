@@ -978,36 +978,45 @@ html::-webkit-scrollbar, body::-webkit-scrollbar, .share-screen::-webkit-scrollb
 html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, .share-screen::-webkit-scrollbar-track, .lore-screen::-webkit-scrollbar-track{background:#020811;border-left:1px solid #0b263a}
 html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, .share-screen::-webkit-scrollbar-thumb, .lore-screen::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#32d9ff 0%,#149cff 48%,#614cff 100%);border:2px solid #020811;border-radius:0;box-shadow:inset 0 0 0 1px rgba(207,246,255,.18),0 0 12px rgba(20,156,255,.32)}
 html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share-screen::-webkit-scrollbar-thumb:hover, .lore-screen::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#79eaff 0%,#29b8ff 45%,#8068ff 100%)}
-/* COMPACT CATEGORY MATRIX */ /* Character evaluation: fixed portrait, identity, then attributes + chemistry. */ .character-lore-grid{display:grid;grid-template-columns:1fr;gap:18px}
-.character-lore-card{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;gap:18px;min-width:0;padding:18px;overflow:hidden;border:1px solid #1a425d;background:linear-gradient(135deg,rgba(20,156,255,.045),transparent 38%),linear-gradient(145deg,#071724,#020a11)}
+/* Compact scouting cards: identity, attributes, chemistry. */
+.character-lore-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.character-lore-card{position:relative;display:grid;grid-template-columns:minmax(240px,.85fr) minmax(300px,.9fr) minmax(240px,1fr);align-items:start;gap:18px;min-width:0;padding:16px;overflow:hidden;border:1px solid #1a425d;background:linear-gradient(135deg,rgba(20,156,255,.045),transparent 38%),linear-gradient(145deg,#071724,#020a11)}
 .character-lore-card:before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:linear-gradient(#28cfff,#168fff,#704dff)}
 .character-lore-card:hover{border-color:#246389;box-shadow:0 12px 34px rgba(0,0,0,.2)}
-.character-lore-image-wrap{position:relative;display:grid;place-items:center;width:176px;height:200px;overflow:hidden;background:#000;border:1px solid #17405c;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
-.character-lore-image-wrap:before{content:attr(data-fallback);position:absolute;color:#17344a;font:900 52px "Barlow Condensed";letter-spacing:-2px}
+.character-lore-identity{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;min-width:0}
+.character-lore-image-wrap{position:relative;display:grid;place-items:center;width:120px;height:136.36px;overflow:hidden;background:#000;border:1px solid #17405c;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%)}
+.character-lore-image-wrap:before{content:attr(data-fallback);position:absolute;color:#17344a;font:900 42px "Barlow Condensed";letter-spacing:-2px}
 .character-lore-image{position:absolute;inset:0;z-index:1;display:block;width:100%;height:100%;object-fit:cover;object-position:center top;background:#000}
 .character-lore-image.image-fallback,.character-lore-image.lore-image-broken{opacity:0}
-.character-lore-main{min-width:0}
-.character-lore-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.character-lore-heading>div:first-child{min-width:0}
-.character-lore-heading h2{margin:4px 0 7px;color:#eaf5fd;font:900 italic 28px/1 "Barlow Condensed";overflow-wrap:anywhere}
-.character-lore-ovr{flex-shrink:0;display:grid;grid-template-columns:auto auto;align-items:center;gap:1px 6px;padding:6px 8px;background:#030b13;border:1px solid #28566e}
-.character-lore-ovr>span{grid-column:1/-1;color:#96d5ec;font-size:9px;font-weight:800;letter-spacing:1px}
-.character-lore-ovr strong{color:#68e2ff;font:900 38px/1 "Barlow Condensed"}
-.character-lore-description{margin:12px 0 16px;color:#9eb7c9;font-size:12px;line-height:1.6}
-.character-lore-evaluation{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
-.character-lore-chemistry{min-width:0;padding-top:12px;border-top:1px solid #1a3549}
-@media(min-width:1200px){.character-lore-card{grid-template-columns:176px minmax(0,1fr);gap:24px;padding:22px}
-.character-lore-evaluation{grid-template-columns:minmax(280px,1fr) minmax(230px,1fr);align-items:start;gap:24px}
-.character-lore-chemistry{padding:12px 0 0 20px;border-top:0;border-left:1px solid #1a3549}}
-@media(max-width:600px){.character-lore-card{grid-template-columns:minmax(0,1fr);gap:16px;padding:16px}
-.character-lore-image-wrap{margin-inline:auto}
-.character-lore-heading h2{font-size:27px}}
+.character-lore-heading{min-width:0}
+.character-lore-heading h2{margin:4px 0 7px;color:#eaf5fd;font:900 italic 25px/1 "Barlow Condensed";overflow-wrap:anywhere}
+.character-lore-ovr{display:inline-flex;align-items:center;gap:6px;margin-top:10px}
+.character-lore-ovr>span{color:#96d5ec;font-size:9px;font-weight:800;letter-spacing:1px}
+.character-lore-ovr strong{color:#68e2ff;font:900 32px/1 "Barlow Condensed"}
+.character-lore-description{grid-column:1/-1;margin:0;color:#9eb7c9;font-size:12px;line-height:1.5}
+.character-lore-chemistry{min-width:0;padding:8px 0 0 16px;border-left:1px solid #1a3549}
+@media(max-width:1099px){
+  .character-lore-card{grid-template-columns:minmax(0,1fr) minmax(280px,1fr)}
+  .character-lore-chemistry{grid-column:1/-1;padding:12px 0 0;border-left:0;border-top:1px solid #1a3549}
+}
+@media(max-width:600px){
+  .character-lore-card{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px}
+  .character-lore-chemistry{grid-column:auto}
+}
+/* Browsing tools share one compact, labelled toolbar. */
+.lore-toolbar{display:grid;grid-template-columns:minmax(200px,1fr) repeat(3,minmax(135px,.5fr)) auto;align-items:end;gap:10px;margin:0 0 16px;padding:12px;background:#04101a;border:1px solid #16384f}
+.lore-toolbar label{min-width:0;margin:0;color:#8ba6ba;font-size:9px;font-weight:800;letter-spacing:1px}
+.lore-toolbar input,.lore-toolbar select{display:block;width:100%;height:38px;margin-top:5px;padding:8px 10px;background:#030b13;color:#dcecf8;border:1px solid #28506a;border-radius:2px;font:700 12px "Rajdhani",sans-serif}
+.lore-toolbar select option{background:#030b13}
+.lore-toolbar button{height:38px;padding:8px 12px;color:#abc8dc;background:#06121d;border:1px solid #25465d;font:800 10px "Rajdhani",sans-serif;letter-spacing:.8px}
+.lore-toolbar button:hover{border-color:var(--blue);color:#fff}
+.lore-toolbar :focus-visible{outline:2px solid #68e2ff;outline-offset:2px}
+.lore-toolbar output{grid-column:1/-1;color:#7594a9;font-size:9px;letter-spacing:1px}
+@media(max-width:900px){.lore-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}.lore-toolbar .lore-search{grid-column:1/-1}}
 /* LORE DATABASE + RELIABLE PLAYER PORTRAITS */ .lore-screen{min-height:100vh;padding:30px 20px}
 .lore-shell{width:min(1540px,100%);margin:0 auto;padding:24px;background:linear-gradient(145deg,rgba(8,24,40,.95),rgba(1,6,12,.98));border:1px solid rgba(73,177,255,.23);box-shadow:0 35px 100px rgba(0,0,0,.55)}
 .lore-actions{display:grid}
 .lore-content-shell{width:min(1540px,100%);margin:0 auto}
-.lore-controls input{width:min(330px,100%);padding:11px 13px;color:#dcecf8;background:#030b13;border:1px solid #173b57;outline:none;font-size:11px;font-weight:700}
-.lore-controls input:focus{border-color:var(--blue);box-shadow:0 0 20px rgba(20,156,255,.1)}
 .lore-kicker{display:block;color:var(--blue);font-size:8px;font-weight:800;letter-spacing:1.6px}
 .chemistry-lore-heading h2{margin:3px 0 5px;color:#eaf5fd;font:900 24px/1 "Barlow Condensed";font-style:italic}
 .lore-subheading{margin-bottom:5px;color:var(--blue);font-size:8px;font-weight:800;letter-spacing:1.6px}
@@ -1133,7 +1142,6 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
   .share-card-top h2{font-size:34px!important}
   .share-versus{font-size:24px!important}
 
-  .lore-controls input{width:100%!important}
   .chemistry-lore-grid{grid-template-columns:1fr!important}}
 @media(max-width:600px){body{font-size:14px}
 .menu-screen{padding:10px!important}

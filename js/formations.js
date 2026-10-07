@@ -884,6 +884,34 @@ function clearLiveFormationTargets(){
 let formationPointerDrag=null;
 let suppressFormationClick=false;
 
+function updateFormationPointerTarget(d){
+    const target=formationDropTargetAt(d.x,d.y);
+    if(target===d.target)return;
+    clearFormationPointerHover();
+    d.target=target;
+    if(target){
+        target.classList.add("pointer-drop-target");
+        if(target.matches(".formation-slot.occupied"))target.classList.add("pointer-swap-target");
+    }
+}
+function scrollFormationDragFrame(time){
+    const d=formationPointerDrag;
+    if(!d?.dragging)return;
+    d.scrollFrame=null;
+    const elapsed=d.scrollTime?Math.min(32,time-d.scrollTime):16;
+    d.scrollTime=time;
+    const edge=Math.min(90,window.innerHeight/4);
+    const proximity=d.y<edge?-(edge-d.y)/edge:
+        d.y>window.innerHeight-edge?(d.y-window.innerHeight+edge)/edge:0;
+    if(proximity){
+        const speed=Math.sign(proximity)*Math.min(1,Math.abs(proximity))**2*420;
+        const before=window.scrollY;
+        window.scrollBy({top:speed*elapsed/1000,behavior:"instant"});
+        if(window.scrollY!==before)updateFormationPointerTarget(d);
+    }
+    d.scrollFrame=requestAnimationFrame(scrollFormationDragFrame);
+}
+
 function createFormationPointerPreview(player,x,y){
     // A browser interruption must never be able to leave multiple drag visuals alive.
     document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
@@ -917,7 +945,8 @@ function beginFormationPointerDrag(event,id){
     const source=event.currentTarget;
     formationPointerDrag={
         id,player,source,pointerId:event.pointerId,
-        startX:event.clientX,startY:event.clientY,
+        startX:event.clientX,startY:event.clientY,x:event.clientX,y:event.clientY,
+        scrollFrame:null,scrollTime:0,
         dragging:false,preview:null,target:null,
         originSlot:source.closest(".formation-slot"),
         finishing:false
@@ -927,6 +956,7 @@ function beginFormationPointerDrag(event,id){
 function moveFormationPointerDrag(event){
     const d=formationPointerDrag;
     if(!d || d.pointerId!==event.pointerId)return;
+    d.x=event.clientX;d.y=event.clientY;
     // If right/middle click joins the primary drag, abort instead of letting the
     // browser enter a mixed-button state that can strand duplicate visuals.
     if(d.dragging && event.pointerType==="mouse" && (event.buttons & ~1)!==0){
@@ -948,15 +978,11 @@ function moveFormationPointerDrag(event){
         updateLiveFormationTargets(d.id);
         playSfx("select");
         document.body.classList.add("formation-pointer-dragging");
+        d.scrollFrame=requestAnimationFrame(scrollFormationDragFrame);
     }
     event.preventDefault();
     moveFormationPointerPreview(event.clientX,event.clientY);
-    clearFormationPointerHover();
-    d.target=formationDropTargetAt(event.clientX,event.clientY);
-    if(d.target){
-        d.target.classList.add("pointer-drop-target");
-        if(d.target.matches(".formation-slot.occupied"))d.target.classList.add("pointer-swap-target");
-    }
+    updateFormationPointerTarget(d);
 }
 function finishFormationPointerDrag(event){
     const d=formationPointerDrag;
@@ -987,6 +1013,12 @@ function cancelFormationPointerDrag(event){
 }
 function cleanupFormationPointerDrag(){
     const d=formationPointerDrag;
+    formationPointerDrag=null;
+    if(d){
+        d.finishing=true;
+        try{d.source.releasePointerCapture?.(d.pointerId)}catch(_){}
+    }
+    if(d?.scrollFrame!=null)cancelAnimationFrame(d.scrollFrame);
     if(d?.preview)d.preview.remove();
     // Safety cleanup also removes any orphaned preview left by an interrupted tab/window action.
     document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
@@ -999,7 +1031,6 @@ function cleanupFormationPointerDrag(){
     clearLiveFormationTargets();
     document.body.classList.remove("formation-pointer-dragging");
     draggedFormationPlayerId=null;
-    formationPointerDrag=null;
 }
 document.addEventListener("pointermove",moveFormationPointerDrag,{passive:false});
 document.addEventListener("pointerup",finishFormationPointerDrag,{passive:false});

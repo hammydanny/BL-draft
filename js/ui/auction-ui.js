@@ -5,17 +5,17 @@ let overlayHideTimer=null;
 
 function createPlayerCard(){
     return `<div class="current-player">
-      <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}">
+      <div class="auction-identity-rail">
+      <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" decoding="async" width="176" height="200">
       </div>
-      <div class="player-card-bottom">
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
           <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
           <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
           </div><div class="auction-player-ovr" aria-label="Overall ${playerOverall(currentPlayer)}, grade ${playerStatGrade(playerOverall(currentPlayer))}"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(currentPlayer))}</b></div></div>
         </div>
-        ${playerStatsRadar(currentPlayer,"auction")}
       </div>
+        ${playerStatsRadar(currentPlayer,"auction")}
     </div>`;
 }
 
@@ -32,7 +32,7 @@ function createTeamTracker(team,number){
     const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
       <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
-        <img src="${p.image}" alt="${esc(p.name)}"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
+        <img src="${p.image}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
     const warnings=[];
     if(full)warnings.push("ROSTER FULL");
@@ -85,7 +85,8 @@ function turnIndicator(label,team){
 }
 
 function moneyInput(id,value,min){
-    return `<div class="money-input"><span>$</span><input type="number" id="${id}" value="${value}" min="${min}" step="${bidIncrement}"></div>`;
+    const label={openingBid:"Opening bid",nextBid:"Next bid",controlBid:"Control bid"}[id]||"Bid amount";
+    return `<div class="money-input"><span>$</span><input type="number" id="${id}" aria-label="${label}" value="${value}" min="${min}" step="${bidIncrement}"></div>`;
 }
 
 function bidPressureRow(team,minBid){
@@ -177,7 +178,7 @@ function createAuctionHistoryPanel(){
     const latest=[...auctionHistory].reverse().slice(0,6);
     const rows=latest.length?latest.map(x=>`
       <div class="history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
-        <img src="${x.player.image}" alt="${esc(x.player.name)}">
+        <img src="${x.player.image}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
         <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="color:${accessibleTeamAccent(x.teamColor)}">${esc(x.teamName)}</b></span></div>
         <div class="history-price">${x.price===0?"FREE":"$"+x.price.toLocaleString()}</div>
       </div>`).join(""):`<div class="history-empty">AWAITING FIRST TRANSFER...</div>`;
@@ -205,6 +206,23 @@ function ensureAuctionHistoryControls(){
 
 function renderAuctionScreen(actionHTML){
     ensureAuctionHistoryControls();
+    const action=auctionContent.querySelector(".action-container");
+    const samePlayer=auctionContent.dataset.playerId===String(currentPlayer.id)&&!!action;
+    const scroll=window.scrollY;
+    if(samePlayer){
+        // Keep the immutable evaluation SVG/image and stabilize the action area
+        // while the same player moves through bidding, zero-budget and sold states.
+        action.style.minHeight=action.getBoundingClientRect().height+"px";
+        action.innerHTML=actionHTML;
+        auctionContent.querySelectorAll(".side-team").forEach((node,index)=>{
+            node.outerHTML=createTeamTracker(index===0?team1:team2,index+1);
+        });
+        const historyPanel=auctionContent.querySelector(".auction-history-panel");
+        if(historyPanel)historyPanel.outerHTML=createAuctionHistoryPanel();
+        window.scrollTo({top:scroll,behavior:"instant"});
+        return;
+    }
+    auctionContent.dataset.playerId=String(currentPlayer.id);
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
     auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
       <div class="auction-command-grid">

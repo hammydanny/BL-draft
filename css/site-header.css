@@ -12,16 +12,13 @@
 .site-header button:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
 .site-header .sound-toggle.muted{opacity:.6}
 .site-header .header-status{display:block;margin-top:6px;color:#8ba6ba;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.2px}
-.site-header .players-remaining{font-size:9px;letter-spacing:1px}
-.site-header .players-remaining span{display:inline;margin-left:4px;font-size:20px}
-.site-header .lore-controls{width:250px;max-width:100%}
-.site-header .lore-controls input{width:100%;height:36px;padding:8px 10px;font-size:11px}
+.site-header .players-remaining{display:flex;align-items:baseline;gap:7px;font-size:9px;letter-spacing:1px}
+.site-header .players-remaining span{display:inline;margin:0;font-size:20px}
 .lore-shell .lore-actions{max-width:760px;margin:0 auto}
 @media(max-width:900px){
   .site-header{gap:12px}
   .site-header h1{font-size:34px}
   .site-header .header-right-controls{gap:8px}
-  .site-header .lore-controls{width:100%}
 }
 @media(max-width:600px){
   .site-header{grid-template-columns:minmax(0,1fr);min-height:112px;gap:12px;padding:12px 0;margin-bottom:16px}

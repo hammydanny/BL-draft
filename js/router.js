@@ -1,6 +1,5 @@
 // BLUE LOCK DRAFT // MULTI-PAGE ROUTING
-// APP_ROUTES keeps the legacy hash map for backward compatibility and the
-// existing preflight harness. APP_ROUTE_PATHS owns the real multi-page URLs.
+// APP_ROUTE_PATHS owns the page URLs. APP_ROUTES only maps legacy hashes.
 const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder"};
 const APP_ROUTE_PATHS={menu:"index.html",lore:"lore.html",auctionSetup:"auction/setup.html",auctionRoom:"auction/room.html",auctionResults:"auction/results.html",auctionTeamBuilder:"auction/team-builder.html",standaloneTeamBuilder:"team-builder.html"};
 const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([route,hash])=>[hash,route]));
@@ -21,7 +20,6 @@ function appRelativePath(){
     return path.replace(/^\/+/,"");
 }
 function canonicalRouteUrl(route){return new URL(routePath(route),appRootUrl());}
-function getRouteFromHash(){return LEGACY_HASH_ROUTES[window.location.hash||""]||"menu";}
 function legacyHashRoute(){
     const path=appRelativePath();
     if(path!==""&&path!=="index.html")return null;
@@ -152,21 +150,6 @@ if(restoreGameInPlace){
     };
 }
 
-// Results -> New Auction used to swap visible sections without changing the
-// real page URL. Keep the existing confirmation flow, but navigate to Setup.
-restartAuction=function(){
-    showConfirm("START A NEW AUCTION","Your current auction and saved progress will be cleared.",()=>{
-        clearSavedGame();
-        uiState={screen:"setup",phase:"setup",turn:null};
-        auctionContent.innerHTML="";
-        playersRemainingDisplay.innerHTML="";
-        saveSetupPreferences();
-        showResumeCard(null);
-        refreshMainMenu();
-        updateRoute("auctionSetup");
-    });
-};
-
 function navigateToRoute(route,options={}){
     switch(route){
         case "menu":
@@ -190,7 +173,6 @@ function navigateToRoute(route,options={}){
             const savedRoute=auctionRouteForSavedState(saved);
             if(savedRoute!=="auctionRoom"){updateRoute(savedRoute,{replace:true});break;}
             if(restoreGameInPlace)restoreGameInPlace(saved);
-            if(saved.uiState?.phase==="coin")showCoinFlip();
             break;
         }
         case "auctionResults":{

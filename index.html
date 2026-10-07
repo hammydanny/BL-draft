@@ -9,15 +9,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=0.6.1.3">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.1.3">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.1.3">
+    <link rel="stylesheet" href="style.css?v=0.6.2">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.2">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.2">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
 
 
-    <section id="menu-screen" class="menu-screen">
+    <section id="menu-screen" class="menu-screen hidden">
         <div class="menu-shell">
             <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
             <div class="menu-title-wrap">
@@ -55,7 +55,6 @@
                 <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p></div>
                 <div class="header-right-controls">
                     <button id="loreBackToMenu" class="header-utility" type="button">← MAIN MENU</button>
-                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
                 </div>
             </header>
             <div class="lore-actions">
@@ -71,10 +70,12 @@
                 <div><div class="game-header-small">BL // CHARACTER DATABASE</div>
                 <h1>CHARACTERS</h1><p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p></div>
                 <div class="header-right-controls">
-                    <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
-                    <div class="lore-controls"><input id="characterLoreSearch" aria-label="Search Characters" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></div>
+                    <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button></div>
                 </div>
             </header>
+            <div class="lore-toolbar" role="search" aria-label="Characters filters">
+                <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></label><label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></select></label><label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label><label>SORT<select id="characterLoreSort"><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option></select></label><button id="characterLoreReset" type="button">RESET FILTERS</button><output id="characterLoreCount" aria-live="polite"></output>
+            </div>
             <div id="characterLoreGrid" class="character-lore-grid"></div>
         </div>
     </section>
@@ -85,10 +86,12 @@
                 <div><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
                 <h1>CHEMISTRY</h1><p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p></div>
                 <div class="header-right-controls">
-                    <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
-                    <div class="lore-controls"><input id="chemistryLoreSearch" aria-label="Search Chemistry" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></div>
+                    <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button></div>
                 </div>
             </header>
+            <div class="lore-toolbar" role="search" aria-label="Chemistry filters">
+                <label class="lore-search">SEARCH<input id="chemistryLoreSearch" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></label><label>TYPE<select id="chemistryLoreType"><option value="ALL">All</option><option value="pair">Player Links</option><option value="context">Team Contexts</option></select></label><label>TIER<select id="chemistryLoreTier"><option value="ALL">All Tiers</option><option value="chemical">Chemical</option><option value="elite">Elite</option><option value="strong">Strong</option><option value="link">Link</option><option value="weak">Weak</option></select></label><label>SORT<select id="chemistryLoreSort"><option value="score-desc">Chemistry High → Low</option><option value="score-asc">Chemistry Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option></select></label><button id="chemistryLoreReset" type="button">RESET FILTERS</button><output id="chemistryLoreCount" aria-live="polite"></output>
+            </div>
             <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
         </div>
     </section>
@@ -290,7 +293,6 @@
             <div class="header-right-controls">
                 <button id="backToResults" class="header-button compact-control">← RESULTS</button>
                 <div class="header-mini-actions">
-                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
                     <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
                     <button class="sound-toggle compact-control" type="button" data-sound-toggle><span class="sound-icon">◖))</span><strong>SFX</strong></button>
                 </div>
@@ -351,23 +353,23 @@
             </div>
         </div>
     </footer>
-    <script defer src="js/version.js"></script>
-    <script defer src="js/players.js"></script>
-    <script defer src="js/state.js"></script>
-    <script defer src="js/ui/player-stats.js"></script>
-    <script defer src="js/audio.js"></script>
-    <script defer src="js/chemistry.js"></script>
-    <script defer src="js/lore.js"></script>
-    <script defer src="js/formations.js"></script>
-    <script defer src="js/storage.js"></script>
-    <script defer src="js/results.js"></script>
-    <script defer src="js/auction.js"></script>
-    <script defer src="js/ui/auction-ui.js"></script>
-    <script defer src="js/router.js"></script>
-    <script defer src="js/ui/menu.js"></script>
-    <script defer src="js/ui/setup.js"></script>
-    <script defer src="js/standalone-builder.js"></script>
-    <script defer src="js/ui/formation-ui.js"></script>
-    <script defer src="js/app.js"></script>
+    <script defer src="js/version.js?v=0.6.2"></script>
+    <script defer src="js/players.js?v=0.6.2"></script>
+    <script defer src="js/state.js?v=0.6.2"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.2"></script>
+    <script defer src="js/audio.js?v=0.6.2"></script>
+    <script defer src="js/chemistry.js?v=0.6.2"></script>
+    <script defer src="js/lore.js?v=0.6.2"></script>
+    <script defer src="js/formations.js?v=0.6.2"></script>
+    <script defer src="js/storage.js?v=0.6.2"></script>
+    <script defer src="js/results.js?v=0.6.2"></script>
+    <script defer src="js/auction.js?v=0.6.2"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.2"></script>
+    <script defer src="js/router.js?v=0.6.2"></script>
+    <script defer src="js/ui/menu.js?v=0.6.2"></script>
+    <script defer src="js/ui/setup.js?v=0.6.2"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.2"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.2"></script>
+    <script defer src="js/app.js?v=0.6.2"></script>
 </body>
 </html>

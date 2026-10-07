@@ -36,6 +36,7 @@ const CHEMISTRY_CONTEXTS = [
 ];
 
 const CHEMISTRY_SPECIAL_PAIRS = [
+  ["Shoei Baro","Asahi Naruhaya",78,"SECOND SELECTION DUO","Barou and Naruhaya teamed with Nishioka, then faced Isagi and Nagi as a duo in the Second Selection."],
   // Proven elite / named combinations
   ["Junichi Wanima","Keisuke Wanima",99,"TWIN SYNCHRONIZATION","Team W's core duo can understand each other almost perfectly without words and specialize in synchronized combination play."],
   ["Ikki Niko","Hibiki Okawa",91,"HIDDEN PLAYMAKER × ACE","Team Y used Niko as the deep-lying organizer feeding Okawa as the visible finishing threat; Niko directly assisted Okawa against Team Z."],

@@ -31,7 +31,7 @@ check(`JavaScript syntax (${jsFiles.length} files)`,()=>{
 });
 const html=read('index.html');
 const scriptTags=[...html.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
-const scripts=scriptTags.map(tag=>/\bsrc\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean);
+const scripts=scriptTags.map(tag=>/\bsrc\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean).map(src=>src.split('?')[0]);
 check('Classic deferred script dependencies and bootstrap order',()=>{
     assert.equal(new Set(scripts).size,scripts.length,'Duplicate script reference');
     for(const [index,src] of scripts.entries()){
@@ -50,7 +50,8 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     }
     assert.equal(scripts.at(-1),'js/app.js','Bootstrap must load last');
 });
-const sandbox=vm.createContext({document:{addEventListener(){}},window:{addEventListener(){}}});
+const baseURI='https://example.test/BL-draft/';
+const sandbox=vm.createContext({URL,document:{baseURI,addEventListener(){}},window:{addEventListener(){}}});
 let data;
 check('Data modules initialize in classic shared scope',()=>{
     for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/formations.js','js/storage.js']){
@@ -65,12 +66,15 @@ check('Unique player IDs, required records, numeric stats and image paths',()=>{
         assert(Number.isInteger(player.id)&&player.id>0,`Invalid ID ${player.id}`);
         assert(!ids.has(player.id),`Duplicate player ID ${player.id}`);ids.add(player.id);
         for(const field of ['name','image','primaryPosition'])assert(typeof player[field]==='string'&&player[field].length,`${player.id}: ${field}`);
-        assert(Array.isArray(player.positions)&&player.positions.length&&player.positions.every(p=>typeof p==='string'&&p.length),`${player.name}: positions`);
+        const positions=['GK','CB','LB','RB','LWB','RWB','DM','CM','AM','LM','RM','LW','RW','ST','CF','FW','DF','WB','WM','SS'];
+        assert(Array.isArray(player.positions)&&player.positions.length&&player.positions.every(p=>positions.includes(p)),`${player.name}: positions`);
         assert(player.positions.includes(player.primaryPosition),`${player.name}: missing primary position`);
         for(const stat of ['ovr','off','sho','spd','def','pas','dri','gk']){
             assert(Number.isFinite(player.stats?.[stat])&&player.stats[stat]>=0&&player.stats[stat]<=100,`${player.name}: ${stat} outside 0–100`);
         }
-        assert(fs.existsSync(path.join(root,player.image)),`Missing image: ${player.image}`);
+        const image=new URL(player.image,baseURI);
+        assert(image.href.startsWith(baseURI),`Unexpected image origin: ${player.image}`);
+        assert(fs.existsSync(path.join(root,decodeURIComponent(image.pathname.slice(new URL(baseURI).pathname.length)))),`Missing image: ${player.image}`);
     }
 });
 check('Chemistry player references and score bounds',()=>{
@@ -93,7 +97,7 @@ check('Formation slots and chemistry edges',()=>{
         assert.equal(slots.length,11,`${name}: must contain eleven slots`);
         assert.equal(slots.filter(slot=>slot.label==='GK').length,1,`${name}: goalkeeper`);
         for(const slot of slots){
-            assert(typeof slot.label==='string'&&slot.label.length,`${name}: missing label`);
+            assert(['GK','CB','LB','RB','LWB','RWB','DM','CM','AM','LM','RM','LW','RW','ST','CF'].includes(slot.label),`${name}: invalid label`);
             for(const axis of ['x','y'])assert(Number.isFinite(slot[axis])&&slot[axis]>=0&&slot[axis]<=100,`${name}: ${axis}`);
         }
         assert(Array.isArray(data.FORMATION_CHEMISTRY_EDGES[name]),`${name}: missing chemistry edges`);
@@ -105,11 +109,11 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.1.3');
+    assert.equal(data.APP_VERSION,'0.6.2');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
-    assert(fs.existsSync(path.join(root,'scripts/validate.js')),'Validation entry point missing');
+    assert(fs.existsSync(path.join(root,'scripts/preflight.js')),'Validation entry point missing');
     assert.equal((html.match(/data-app-version/g)||[]).length,2,'Version label targets');
     for(const version of [data.AUCTION_SAVE_SCHEMA_VERSION,data.STANDALONE_SAVE_SCHEMA_VERSION])assert(Number.isInteger(version)&&version>0);
     assert(read('js/state.js').includes('"blAuctionSaveV2"'));
@@ -130,6 +134,15 @@ check('Legacy/current saves normalize without mutation or storage writes',()=>{
         assert.equal(migrated.schemaVersion,AUCTION_SAVE_SCHEMA_VERSION);
         assert.equal(JSON.stringify(legacy),original);
         assert.deepEqual(normalizeAuctionSave(migrated),migrated);
+        for(const state of [{screen:'auction-team-builder',phase:'team-builder',turn:null},
+            {screen:'formation',phase:'team-builder',turn:null},{screen:'auction',phase:'team-builder',turn:null}]){
+            const oldBuilder={...legacy,uiState:state};
+            const originalBuilder=JSON.stringify(oldBuilder);
+            const builder=normalizeAuctionSave(oldBuilder);
+            assert.deepEqual(builder.uiState,{screen:'formation',phase:'complete',turn:null});
+            assert.equal(JSON.stringify(oldBuilder),originalBuilder);
+            assert.deepEqual(normalizeAuctionSave(builder),builder);
+        }
         const setup={setup:{selected:[1,2],budget:'15000',poolPosition:'ALL'}};
         assert.deepEqual(normalizeAuctionSave(setup).setup,setup.setup);
         const categories={setup:{poolCategories:{'blue-lock':true},poolManualOverrides:{1:false}}};
@@ -183,13 +196,15 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
         document.baseURI=location.href;
     };
     vm.runInContext(read('js/router.js'),context);
-    for(const [route,routePath] of Object.entries(vm.runInContext('APP_ROUTES',context))){
+    const routes=vm.runInContext('APP_ROUTE_PATHS',context);
+    for(const [route,routePath] of Object.entries(routes)){
+        assert(fs.existsSync(path.join(root,routePath)),`Missing route page ${routePath}`);
         setLocation(routePath);
         assert.equal(vm.runInContext('getRouteFromLocation()',context),route,`${routePath}: route resolution`);
         assert.equal(vm.runInContext(`canonicalRouteUrl(${JSON.stringify(route)}).href`,context),`https://example.test/BL-draft/${routePath}`);
     }
     const legacy={
-        '#/':'menu','#/lore':'lore','#/team-builder':'standaloneTeamBuilder','#/auction':'auctionSetup',
+        '#/':'menu','#/lore':'lore','#/team-builder':'standaloneTeamBuilder','#/auction':'auctionRoom','#/auction/setup':'auctionSetup',
         '#/auction/results':'auctionResults','#/auction/team-builder':'auctionTeamBuilder'
     };
     for(const [hash,route] of Object.entries(legacy)){
@@ -204,9 +219,49 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
     assert.equal(vm.runInContext('normalizeCurrentRoute(getRouteFromLocation())',context),false);
     assert.equal(navigation.at(-1).type,'replace');
     assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder.html');
+    for(const state of [{screen:'auction',phase:'complete'},{screen:'formation',phase:'complete'},
+        {screen:'auction-team-builder',phase:'team-builder'}]){
+        context.saved={uiState:state};
+        const expected=state.screen==='auction'?'auctionResults':'auctionTeamBuilder';
+        assert.equal(vm.runInContext('auctionRouteForSavedState(saved)',context),expected);
+        for(const route of ['auctionResults','auctionTeamBuilder']){
+            context.route=route;
+            const completed=vm.runInContext('completedAuctionSaveFor(route,saved)',context);
+            assert.equal(completed.uiState.phase,'complete');
+            assert.equal(completed.uiState.screen,route==='auctionResults'?'auction':'formation');
+        }
+    }
     vm.runInContext('navigateToRoute=(route,options)=>{globalThis.routed={route,options};}',context);
     setLocation('lore.html');listeners.popstate();
     assert.equal(context.routed.route,'lore');assert.equal(context.routed.options.skipHistory,true);
+});
+check('Every section page has ordered scripts, versioned styles, valid assets and unique IDs',()=>{
+    const context=vm.createContext({window:{addEventListener(){}},URL});
+    vm.runInContext(read('js/router.js'),context);
+    for(const page of Object.values(vm.runInContext('APP_ROUTE_PATHS',context))){
+        const content=read(page);
+        const tags=[...content.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
+        const refs=tags.map(tag=>/\bsrc=["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean);
+        assert.deepEqual(refs.map(src=>src.split('?')[0]),scripts,`${page}: script order`);
+        refs.forEach((src,index)=>{
+            assert(tags[index].includes('defer'),`${page}: non-deferred script`);
+            assert(src.endsWith(`?v=${data.APP_VERSION}`),`${page}: script cache version`);
+            assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing ${src}`);
+        });
+        for(const css of ['style.css','css/player-stats.css','css/site-header.css']){
+            assert(content.includes(`${css}?v=${data.APP_VERSION}`),`${page}: missing/versioned ${css}`);
+        }
+        const ids=[...content.matchAll(/\bid=["']([^"']+)["']/g)].map(match=>match[1]);
+        assert.equal(new Set(ids).size,ids.length,`${page}: duplicate ID`);
+        const base=/\bhref=["']([^"']+)["']/.exec(content.match(/<base\b[^>]*>/i)?.[0]||'')?.[1]||'./';
+        const pageUrl=new URL(page,baseURI),resolved=new URL(base,pageUrl);
+        assert.equal(resolved.href,baseURI,`${page}: incorrect subdirectory asset base`);
+        for(const [,src] of content.matchAll(/<(?:img|link)\b[^>]*?\b(?:src|href)=["']([^"']+)["']/gi)){
+            if(/^(?:https?:|data:)/.test(src))continue;
+            assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing asset ${src}`);
+        }
+        assert.equal((content.match(/data-app-version/g)||[]).length,2,`${page}: version targets`);
+    }
 });
 check('Auction page state stays aligned with canonical URLs',()=>{
     const formations=read('js/formations.js'),menu=read('js/ui/menu.js'),results=read('js/results.js'),router=read('js/router.js');
@@ -252,11 +307,11 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={getElementById:element,querySelector(){return null;},querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,getElementById:element,querySelector(){return null;},querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
-    const window={location:{href:'https://example.test/'+hash,hash},addEventListener(){},scrollTo(){}};
+    const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(){},scrollTo(){}};
     const history={state:null,replaceState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;},
         pushState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;}};
     const context=vm.createContext({document,window,history,localStorage,URL,console,assert,
@@ -372,6 +427,31 @@ check('Shared radar axes, source values, specialist grading and core UI replacem
         assert(!/statStrip\(|character-lore-stats|player-stat-row/.test(read(file)),`${file}: old core stat UI remains`);
     }
     assert(!/\.stat-strip|\.character-lore-stats|\.player-stat-(?:row|track|label)/.test(read('style.css')),'Unused core stat CSS remains');
+});
+check('Second Selection duo resolves to the purple chemistry tier',()=>{
+    const app=appContext();
+    app.run(`
+        const a=players.find(player=>player.name==='Shoei Baro');
+        const b=players.find(player=>player.name==='Asahi Naruhaya');
+        const pair=CHEMISTRY_SPECIAL_PAIRS.find(([x,y])=>x===a.name&&y===b.name);
+        assert(pair);assert.equal(pair[2],78);assert.equal(pair[3],'SECOND SELECTION DUO');
+        assert.equal(playerChemistry(a,b),78);assert.equal(playerChemistry(b,a),78);
+        assert.equal(chemistryTier(playerChemistry(a,b)),'link');
+        assert(getCharacterChemistry(a).pairLinks.some(link=>link.label===pair[3]));
+        assert(getCharacterChemistry(b).pairLinks.some(link=>link.label===pair[3]));
+    `);
+});
+check('Coin-phase restoration waits before drawing the first player',()=>{
+    const app=appContext();
+    app.run(`
+        resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:2,selectedPlayers:players.slice(0,6)});
+        uiState={screen:'auction',phase:'coin',turn:null};saveGame();
+        const saved=loadSavedData();
+        let flips=0;showCoinFlip=()=>{flips++;};
+        restoreGameInPlace(saved);
+        assert.equal(flips,1);assert.equal(auctionNumber,0);assert.equal(currentPlayer,null);
+        assert.deepEqual(remainingPlayers.map(player=>player.id),saved.remainingPlayerIds);
+    `);
 });
 check('Auto Best cached scoring equals live scoring and uses conservative OVR weights',()=>{
     const app=appContext();

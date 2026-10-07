@@ -79,71 +79,132 @@ function characterLoreDescription(player){
 function loreImageFallback(name){
     return name.split(/\s+/).map(part=>part[0]).join("").slice(0,3).toUpperCase();
 }
-function getCharacterChemistry(player){
-    const name=player.name;
-    const pairLinks=CHEMISTRY_SPECIAL_PAIRS
-      .filter(pair=>Array.isArray(pair)&&pair.length>=5&&(pair[0]===name||pair[1]===name))
-      .map(pair=>({type:"pair",characters:[pair[0],pair[1]],score:Number(pair[2])||0,label:pair[3]||"CHEMISTRY",description:pair[4]||""}));
-    const teamLinks=CHEMISTRY_CONTEXTS
-      .filter(context=>Array.isArray(context.players)&&context.players.includes(name))
-      .map(context=>({type:"context",name:context.name,score:Number(context.score)||0,characters:context.players,
-        description:`${name} is part of the ${context.name} chemistry context represented in the game's fan chemistry model.`}));
-    return {pairLinks,teamLinks};
+// Static database records and markup are reused across client-side filter changes.
+// The gameplay arrays remain untouched.
+let loreDatabaseCache=null;
+function loreDatabase(){
+    if(loreDatabaseCache)return loreDatabaseCache;
+    const chemistry=[
+      ...CHEMISTRY_SPECIAL_PAIRS.map(pair=>({type:"pair",characters:[pair[0],pair[1]],score:Number(pair[2])||0,label:pair[3]||"CHEMISTRY",description:pair[4]||""})),
+      ...CHEMISTRY_CONTEXTS.map(context=>({type:"context",name:context.name,characters:context.players||[],score:Number(context.score)||0,
+        description:"A chemistry context based on shared history and tactical relationships in the game's fan model."}))
+    ];
+    const byName=new Map(players.map(player=>[player.name,{pairLinks:[],teamLinks:[]}]));
+    for(const entry of chemistry){
+      entry.title=entry.type==="pair"?entry.characters.join(" × "):entry.name;
+      entry.search=[entry.title,entry.label,entry.description,...entry.characters].join(" ").toLowerCase();
+      for(const name of entry.characters){
+        const profile=byName.get(name);if(!profile)continue;
+        if(entry.type==="pair")profile.pairLinks.push(entry);
+        else profile.teamLinks.push(entry);
+      }
+    }
+    const characters=players.map(player=>({player,chemistry:byName.get(player.name),
+      search:[player.name,primaryPosition(player),...playerPositions(player)].join(" ").toLowerCase()}));
+    loreDatabaseCache={characters,chemistry,byName};
+    return loreDatabaseCache;
+}
+function getCharacterChemistry(player){return loreDatabase().byName.get(player.name)||{pairLinks:[],teamLinks:[]};}
+function loreControlValue(id,fallback=""){return document.getElementById(id)?.value||fallback;}
+function filteredCharacterLore(){
+    const query=loreControlValue("characterLoreSearch").trim().toLowerCase();
+    const group=loreControlValue("characterLorePosition","ALL"),grade=loreControlValue("characterLoreGrade","ALL");
+    const filtered=loreDatabase().characters.filter(record=>
+      (!query||record.search.includes(query))&&
+      (group==="ALL"||playerPositions(record.player).some(pos=>positionGroup(pos)===group))&&
+      (grade==="ALL"||playerStatGrade(playerOverall(record.player))===grade)
+    );
+    const sort=loreControlValue("characterLoreSort","ovr-desc");
+    const compareNames=(a,b)=>a.player.name.localeCompare(b.player.name);
+    return filtered.sort((a,b)=>{
+      if(sort==="name-asc")return compareNames(a,b);
+      if(sort==="name-desc")return compareNames(b,a);
+      if(sort==="position")return primaryPosition(a.player).localeCompare(primaryPosition(b.player))||compareNames(a,b);
+      return (sort==="ovr-asc"?1:-1)*(playerOverall(a.player)-playerOverall(b.player))||compareNames(a,b);
+    });
+}
+function characterLoreCard(record){
+    if(record.html)return record.html;
+    const {player,chemistry}=record;
+    const preview=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score).slice(0,3);
+    const duo=chemistry.pairLinks.find(link=>link.label==="SECOND SELECTION DUO");
+    if(duo&&!preview.includes(duo))preview.push(duo);
+    record.html=`<article class="character-lore-card">
+      <div class="character-lore-identity">
+        <div class="character-lore-image-wrap" data-fallback="${esc(loreImageFallback(player.name))}">
+          <img src="${player.image}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="120" height="136"
+            onerror="this.classList.add('lore-image-broken')">
+        </div>
+        <div class="character-lore-heading"><span class="lore-kicker">${esc(primaryPosition(player))}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}
+          <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>
+        </div>
+        <p class="character-lore-description">${esc(characterLoreDescription(player))}</p>
+      </div>
+      ${playerStatsRadar(player,"lore")}
+      <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
+        ${preview.length?preview.map(link=>`<div class="character-chemistry-link"><div>
+          <strong>${esc(link.characters.filter(name=>name!==player.name).join(" × "))}</strong><span>${esc(link.label)}</span>
+          </div><b class="${chemistryTier(link.score)}">${link.score}</b></div>`).join(""):`<div class="lore-muted">NO NAMED CHEMISTRY LINKS</div>`}
+        ${chemistry.teamLinks.length?`<div class="character-team-contexts">${chemistry.teamLinks.slice(0,5).map(context=>`<span>${esc(context.name)}</span>`).join("")}</div>`:""}
+      </div>
+    </article>`;
+    return record.html;
+}
+function renderLoreCards(grid,records,cardMarkup,emptyMessage){
+    if(!records.length){grid.innerHTML=`<div class="lore-empty">${emptyMessage}</div>`;return;}
+    const nodes=records.map(record=>{
+        if(!record.node){
+            const template=document.createElement("template");
+            template.innerHTML=cardMarkup(record);
+            record.node=template.content.firstElementChild;
+        }
+        return record.node;
+    });
+    // Reordering existing cards keeps decoded portraits and SVGs intact.
+    if(grid.children.length!==nodes.length||nodes.some((node,index)=>grid.children[index]!==node)){
+        grid.replaceChildren(...nodes);
+    }
 }
 function renderCharacterLore(){
     const grid=document.getElementById("characterLoreGrid");if(!grid)return;
-    const query=String(document.getElementById("characterLoreSearch")?.value||"").trim().toLowerCase();
-    const filtered=players.filter(player=>
-      !query||player.name.toLowerCase().includes(query)||primaryPosition(player).toLowerCase().includes(query)||
-      playerPositions(player).some(pos=>pos.toLowerCase().includes(query))
-    ).sort((a,b)=>playerOverall(b)-playerOverall(a));
-    if(!filtered.length){grid.innerHTML=`<div class="lore-empty">NO CHARACTERS MATCH YOUR SEARCH.</div>`;return;}
-    grid.innerHTML=filtered.map(player=>{
-      const chemistry=getCharacterChemistry(player);
-      const chemistryPreview=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score).slice(0,3);
-      return `<article class="character-lore-card">
-        <div class="character-lore-image-wrap" data-fallback="${esc(loreImageFallback(player.name))}">
-          <img src="${player.image}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy"
-            onerror="this.classList.add('lore-image-broken')">
-        </div>
-        <div class="character-lore-main">
-          <div class="character-lore-heading"><div><span class="lore-kicker">${esc(primaryPosition(player))}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
-            <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div></div>
-          <p class="character-lore-description">${esc(characterLoreDescription(player))}</p>
-          <div class="character-lore-evaluation">
-          ${playerStatsRadar(player,"lore")}
-          <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
-            ${chemistryPreview.length?chemistryPreview.map(link=>`<div class="character-chemistry-link"><div>
-              <strong>${esc(link.characters.filter(name=>name!==player.name).join(" × "))}</strong><span>${esc(link.label)}</span>
-              </div><b class="${chemistryTier(link.score)}">${link.score}</b></div>`).join(""):`<div class="lore-muted">NO NAMED CHEMISTRY LINKS</div>`}
-            ${chemistry.teamLinks.length?`<div class="character-team-contexts">${chemistry.teamLinks.slice(0,5).map(context=>`<span>${esc(context.name)}</span>`).join("")}</div>`:""}
-          </div></div>
-        </div>
-      </article>`;
-    }).join("");
+    const filtered=filteredCharacterLore();
+    renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS.");
+    const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${players.length} PLAYERS`;
+}
+function filteredChemistryLore(){
+    const query=loreControlValue("chemistryLoreSearch").trim().toLowerCase();
+    const type=loreControlValue("chemistryLoreType","ALL"),tier=loreControlValue("chemistryLoreTier","ALL");
+    const filtered=loreDatabase().chemistry.filter(entry=>(!query||entry.search.includes(query))&&
+      (type==="ALL"||entry.type===type)&&(tier==="ALL"||chemistryTier(entry.score)===tier));
+    const sort=loreControlValue("chemistryLoreSort","score-desc");
+    return filtered.sort((a,b)=>{
+      if(sort==="name-asc")return a.title.localeCompare(b.title);
+      if(sort==="name-desc")return b.title.localeCompare(a.title);
+      return (sort==="score-asc"?1:-1)*(a.score-b.score)||a.title.localeCompare(b.title);
+    });
+}
+function chemistryLoreCard(entry){
+    if(entry.html)return entry.html;
+    const isPair=entry.type==="pair";
+    entry.html=`<article class="chemistry-lore-card">
+      <div class="chemistry-lore-heading"><div><span class="lore-kicker">${isPair?"PLAYER LINK":"TEAM CONTEXT"}</span>
+        <h2>${esc(entry.title)}</h2>${isPair?`<span class="chemistry-lore-label">${esc(entry.label)}</span>`:""}</div>
+        <div class="chemistry-lore-score ${chemistryTier(entry.score)}"><span>CHEM</span><strong>${entry.score}</strong></div></div>
+      <p class="chemistry-lore-description">${esc(entry.description)}</p>
+      <div class="chemistry-lore-characters">${entry.characters.map(name=>`<span>${esc(name)}</span>`).join("")}</div>
+    </article>`;
+    return entry.html;
 }
 function renderChemistryLore(){
     const grid=document.getElementById("chemistryLoreGrid");if(!grid)return;
-    const query=String(document.getElementById("chemistryLoreSearch")?.value||"").trim().toLowerCase();
-    const pairEntries=CHEMISTRY_SPECIAL_PAIRS.map(pair=>({type:"pair",characters:[pair[0],pair[1]],score:Number(pair[2])||0,label:pair[3]||"CHEMISTRY",description:pair[4]||""}));
-    const contextEntries=CHEMISTRY_CONTEXTS.map(context=>({type:"context",name:context.name,characters:context.players||[],score:Number(context.score)||0,
-      description:"A chemistry context based on shared history and tactical relationships in the game's fan model."}));
-    const entries=[...pairEntries,...contextEntries].filter(entry=>{
-      if(!query)return true;
-      return entry.characters.join(" ").toLowerCase().includes(query)||String(entry.name||"").toLowerCase().includes(query)||
-        String(entry.label||"").toLowerCase().includes(query)||String(entry.description||"").toLowerCase().includes(query);
-    });
-    grid.innerHTML=entries.length?entries.map(entry=>{
-      const isPair=entry.type==="pair";
-      return `<article class="chemistry-lore-card">
-        <div class="chemistry-lore-heading"><div><span class="lore-kicker">${isPair?"PLAYER LINK":"TEAM CONTEXT"}</span>
-          <h2>${isPair?`${esc(entry.characters[0])} × ${esc(entry.characters[1])}`:esc(entry.name)}</h2>
-          ${isPair?`<span class="chemistry-lore-label">${esc(entry.label)}</span>`:""}</div>
-          <div class="chemistry-lore-score ${chemistryTier(entry.score)}"><span>CHEM</span><strong>${entry.score}</strong></div></div>
-        <p class="chemistry-lore-description">${esc(entry.description)}</p>
-        <div class="chemistry-lore-characters">${entry.characters.map(name=>`<span>${esc(name)}</span>`).join("")}</div>
-      </article>`;
-    }).join(""):`<div class="lore-empty">NO CHEMISTRY ENTRIES MATCH YOUR SEARCH.</div>`;
+    const entries=filteredChemistryLore();
+    renderLoreCards(grid,entries,chemistryLoreCard,"NO CHEMISTRY ENTRIES MATCH YOUR FILTERS.");
+    const count=document.getElementById("chemistryLoreCount");if(count)count.textContent=`${entries.length} / ${loreDatabase().chemistry.length} ENTRIES`;
+}
+function resetLoreFilters(kind){
+    const defaults=kind==="character"?{Search:"",Position:"ALL",Grade:"ALL",Sort:"ovr-desc"}:{Search:"",Type:"ALL",Tier:"ALL",Sort:"score-desc"};
+    for(const [control,value] of Object.entries(defaults)){const input=document.getElementById(kind+"Lore"+control);if(input)input.value=value;}
+    if(kind==="character")renderCharacterLore();else renderChemistryLore();
 }
 function openLoreMenu(){setVisibleScreen(document.getElementById("lore-menu-screen"));}
 function openCharacterLore(){setVisibleScreen(document.getElementById("character-lore-screen"));renderCharacterLore();}
@@ -155,7 +216,11 @@ function bindLoreUI(){
     document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);
     document.getElementById("charactersBackToLore")?.addEventListener("click",openLoreMenu);
     document.getElementById("chemistryBackToLore")?.addEventListener("click",openLoreMenu);
-    document.getElementById("characterLoreSearch")?.addEventListener("input",renderCharacterLore);
-    document.getElementById("chemistryLoreSearch")?.addEventListener("input",renderChemistryLore);
+    for(const [kind,render] of [["character",renderCharacterLore],["chemistry",renderChemistryLore]]){
+      document.getElementById(kind+"LoreSearch")?.addEventListener("input",render);
+      const controls=kind==="character"?["Position","Grade","Sort"]:["Type","Tier","Sort"];
+      for(const control of controls)document.getElementById(kind+"Lore"+control)?.addEventListener("change",render);
+      document.getElementById(kind+"LoreReset")?.addEventListener("click",()=>resetLoreFilters(kind));
+    }
 }
 bindLoreUI();

@@ -31,8 +31,8 @@
 .player-stats-gk.is-outfield{color:#90a6b6;padding:6px 8px}
 .player-stats-gk.is-outfield strong{font-size:19px}
 .player-stats-gk.is-outfield .player-stats-grade{width:22px;height:24px;font-size:17px}
-.player-stats--lore{margin-top:0;padding:12px}
-.player-stats--lore .player-stats-radar{max-width:290px}
+.player-stats--lore{margin:0;padding:8px}
+.player-stats--lore .player-stats-radar{max-width:250px}
 .player-stats--sidebar{padding:7px}
 .player-stats--sidebar .player-stats-heading{flex-wrap:wrap;gap:3px}
 .player-stats--sidebar .player-stats-radar{max-width:260px}
@@ -41,57 +41,34 @@
 .evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:#68e2ff;border:1px solid #39728d;background:#071c2a;font:900 21px/1 "Barlow Condensed",sans-serif}
 .player-info-ovr .evaluation-grade{margin-top:4px}
 .current-ovr-row .evaluation-grade{vertical-align:middle}
-/* One target module at every viewport; portrait size never depends on the source image. */
-.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 12px;padding:16px;gap:16px;background:linear-gradient(135deg,#081b2b,#020910);border:1px solid #28566e;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
-.auction-command-center .player-image-container{width:176px;height:200px;overflow:hidden;background:#000;border:1px solid #17405c;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+/* Current target: identity rail beside the main attribute evaluation. */
+.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 12px;padding:16px;gap:18px;background:linear-gradient(135deg,#081b2b,#020910);border:1px solid #28566e;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
+.auction-identity-rail{min-width:0}
+.auction-command-center .player-image-container{width:176px;height:200px;overflow:hidden;background:#000;border:1px solid #326078;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 .auction-command-center .player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
-.auction-command-center .player-card-bottom{min-width:0;text-align:left}
-.auction-player-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.auction-player-heading>div:first-child{min-width:0}
+.player-card-identity{margin-top:12px;min-width:0;text-align:left}
+.auction-player-heading{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .player-card-label{color:#96d5ec;font-size:9px;font-weight:800;letter-spacing:1.1px}
-.player-card-name{margin:6px 0;color:#edf7ff;font:900 italic 30px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
-.auction-player-ovr{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 5px;flex-shrink:0;padding:6px 8px;border:1px solid #39728d;background:#030e18}
-.auction-player-ovr>span{grid-column:1/-1;color:#96d5ec;font-size:9px;font-weight:900;letter-spacing:1.2px}
-.auction-player-ovr strong{color:#fff;font:900 38px/1 "Barlow Condensed",sans-serif}
-.player-stats--auction{margin-top:14px;padding:10px}
-.player-stats--auction .player-stats-heading{flex-wrap:wrap;gap:3px}
-.player-stats--auction .player-stats-radar{max-width:280px}
-@media(min-width:1100px){
-  .player-stats--auction{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:8px;align-items:center}
-  .player-stats--auction .player-stats-heading{grid-column:1/-1}
-  .player-stats--auction .player-stats-radar{max-width:250px}
-  .player-stats--auction .player-stats-gk{flex-direction:column;justify-content:center;text-align:center;gap:14px;padding:14px 6px}
-  .player-stats--auction .player-stats-gk>span{font-size:8px;letter-spacing:.5px}
-  .player-stats--auction .player-stats-gk>span small{font-size:6px;letter-spacing:.3px}
-}
-@media(min-width:1200px){
-  .player-stats--lore{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:8px 12px;align-items:center}
-  .player-stats--lore .player-stats-heading{grid-column:1/-1}
-  .player-stats--lore .player-stats-radar{max-width:270px}
-  .player-stats--lore .player-stats-gk{flex-direction:column;justify-content:center;text-align:center;gap:14px;padding:16px 8px}
-}
-@media(min-width:1500px){
-  .auction-command-center .current-player{grid-template-columns:200px minmax(0,1fr)}
-  .auction-command-center .player-image-container{width:200px;height:227.27px}
-}
-@media(max-width:1099px){
-  .auction-command-center .current-player{max-width:680px;grid-template-columns:176px minmax(0,1fr)}
-  .auction-command-center .player-card-bottom{display:contents}
-  .player-card-identity{min-width:0;align-self:center}
-  .auction-command-center .player-stats--auction{grid-column:1/-1;margin:0;display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:8px 16px;align-items:center}
-  .player-stats--auction .player-stats-heading{grid-column:1/-1}
-  .player-stats--auction .player-stats-gk{flex-direction:column;text-align:center;gap:12px;padding:16px 8px}
-}
-@media(max-width:600px){
-  .auction-command-center .current-player{grid-template-columns:112px minmax(0,1fr);padding:12px;gap:12px}
+.player-card-name{margin:6px 0;color:#edf7ff;font:900 italic 27px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.auction-player-ovr{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:6px;padding:5px 8px;border:1px solid #39728d;background:#030e18}
+.auction-player-ovr>span{color:#96d5ec;font-size:9px;font-weight:900;letter-spacing:1.2px}
+.auction-player-ovr strong{color:#fff;font:900 32px/1 "Barlow Condensed",sans-serif}
+.player-stats--auction{margin:0;padding:10px;display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:8px 12px;align-items:center}
+.player-stats--auction .player-stats-heading{grid-column:1/-1;flex-wrap:wrap;gap:3px}
+.player-stats--auction .player-stats-radar{max-width:310px}
+.player-stats--auction .player-stats-gk{flex-direction:column;justify-content:center;text-align:center;gap:14px;padding:14px 6px}
+.player-stats--auction .player-stats-gk>span{font-size:8px;letter-spacing:.5px}
+.player-stats--auction .player-stats-gk>span small{font-size:6px;letter-spacing:.3px}
+@media(max-width:760px){
+  .auction-command-center .current-player{grid-template-columns:minmax(0,1fr);gap:16px;padding:12px}
+  .auction-identity-rail{display:grid;grid-template-columns:112px minmax(0,1fr);gap:14px;align-items:center}
   .auction-command-center .player-image-container{width:112px;height:127.27px}
+  .player-card-identity{margin:0}
   .player-card-name{font-size:25px}
-  .auction-player-heading{flex-wrap:wrap;gap:8px}
-  .auction-player-ovr{grid-template-columns:auto auto auto;padding:4px 6px}
-  .auction-player-ovr>span{grid-column:auto}
-  .auction-player-ovr strong{font-size:30px}
-  .auction-command-center .player-stats--auction{display:block}
+  .player-stats--auction{display:block}
+  .player-stats--auction .player-stats-radar{max-width:280px}
   .player-stats--auction .player-stats-gk{flex-direction:row;justify-content:space-between;text-align:left;gap:8px;padding:8px 10px}
+  .player-stats--auction .player-stats-gk>span{font-size:10px;letter-spacing:1px}
 }
 @media(max-width:380px){
   .player-stats-heading{flex-wrap:wrap;gap:3px}

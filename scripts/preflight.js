@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 'use strict';
-// Compatibility entry point; validate.js is the canonical CLI.
-require('./validate.js');
+// Public CLI for the dependency-free project checks.
+require('../js/preflight.js');

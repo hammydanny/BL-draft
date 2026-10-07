@@ -85,7 +85,11 @@ function normalizeAuctionSave(value){
         if(value.formationCaptainByTeam!==undefined&&(!isSaveRecord(value.formationCaptainByTeam)||
            !Object.values(value.formationCaptainByTeam).every(id=>id===null||Number.isInteger(id))))return null;
     }
-    return {...value,schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+    const normalized={...value,schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+    if(value.gameActive&&(value.uiState?.screen==="auction-team-builder"||value.uiState?.phase==="team-builder")){
+        normalized.uiState={screen:"formation",phase:"complete",turn:null};
+    }
+    return normalized;
 }
 
 function normalizeStandaloneSave(value){
@@ -214,6 +218,7 @@ function restoreGame(saved){
     resumeCurrentView();
 }
 function resumeCurrentView(){
+    if(uiState.phase==="coin"){showCoinFlip();return;}
     if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}
     if(uiState.phase==="complete"){showAuctionComplete();return;}
     if(!currentPlayer){startNextAuction();return;}
