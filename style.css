@@ -172,9 +172,41 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 .menu-title-wrap h1{position:relative;margin:0;font-size:clamp(58px,10vw,100px);font-style:italic;font-weight:900;line-height:.76;letter-spacing:-4px}.menu-title-wrap h1 span{display:block;color:var(--blue);text-shadow:0 0 35px rgba(20,156,255,.3)}
 .menu-title-wrap p{position:relative;margin:18px 0 0;color:#66849d;font-size:11px;font-weight:700;letter-spacing:3px}
 .menu-actions{display:grid;gap:7px}.menu-actions button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:15px 17px;text-align:left;letter-spacing:2px;transition:.18s}
-.menu-primary{color:#fff;background:linear-gradient(100deg,#0872d4,#159fff);border:0;font-size:13px;font-weight:800;box-shadow:0 10px 35px rgba(20,156,255,.18)}
-.menu-action{color:#b2c7d8;background:rgba(4,15,25,.78);border:1px solid #173b57;font-size:11px;font-weight:700}.menu-action b{color:#4e718c;font-size:9px;letter-spacing:2px}
-.menu-actions button:hover{transform:translateX(5px);border-color:var(--blue);filter:brightness(1.12)}
+.menu-primary{
+    color:#b2c7d8;
+    background:rgba(4,15,25,.78);
+    border:1px solid #173b57;
+    font-size:13px;
+    font-weight:800;
+    box-shadow:none;
+}
+
+.menu-action{
+    color:#b2c7d8;
+    background:rgba(4,15,25,.78);
+    border:1px solid #173b57;
+    font-size:11px;
+    font-weight:700;
+}
+
+.menu-action b{
+    color:#4e718c;
+    font-size:9px;
+    letter-spacing:2px;
+}
+
+.menu-actions button:hover{
+    transform:translateX(5px);
+    color:#fff;
+    background:linear-gradient(100deg,#0872d4,#159fff);
+    border-color:var(--blue);
+    box-shadow:0 10px 35px rgba(20,156,255,.18);
+    filter:none;
+}
+
+.menu-actions button:hover b{
+    color:#fff;
+}
 .menu-resume-panel{display:flex;justify-content:space-between;gap:15px;margin-bottom:9px;padding:9px 12px;background:rgba(20,156,255,.08);border-left:2px solid var(--blue)}.menu-resume-panel span{color:var(--blue);font-size:9px;font-weight:800;letter-spacing:2px}.menu-resume-panel strong{color:#9db7cb;font-size:10px;letter-spacing:1px}
 .menu-footer-line{display:flex;justify-content:space-between;margin-top:24px;padding-top:13px;border-top:1px solid rgba(80,174,255,.12);color:#49647a;font-size:9px;font-weight:700;letter-spacing:1.5px}.menu-footer-line strong{color:#819db3}
 .setup-back-button{margin:0 auto 18px;padding:8px 12px;color:#718ca3;background:transparent;border:1px solid #17364f;font-size:10px;font-weight:700;letter-spacing:1.5px}.setup-back-button:hover{color:#fff;border-color:var(--blue)}
