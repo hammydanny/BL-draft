@@ -7,8 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=0.6.1">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.1">
+    <link rel="stylesheet" href="style.css?v=0.6.1.2">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.1.2">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.1.2">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
@@ -46,12 +47,15 @@
 
     <section id="lore-menu-screen" class="lore-screen hidden">
         <div class="lore-shell">
-            <div class="lore-header">
-                <button id="loreBackToMenu" class="setup-back-button" type="button">← MAIN MENU</button>
-                <div class="menu-code">BL // DATABASE</div>
+            <header class="lore-header site-header">
+                <div><div class="game-header-small">BL // DATABASE</div>
                 <h1>BLUE LOCK <span>LORE</span></h1>
-                <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p>
-            </div>
+                <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p></div>
+                <div class="header-right-controls">
+                    <button id="loreBackToMenu" class="header-utility" type="button">← MAIN MENU</button>
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
+                </div>
+            </header>
             <div class="lore-actions">
                 <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
                 <button id="loreChemistry" class="menu-action lore-action" type="button"><span>CHEMISTRY</span><b>RELATIONSHIP DATABASE</b></button>
@@ -61,45 +65,38 @@
 
     <section id="character-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
-            <div class="lore-page-header">
-                <div>
-                    <button id="charactersBackToLore" class="setup-back-button" type="button">← LORE</button>
-                    <div class="menu-code">BL // CHARACTER DATABASE</div>
-                    <h1>CHARACTERS</h1>
-                    <p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p>
+            <header class="lore-page-header site-header">
+                <div><div class="game-header-small">BL // CHARACTER DATABASE</div>
+                <h1>CHARACTERS</h1><p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p></div>
+                <div class="header-right-controls">
+                    <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+                    <div class="lore-controls"><input id="characterLoreSearch" aria-label="Search Characters" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></div>
                 </div>
-                <div class="lore-controls">
-                    <input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off">
-                </div>
-            </div>
+            </header>
             <div id="characterLoreGrid" class="character-lore-grid"></div>
         </div>
     </section>
 
     <section id="chemistry-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
-            <div class="lore-page-header">
-                <div>
-                    <button id="chemistryBackToLore" class="setup-back-button" type="button">← LORE</button>
-                    <div class="menu-code">BL // CHEMISTRY DATABASE</div>
-                    <h1>CHEMISTRY</h1>
-                    <p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p>
+            <header class="lore-page-header site-header">
+                <div><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
+                <h1>CHEMISTRY</h1><p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p></div>
+                <div class="header-right-controls">
+                    <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+                    <div class="lore-controls"><input id="chemistryLoreSearch" aria-label="Search Chemistry" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></div>
                 </div>
-                <div class="lore-controls">
-                    <input id="chemistryLoreSearch" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off">
-                </div>
-            </div>
+            </header>
             <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
         </div>
     </section>
 
     <section id="setup-screen" class="hidden">
-        <div class="setup-logo">
-            <button id="setupBackToMenu" class="setup-back-button" type="button">← MAIN MENU</button>
-            <div class="system-tag">BL // STRIKER SELECTION PROGRAM</div>
-            <h1>BLUE LOCK <span>DRAFT</span></h1>
-            <p>DRAFT // BID // BUILD YOUR XI</p>
-        </div>
+        <header class="setup-logo site-header">
+            <div><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div>
+            <h1>BLUE LOCK <span>DRAFT</span></h1><p>DRAFT // BID // BUILD YOUR XI</p></div>
+            <div class="header-right-controls"><button id="setupBackToMenu" class="header-utility" type="button">← MAIN MENU</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+        </header>
 
         <div class="setup-box setup-box-wide">
             <div class="panel-code">SYSTEM_CONFIG // 001</div>
@@ -263,15 +260,16 @@
     </section>
 
     <section id="auction-screen" class="hidden">
-        <header class="game-header">
+        <header class="game-header site-header">
             <div>
                 <div class="game-header-small">BL // LIVE SELECTION</div>
                 <h1>AUCTION <span>ROOM</span></h1>
+                <div class="header-status"><i></i> SYSTEM LIVE</div>
             </div>
-            <div class="header-status"><i></i> SYSTEM LIVE</div>
             <div class="header-right-controls">
                 <div id="playersRemaining" class="players-remaining"></div>
                 <div class="header-mini-actions">
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
                     <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
                     <button id="soundToggle" class="sound-toggle compact-control" type="button"><span class="sound-icon">◖))</span><strong>SFX</strong></button>
                 </div>
@@ -281,15 +279,16 @@
     </section>
 
     <section id="formation-screen" class="hidden">
-        <header class="game-header formation-header">
+        <header class="game-header formation-header site-header">
             <div>
                 <div id="formationHeaderCode" class="game-header-small">BL // SQUAD DEPLOYMENT</div>
                 <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
+                <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
             </div>
-            <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
             <div class="header-right-controls">
                 <button id="backToResults" class="header-button compact-control">← RESULTS</button>
                 <div class="header-mini-actions">
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
                     <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
                     <button class="sound-toggle compact-control" type="button" data-sound-toggle><span class="sound-icon">◖))</span><strong>SFX</strong></button>
                 </div>
@@ -316,7 +315,7 @@
             <div class="panel-code" id="infoModalCode">BL // DATABASE</div>
             <h2 id="infoModalTitle">HOW TO PLAY</h2>
             <div id="infoModalBody" class="info-body"></div>
-            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO MENU</span><b>→</b></button>
+            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO PAGE</span><b>→</b></button>
         </div>
     </div>
 

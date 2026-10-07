@@ -95,6 +95,7 @@ function closeInfoModal(){document.getElementById("infoModal").classList.add("hi
 document.getElementById("menuNewAuction").addEventListener("click",openSetupFromMenu);
 document.getElementById("menuResumeAuction").addEventListener("click",()=>restoreGame(loadSavedData()));
 document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
+document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
 document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
 document.getElementById("setupBackToMenu").addEventListener("click",()=>{saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();});
 document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);

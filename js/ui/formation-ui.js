@@ -111,7 +111,8 @@ function createPlayerInfoSidebar(team){
     ${(()=>{
       const slot=currentPlayerSlot(formationTeamNumber,player.id);
       const pos=slot?.label||primaryPosition(player);
-      return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${slot?effectiveOVR(player,pos):playerOverall(player)}</strong></div></div>`;
+      const rating=slot?effectiveOVR(player,pos):playerOverall(player);
+      return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
     })()}
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
     ${(()=>{
@@ -125,7 +126,8 @@ function createPlayerInfoSidebar(team){
     <div class="player-info-section current-position-rating">${(()=>{
       const slot=currentPlayerSlot(formationTeamNumber,player.id);
       const pos=slot?.label||primaryPosition(player);
-      return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${slot?effectiveOVR(player,pos):playerOverall(player)}</b></div>`;
+      const rating=slot?effectiveOVR(player,pos):playerOverall(player);
+      return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${rating} <small class="evaluation-grade">${playerStatGrade(rating)}</small></b></div>`;
     })()}</div>
     <div class="player-info-section">
       <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>

@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 'use strict';
-// Canonical CLI entry point; shared checks live in js/preflight.js.
-require('../js/preflight.js');
+// Compatibility entry point; validate.js is the canonical CLI.
+require('./validate.js');

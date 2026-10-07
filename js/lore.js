@@ -108,15 +108,16 @@ function renderCharacterLore(){
         </div>
         <div class="character-lore-main">
           <div class="character-lore-heading"><div><span class="lore-kicker">${esc(primaryPosition(player))}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
-            <div class="character-lore-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong></div></div>
+            <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div></div>
           <p class="character-lore-description">${esc(characterLoreDescription(player))}</p>
+          <div class="character-lore-evaluation">
           ${playerStatsRadar(player,"lore")}
           <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
             ${chemistryPreview.length?chemistryPreview.map(link=>`<div class="character-chemistry-link"><div>
               <strong>${esc(link.characters.filter(name=>name!==player.name).join(" × "))}</strong><span>${esc(link.label)}</span>
               </div><b class="${chemistryTier(link.score)}">${link.score}</b></div>`).join(""):`<div class="lore-muted">NO NAMED CHEMISTRY LINKS</div>`}
             ${chemistry.teamLinks.length?`<div class="character-team-contexts">${chemistry.teamLinks.slice(0,5).map(context=>`<span>${esc(context.name)}</span>`).join("")}</div>`:""}
-          </div>
+          </div></div>
         </div>
       </article>`;
     }).join("");

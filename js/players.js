@@ -68,7 +68,7 @@ const players = [
     { id: 64, name: "Vivien Hugo", image: "images/vivien-hugo.jpg", primaryPosition: "CM", positions: ["CM"] , stats: { ovr:95, off:91, sho:88, spd:89, def:88, pas:95, dri:94, gk:65 } },
     { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:86, off:87, sho:83, spd:89, def:68, pas:84, dri:87, gk:50 } },
     { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:91, off:92, sho:90, spd:88, def:73, pas:91, dri:89, gk:56 } },
-    { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "RW", positions: ["RW", "RM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
+    { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "LW", positions: ["LW", "LM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
     { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:86, sho:85, spd:84, def:65, pas:79, dri:82, gk:49 } }
 ];
 

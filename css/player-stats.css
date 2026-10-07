@@ -18,6 +18,7 @@
 .player-stats-spoke{stroke:#214154;stroke-width:1}
 .player-stats-shape{fill:rgba(32,183,255,.24);stroke:var(--radar-cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(54,199,255,.55))}
 .player-stats-axis{fill:#b5d6e8;font:800 12px "Rajdhani",sans-serif;letter-spacing:1px}
+.player-stats-axis-grade{fill:var(--radar-cyan);font:900 12px "Rajdhani",sans-serif}
 .player-stats-value{fill:#effaff;font:900 19px "Barlow Condensed",sans-serif}
 .player-stats-gk{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid #1a3545;background:#06121c}
 .player-stats-gk>span{font-size:10px;font-weight:900;letter-spacing:1px}
@@ -30,42 +31,67 @@
 .player-stats-gk.is-outfield{color:#90a6b6;padding:6px 8px}
 .player-stats-gk.is-outfield strong{font-size:19px}
 .player-stats-gk.is-outfield .player-stats-grade{width:22px;height:24px;font-size:17px}
-.player-stats--lore .player-stats-radar{max-width:250px}
+.player-stats--lore{margin-top:0;padding:12px}
+.player-stats--lore .player-stats-radar{max-width:290px}
 .player-stats--sidebar{padding:7px}
 .player-stats--sidebar .player-stats-heading{flex-wrap:wrap;gap:3px}
 .player-stats--sidebar .player-stats-radar{max-width:260px}
-.current-player .player-image-container{position:relative}
-.auction-player-ovr{position:absolute;right:10px;bottom:10px;z-index:2;display:flex;flex-direction:column;align-items:center;min-width:54px;padding:6px 9px;border:1px solid #57c7ee;background:rgba(2,12,21,.94);box-shadow:0 0 20px rgba(20,156,255,.18)}
-.auction-player-ovr span{color:#a7d9ed;font-size:9px;font-weight:900;letter-spacing:1.5px}
-.auction-player-ovr strong{color:#fff;font:900 36px/1 "Barlow Condensed",sans-serif}
-/* The desktop target card is a portrait column beside an evaluation column. */
-@media(min-width:701px){
-  .auction-command-center .player-stats--auction{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;padding:8px}
+
+/* Shared supplementary rating grade; never replaces the rating number. */
+.evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:#68e2ff;border:1px solid #39728d;background:#071c2a;font:900 21px/1 "Barlow Condensed",sans-serif}
+.player-info-ovr .evaluation-grade{margin-top:4px}
+.current-ovr-row .evaluation-grade{vertical-align:middle}
+/* One target module at every viewport; portrait size never depends on the source image. */
+.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 12px;padding:16px;gap:16px;background:linear-gradient(135deg,#081b2b,#020910);border:1px solid #28566e;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
+.auction-command-center .player-image-container{width:176px;height:200px;overflow:hidden;background:#000;border:1px solid #17405c;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.auction-command-center .player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
+.auction-command-center .player-card-bottom{min-width:0;text-align:left}
+.auction-player-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.auction-player-heading>div:first-child{min-width:0}
+.player-card-label{color:#96d5ec;font-size:9px;font-weight:800;letter-spacing:1.1px}
+.player-card-name{margin:6px 0;color:#edf7ff;font:900 italic 30px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.auction-player-ovr{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 5px;flex-shrink:0;padding:6px 8px;border:1px solid #39728d;background:#030e18}
+.auction-player-ovr>span{grid-column:1/-1;color:#96d5ec;font-size:9px;font-weight:900;letter-spacing:1.2px}
+.auction-player-ovr strong{color:#fff;font:900 38px/1 "Barlow Condensed",sans-serif}
+.player-stats--auction{margin-top:14px;padding:10px}
+.player-stats--auction .player-stats-heading{flex-wrap:wrap;gap:3px}
+.player-stats--auction .player-stats-radar{max-width:280px}
+@media(min-width:1100px){
+  .player-stats--auction{display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:8px;align-items:center}
   .player-stats--auction .player-stats-heading{grid-column:1/-1}
-  .player-stats--auction .player-stats-radar{max-width:245px;min-width:0}
-  .player-stats--auction .player-stats-gk{flex-direction:column;justify-content:center;gap:10px;padding:10px 8px;text-align:center}
-  .player-stats--auction .player-stats-gk>span{font-size:8px;letter-spacing:.6px}
-  .player-stats--auction .player-stats-gk>span small{max-width:70px;font-size:7px}
+  .player-stats--auction .player-stats-radar{max-width:250px}
+  .player-stats--auction .player-stats-gk{flex-direction:column;justify-content:center;text-align:center;gap:14px;padding:14px 6px}
+  .player-stats--auction .player-stats-gk>span{font-size:8px;letter-spacing:.5px}
+  .player-stats--auction .player-stats-gk>span small{font-size:6px;letter-spacing:.3px}
 }
-/* Small target cards give the radar a full row, preserving readable values. */
+@media(min-width:1200px){
+  .player-stats--lore{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:8px 12px;align-items:center}
+  .player-stats--lore .player-stats-heading{grid-column:1/-1}
+  .player-stats--lore .player-stats-radar{max-width:270px}
+  .player-stats--lore .player-stats-gk{flex-direction:column;justify-content:center;text-align:center;gap:14px;padding:16px 8px}
+}
+@media(min-width:1500px){
+  .auction-command-center .current-player{grid-template-columns:200px minmax(0,1fr)}
+  .auction-command-center .player-image-container{width:200px;height:227.27px}
+}
 @media(max-width:1099px){
-  .auction-command-center .current-player{width:100%!important;max-width:520px;display:grid!important;grid-template-columns:160px minmax(0,1fr)!important;gap:0!important}
-  .auction-command-center .current-player .player-image-container{grid-column:1;grid-row:1;width:100%!important;height:180px!important;min-height:180px!important}
-  .auction-command-center .current-player .player-card-bottom{display:contents!important}
-  .player-card-identity{grid-column:2;grid-row:1;align-self:center;min-width:0;padding:12px}
-  .auction-command-center .player-stats--auction{grid-column:1/-1;display:block;width:auto;max-width:none;margin:10px}
-  .player-stats--auction .player-stats-radar{max-width:280px}
-  .player-stats--auction .player-stats-gk{flex-direction:row;justify-content:space-between;padding:8px 10px;text-align:left}
-  .player-stats--auction .player-stats-gk>span{font-size:10px;letter-spacing:1px}
-  .player-stats--auction .player-stats-gk>span small{max-width:none}
+  .auction-command-center .current-player{max-width:680px;grid-template-columns:176px minmax(0,1fr)}
+  .auction-command-center .player-card-bottom{display:contents}
+  .player-card-identity{min-width:0;align-self:center}
+  .auction-command-center .player-stats--auction{grid-column:1/-1;margin:0;display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:8px 16px;align-items:center}
+  .player-stats--auction .player-stats-heading{grid-column:1/-1}
+  .player-stats--auction .player-stats-gk{flex-direction:column;text-align:center;gap:12px;padding:16px 8px}
 }
-@media(max-width:520px){
-  .auction-command-center .current-player{max-width:400px;grid-template-columns:120px minmax(0,1fr)!important}
-  .auction-command-center .current-player .player-image-container{height:150px!important;min-height:150px!important}
-  .player-card-identity{padding:8px 10px}
-  .player-stats--auction .player-stats-radar{max-width:260px}
-  .auction-player-ovr{right:5px;bottom:5px;min-width:44px;padding:4px 6px}
+@media(max-width:600px){
+  .auction-command-center .current-player{grid-template-columns:112px minmax(0,1fr);padding:12px;gap:12px}
+  .auction-command-center .player-image-container{width:112px;height:127.27px}
+  .player-card-name{font-size:25px}
+  .auction-player-heading{flex-wrap:wrap;gap:8px}
+  .auction-player-ovr{grid-template-columns:auto auto auto;padding:4px 6px}
+  .auction-player-ovr>span{grid-column:auto}
   .auction-player-ovr strong{font-size:30px}
+  .auction-command-center .player-stats--auction{display:block}
+  .player-stats--auction .player-stats-gk{flex-direction:row;justify-content:space-between;text-align:left;gap:8px;padding:8px 10px}
 }
 @media(max-width:380px){
   .player-stats-heading{flex-wrap:wrap;gap:3px}

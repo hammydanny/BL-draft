@@ -5,14 +5,14 @@ let overlayHideTimer=null;
 
 function createPlayerCard(){
     return `<div class="current-player">
-      <div class="card-index">${String(auctionNumber).padStart(2,"0")}</div>
       <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}">
-        <div class="auction-player-ovr"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong></div>
       </div>
       <div class="player-card-bottom">
         <div class="player-card-identity">
+          <div class="auction-player-heading"><div>
           <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
           <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
+          </div><div class="auction-player-ovr" aria-label="Overall ${playerOverall(currentPlayer)}, grade ${playerStatGrade(playerOverall(currentPlayer))}"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(currentPlayer))}</b></div></div>
         </div>
         ${playerStatsRadar(currentPlayer,"auction")}
       </div>

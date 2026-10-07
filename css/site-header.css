@@ -1,0 +1,36 @@
+/* Major page navigation: shared rhythm, independent of the page's content layout. */
+.site-header{width:100%;max-width:1540px;min-height:112px;margin:0 auto 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);text-align:left}
+.site-header>div:first-child{min-width:0}
+.site-header .game-header-small{margin:0 0 5px;color:#54c8ff;font-size:10px;font-weight:800;letter-spacing:2px}
+.site-header h1{margin:0;color:#edf7ff;font:900 italic 38px/1 "Barlow Condensed",sans-serif;letter-spacing:-.8px;text-transform:uppercase}
+.site-header h1 span{display:inline;color:var(--blue);text-shadow:none}
+.site-header p{margin:6px 0 0;color:#8ba6ba;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.2px}
+.site-header .header-right-controls{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;min-width:0}
+.site-header .header-mini-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.site-header button{display:inline-flex;align-items:center;justify-content:center;gap:4px;width:auto;height:36px;min-height:36px;margin:0;padding:8px 10px;color:#abc8dc;background:#06121d;border:1px solid #25465d;border-radius:2px;font:800 10px/1 "Rajdhani",sans-serif;letter-spacing:.8px;white-space:nowrap;box-shadow:none}
+.site-header button:hover{color:#fff;border-color:var(--blue);transform:none}
+.site-header button:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
+.site-header .sound-toggle.muted{opacity:.6}
+.site-header .header-status{display:block;margin-top:6px;color:#8ba6ba;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.2px}
+.site-header .players-remaining{font-size:9px;letter-spacing:1px}
+.site-header .players-remaining span{display:inline;margin-left:4px;font-size:20px}
+.site-header .lore-controls{width:250px;max-width:100%}
+.site-header .lore-controls input{width:100%;height:36px;padding:8px 10px;font-size:11px}
+.lore-shell .lore-actions{max-width:760px;margin:0 auto}
+@media(max-width:900px){
+  .site-header{gap:12px}
+  .site-header h1{font-size:34px}
+  .site-header .header-right-controls{gap:8px}
+  .site-header .lore-controls{width:100%}
+}
+@media(max-width:600px){
+  .site-header{grid-template-columns:minmax(0,1fr);min-height:112px;gap:12px;padding:12px 0;margin-bottom:16px}
+  .site-header h1{font-size:30px}
+  .site-header .game-header-small{font-size:9px;letter-spacing:1.4px}
+  .site-header p{font-size:9px;letter-spacing:.7px}
+  .site-header .header-right-controls{justify-content:flex-start}
+  .site-header .header-mini-actions{gap:6px}
+  .site-header button{height:38px;min-height:38px;padding:8px 10px}
+  .site-header .header-status{font-size:9px;letter-spacing:.7px}
+  .site-header .players-remaining{margin-right:auto;text-align:left}
+}

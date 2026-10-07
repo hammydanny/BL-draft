@@ -8,7 +8,8 @@ const PLAYER_RADAR_AXES = [
     {key:"off",label:"OFF",name:"Offence"}
 ];
 
-function goalkeeperStatGrade(value){
+// Shared display-only grade; numerical ratings remain the source of truth.
+function playerStatGrade(value){
     return value>=90?"S":value>=80?"A":value>=70?"B":value>=60?"C":
         value>=50?"D":value>=40?"E":value>=30?"F":"G";
 }
@@ -27,7 +28,7 @@ function playerStatsRadar(player,variant="sidebar"){
     const polygon=PLAYER_RADAR_AXES.map((axis,i)=>
         coordinate(point(i,Math.max(0,Math.min(100,Number(stats[axis.key])||0))*.88))
     ).join(" ");
-    const description=PLAYER_RADAR_AXES.map(axis=>`${axis.name}: ${stats[axis.key]} out of 100`).join(". ");
+    const description=PLAYER_RADAR_AXES.map(axis=>`${axis.name}: ${stats[axis.key]} out of 100, grade ${playerStatGrade(stats[axis.key])}`).join(". ");
     return `<div class="player-stats player-stats--${size}">
       <div class="player-stats-heading"><span>ATTRIBUTE ANALYSIS</span><small>06 // FIELD METRICS</small></div>
       <svg class="player-stats-radar" viewBox="0 0 300 280" role="img" aria-label="${esc(player.name)} attributes. ${esc(description)}">
@@ -39,13 +40,13 @@ function playerStatsRadar(player,variant="sidebar"){
         <polygon class="player-stats-shape" points="${polygon}"/>
         ${PLAYER_RADAR_AXES.map((axis,i)=>{
             const [x,y]=point(i,122);
-            return `<text class="player-stats-axis" x="${x.toFixed(2)}" y="${(y-4).toFixed(2)}" text-anchor="middle">${axis.label}</text>
-              <text class="player-stats-value" x="${x.toFixed(2)}" y="${(y+15).toFixed(2)}" text-anchor="middle">${stats[axis.key]}</text>`;
+            return `<text class="player-stats-axis" x="${x.toFixed(2)}" y="${(y-6).toFixed(2)}" text-anchor="middle">${axis.label}</text>
+              <text class="player-stats-value" x="${x.toFixed(2)}" y="${(y+14).toFixed(2)}" text-anchor="middle"><tspan>${stats[axis.key]}</tspan><tspan class="player-stats-axis-grade" dx="4">${playerStatGrade(stats[axis.key])}</tspan></text>`;
         }).join("")}
       </svg>
-      <div class="player-stats-gk ${goalkeeper?"is-specialist":"is-outfield"}" aria-label="${goalkeeper?"Goalkeeper specialist":"Goalkeeping"}: ${stats.gk} out of 100, grade ${goalkeeperStatGrade(stats.gk)}">
+      <div class="player-stats-gk ${goalkeeper?"is-specialist":"is-outfield"}" aria-label="${goalkeeper?"Goalkeeper specialist":"Goalkeeping"}: ${stats.gk} out of 100, grade ${playerStatGrade(stats.gk)}">
         <span>${goalkeeper?"GOALKEEPER":"GOALKEEPING"}<small>${goalkeeper?"SPECIALIST METRIC":"SECONDARY METRIC"}</small></span>
-        <strong><small>GK</small> ${stats.gk}</strong><b class="player-stats-grade">${goalkeeperStatGrade(stats.gk)}</b>
+        <strong><small>GK</small> ${stats.gk}</strong><b class="player-stats-grade">${playerStatGrade(stats.gk)}</b>
       </div>
     </div>`;
 }

@@ -105,10 +105,11 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.1');
+    assert.equal(data.APP_VERSION,'0.6.1.2');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
-    assert(fs.existsSync(path.join(root,'scripts/preflight.js')),'Documented preflight entry point missing');
+    assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
+    assert(fs.existsSync(path.join(root,'scripts/validate.js')),'Validation entry point missing');
     assert.equal((html.match(/data-app-version/g)||[]).length,2,'Version label targets');
     for(const version of [data.AUCTION_SAVE_SCHEMA_VERSION,data.STANDALONE_SAVE_SCHEMA_VERSION])assert(Number.isInteger(version)&&version>0);
     assert(read('js/state.js').includes('"blAuctionSaveV2"'));
@@ -327,10 +328,10 @@ check('Shared radar axes, source values, specialist grading and core UI replacem
         assert(!radar.includes('>OVR<'));
         const outfield=players.find(player=>player.name==='Yoichi Isagi');
         assert(playerStatsRadar(outfield,'lore').includes('is-outfield'));
-        for(const axis of PLAYER_RADAR_AXES)assert(radar.includes('>'+gk.stats[axis.key]+'</text>'));
+        for(const axis of PLAYER_RADAR_AXES)assert(radar.includes('>'+gk.stats[axis.key]+'</tspan>'));
         for(const [value,grade] of [[100,'S'],[90,'S'],[89,'A'],[80,'A'],[79,'B'],[70,'B'],
             [69,'C'],[60,'C'],[59,'D'],[50,'D'],[49,'E'],[40,'E'],[39,'F'],[30,'F'],[29,'G'],[0,'G']]){
-            assert.equal(goalkeeperStatGrade(value),grade);
+            assert.equal(playerStatGrade(value),grade);
         }
     `);
     for(const file of ['js/ui/auction-ui.js','js/lore.js','js/ui/formation-ui.js']){
