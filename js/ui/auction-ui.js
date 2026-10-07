@@ -200,7 +200,6 @@ function ensureAuctionHistoryControls(){
 
 function renderAuctionScreen(actionHTML){
     ensureAuctionHistoryControls();
-    updateGlobalBackButton?.();
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
     auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
       <div class="auction-command-grid">
