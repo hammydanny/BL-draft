@@ -1,4 +1,4 @@
-// BLUE LOCK DRAFT // FORMATION UI + APP BOOTSTRAP
+// BLUE LOCK DRAFT // FORMATION UI
 // Split from the former root script.js. Classic scripts share the same global scope.
 function waitForAutoBestPaint(){
     return new Promise(resolve=>{
@@ -268,18 +268,3 @@ document.getElementById("backToResults").addEventListener("click",()=>{
     setVisibleScreen(auctionScreen);
     showAuctionComplete();
 });
-
-const initialSaved=loadSavedData();
-if(initialSaved?.gameActive) showResumeCard(initialSaved);
-else restoreSetup(initialSaved);
-const initialRoute=getRouteFromHash();
-
-history.replaceState(
-    {
-        blDraftRoute:initialRoute
-    },
-    "",
-    window.location.href
-);
-
-navigateToRoute(initialRoute,{skipHistory:true});
