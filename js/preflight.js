@@ -105,7 +105,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6');
+    assert.equal(data.APP_VERSION,'0.6.1');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(fs.existsSync(path.join(root,'scripts/preflight.js')),'Documented preflight entry point missing');
