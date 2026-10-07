@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="../">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Lock Draft — Auction Room</title>
+
+    <link rel="icon" type="image/png" href="images/bld-logo.png?v=0.6.1.3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=0.6.1.3">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.1.3">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.1.3">
+</head>
+<body>
+    <div class="background-tech" aria-hidden="true"></div>
+
+
+    <section id="menu-screen" class="menu-screen">
+        <div class="menu-shell">
+            <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
+            <div class="menu-title-wrap">
+                <div class="menu-number">01</div>
+                <h1>BLUE LOCK <span>DRAFT</span></h1>
+                <p>TEAM DRAFT SIMULATOR // UNOFFICIAL FAN PROJECT</p>
+            </div>
+
+            <div id="menuResumePanel" class="menu-resume-panel hidden">
+                <span>LOCAL SESSION DETECTED</span>
+                <strong id="menuResumeMeta">AUCTION IN PROGRESS</strong>
+            </div>
+
+            <div class="menu-actions">
+                <button id="menuNewAuction" class="menu-primary" type="button"><span>NEW AUCTION</span><b>→</b></button>
+                <button id="menuResumeAuction" class="menu-action hidden" type="button"><span>RESUME AUCTION</span><b>CONTINUE</b></button>
+                <button id="menuStandaloneBuilder" class="menu-action menu-builder-action" type="button"><span>TEAM BUILDER</span><b>BUILD ONE SQUAD</b></button>
+                <button id="menuLore" class="menu-action" type="button"><span>LORE</span><b>DATABASE</b></button>
+                <button id="menuHowToPlay" class="menu-action" type="button"><span>HOW TO PLAY</span><b>RULES</b></button>
+                <button id="menuAbout" class="menu-action" type="button"><span>ABOUT</span><b>INFO</b></button>
+            </div>
+
+            <div class="menu-footer-line">
+                <span>DEVELOPED BY <strong>HAMMYDANNY@GITHUB</strong> <i>//</i> WITH THE SUPPORT OF <strong>SYAAFIBWN@GITHUB</strong></span>
+                <span data-app-version> // FAN PROJECT // 2026</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="lore-menu-screen" class="lore-screen hidden">
+        <div class="lore-shell">
+            <header class="lore-header site-header">
+                <div><div class="game-header-small">BL // DATABASE</div>
+                <h1>BLUE LOCK <span>LORE</span></h1>
+                <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p></div>
+                <div class="header-right-controls">
+                    <button id="loreBackToMenu" class="header-utility" type="button">← MAIN MENU</button>
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
+                </div>
+            </header>
+            <div class="lore-actions">
+                <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
+                <button id="loreChemistry" class="menu-action lore-action" type="button"><span>CHEMISTRY</span><b>RELATIONSHIP DATABASE</b></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="character-lore-screen" class="lore-screen hidden">
+        <div class="lore-content-shell">
+            <header class="lore-page-header site-header">
+                <div><div class="game-header-small">BL // CHARACTER DATABASE</div>
+                <h1>CHARACTERS</h1><p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p></div>
+                <div class="header-right-controls">
+                    <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+                    <div class="lore-controls"><input id="characterLoreSearch" aria-label="Search Characters" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></div>
+                </div>
+            </header>
+            <div id="characterLoreGrid" class="character-lore-grid"></div>
+        </div>
+    </section>
+
+    <section id="chemistry-lore-screen" class="lore-screen hidden">
+        <div class="lore-content-shell">
+            <header class="lore-page-header site-header">
+                <div><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
+                <h1>CHEMISTRY</h1><p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p></div>
+                <div class="header-right-controls">
+                    <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+                    <div class="lore-controls"><input id="chemistryLoreSearch" aria-label="Search Chemistry" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></div>
+                </div>
+            </header>
+            <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
+        </div>
+    </section>
+
+    <section id="setup-screen" class="hidden">
+        <header class="setup-logo site-header">
+            <div><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div>
+            <h1>BLUE LOCK <span>DRAFT</span></h1><p>DRAFT // BID // BUILD YOUR XI</p></div>
+            <div class="header-right-controls"><button id="setupBackToMenu" class="header-utility" type="button">← MAIN MENU</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+        </header>
+
+        <div class="setup-box setup-box-wide">
+            <div class="panel-code">SYSTEM_CONFIG // 001</div>
+            <div id="resumeSessionCard" class="resume-session hidden">
+                <div class="resume-session-copy">
+                    <span>LOCAL SESSION DETECTED</span>
+                    <strong id="resumeSessionTitle">UNFINISHED AUCTION</strong>
+                    <small id="resumeSessionMeta"></small>
+                </div>
+                <div class="resume-session-actions">
+                    <button type="button" id="resumeSessionButton">RESUME</button>
+                    <button type="button" id="discardSessionButton">DISCARD</button>
+                </div>
+            </div>
+
+            <div class="setup-section-title">TEAMS</div>
+
+            <div class="team-config team-config-1">
+                <div class="team-config-number">01</div>
+                <div class="team-config-fields">
+                    <label for="team1Name">TEAM 1 NAME</label>
+                    <input type="text" id="team1Name" value="TEAM 1" maxlength="20">
+                    <label for="team1Color">TEAM 1 COLOR</label>
+                    <div class="color-control">
+                        <input type="color" id="team1Color" value="#19a7ff">
+                        <span id="team1ColorValue">#19A7FF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-config team-config-2">
+                <div class="team-config-number">02</div>
+                <div class="team-config-fields">
+                    <label for="team2Name">TEAM 2 NAME</label>
+                    <input type="text" id="team2Name" value="TEAM 2" maxlength="20">
+                    <label for="team2Color">TEAM 2 COLOR</label>
+                    <div class="color-control">
+                        <input type="color" id="team2Color" value="#ff315d">
+                        <span id="team2ColorValue">#FF315D</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="setup-section-title">GAME MODE</div>
+            <div class="game-mode-grid">
+                <button type="button" class="game-mode-card" data-game-mode="quick">
+                    <span>QUICK</span><strong>5v5</strong><small>$5,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="standard">
+                    <span>STANDARD</span><strong>11v11</strong><small>$11,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card active" data-game-mode="full">
+                    <span>FULL SQUAD</span><strong>15v15</strong><small>$15,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="custom">
+                    <span>CUSTOM</span><strong>MANUAL</strong><small>SET YOUR OWN RULES</small>
+                </button>
+            </div>
+            <div class="mode-note">Presets only change budget, bid interval and roster size. Team names, colors and player pool stay yours.</div>
+
+            <div class="setup-section-title">AUCTION SETTINGS</div>
+
+            <div class="settings-grid">
+                <div>
+                    <label for="budget">STARTING BUDGET</label>
+                    <input type="number" id="budget" value="15000" min="50" step="50">
+                </div>
+                <div>
+                    <label for="bidIncrement">BID INTERVAL</label>
+                    <input type="number" id="bidIncrement" value="50" min="1">
+                </div>
+            </div>
+
+            <label for="maxPlayers">MAX PLAYERS PER TEAM</label>
+            <input type="number" id="maxPlayers" value="15" min="1">
+
+            <div class="setup-section-title">PLAYER POOL</div>
+
+            <div class="preset-section category-section">
+                <div class="preset-label">PLAYER CATEGORIES // COMBINE ANY GROUPS</div>
+                <div class="pool-category-grid">
+                    <label><input type="checkbox" data-pool-category="blue-lock-project" checked><span>BLUE LOCK PROJECT<small>ORIGINAL BLUE LOCK PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="original-u20" checked><span>ORIGINAL JAPAN U-20<small>SAE + U-20 MATCH SQUAD</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-five" checked><span>WORLD FIVE<small>SECOND SELECTION WORLD TEAM</small></span></label>
+                    <label><input type="checkbox" data-pool-category="master-strikers" checked><span>MASTER STRIKERS<small>NEL MASTER PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="new-gen-11" checked><span>NEW GENERATION XI<small>KNOWN NG11 THROUGH CH.364</small></span></label>
+                    <label><input type="checkbox" data-pool-category="nel-foreign" checked><span>NEL FOREIGN PLAYERS<small>OVERSEAS NEL CAST</small></span></label>
+                    <label><input type="checkbox" data-pool-category="japan-world-cup" checked><span>JAPAN U-20 WORLD CUP<small>CURRENT JAPAN SELECTION</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-cup-new" checked><span>U-20 WC NEWCOMERS<small>NEW INTERNATIONAL PLAYERS</small></span></label>
+                </div>
+                <div class="preset-note">Categories combine as a union. If a player belongs to multiple checked groups, removing one group will not remove that player while another checked group still includes them. Individual player toggles act as manual overrides.</div>
+            </div>
+
+            <div class="player-pool-toolbar player-database-toolbar">
+                <div class="player-search-wrap">
+                    <span>⌕</span>
+                    <input type="search" id="playerSearch" placeholder="SEARCH PLAYERS..." autocomplete="off">
+                </div>
+                <div class="pool-filter-grid">
+                    <label>GROUP
+                        <select id="playerGroupFilter">
+                            <option value="all">ALL</option>
+                            <option value="blue-lock-project">BLUE LOCK PROJECT</option>
+                            <option value="original-u20">ORIGINAL JAPAN U-20</option>
+                            <option value="world-five">WORLD FIVE</option>
+                            <option value="master-strikers">MASTER STRIKERS</option>
+                            <option value="new-gen-11">NEW GENERATION XI</option>
+                            <option value="nel-foreign">NEL FOREIGN PLAYERS</option>
+                            <option value="japan-world-cup">JAPAN U-20 WORLD CUP</option>
+                            <option value="world-cup-new">U-20 WC NEW</option>
+                        </select>
+                    </label>
+                    <label>ROLE
+                        <select id="playerPositionFilter">
+                            <option value="ALL">ALL</option>
+                            <option value="ATTACK">ATTACK</option>
+                            <option value="MIDFIELD">MIDFIELD</option>
+                            <option value="DEFENCE">DEFENCE</option>
+                            <option value="GK">GK</option>
+                        </select>
+                    </label>
+                    <label>SORT
+                        <select id="playerSort">
+                            <option value="id">PLAYER ID</option>
+                            <option value="ovr">OVR ↓</option>
+                            <option value="sho">SHOOTING ↓</option>
+                            <option value="spd">SPEED ↓</option>
+                            <option value="pas">PASSING ↓</option>
+                            <option value="dri">DRIBBLING ↓</option>
+                            <option value="def">DEFENCE ↓</option>
+                            <option value="name">NAME A-Z</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="pool-actions">
+                    <button type="button" id="selectAllPlayers">SELECT ALL</button>
+                    <button type="button" id="invertPlayers">INVERT</button>
+                    <button type="button" id="clearAllPlayers">CLEAR ALL</button>
+                </div>
+            </div>
+
+            <div class="pool-status">
+                <div>
+                    <span>SELECTED</span>
+                    <strong id="selectedPlayerCount">0 / 0</strong>
+                </div>
+                <div id="poolRequirement" class="pool-requirement">SELECT PLAYERS FOR THE AUCTION</div>
+            </div>
+
+            <div id="playerPoolGrid" class="player-pool-grid"></div>
+            <div id="playerPoolEmpty" class="player-pool-empty hidden">NO PLAYERS MATCH YOUR SEARCH.</div>
+
+            <button id="startGame" class="primary-button">
+                <span>INITIALIZE AUCTION</span><b>→</b>
+            </button>
+            <button id="randomDraftGame" class="primary-button secondary-action">
+                <span>SKIP AUCTION // RANDOM DRAFT</span><b>→</b>
+            </button>
+        </div>
+    </section>
+
+    <section id="auction-screen" class="hidden">
+        <header class="game-header site-header">
+            <div>
+                <div class="game-header-small">BL // LIVE SELECTION</div>
+                <h1>AUCTION <span>ROOM</span></h1>
+                <div class="header-status"><i></i> SYSTEM LIVE</div>
+            </div>
+            <div class="header-right-controls">
+                <div id="playersRemaining" class="players-remaining"></div>
+                <div class="header-mini-actions">
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
+                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
+                    <button id="soundToggle" class="sound-toggle compact-control" type="button"><span class="sound-icon">◖))</span><strong>SFX</strong></button>
+                </div>
+            </div>
+        </header>
+        <div id="auction-content"></div>
+    </section>
+
+    <section id="formation-screen" class="hidden">
+        <header class="game-header formation-header site-header">
+            <div>
+                <div id="formationHeaderCode" class="game-header-small">BL // SQUAD DEPLOYMENT</div>
+                <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
+                <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
+            </div>
+            <div class="header-right-controls">
+                <button id="backToResults" class="header-button compact-control">← RESULTS</button>
+                <div class="header-mini-actions">
+                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
+                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
+                    <button class="sound-toggle compact-control" type="button" data-sound-toggle><span class="sound-icon">◖))</span><strong>SFX</strong></button>
+                </div>
+            </div>
+        </header>
+        <div id="formation-content"></div>
+    </section>
+
+    <div id="game-overlay" class="game-overlay hidden">
+        <div class="overlay-scanline"></div>
+        <div id="overlay-content" class="overlay-content"></div>
+    </div>
+
+
+    <div id="fxLayer" class="fx-layer" aria-hidden="true">
+        <div id="bidFlash" class="bid-flash"></div>
+        <div id="soldBurst" class="sold-burst">SOLD</div>
+    </div>
+
+
+    <div id="infoModal" class="info-modal hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="info-card">
+            <button id="infoModalClose" class="info-close" type="button" aria-label="Close">×</button>
+            <div class="panel-code" id="infoModalCode">BL // DATABASE</div>
+            <h2 id="infoModalTitle">HOW TO PLAY</h2>
+            <div id="infoModalBody" class="info-body"></div>
+            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO PAGE</span><b>→</b></button>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="confirm-card">
+            <div class="panel-code">SYSTEM // CONFIRM ACTION</div>
+            <div class="confirm-mark">!</div>
+            <h2 id="confirmTitle">CONFIRM</h2>
+            <p id="confirmMessage"></p>
+            <div class="confirm-actions">
+                <button id="confirmCancel" type="button" class="pass-button">CANCEL</button>
+                <button id="confirmAccept" type="button" class="primary-button"><span>CONFIRM</span><b>→</b></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <strong>BLUE LOCK DRAFT</strong>
+                <span>UNOFFICIAL FAN PROJECT</span>
+            </div>
+            <p>
+                Blue Lock Draft is an unofficial, non-commercial fan-made project and is not affiliated with,
+                endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock.
+                Blue Lock and related names, characters, and imagery belong to their respective rights holders.
+            </p>
+            <div class="footer-meta">
+                <span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> <i>//</i> WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span>
+                <span data-app-version> // FAN PROJECT // 2026</span>
+            </div>
+        </div>
+    </footer>
+    <script defer src="js/version.js"></script>
+    <script defer src="js/players.js"></script>
+    <script defer src="js/state.js"></script>
+    <script defer src="js/ui/player-stats.js"></script>
+    <script defer src="js/audio.js"></script>
+    <script defer src="js/chemistry.js"></script>
+    <script defer src="js/lore.js"></script>
+    <script defer src="js/formations.js"></script>
+    <script defer src="js/storage.js"></script>
+    <script defer src="js/results.js"></script>
+    <script defer src="js/auction.js"></script>
+    <script defer src="js/ui/auction-ui.js"></script>
+    <script defer src="js/router.js"></script>
+    <script defer src="js/ui/menu.js"></script>
+    <script defer src="js/ui/setup.js"></script>
+    <script defer src="js/standalone-builder.js"></script>
+    <script defer src="js/ui/formation-ui.js"></script>
+    <script defer src="js/app.js"></script>
+</body>
+</html>

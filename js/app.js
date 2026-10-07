@@ -8,7 +8,7 @@ document.querySelectorAll("[data-app-version]").forEach(el=>{
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
-const initialRoute=getRouteFromHash();
+const initialRoute=getRouteFromLocation();
 
 history.replaceState(
     {
