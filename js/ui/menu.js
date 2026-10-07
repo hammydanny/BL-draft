@@ -93,7 +93,7 @@ function openInfoModal(type){
 function closeInfoModal(){document.getElementById("infoModal").classList.add("hidden");}
 
 document.getElementById("menuNewAuction").addEventListener("click",openSetupFromMenu);
-document.getElementById("menuResumeAuction").addEventListener("click",()=>restoreGame(loadSavedData()));
+document.getElementById("menuResumeAuction").addEventListener("click",()=>resumeSavedAuction(loadSavedData()));
 document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
 document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
 document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
@@ -111,5 +111,5 @@ function showConfirm(title,message,onAccept){
 function closeConfirm(){document.getElementById("confirmModal").classList.add("hidden");pendingConfirmAction=null;}
 document.getElementById("confirmCancel").addEventListener("click",closeConfirm);
 document.getElementById("confirmAccept").addEventListener("click",()=>{const fn=pendingConfirmAction;closeConfirm();if(fn)fn();});
-document.getElementById("resumeSessionButton").addEventListener("click",()=>restoreGame(loadSavedData()));
+document.getElementById("resumeSessionButton").addEventListener("click",()=>resumeSavedAuction(loadSavedData()));
 document.getElementById("discardSessionButton").addEventListener("click",()=>showConfirm("DISCARD SAVED AUCTION","This permanently removes the unfinished local auction from this browser.",()=>{clearSavedGame();showResumeCard(null);}));

@@ -180,9 +180,9 @@ function restartAuction(){
     showConfirm("START A NEW AUCTION","Your current auction and saved progress will be cleared.",()=>{
         clearSavedGame();
         uiState={screen:"setup",phase:"setup",turn:null};
-        auctionScreen.classList.add("hidden");formationScreen.classList.add("hidden");setupScreen.classList.remove("hidden");
+
         auctionContent.innerHTML="";playersRemainingDisplay.innerHTML="";
-        saveSetupPreferences();showResumeCard(null);refreshMainMenu();
+        saveSetupPreferences();showResumeCard(null);refreshMainMenu();updateRoute("auctionSetup");
         window.scrollTo({top:0,behavior:"smooth"});
     });
 }

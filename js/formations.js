@@ -587,8 +587,8 @@ function applyBestFormationAndAssignment(n){
 
 function openAuctionTeamBuilder(){
     uiState={
-        screen:"auction-team-builder",
-        phase:"team-builder",
+        screen:"formation",
+        phase:"complete",
         turn:null
     };
 

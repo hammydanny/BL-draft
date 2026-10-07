@@ -165,23 +165,56 @@ check('Legacy/current saves normalize without mutation or storage writes',()=>{
         localStorage.getItem=()=>'null';assert.equal(loadSavedData(),null);
     `);
 });
-check('Hash routes and popstate handler remain available',()=>{
-    const listeners={};
-    const window={location:{href:'https://example.test/#/',hash:'#/'},addEventListener:(name,fn)=>{listeners[name]=fn;}};
+check('Multi-page routes, legacy hashes and navigation helpers',()=>{
+    const listeners={},navigation=[];
+    const location={
+        href:'https://example.test/BL-draft/index.html',
+        hash:'',
+        assign(url){navigation.push({type:'assign',url:String(url)});},
+        replace(url){navigation.push({type:'replace',url:String(url)});}
+    };
+    const document={baseURI:'https://example.test/BL-draft/index.html',querySelector:selector=>selector==='base'?{href:'https://example.test/BL-draft/'}:null};
     const history={replaceState(state,unused,url){this.state=state;this.url=String(url);},pushState(state,unused,url){this.state=state;this.url=String(url);}};
-    const context=vm.createContext({window,history,URL});
+    const window={location,addEventListener:(name,fn)=>{listeners[name]=fn;}};
+    const context=vm.createContext({window,document,history,URL});
+    const setLocation=(path,hash='')=>{
+        location.href=`https://example.test/BL-draft/${path}${hash}`;
+        location.hash=hash;
+        document.baseURI=location.href;
+    };
     vm.runInContext(read('js/router.js'),context);
-    for(const [route,hash] of Object.entries(vm.runInContext('APP_ROUTES',context))){
-        window.location.hash=hash;
-        assert.equal(vm.runInContext('getRouteFromHash()',context),route);
-        vm.runInContext(`updateRoute(${JSON.stringify(route)},{replace:true})`,context);
-        assert.equal(history.state.blDraftRoute,route);
-        assert.equal(new URL(history.url).hash,hash);
+    for(const [route,routePath] of Object.entries(vm.runInContext('APP_ROUTES',context))){
+        setLocation(routePath);
+        assert.equal(vm.runInContext('getRouteFromLocation()',context),route,`${routePath}: route resolution`);
+        assert.equal(vm.runInContext(`canonicalRouteUrl(${JSON.stringify(route)}).href`,context),`https://example.test/BL-draft/${routePath}`);
     }
-    window.location.hash='#/unknown';assert.equal(vm.runInContext('getRouteFromHash()',context),'menu');
+    const legacy={
+        '#/':'menu','#/lore':'lore','#/team-builder':'standaloneTeamBuilder','#/auction':'auctionSetup',
+        '#/auction/results':'auctionResults','#/auction/team-builder':'auctionTeamBuilder'
+    };
+    for(const [hash,route] of Object.entries(legacy)){
+        setLocation('index.html',hash);
+        assert.equal(vm.runInContext('getRouteFromLocation()',context),route,`${hash}: legacy route`);
+    }
+    setLocation('index.html');navigation.length=0;
+    vm.runInContext('updateRoute("auctionResults")',context);
+    assert.equal(navigation.at(-1).type,'assign');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/results.html');
+    setLocation('index.html','#/auction/team-builder');navigation.length=0;
+    assert.equal(vm.runInContext('normalizeCurrentRoute(getRouteFromLocation())',context),false);
+    assert.equal(navigation.at(-1).type,'replace');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder.html');
     vm.runInContext('navigateToRoute=(route,options)=>{globalThis.routed={route,options};}',context);
-    window.location.hash='#/lore';listeners.popstate();
+    setLocation('lore.html');listeners.popstate();
     assert.equal(context.routed.route,'lore');assert.equal(context.routed.options.skipHistory,true);
+});
+check('Auction page state stays aligned with canonical URLs',()=>{
+    const formations=read('js/formations.js'),menu=read('js/ui/menu.js'),results=read('js/results.js'),router=read('js/router.js');
+    assert(/function openAuctionTeamBuilder\(\)[\s\S]*?screen:"formation"[\s\S]*?phase:"complete"/.test(formations),'Team Builder must preserve completed-auction state');
+    assert.equal((menu.match(/resumeSavedAuction\(loadSavedData\(\)\)/g)||[]).length,2,'Both Resume controls must route through saved-state navigation');
+    assert(/function restartAuction\(\)[\s\S]*?updateRoute\("auctionSetup"\)/.test(results),'New Auction must navigate to auction/setup.html');
+    assert(router.includes('auctionRouteForSavedState'),'Saved auction route helper missing');
+    assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
     const css=read('style.css').replace(/\/\*[\s\S]*?\*\//g,'');
