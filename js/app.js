@@ -10,6 +10,8 @@ if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
 const initialRoute=getRouteFromLocation();
 
+if(!normalizeCurrentRoute(initialRoute)) return;
+
 history.replaceState(
     {
         blDraftRoute:initialRoute

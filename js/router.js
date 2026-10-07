@@ -2,13 +2,8 @@
 const APP_ROUTES={menu:"index.html",lore:"lore.html",auctionSetup:"auction/setup.html",auctionRoom:"auction/room.html",auctionResults:"auction/results.html",auctionTeamBuilder:"auction/team-builder.html",standaloneTeamBuilder:"team-builder.html"};
 function routePath(route){return APP_ROUTES[route]||APP_ROUTES.menu;}
 function appRootUrl(){
-    const currentPath=window.location.pathname;
-    const auctionMarker="/auction/";
-    const auctionIndex=currentPath.indexOf(auctionMarker);
-    if(auctionIndex>=0){
-        return new URL(currentPath.slice(0,auctionIndex+1),window.location.origin);
-    }
-    return new URL(currentPath.slice(0,currentPath.lastIndexOf("/")+1)||"/",window.location.origin);
+    const base=new URL(document.querySelector("base")?.href||"./",document.baseURI);
+    return new URL("./",base);
 }
 function appRelativePath(){
     const root=appRootUrl(),current=new URL(window.location.href);
@@ -16,10 +11,19 @@ function appRelativePath(){
     if(path.startsWith(root.pathname))path=path.slice(root.pathname.length);
     return path.replace(/^\/+/,"");
 }
+function canonicalRouteUrl(route){return new URL(routePath(route),appRootUrl());}
 function getRouteFromLocation(){const path=appRelativePath();if(path===""||path==="index.html")return "menu";if(path==="lore.html")return "lore";if(path==="team-builder.html")return "standaloneTeamBuilder";if(path==="auction/setup.html")return "auctionSetup";if(path==="auction/room.html")return "auctionRoom";if(path==="auction/results.html")return "auctionResults";if(path==="auction/team-builder.html")return "auctionTeamBuilder";const hash=window.location.hash||"";if(hash==="#/lore")return "lore";if(hash==="#/team-builder")return "standaloneTeamBuilder";if(hash==="#/auction/results")return "auctionResults";if(hash==="#/auction/team-builder")return "auctionTeamBuilder";if(hash==="#/auction")return "auctionSetup";return "menu";}
 function getRouteFromHash(){return getRouteFromLocation();}
 function getScreenRoute(screen){if(screen===menuScreen)return "menu";if(screen===setupScreen)return "auctionSetup";if(screen===auctionScreen)return uiState?.phase==="complete"?"auctionResults":"auctionRoom";if(screen===formationScreen)return formationTeamNumber===0?"standaloneTeamBuilder":"auctionTeamBuilder";if(screen?.id==="lore-menu-screen"||screen?.id==="character-lore-screen"||screen?.id==="chemistry-lore-screen")return "lore";return null;}
 function updateRoute(route,{replace=false}={}){const target=routePath(route),current=appRelativePath();if(current===target){if(window.location.hash)history.replaceState({blDraftRoute:route},"",window.location.pathname+window.location.search);return;}const url=new URL(target,appRootUrl());if(replace)window.location.replace(url.href);else window.location.assign(url.href);}
 function setVisibleScreen(screen,options={}){[menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));if(screen)screen.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});if(!options.skipHistory){const route=getScreenRoute(screen);if(route&&appRelativePath()!==routePath(route))updateRoute(route);}}
 window.addEventListener("popstate",()=>navigateToRoute(getRouteFromLocation(),{skipHistory:true}));
+function normalizeCurrentRoute(route){
+    const target=canonicalRouteUrl(route),current=new URL(window.location.href);
+    if(current.pathname!==target.pathname||current.search!==target.search||current.hash!==target.hash){
+        window.location.replace(target.href);
+        return false;
+    }
+    return true;
+}
 function navigateToRoute(route,options={}){switch(route){case "menu":goToMainMenu({...options,skipHistory:true});break;case "lore":if(typeof openLoreMenu==="function")openLoreMenu({...options,skipHistory:true});else setVisibleScreen(document.getElementById("lore-menu-screen"),{...options,skipHistory:true});break;case "standaloneTeamBuilder":openStandaloneBuilder();break;case "auctionSetup":uiState={screen:"setup",phase:"setup",turn:null};setVisibleScreen(setupScreen,{...options,skipHistory:true});renderPlayerPool();break;case "auctionRoom":if(uiState?.phase==="complete"){setVisibleScreen(auctionScreen,{...options,skipHistory:true});showAuctionComplete();}else if(loadSavedData()?.gameActive)restoreGame(loadSavedData());else navigateToRoute("auctionSetup",{skipHistory:true});break;case "auctionResults":if(uiState?.phase==="complete"){setVisibleScreen(auctionScreen,{...options,skipHistory:true});showAuctionComplete();}else if(loadSavedData()?.gameActive){restoreGame(loadSavedData());if(uiState?.phase==="complete")showAuctionComplete();else navigateToRoute("auctionRoom",{skipHistory:true});}else navigateToRoute("auctionSetup",{skipHistory:true});break;case "auctionTeamBuilder":if(uiState?.phase==="complete")openAuctionTeamBuilder();else if(loadSavedData()?.gameActive){restoreGame(loadSavedData());if(uiState?.phase==="complete")openAuctionTeamBuilder();else navigateToRoute("auctionRoom",{skipHistory:true});}else navigateToRoute("auctionSetup",{skipHistory:true});break;default:goToMainMenu({...options,skipHistory:true});break;}}
