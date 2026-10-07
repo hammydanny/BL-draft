@@ -72,6 +72,10 @@ const players = [
     { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:86, sho:85, spd:84, def:65, pas:79, dri:82, gk:49 } }
 ];
 
+players.forEach(player=>{
+    if(player?.image) player.image=new URL(player.image,document.baseURI).href;
+});
+
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
 
 function squadRatings(teamNumber){

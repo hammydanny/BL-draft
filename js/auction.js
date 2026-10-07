@@ -140,7 +140,9 @@ function startGame(){
     gameOverlay.classList.add("hidden");
     gameOverlay.classList.remove("overlay-out");
     setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
-    updatePlayersRemaining();showCoinFlip();
+    updatePlayersRemaining();
+    updateRoute("auctionRoom");
+    showCoinFlip();
 }
 
 function shufflePlayers(list){
@@ -161,8 +163,11 @@ function startRandomDraft(){
     ];
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
+    saveGame();
     setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
-    updatePlayersRemaining();showAuctionComplete();
+    updatePlayersRemaining();
+    updateRoute("auctionResults");
+    showAuctionComplete();
 }
 
 function showCoinFlip(){

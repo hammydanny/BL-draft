@@ -8,8 +8,10 @@ document.querySelectorAll("[data-app-version]").forEach(el=>{
 const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
-const initialRoute=getRouteFromHash();
+const initialRoute=getRouteFromLocation();
+const routeIsCanonical=normalizeCurrentRoute(initialRoute);
 
+if(routeIsCanonical){
 history.replaceState(
     {
         blDraftRoute:initialRoute
@@ -19,3 +21,4 @@ history.replaceState(
 );
 
 navigateToRoute(initialRoute,{skipHistory:true});
+}

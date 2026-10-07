@@ -95,6 +95,7 @@ function showAuctionComplete(){
     document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
+    if(appRelativePath()!==routePath("auctionResults"))updateRoute("auctionResults");
 }
 function shareFormationSnapshot(n){
     const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3";
