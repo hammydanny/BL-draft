@@ -2,7 +2,7 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 // ============================================================================
-// CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 363
+// CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 364
 // ----------------------------------------------------------------------------
 // Blue Lock does NOT publish an official 0-100 chemistry statistic.
 // These scores are a fan-game model. Strong overrides are based on demonstrated
@@ -46,7 +46,7 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Tabito Karasu","Eita Otoya",98,"ASSASSIN × NINJA","Their play compatibility is repeatedly emphasized; short exchanges and off-ball movement let them read each other at speed."],
   ["Tabito Karasu","Yo Hiori",98,"CROW × ICE","Bambi Osaka history, personal trust, and chapter 337's France match: Karasu directly assists Hiori's equalizer."],
   ["Seishiro Nagi","Reo Mikage",95,"ESTABLISHED DUO","Their creator-finisher understanding is exceptional from Team V through Manshine, but the manga explicitly frames their repeated dependence as a ceiling on further growth."],
-  ["Ranze Kurona","Jin Kiyora",92,"DOG HUNT","They share Third Selection/Bastard history, and chapter 363 gives them a direct two-man trap: Kurona presses Teddy while Kiyora seals the escape route."],
+  ["Ranze Kurona","Jin Kiyora",92,"DOG HUNT","They share Third Selection/Bastard history, and chapter 364 gives them a direct two-man trap: Kurona presses Teddy while Kiyora seals the escape route."],
   ["Jin Kiyora","Michael Kaiser",95,"BORDERLINE PASS","PXG: Kiyora's extreme-backspin pass stopped perfectly for Kaiser's Magnus, directly creating Kaiser's goal."],
   ["Yoichi Isagi","Meguru Bachira",96,"MONSTER LINK","From Team Z through the Second Selection, Bachira repeatedly seeks the 'monster' he recognizes in Isagi and trusts him to reach the same attacking picture."],
   ["Yoichi Isagi","Seishiro Nagi",94,"SECOND-SELECTION REACTION","Their improvised combinations repeatedly converted each other's weapons into unpredictable scoring routes."],
@@ -178,7 +178,7 @@ function chemistryRelation(a,b){
     return {
         score:55,
         label:"UNPROVEN LINK",
-        reason:"No sustained shared on-field system has been demonstrated in Blue Lock through chapter 363.",
+        reason:"No sustained shared on-field system has been demonstrated in Blue Lock through chapter 364.",
         contexts:[]
     };
 }
@@ -378,7 +378,7 @@ function chemistryHud(teamNumber,team){
       <div class="chem-score">
         <span>TEAM CHEMISTRY</span>
         <strong>${c.overall||"--"}</strong>
-        <small>FAN MODEL // CANON GAMEPLAY THROUGH CH.363</small>
+        <small>FAN MODEL // CANON GAMEPLAY THROUGH CH.364</small>
       </div>
       <div class="chemistry-summary">
         <div><span>TACTICAL LINKS</span><strong>${c.activeLinks}<small> / ${c.possibleLinks}</small></strong></div>
