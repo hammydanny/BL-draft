@@ -198,8 +198,8 @@ img.image-fallback{min-height:70px;background:repeating-linear-gradient(135deg,#
 .menu-actions button:hover{
     transform:translateX(5px);
     color:#fff;
-    background:linear-gradient(100deg,#0872d4,#159fff);
-    border-color:var(--blue);
+    background:linear-gradient(100deg,#0872d4,#159fff) !important;
+    border-color:var(--blue) !important;
     box-shadow:0 10px 35px rgba(20,156,255,.18);
     filter:none;
 }
@@ -1706,7 +1706,10 @@ body::-webkit-scrollbar-thumb:hover,
 /* =========================================================
    V15 // STANDALONE GLOBAL TEAM BUILDER
    ========================================================= */
-.menu-builder-action{border-color:#225b80!important;background:linear-gradient(90deg,rgba(20,156,255,.08),rgba(88,54,255,.04))!important}
+.menu-builder-action{
+    border-color:#173b57;
+    background:rgba(4,15,25,.78);
+}
 .standalone-builder-label{
   display:flex;flex-direction:column;justify-content:center;min-width:145px;padding:9px 13px;
   background:#06111c;border:1px solid #1a587c
