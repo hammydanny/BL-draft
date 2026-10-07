@@ -9,9 +9,9 @@ const initialSaved=loadSavedData();
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
 const initialRoute=getRouteFromLocation();
+const routeIsCanonical=normalizeCurrentRoute(initialRoute);
 
-if(!normalizeCurrentRoute(initialRoute)) return;
-
+if(routeIsCanonical){
 history.replaceState(
     {
         blDraftRoute:initialRoute
@@ -21,3 +21,4 @@ history.replaceState(
 );
 
 navigateToRoute(initialRoute,{skipHistory:true});
+}
