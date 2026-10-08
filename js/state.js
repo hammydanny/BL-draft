@@ -62,6 +62,7 @@ function esc(value) {
 
 let siteErrorTimer=null;
 function showSiteError(message,title="INPUT ERROR"){
+    playSfx("error");
     let box=document.getElementById("siteError");
     if(!box){
         box=document.createElement("div");

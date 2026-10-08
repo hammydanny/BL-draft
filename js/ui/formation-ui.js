@@ -137,6 +137,7 @@ function createPlayerInfoSidebar(team){
 }
 
 function renderFormationBuilder(){
+    configureTeamBuilderHeader(formationTeamNumber===0);
     hideChemistryTooltip();
     const standalone=formationTeamNumber===0;
     const team=teamByNumber(formationTeamNumber);
@@ -253,7 +254,7 @@ function renderFormationBuilder(){
     applyFormationMoveFx();
     if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();
 }
-document.getElementById("backToResults")?.addEventListener("click",()=>{
+document.getElementById("backToResults").addEventListener("click",()=>{
     hideChemistryTooltip();
 
     if(formationTeamNumber===0||uiState.screen==="standalone-builder"){

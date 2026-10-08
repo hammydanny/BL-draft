@@ -76,8 +76,9 @@ function createFullHistory(){
 function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
+    if(!wasComplete)playSfx("result");
     if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionResults")){updateRoute("auctionResults");return;}
-    playersRemainingDisplay.innerHTML="COMPLETE";
+    updateSiteDirectory(auctionScreen);
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
       <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>

@@ -115,6 +115,7 @@ async function autoBestStandaloneTeam(){
         }
 
         selectedFormationPlayerId=null;
+        playSfx("confirm");
         saveStandaloneBuilderState();
 
         // Place the calculated players before removing the loader.

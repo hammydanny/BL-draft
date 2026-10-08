@@ -200,22 +200,8 @@ document.querySelectorAll("[data-pool-category]").forEach(input=>{
 });
 // The destination route renders the pool after restoring setup preferences.
 
-const initializeAuctionButton=document.getElementById("startGame");
-const randomDraftButton=document.getElementById("randomDraftGame");
-if(initializeAuctionButton){
-    initializeAuctionButton.type="button";
-    initializeAuctionButton.addEventListener("click",event=>{
-        event.preventDefault();
-        if(typeof startGame==="function")startGame();
-    });
-}
-if(randomDraftButton){
-    randomDraftButton.type="button";
-    randomDraftButton.addEventListener("click",event=>{
-        event.preventDefault();
-        if(typeof startRandomDraft==="function")startRandomDraft();
-    });
-}
+document.getElementById("startGame").addEventListener("click",startGame);
+document.getElementById("randomDraftGame").addEventListener("click",startRandomDraft);
 document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
 document.getElementById("selectAllPlayers").addEventListener("click", () => {
     Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=true);

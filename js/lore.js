@@ -219,16 +219,13 @@ function resetLoreFilters(kind){
     for(const [control,value] of Object.entries(defaults)){const input=document.getElementById(kind+"Lore"+control);if(input)input.value=value;}
     if(kind==="character")renderCharacterLore();else renderChemistryLore();
 }
-function openLoreMenu(){setVisibleScreen(document.getElementById("lore-menu-screen"));}
-function openCharacterLore(){setVisibleScreen(document.getElementById("character-lore-screen"));renderCharacterLore();}
-function openChemistryLore(){setVisibleScreen(document.getElementById("chemistry-lore-screen"));renderChemistryLore();}
+function openLoreMenu(options={}){setVisibleScreen(document.getElementById("lore-menu-screen"),options);}
+function openCharacterLore(options={}){setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();}
+function openChemistryLore(options={}){setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();}
 function bindLoreUI(){
     document.getElementById("menuLore")?.addEventListener("click",openLoreMenu);
-    document.getElementById("loreBackToMenu")?.addEventListener("click",()=>{setVisibleScreen(menuScreen);refreshMainMenu();});
     document.getElementById("loreCharacters")?.addEventListener("click",openCharacterLore);
     document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);
-    document.getElementById("charactersBackToLore")?.addEventListener("click",openLoreMenu);
-    document.getElementById("chemistryBackToLore")?.addEventListener("click",openLoreMenu);
     for(const [kind,render] of [["character",renderCharacterLore],["chemistry",renderChemistryLore]]){
       document.getElementById(kind+"LoreSearch")?.addEventListener("input",render);
       const controls=kind==="character"?["Position","Grade","Sort"]:["Type","Tier","Sort"];

@@ -141,7 +141,7 @@ function setFormationCaptain(playerId){
     const n=formationTeamNumber;
     if(!assignedIds(n).has(playerId)){showSiteError("Place the player in the active formation before making them captain.","CAPTAIN MUST BE DEPLOYED");return;}
     formationCaptainByTeam[n]=formationCaptainByTeam[n]===playerId?null:playerId;
-    renderFormationBuilder();saveGame();
+    playSfx("confirm");renderFormationBuilder();saveGame();
 }
 function formationRoleScore(player,label){
     const effective=effectiveOVR(player,label);
@@ -736,6 +736,8 @@ async function autoBestXI(){
         }
 
         selectedFormationPlayerId=null;
+        playSfx("confirm");
+
         // Render the calculated formation while the loading screen is still active.
         renderFormationBuilder();
         saveGame();
@@ -790,6 +792,7 @@ function movePlayerToSlot(playerId,slotIndex){
         sourceSlot:sourceSlot!==undefined?Number(sourceSlot):null,
         displacedId:targetPlayer&&targetPlayer.id!==playerId?targetPlayer.id:null
     };
+    playSfx(targetPlayer&&targetPlayer.id!==playerId?"swap":"drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -798,6 +801,7 @@ function movePlayerToBench(playerId){
     const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
     if(formationCaptainByTeam[n]===playerId)formationCaptainByTeam[n]=null;
+    playSfx("drop");
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
 }
@@ -976,6 +980,7 @@ function moveFormationPointerDrag(event){
         if(d.originSlot)d.originSlot.classList.add("pointer-drag-origin");
         d.preview=createFormationPointerPreview(d.player,event.clientX,event.clientY);
         updateLiveFormationTargets(d.id);
+        playSfx("select");
         document.body.classList.add("formation-pointer-dragging");
         d.scrollFrame=requestAnimationFrame(scrollFormationDragFrame);
     }

@@ -40,9 +40,9 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
         assert(/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
         assert(!/\btype\s*=\s*["']module["']/i.test(scriptTags[index]),'Keep classic scripts');
     }
-    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/fx.js','js/chemistry.js',
+    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
-        'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/setup.js',
+        'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
         assert(scripts.includes(expected[i]),`Missing ${expected[i]}`);
@@ -109,7 +109,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.6');
+    assert.equal(data.APP_VERSION,'0.6.6.1');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -266,10 +266,45 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
 check('Auction page state stays aligned with canonical URLs',()=>{
     const formations=read('js/formations.js'),menu=read('js/ui/menu.js'),results=read('js/results.js'),router=read('js/router.js');
     assert(/function openAuctionTeamBuilder\(\)[\s\S]*?screen:"formation"[\s\S]*?phase:"complete"/.test(formations),'Team Builder must preserve completed-auction state');
-    assert.equal((menu.match(/resumeSavedAuction\(loadSavedData\(\)\)/g)||[]).length,2,'Both Resume controls must route through saved-state navigation');
+    for(const id of ['menuResumeAuction','resumeSessionButton'])assert(menu.includes(`getElementById("${id}").addEventListener("click",()=>resumeSavedAuction(loadSavedData()))`),`${id}: saved-state navigation`);
+    assert(read('js/ui/site-directory.js').includes('resumeSavedAuction(loadSavedData())'),'Directory Resume must reuse save normalization');
     assert(/function restartAuction\(\)[\s\S]*?updateRoute\("auctionSetup"\)/.test(results),'New Auction must navigate to auction/setup.html');
     assert(router.includes('auctionRouteForSavedState'),'Saved auction route helper missing');
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
+});
+check('Canonical directory shell, global help and contextual recovery targets',()=>{
+    const pages=['index.html','lore.html','team-builder.html','auction/setup.html','auction/room.html','auction/results.html','auction/team-builder.html'];
+    const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
+    const expected=shell(html);assert(expected,'Missing global directory');
+    for(const page of pages){
+        const content=read(page);
+        assert.equal(shell(content),expected,`${page}: header shell differs`);
+        assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,`${page}: global header count`);
+        assert.equal((content.match(/id="infoModal"/g)||[]).length,1,`${page}: shared information modal`);
+        assert.equal((content.match(/data-how-to-play/g)||[]).length,1,`${page}: one global help action`);
+        assert(!/siteSidebar|site-sidebar|site-header-football|data-site-nav/.test(content),`${page}: obsolete chrome`);
+        for(const id of ['startGame','randomDraftGame','playersRemaining','backToResults','formationHeaderTitle'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
+        assert(content.includes('class="auction-context-actions"'),`${page}: Auction history target`);
+    }
+    assert(fs.existsSync(path.join(root,'images/bld-logo-header.webp')),'BLD logo missing');
+    const directory=read('js/ui/site-directory.js'),menu=read('js/ui/menu.js'),setup=read('js/ui/setup.js');
+    assert(directory.includes('button.hidden=!saved?.gameActive'),'Hide unavailable Resume');
+    assert(directory.includes('getElementById("backToResults").hidden=standalone'),'No Results action in standalone');
+    assert(menu.includes('openInfoModal("how")'),'Help must use the existing information modal');
+    assert.equal((scripts.map(read).join('\n').match(/function openInfoModal\(/g)||[]).length,1,'Duplicate modal implementation');
+    for(const [id,fn] of [['startGame','startGame'],['randomDraftGame','startRandomDraft']])assert(setup.includes(`getElementById("${id}").addEventListener("click",${fn})`),`${id}: required handler`);
+    assert(read('js/ui/auction-ui.js').includes('querySelector(".auction-context-actions")'),'Undo/Redo injection target');
+    assert(!/history.pushState/.test(read('js/auction.js')),'Setup must load a destination document');
+    assert(!/site-sidebar|site-header-football|sidebar-open|HEADER FIX/.test(read('css/site-header.css')),'Obsolete header CSS');
+    for(const file of scripts)assert(!/initPersistentSiteChrome|data-site-sidebar|data-site-nav/.test(read(file)),`Obsolete listener in ${file}`);
+});
+check('Original sound engine, persistence and separate visual feedback',()=>{
+    const audio=read('js/audio.js'),fx=read('js/fx.js');
+    for(const name of ['ensureAudio','playSfx','toggleSound','unlockAudio'])assert(audio.includes(`function ${name}(`),`Missing ${name}`);
+    assert(audio.includes('"blAuctionSound"'),'Preserve sound preference key');
+    for(const name of ['reveal','bid','pass','error','sold','nav','select','drop','confirm','back','toggle','result','outbid','swap','warning'])assert(audio.includes(`name==="${name}"`),`Missing original ${name} sound`);
+    assert(!/function triggerFx/.test(audio),'Audio must not duplicate visual FX');
+    assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
     const css=read('style.css').replace(/\/\*[\s\S]*?\*\//g,'');
@@ -282,7 +317,7 @@ check('CSS loader is unique and obsolete global Back code is absent',()=>{
 check('HTML IDs, contextual navigation, and chapter labels',()=>{
     const ids=[...html.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map(match=>match[1]);
     assert.equal(new Set(ids).size,ids.length,'Duplicate HTML IDs');
-    for(const id of ['siteSidebar','menu-screen','setup-screen','auction-screen','formation-screen','menuNewAuction','menuStandaloneBuilder','menuLore'])assert(ids.includes(id),`Missing ${id}`);
+    for(const id of ['siteDirectory','siteBreadcrumb','menu-screen','setup-screen','auction-screen','formation-screen','menuNewAuction','menuStandaloneBuilder','menuLore'])assert(ids.includes(id),`Missing ${id}`);
     for(const src of ['index.html','style.css',...scripts])assert(!/(?:chapter\s+|ch\.\s*)363\b/i.test(read(src)),`Old chapter label in ${src}`);
     assert(!/initialSaved|getRouteFromHash|history\.replaceState/.test(read('js/ui/formation-ui.js')),'Bootstrap still in Formation UI');
     assert(!/const\s+APP_ROUTES|function\s+navigateToRoute/.test(read('js/ui/menu.js')),'Router still in Menu UI');
@@ -296,8 +331,8 @@ function appContext(initialStorage={},hash='#/'){
         return {id,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty(){}},
             classList:{add(...names){names.forEach(n=>classes.add(n));},remove(...names){names.forEach(n=>classes.delete(n));},
                 contains:name=>classes.has(name),toggle(name,force){const add=force??!classes.has(name);if(add)classes.add(name);else classes.delete(name);}},
-            addEventListener(){},setAttribute(){},removeAttribute(){},appendChild(){},remove(){},focus(){},select(){},
-            querySelector(){return null;},querySelectorAll(){return [];},closest(){return null;}};
+            addEventListener(){},setAttribute(){},removeAttribute(){},appendChild(){},insertBefore(){},remove(){},focus(){},select(){},
+            querySelector(selector){return ['.auction-context-actions','.directory-backdrop'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
     };
     const element=id=>{if(!elements.has(id))elements.set(id,makeElement(id));return elements.get(id);};
     for(const match of html.matchAll(/<[^>]+\bid=["']([^"']+)["'][^>]*>/g)){
@@ -307,11 +342,11 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,getElementById:element,querySelector(){return null;},querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,getElementById:element,querySelector:selector=>selector==='.site-header'?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
-    const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(){},scrollTo(){}};
+    const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(){},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){}})};
     const history={state:null,replaceState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;},
         pushState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;}};
     const context=vm.createContext({document,window,history,localStorage,URL,console,assert,

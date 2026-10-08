@@ -1,40 +1,6 @@
 // BLUE LOCK DRAFT // MENU UI
-function initPersistentSiteChrome(){
-    const sidebar=document.getElementById("siteSidebar");
-    if(!sidebar)return;
-    const toggleButtons=document.querySelectorAll("[data-site-sidebar-toggle]");
-    const closeButtons=sidebar.querySelectorAll("[data-site-sidebar-close]");
-    const closeSidebar=()=>{
-        sidebar.classList.remove("is-open");
-        sidebar.setAttribute("aria-hidden","true");
-        toggleButtons.forEach(button=>button.setAttribute("aria-expanded","false"));
-        document.body.classList.remove("sidebar-open");
-    };
-    const openSidebar=()=>{
-        sidebar.classList.add("is-open");
-        sidebar.setAttribute("aria-hidden","false");
-        toggleButtons.forEach(button=>button.setAttribute("aria-expanded","true"));
-        document.body.classList.add("sidebar-open");
-        sidebar.querySelector(".site-sidebar-close")?.focus();
-    };
-    toggleButtons.forEach(button=>button.addEventListener("click",()=>sidebar.classList.contains("is-open")?closeSidebar():openSidebar()));
-    closeButtons.forEach(button=>button.addEventListener("click",closeSidebar));
-    document.addEventListener("keydown",event=>{if(event.key==="Escape"&&sidebar.classList.contains("is-open"))closeSidebar();});
-    sidebar.querySelectorAll("[data-site-nav]").forEach(button=>button.addEventListener("click",()=>{
-        const action=button.getAttribute("data-site-nav");
-        closeSidebar();
-        if(action==="home")goToMainMenu();
-        else if(action==="new-auction")openSetupFromMenu();
-        else if(action==="resume")resumeSavedAuction(loadSavedData());
-        else if(action==="builder")openStandaloneBuilder();
-        else if(action==="lore")updateRoute("lore");
-        else if(action==="how-to-play")openInfoModal("how");
-        else if(action==="about")openInfoModal("about");
-    }));
-}
-initPersistentSiteChrome();
-
 function refreshMainMenu(){
+    refreshDirectoryResume();
     const saved=loadSavedData();
     const hasGame=!!saved?.gameActive;
     const resume=document.getElementById("menuResumeAuction");
@@ -47,6 +13,7 @@ function refreshMainMenu(){
     }
 }
 function goToMainMenu(options={}){
+    if(uiState.screen==="setup")saveSetupPreferences();
     if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
 
     if(!options.skipHistory&&!historyOnlyNavigation()&&appRelativePath()!==routePath("menu")){updateRoute("menu");return;}
@@ -70,7 +37,6 @@ function goToMainMenu(options={}){
     setVisibleScreen(menuScreen,options);
     refreshMainMenu();
 }
-document.querySelectorAll("[data-main-menu]").forEach(b=>b.addEventListener("click",goToMainMenu));
 
 function openSetupFromMenu(){
     const saved=loadSavedData();
@@ -89,7 +55,9 @@ function openSetupFromMenu(){
     setVisibleScreen(setupScreen);
     renderPlayerPool();
 }
+let infoModalReturnFocus=null;
 function openInfoModal(type){
+    infoModalReturnFocus=document.activeElement;
     const modal=document.getElementById("infoModal");
     const title=document.getElementById("infoModalTitle");
     const code=document.getElementById("infoModalCode");
@@ -119,15 +87,28 @@ function openInfoModal(type){
           <div class="info-section"><p><strong>UNDO / REDO</strong> reverses or repeats auction actions. <strong>PARTIAL SQUADS</strong> use only deployed players. <strong>STANDALONE TEAM BUILDER</strong> makes a separate squad. Both modes save locally in this browser.</p></div>`;
     }
     modal.classList.remove("hidden");
+    document.getElementById("infoModalClose").focus();
 }
-function closeInfoModal(){document.getElementById("infoModal").classList.add("hidden");}
+function closeInfoModal(){
+    document.getElementById("infoModal").classList.add("hidden");
+    if(infoModalReturnFocus?.closest(".site-directory")&&window.matchMedia("(max-width: 1050px)").matches){
+        document.getElementById("directoryMenuToggle").focus();
+    }else if(infoModalReturnFocus?.isConnected)infoModalReturnFocus.focus();
+}
+document.getElementById("infoModal").addEventListener("keydown",event=>{
+    if(event.key==="Escape"){event.preventDefault();closeInfoModal();return;}
+    if(event.key!=="Tab")return;
+    const controls=[...event.currentTarget.querySelectorAll('button,a[href],input,select,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
+    const first=controls[0],last=controls.at(-1);
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
 
 document.getElementById("menuNewAuction").addEventListener("click",openSetupFromMenu);
 document.getElementById("menuResumeAuction").addEventListener("click",()=>resumeSavedAuction(loadSavedData()));
 document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
 document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
 document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
-document.getElementById("setupBackToMenu")?.addEventListener("click",()=>{saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();});
 document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);
 document.getElementById("infoModalDone").addEventListener("click",closeInfoModal);
 document.getElementById("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfoModal();});

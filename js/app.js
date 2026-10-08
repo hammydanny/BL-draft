@@ -22,5 +22,6 @@ history.replaceState(
 );
 
 navigateToRoute(initialRoute,{skipHistory:true});
+updateSiteDirectory();
 if(!pendingRoutePath)document.documentElement.classList.remove("app-initializing");
 }

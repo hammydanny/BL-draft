@@ -19,7 +19,18 @@ function appRelativePath(){
     if(path.startsWith(root.pathname))path=path.slice(root.pathname.length);
     return path.replace(/^\/+/,"");
 }
-function canonicalRouteUrl(route){return new URL(routePath(route),appRootUrl());}
+function databaseViewFromLocation(){
+    const view=new URL(window.location.href).searchParams.get("view");
+    return view==="characters"||view==="chemistry"?view:"lore";
+}
+function databaseViewForScreen(screen){
+    return screen?.id==="character-lore-screen"?"characters":screen?.id==="chemistry-lore-screen"?"chemistry":"lore";
+}
+function canonicalRouteUrl(route,{databaseView=null}={}){
+    const url=new URL(routePath(route),appRootUrl());
+    if(route==="lore"&&(databaseView==="characters"||databaseView==="chemistry"))url.searchParams.set("view",databaseView);
+    return url;
+}
 function legacyHashRoute(){
     const path=appRelativePath();
     if(path!==""&&path!=="index.html")return null;
@@ -83,7 +94,7 @@ function assignLocation(url,route){
     if(typeof window.location.assign==="function")window.location.assign(url.href);
     else history.pushState({blDraftRoute:route},"",url.href);
 }
-function updateRoute(route,{replace=false}={}){
+function updateRoute(route,{replace=false,databaseView=null}={}){
     // openAuctionTeamBuilder() historically saved a transient "team-builder"
     // phase. Normalize it before leaving Results so the destination page can
     // restore the completed auction instead of bouncing back to Auction Room.
@@ -103,9 +114,17 @@ function updateRoute(route,{replace=false}={}){
         return;
     }
 
-    const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route);
+    const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route,{databaseView});
     if(current===target||(route==="menu"&&current==="")){
         pendingRoutePath=null;
+        if(route==="lore"){
+            if(window.location.href!==url.href){
+                if(replace)history.replaceState({blDraftRoute:route},"",url.href);
+                else history.pushState({blDraftRoute:route},"",url.href);
+            }
+            navigateToRoute(route,{skipHistory:true});
+            return;
+        }
         const currentUrl=new URL(window.location.href,appRootUrl());
         if(currentUrl.hash||currentUrl.pathname!==url.pathname||currentUrl.search!==url.search){
             history.replaceState({blDraftRoute:route},"",url.href);
@@ -119,10 +138,12 @@ function updateRoute(route,{replace=false}={}){
 function setVisibleScreen(screen,options={}){
     if(!options.skipHistory){
         const route=getScreenRoute(screen);
-        if(route&&appRelativePath()!==routePath(route)){updateRoute(route);return;}
+        const databaseView=route==="lore"?databaseViewForScreen(screen):null;
+        if(route&&(appRelativePath()!==routePath(route)||(route==="lore"&&databaseView!==databaseViewFromLocation()))){updateRoute(route,{databaseView});return;}
     }
     [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");
+    updateSiteDirectory(screen);
     window.scrollTo({top:0,behavior:"instant"});
 }
 window.addEventListener("popstate",()=>navigateToRoute(getRouteFromLocation(),{skipHistory:true}));
@@ -135,7 +156,7 @@ function normalizeCurrentRoute(route){
     // legacy hash as canonical there so bootstrap can exercise the destination
     // screen in-place. Real browsers still migrate hashes to clean page URLs.
     if(historyOnlyNavigation()&&legacyHashRoute()===route)return true;
-    const target=canonicalRouteUrl(route),current=new URL(window.location.href,appRootUrl());
+    const target=canonicalRouteUrl(route,{databaseView:route==="lore"?databaseViewFromLocation():null}),current=new URL(window.location.href,appRootUrl());
     if(route==="menu"&&current.pathname===appRootUrl().pathname&&!current.search&&!current.hash)return true;
     if(current.pathname!==target.pathname||current.search!==target.search||current.hash!==target.hash){
         replaceLocation(target,route);
@@ -169,8 +190,9 @@ function navigateToRoute(route,options={}){
             goToMainMenu({...options,skipHistory:true});
             break;
         case "lore":
-            if(typeof openLoreMenu==="function")openLoreMenu({...options,skipHistory:true});
-            else setVisibleScreen(document.getElementById("lore-menu-screen"),{...options,skipHistory:true});
+            if(databaseViewFromLocation()==="characters")openCharacterLore({...options,skipHistory:true});
+            else if(databaseViewFromLocation()==="chemistry")openChemistryLore({...options,skipHistory:true});
+            else openLoreMenu({...options,skipHistory:true});
             break;
         case "standaloneTeamBuilder":
             openStandaloneBuilder();

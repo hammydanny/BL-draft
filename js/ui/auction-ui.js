@@ -189,14 +189,13 @@ function createAuctionHistoryPanel(){
 }
 
 function ensureAuctionHistoryControls(){
-    const actions=auctionScreen.querySelector(".header-mini-actions");
-    if(!actions)return;
+    const actions=auctionScreen.querySelector(".auction-context-actions");
     if(!document.getElementById("auctionUndoButton")){
         const wrap=document.createElement("div");
         wrap.className="auction-history-controls";
         wrap.innerHTML=`
-          <button id="auctionUndoButton" class="compact-control auction-history-button" type="button" disabled>↶ <span>UNDO</span></button>
-          <button id="auctionRedoButton" class="compact-control auction-history-button" type="button" disabled>↷ <span>REDO</span></button>`;
+          <button id="auctionUndoButton" class="context-control auction-history-button" type="button" disabled>↶ <span>UNDO</span></button>
+          <button id="auctionRedoButton" class="context-control auction-history-button" type="button" disabled>↷ <span>REDO</span></button>`;
         actions.insertBefore(wrap,actions.firstChild);
         document.getElementById("auctionUndoButton").addEventListener("click",undoAuctionAction);
         document.getElementById("auctionRedoButton").addEventListener("click",redoAuctionAction);
@@ -236,8 +235,7 @@ function renderAuctionScreen(actionHTML){
 }
 
 function updatePlayersRemaining(){
-    if(!playersRemainingDisplay)return;
-    playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;
+    playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span> <small>PLAYERS LEFT</small>`;
     playersRemainingDisplay.classList.remove("counter-pop");void playersRemainingDisplay.offsetWidth;playersRemainingDisplay.classList.add("counter-pop");
 }
 

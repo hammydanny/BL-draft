@@ -9,41 +9,45 @@
     <link rel="icon" type="image/png" href="images/bld-logo.png?v=0.6.1.3">
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/rajdhani-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=0.6.6">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.6">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.6">
+    <link rel="stylesheet" href="style.css?v=0.6.6.1">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.6.1">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.6.1">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
 
 
-    <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
-    <button class="site-sidebar-backdrop" type="button" data-site-sidebar-close aria-label="Close menu"></button>
-    <div class="site-sidebar-panel" role="dialog" aria-modal="true" aria-label="Site menu">
-        <div class="site-sidebar-topline">
-            <span>BLUE LOCK DRAFT</span>
-            <button class="site-sidebar-close" type="button" data-site-sidebar-close aria-label="Close menu">×</button>
+    <header class="site-header" role="banner">
+        <div class="site-header-inner">
+            <button class="site-header-brand" type="button" data-directory-action="home" aria-label="Blue Lock Draft home">
+                <img class="site-header-brand-logo" src="images/bld-logo-header.webp" alt="BLD" width="40" height="40" loading="eager" decoding="async">
+                <span>BLUE LOCK <em>DRAFT</em></span>
+            </button>
+            <button id="directoryMenuToggle" class="directory-menu-toggle" type="button" aria-controls="siteDirectory" aria-expanded="false">MENU <span aria-hidden="true">≡</span></button>
+            <button class="directory-backdrop" type="button" aria-label="Close navigation" hidden></button>
+            <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
+                <button class="directory-item" type="button" data-directory-action="home" data-directory-section="home">HOME</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="play" aria-expanded="false">PLAY <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="new-auction">NEW AUCTION</button>
+                        <button type="button" data-directory-action="resume" hidden>RESUME AUCTION</button>
+                    </div>
+                </details>
+                <button class="directory-item" type="button" data-directory-action="builder" data-directory-section="builder">TEAM BUILDER</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="database" aria-expanded="false">DATABASE <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="lore">LORE</button>
+                        <button type="button" data-directory-action="characters">CHARACTERS</button>
+                        <button type="button" data-directory-action="chemistry">CHEMISTRY</button>
+                    </div>
+                </details>
+                <button class="directory-item directory-help" type="button" data-how-to-play>HOW TO PLAY <span aria-hidden="true">?</span></button>
+            </nav>
+            <nav id="siteBreadcrumb" class="site-breadcrumb" aria-label="Current location"></nav>
         </div>
-        <nav class="site-sidebar-nav" aria-label="Primary">
-            <button type="button" data-site-nav="home"><span>HOME</span><b>MAIN SCREEN</b></button>
-            <button type="button" data-site-nav="new-auction"><span>NEW AUCTION</span><b>START DRAFT</b></button>
-            <button type="button" data-site-nav="resume"><span>RESUME AUCTION</span><b>CONTINUE SESSION</b></button>
-            <button type="button" data-site-nav="builder"><span>TEAM BUILDER</span><b>BUILD ONE SQUAD</b></button>
-            <button type="button" data-site-nav="lore"><span>LORE</span><b>PLAYER DATABASE</b></button>
-            <button type="button" data-site-nav="how-to-play"><span>HOW TO PLAY</span><b>RULES</b></button>
-            <button type="button" data-site-nav="about"><span>ABOUT</span><b>PROJECT INFO</b></button>
-        </nav>
-    </div>
-</aside>
-<header class="site-header" role="banner">
-    <button class="site-header-menu" type="button" data-site-sidebar-toggle aria-controls="siteSidebar" aria-expanded="false" aria-label="Open menu"><span aria-hidden="true">☰</span></button>
-    <div class="site-header-brand" aria-label="Blue Lock Draft">
-        <img class="site-header-brand-logo" src="images/bld-logo-header.webp" alt="" width="34" height="34" aria-hidden="true">
-        <button class="site-header-home" type="button" data-main-menu aria-label="Blue Lock Draft home"><span>BLUE LOCK <em>DRAFT</em></span></button>
-    </div>
-    <div id="playersRemaining" class="site-header-players-remaining" aria-live="polite"></div>
-    <button class="site-header-football" type="button" aria-label="Football" title="Football"><span aria-hidden="true">⚽</span></button>
-</header>
+    </header>
 
 <section id="menu-screen" class="menu-screen hidden">
         
@@ -77,6 +81,14 @@
     </section>
 
     <section id="lore-menu-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // DATABASE</div>
+                <h1>BLUE LOCK <span>LORE</span></h1>
+                <div class="page-context-status">CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
         
         <div class="lore-shell">
             <div class="lore-actions">
@@ -87,6 +99,14 @@
     </section>
 
     <section id="character-lore-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // CHARACTER DATABASE</div>
+                <h1>CHARACTERS</h1>
+                <div class="page-context-status">PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
         <div class="lore-content-shell">
             
             <div class="lore-toolbar" role="search" aria-label="Characters filters">
@@ -97,6 +117,14 @@
     </section>
 
     <section id="chemistry-lore-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // CHEMISTRY DATABASE</div>
+                <h1>CHEMISTRY</h1>
+                <div class="page-context-status">CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
         <div class="lore-content-shell">
             
             <div class="lore-toolbar" role="search" aria-label="Chemistry filters">
@@ -107,6 +135,14 @@
     </section>
 
     <section id="setup-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // STRIKER SELECTION PROGRAM</div>
+                <h1>AUCTION <span>SETUP</span></h1>
+                <div class="page-context-status">DRAFT // BID // BUILD YOUR XI</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
         
 
         <div class="setup-box setup-box-wide">
@@ -272,11 +308,27 @@
     </section>
 
     <section id="auction-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code" id="auctionHeaderCode">BL // LIVE SELECTION</div>
+                <h1 id="auctionHeaderTitle">AUCTION <span>ROOM</span></h1>
+                <div class="page-context-status" id="auctionHeaderStatus"><i></i> SYSTEM LIVE</div>
+            </div>
+            <div class="page-context-tools"><div id="playersRemaining" class="players-remaining" aria-live="polite"></div><div class="auction-context-actions"><button id="soundToggle" class="context-control sound-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects"><span class="sound-icon" aria-hidden="true">◖))</span><strong>SFX</strong></button></div></div>
+        </header>
         
         <div id="auction-content"></div>
     </section>
 
     <section id="formation-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code" id="formationHeaderCode">BL // SQUAD DEPLOYMENT</div>
+                <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
+                <div class="page-context-status" id="formationHeaderStatus"><i></i> TACTICAL MODE</div>
+            </div>
+            <div class="page-context-tools"><span id="formationTeamContext" class="page-context-team"></span><button id="backToResults" class="context-control" type="button">← RESULTS</button><button class="context-control sound-toggle" type="button" data-sound-toggle aria-pressed="true" aria-label="Mute sound effects"><span class="sound-icon" aria-hidden="true">◖))</span><strong>SFX</strong></button></div>
+        </header>
         
         <div id="formation-content"></div>
     </section>
@@ -333,22 +385,25 @@
             </div>
         </div>
     </footer>
-    <script defer src="js/version.js?v=0.6.6"></script>
-    <script defer src="js/players.js?v=0.6.6"></script>
-    <script defer src="js/state.js?v=0.6.6"></script>
-    <script defer src="js/ui/player-stats.js?v=0.6.6"></script><script defer src="js/fx.js?v=0.6.6"></script>
-    <script defer src="js/chemistry.js?v=0.6.6"></script>
-    <script defer src="js/lore.js?v=0.6.6"></script>
-    <script defer src="js/formations.js?v=0.6.6"></script>
-    <script defer src="js/storage.js?v=0.6.6"></script>
-    <script defer src="js/results.js?v=0.6.6"></script>
-    <script defer src="js/auction.js?v=0.6.6"></script>
-    <script defer src="js/ui/auction-ui.js?v=0.6.6"></script>
-    <script defer src="js/router.js?v=0.6.6"></script>
-    <script defer src="js/ui/menu.js?v=0.6.6"></script>
-    <script defer src="js/ui/setup.js?v=0.6.6"></script>
-    <script defer src="js/standalone-builder.js?v=0.6.6"></script>
-    <script defer src="js/ui/formation-ui.js?v=0.6.6"></script>
-    <script defer src="js/app.js?v=0.6.6"></script>
+    <script defer src="js/version.js?v=0.6.6.1"></script>
+    <script defer src="js/players.js?v=0.6.6.1"></script>
+    <script defer src="js/state.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.6.1"></script>
+    <script defer src="js/audio.js?v=0.6.6.1"></script>
+    <script defer src="js/fx.js?v=0.6.6.1"></script>
+    <script defer src="js/chemistry.js?v=0.6.6.1"></script>
+    <script defer src="js/lore.js?v=0.6.6.1"></script>
+    <script defer src="js/formations.js?v=0.6.6.1"></script>
+    <script defer src="js/storage.js?v=0.6.6.1"></script>
+    <script defer src="js/results.js?v=0.6.6.1"></script>
+    <script defer src="js/auction.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.6.1"></script>
+    <script defer src="js/router.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/menu.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/setup.js?v=0.6.6.1"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.6.1"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.6.1"></script>
+    <script defer src="js/app.js?v=0.6.6.1"></script>
 </body>
 </html>
