@@ -9,19 +9,44 @@
     <link rel="icon" type="image/png" href="images/bld-logo.png?v=0.6.1.3">
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/rajdhani-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=0.6.3">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.3">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.3">
+    <link rel="stylesheet" href="style.css?v=0.6.6">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.6">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.6">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
 
 
-    <section id="menu-screen" class="menu-screen hidden">
-        <header class="site-header">
-            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div><h1>MAIN <span>MENU</span></h1><p>TEAM DRAFT SIMULATOR // FAN PROJECT</p></div></div>
-            <div class="header-right-controls"></div>
-        </header>
+    <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
+    <button class="site-sidebar-backdrop" type="button" data-site-sidebar-close aria-label="Close menu"></button>
+    <div class="site-sidebar-panel" role="dialog" aria-modal="true" aria-label="Site menu">
+        <div class="site-sidebar-topline">
+            <span>BLUE LOCK DRAFT</span>
+            <button class="site-sidebar-close" type="button" data-site-sidebar-close aria-label="Close menu">×</button>
+        </div>
+        <nav class="site-sidebar-nav" aria-label="Primary">
+            <button type="button" data-site-nav="home"><span>HOME</span><b>MAIN SCREEN</b></button>
+            <button type="button" data-site-nav="new-auction"><span>NEW AUCTION</span><b>START DRAFT</b></button>
+            <button type="button" data-site-nav="resume"><span>RESUME AUCTION</span><b>CONTINUE SESSION</b></button>
+            <button type="button" data-site-nav="builder"><span>TEAM BUILDER</span><b>BUILD ONE SQUAD</b></button>
+            <button type="button" data-site-nav="lore"><span>LORE</span><b>PLAYER DATABASE</b></button>
+            <button type="button" data-site-nav="how-to-play"><span>HOW TO PLAY</span><b>RULES</b></button>
+            <button type="button" data-site-nav="about"><span>ABOUT</span><b>PROJECT INFO</b></button>
+        </nav>
+    </div>
+</aside>
+<header class="site-header" role="banner">
+    <button class="site-header-menu" type="button" data-site-sidebar-toggle aria-controls="siteSidebar" aria-expanded="false" aria-label="Open menu"><span aria-hidden="true">☰</span></button>
+    <div class="site-header-brand" aria-label="Blue Lock Draft">
+        <img class="site-header-brand-logo" src="images/bld-logo-header.webp" alt="" width="34" height="34" aria-hidden="true">
+        <button class="site-header-home" type="button" data-main-menu aria-label="Blue Lock Draft home"><span>BLUE LOCK <em>DRAFT</em></span></button>
+    </div>
+    <div id="playersRemaining" class="site-header-players-remaining" aria-live="polite"></div>
+    <button class="site-header-football" type="button" aria-label="Football" title="Football"><span aria-hidden="true">⚽</span></button>
+</header>
+
+<section id="menu-screen" class="menu-screen hidden">
+        
         <div class="menu-shell">
             <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
             <div class="menu-title-wrap">
@@ -52,15 +77,7 @@
     </section>
 
     <section id="lore-menu-screen" class="lore-screen hidden">
-        <header class="lore-header site-header">
-                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // DATABASE</div>
-                <h1>BLUE LOCK <span>LORE</span></h1>
-                <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p></div>
-                </div>
-                <div class="header-right-controls">
-                    <button id="loreBackToMenu" class="header-utility" type="button">← MAIN MENU</button>
-                </div>
-            </header>
+        
         <div class="lore-shell">
             <div class="lore-actions">
                 <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
@@ -71,14 +88,7 @@
 
     <section id="character-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
-            <header class="lore-page-header site-header">
-                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // CHARACTER DATABASE</div>
-                <h1>CHARACTERS</h1><p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p></div>
-                </div>
-                <div class="header-right-controls">
-                    <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button></div>
-                </div>
-            </header>
+            
             <div class="lore-toolbar" role="search" aria-label="Characters filters">
                 <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></label><label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></select></label><label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label><label>SORT<select id="characterLoreSort"><option value="chronological">Manga Appearance</option><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option></select></label><button id="characterLoreReset" type="button">RESET FILTERS</button><output id="characterLoreCount" aria-live="polite"></output>
             </div>
@@ -88,14 +98,7 @@
 
     <section id="chemistry-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
-            <header class="lore-page-header site-header">
-                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
-                <h1>CHEMISTRY</h1><p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p></div>
-                </div>
-                <div class="header-right-controls">
-                    <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button></div>
-                </div>
-            </header>
+            
             <div class="lore-toolbar" role="search" aria-label="Chemistry filters">
                 <label class="lore-search">SEARCH<input id="chemistryLoreSearch" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></label><label>TYPE<select id="chemistryLoreType"><option value="ALL">All</option><option value="pair">Player Links</option><option value="context">Team Contexts</option></select></label><label>TIER<select id="chemistryLoreTier"><option value="ALL">All Tiers</option><option value="chemical">Chemical</option><option value="elite">Elite</option><option value="strong">Strong</option><option value="link">Link</option><option value="weak">Weak</option></select></label><label>SORT<select id="chemistryLoreSort"><option value="score-desc">Chemistry High → Low</option><option value="score-asc">Chemistry Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option></select></label><button id="chemistryLoreReset" type="button">RESET FILTERS</button><output id="chemistryLoreCount" aria-live="polite"></output>
             </div>
@@ -104,12 +107,7 @@
     </section>
 
     <section id="setup-screen" class="hidden">
-        <header class="setup-logo site-header">
-            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div>
-            <h1>BLUE LOCK <span>DRAFT</span></h1><p>DRAFT // BID // BUILD YOUR XI</p></div>
-            </div>
-                <div class="header-right-controls"><button id="setupBackToMenu" class="header-utility" type="button">← MAIN MENU</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
-        </header>
+        
 
         <div class="setup-box setup-box-wide">
             <div class="panel-code">SYSTEM_CONFIG // 001</div>
@@ -264,51 +262,22 @@
             <div id="playerPoolGrid" class="player-pool-grid"></div>
             <div id="playerPoolEmpty" class="player-pool-empty hidden">NO PLAYERS MATCH YOUR SEARCH.</div>
 
-            <button id="startGame" class="primary-button">
+            <button id="startGame" type="button" class="primary-button">
                 <span>INITIALIZE AUCTION</span><b>→</b>
             </button>
-            <button id="randomDraftGame" class="primary-button secondary-action">
+            <button id="randomDraftGame" type="button" class="primary-button secondary-action">
                 <span>SKIP AUCTION // RANDOM DRAFT</span><b>→</b>
             </button>
         </div>
     </section>
 
     <section id="auction-screen" class="hidden">
-        <header class="game-header site-header">
-            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy">
-                <div class="game-header-small">BL // LIVE SELECTION</div>
-                <h1>AUCTION <span>ROOM</span></h1>
-                <div class="header-status"><i></i> SYSTEM LIVE</div>
-            </div>
-            </div>
-                <div class="header-right-controls">
-                <div id="playersRemaining" class="players-remaining"></div>
-                <div class="header-mini-actions">
-                    <button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button>
-                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
-                    <button id="soundToggle" class="sound-toggle compact-control" type="button"><span class="sound-icon">◖))</span><strong>SFX</strong></button>
-                </div>
-            </div>
-        </header>
+        
         <div id="auction-content"></div>
     </section>
 
     <section id="formation-screen" class="hidden">
-        <header class="game-header formation-header site-header">
-            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy">
-                <div id="formationHeaderCode" class="game-header-small">BL // SQUAD DEPLOYMENT</div>
-                <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
-                <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
-            </div>
-            </div>
-                <div class="header-right-controls">
-                <button id="backToResults" class="header-button compact-control">← RESULTS</button>
-                <div class="header-mini-actions">
-                    <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
-                    <button class="sound-toggle compact-control" type="button" data-sound-toggle><span class="sound-icon">◖))</span><strong>SFX</strong></button>
-                </div>
-            </div>
-        </header>
+        
         <div id="formation-content"></div>
     </section>
 
@@ -364,23 +333,22 @@
             </div>
         </div>
     </footer>
-    <script defer src="js/version.js?v=0.6.3"></script>
-    <script defer src="js/players.js?v=0.6.3"></script>
-    <script defer src="js/state.js?v=0.6.3"></script>
-    <script defer src="js/ui/player-stats.js?v=0.6.3"></script>
-    <script defer src="js/audio.js?v=0.6.3"></script>
-    <script defer src="js/chemistry.js?v=0.6.3"></script>
-    <script defer src="js/lore.js?v=0.6.3"></script>
-    <script defer src="js/formations.js?v=0.6.3"></script>
-    <script defer src="js/storage.js?v=0.6.3"></script>
-    <script defer src="js/results.js?v=0.6.3"></script>
-    <script defer src="js/auction.js?v=0.6.3"></script>
-    <script defer src="js/ui/auction-ui.js?v=0.6.3"></script>
-    <script defer src="js/router.js?v=0.6.3"></script>
-    <script defer src="js/ui/menu.js?v=0.6.3"></script>
-    <script defer src="js/ui/setup.js?v=0.6.3"></script>
-    <script defer src="js/standalone-builder.js?v=0.6.3"></script>
-    <script defer src="js/ui/formation-ui.js?v=0.6.3"></script>
-    <script defer src="js/app.js?v=0.6.3"></script>
+    <script defer src="js/version.js?v=0.6.6"></script>
+    <script defer src="js/players.js?v=0.6.6"></script>
+    <script defer src="js/state.js?v=0.6.6"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.6"></script><script defer src="js/fx.js?v=0.6.6"></script>
+    <script defer src="js/chemistry.js?v=0.6.6"></script>
+    <script defer src="js/lore.js?v=0.6.6"></script>
+    <script defer src="js/formations.js?v=0.6.6"></script>
+    <script defer src="js/storage.js?v=0.6.6"></script>
+    <script defer src="js/results.js?v=0.6.6"></script>
+    <script defer src="js/auction.js?v=0.6.6"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.6"></script>
+    <script defer src="js/router.js?v=0.6.6"></script>
+    <script defer src="js/ui/menu.js?v=0.6.6"></script>
+    <script defer src="js/ui/setup.js?v=0.6.6"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.6"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.6"></script>
+    <script defer src="js/app.js?v=0.6.6"></script>
 </body>
 </html>

@@ -236,6 +236,7 @@ function renderAuctionScreen(actionHTML){
 }
 
 function updatePlayersRemaining(){
+    if(!playersRemainingDisplay)return;
     playersRemainingDisplay.innerHTML=`<span>${remainingPlayers.length}</span>PLAYERS LEFT`;
     playersRemainingDisplay.classList.remove("counter-pop");void playersRemainingDisplay.offsetWidth;playersRemainingDisplay.classList.add("counter-pop");
 }

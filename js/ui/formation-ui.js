@@ -253,7 +253,7 @@ function renderFormationBuilder(){
     applyFormationMoveFx();
     if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();
 }
-document.getElementById("backToResults").addEventListener("click",()=>{
+document.getElementById("backToResults")?.addEventListener("click",()=>{
     hideChemistryTooltip();
 
     if(formationTeamNumber===0||uiState.screen==="standalone-builder"){
@@ -266,7 +266,6 @@ document.getElementById("backToResults").addEventListener("click",()=>{
     }
 
     if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionResults")){updateRoute("auctionResults");return;}
-    configureFormationHeader?.(false);
     setVisibleScreen(auctionScreen);
     showAuctionComplete();
 });

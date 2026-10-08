@@ -134,15 +134,19 @@ function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
-    if(!historyOnlyNavigation()){updateRoute("auctionRoom");return;}
-    // Start with an empty auction command area so no player card can flash behind
-    // the opening overlays from a previous or newly-created auction state.
+    if(!historyOnlyNavigation()){
+        const url=canonicalRouteUrl("auctionRoom");
+        history.pushState({blDraftRoute:"auctionRoom"},"",url.href);
+    }
+    pendingRoutePath=null;
+    // Render the destination immediately after updating the canonical URL.
+    // Do not wait for a second route pass; that can leave the multi-page shell
+    // with every screen hidden when navigation occurs from the setup page.
     auctionContent.innerHTML="";
     gameOverlay.classList.add("hidden");
     gameOverlay.classList.remove("overlay-out");
-    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    setVisibleScreen(auctionScreen,{skipHistory:true});
     updatePlayersRemaining();
-    updateRoute("auctionRoom");
     showCoinFlip();
 }
 
@@ -165,10 +169,13 @@ function startRandomDraft(){
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
     saveGame();
-    if(!historyOnlyNavigation()){updateRoute("auctionResults");return;}
-    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    if(!historyOnlyNavigation()){
+        const url=canonicalRouteUrl("auctionResults");
+        history.pushState({blDraftRoute:"auctionResults"},"",url.href);
+    }
+    pendingRoutePath=null;
+    setVisibleScreen(auctionScreen,{skipHistory:true});
     updatePlayersRemaining();
-    updateRoute("auctionResults");
     showAuctionComplete();
 }
 
@@ -224,7 +231,7 @@ function awardPlayerFree(teamNumber,forced=false){
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
     startingTeam=otherTeamNumber(startingTeam);
     uiState={screen:"auction",phase:"sold",turn:teamNumber};saveGame();
-    playSfx("sold");triggerFx("sold",forced?"ASSIGNED":"SOLD");
+    triggerFx("sold",forced?"ASSIGNED":"SOLD");
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">${forced?"ROSTER AUTO-ASSIGNMENT":"TRANSFER COMPLETE"}</div>
@@ -238,7 +245,6 @@ function awardPlayerFree(teamNumber,forced=false){
 }
 
 function showPlayerReveal(){
-    playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
       <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
@@ -255,7 +261,7 @@ function placeOpeningBid(){
     if(!validateBid(bid,starter,0)) return;
     recordAuctionUndoPoint("OPENING BID");
     currentBid=bid; currentBidder=startingTeam;
-    playSfx("bid");triggerFx("bid");
+    triggerFx("bid");
     const other=startingTeam===1?2:1;
     if(teamByNumber(other).budget===0){awardPlayer(startingTeam);return;}
     displayBiddingTurn(other);
@@ -267,7 +273,7 @@ function placeBid(n){
     recordAuctionUndoPoint("BID");
     const previousBidder=currentBidder;
     currentBid=bid; currentBidder=n;
-    playSfx(previousBidder&&previousBidder!==n?"outbid":"bid");triggerFx("bid");
+    triggerFx("bid");
     displayBiddingTurn(n===1?2:1);
 }
 
@@ -279,7 +285,7 @@ function validateBid(bid,team,minimum){
     return true;
 }
 
-function passBid(){recordAuctionUndoPoint("PASS / SOLD");playSfx("pass");awardPlayer(currentBidder);}
+function passBid(){recordAuctionUndoPoint("PASS / SOLD");awardPlayer(currentBidder);}
 
 function awardPlayer(n){
     if(isTeamFull(n)){
@@ -292,7 +298,7 @@ function awardPlayer(n){
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
     startingTeam=startingTeam===1?2:1;
     uiState={screen:"auction",phase:"sold",turn:n};saveGame();
-    playSfx("sold");triggerFx("sold","SOLD");
+    triggerFx("sold","SOLD");
     renderAuctionScreen(`
       <div class="sold-panel" style="${teamVars(winner)}">
         <div class="sold-stamp">TRANSFER COMPLETE</div>
@@ -308,8 +314,8 @@ function buyWithControl(n){
     const team=teamByNumber(n),bid=Number(document.getElementById("controlBid").value);
     if(!validateBid(bid,team,0)) return;
     recordAuctionUndoPoint("CONTROL BUY");
-    currentBid=bid;currentBidder=n;playSfx("bid");triggerFx("bid");awardPlayer(n);
+    currentBid=bid;currentBidder=n;triggerFx("bid");awardPlayer(n);
 }
 
-function passWithControl(n){recordAuctionUndoPoint("CONTROL PASS");playSfx("pass");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
+function passWithControl(n){recordAuctionUndoPoint("CONTROL PASS");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
 
