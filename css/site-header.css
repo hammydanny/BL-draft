@@ -40,3 +40,58 @@ body.sidebar-open{overflow:hidden}
   .site-header-home{font-size:28px!important;padding:3px 7px}
   .site-sidebar-panel{width:min(330px,90vw);padding:16px 12px 20px}
 }
+
+/* VIEWPORT-LEVEL HEADER OVERRIDES */
+.site-header{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:5000;
+    width:100vw;
+    max-width:none;
+    height:72px;
+    margin:0;
+    padding:0 24px;
+    box-sizing:border-box;
+}
+.site-header-home{
+    display:inline-flex!important;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+.site-header-brand-logo{
+    display:block;
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+    object-fit:contain;
+}
+.site-header-home span{
+    display:inline-block;
+    color:#edf7ff;
+    text-transform:uppercase;
+}
+.site-header-home em{
+    color:var(--blue);
+    font-style:inherit;
+}
+.site-header-home:hover span{color:#fff}
+.menu-screen,#setup-screen,#auction-screen,#formation-screen,.lore-screen{
+    padding-top:90px!important;
+}
+@media(max-width:600px){
+    .site-header{
+        height:60px;
+        padding:0 12px;
+    }
+    .site-header-brand-logo{
+        width:32px;
+        height:32px;
+        flex-basis:32px;
+    }
+    .menu-screen,#setup-screen,#auction-screen,#formation-screen,.lore-screen{
+        padding-top:76px!important;
+    }
+}
