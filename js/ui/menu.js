@@ -1,4 +1,39 @@
 // BLUE LOCK DRAFT // MENU UI
+function initPersistentSiteChrome(){
+    const sidebar=document.getElementById("siteSidebar");
+    if(!sidebar)return;
+    const toggleButtons=document.querySelectorAll("[data-site-sidebar-toggle]");
+    const closeButtons=sidebar.querySelectorAll("[data-site-sidebar-close]");
+    const closeSidebar=()=>{
+        sidebar.classList.remove("is-open");
+        sidebar.setAttribute("aria-hidden","true");
+        toggleButtons.forEach(button=>button.setAttribute("aria-expanded","false"));
+        document.body.classList.remove("sidebar-open");
+    };
+    const openSidebar=()=>{
+        sidebar.classList.add("is-open");
+        sidebar.setAttribute("aria-hidden","false");
+        toggleButtons.forEach(button=>button.setAttribute("aria-expanded","true"));
+        document.body.classList.add("sidebar-open");
+        sidebar.querySelector(".site-sidebar-close")?.focus();
+    };
+    toggleButtons.forEach(button=>button.addEventListener("click",()=>sidebar.classList.contains("is-open")?closeSidebar():openSidebar()));
+    closeButtons.forEach(button=>button.addEventListener("click",closeSidebar));
+    document.addEventListener("keydown",event=>{if(event.key==="Escape"&&sidebar.classList.contains("is-open"))closeSidebar();});
+    sidebar.querySelectorAll("[data-site-nav]").forEach(button=>button.addEventListener("click",()=>{
+        const action=button.getAttribute("data-site-nav");
+        closeSidebar();
+        if(action==="home")goToMainMenu();
+        else if(action==="new-auction")openSetupFromMenu();
+        else if(action==="resume")resumeSavedAuction(loadSavedData());
+        else if(action==="builder")openStandaloneBuilder();
+        else if(action==="lore")updateRoute("lore");
+        else if(action==="how-to-play")openInfoModal("how");
+        else if(action==="about")openInfoModal("about");
+    }));
+}
+initPersistentSiteChrome();
+
 function refreshMainMenu(){
     const saved=loadSavedData();
     const hasGame=!!saved?.gameActive;
@@ -95,7 +130,7 @@ document.getElementById("menuResumeAuction").addEventListener("click",()=>resume
 document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
 document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
 document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
-document.getElementById("setupBackToMenu").addEventListener("click",()=>{saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();});
+document.getElementById("setupBackToMenu")?.addEventListener("click",()=>{saveSetupPreferences();setVisibleScreen(menuScreen);refreshMainMenu();});
 document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);
 document.getElementById("infoModalDone").addEventListener("click",closeInfoModal);
 document.getElementById("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfoModal();});
