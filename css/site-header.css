@@ -9,7 +9,7 @@
 @font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
 
 /* PERSISTENT SITE HEADER + SIDEBAR */
-.site-header{position:fixed;top:0;left:0;right:0;z-index:5000;width:100vw;max-width:none;height:64px;margin:0;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;background:rgba(3,10,18,.94);border-bottom:1px solid rgba(68,131,168,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:5000;width:100vw;max-width:none;height:64px;margin:0;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:14px;background:rgba(3,10,18,.94);border-bottom:1px solid rgba(68,131,168,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .site-header button{appearance:none;border:0;background:transparent;font:inherit;cursor:pointer}
 .site-header-menu,.site-header-football{width:40px;height:40px;display:grid!important;place-items:center;color:#c8e9ff;border:1px solid #244b64!important;border-radius:3px!important;background:#06121d!important;font:800 20px/1 "Rajdhani",sans-serif!important}
 .site-header-menu:hover,.site-header-football:hover{color:#fff;border-color:var(--blue)!important;background:#0a1c2b!important}
@@ -17,6 +17,16 @@
 .site-header-menu span{display:block;transform:translateY(-1px)}
 .site-header-home{justify-self:start;min-width:0;padding:4px 12px;color:#edf7ff;font:900 italic clamp(24px,3vw,36px)/1 "Barlow Condensed",sans-serif!important;letter-spacing:-.5px;text-transform:uppercase;white-space:nowrap}
 .site-header-home:hover{color:#54c8ff}
+.site-header-players-remaining{
+    min-width:90px;
+    color:#7ea8c1;
+    text-align:right;
+    font:700 10px/1 "Rajdhani",sans-serif;
+    letter-spacing:1.8px;
+    white-space:nowrap;
+}
+.site-header-players-remaining:empty{visibility:hidden}
+.site-header-players-remaining span{color:#cfeeff;font-size:15px}
 .site-header-football{font-size:21px!important}
 .site-sidebar{position:fixed;inset:0;z-index:3000;visibility:hidden;pointer-events:none}
 .site-sidebar.is-open{visibility:visible;pointer-events:auto}
@@ -91,6 +101,7 @@ body.sidebar-open{overflow:hidden}
         gap:9px;
     }
     .site-header-menu,.site-header-football{width:34px;height:34px}
+    .site-header-players-remaining{min-width:72px;font-size:9px;letter-spacing:1.2px}
     .site-header-brand{gap:7px}
     .site-header-brand-logo{width:30px;height:30px;flex-basis:30px}
     .site-header-home{font-size:26px!important}
