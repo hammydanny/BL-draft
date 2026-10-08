@@ -134,7 +134,7 @@ function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
-    if(!historyOnlyNavigation()){updateRoute("auctionRoom");return;}
+    if(!historyOnlyNavigation()){navigateRouteInPlace("auctionRoom");return;}
     // Start with an empty auction command area so no player card can flash behind
     // the opening overlays from a previous or newly-created auction state.
     auctionContent.innerHTML="";
@@ -165,7 +165,7 @@ function startRandomDraft(){
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
     saveGame();
-    if(!historyOnlyNavigation()){updateRoute("auctionResults");return;}
+    if(!historyOnlyNavigation()){navigateRouteInPlace("auctionResults");return;}
     setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
     updateRoute("auctionResults");

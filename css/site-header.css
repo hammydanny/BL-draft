@@ -9,13 +9,13 @@
 @font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
 
 /* PERSISTENT SITE HEADER + SIDEBAR */
-.site-header{position:sticky;top:0;z-index:1000;width:100%;max-width:none;height:68px;margin:0 0 18px;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;background:rgba(3,10,18,.94);border-bottom:1px solid rgba(68,131,168,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:5000;width:100vw;max-width:none;height:64px;margin:0;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;background:rgba(3,10,18,.94);border-bottom:1px solid rgba(68,131,168,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .site-header button{appearance:none;border:0;background:transparent;font:inherit;cursor:pointer}
 .site-header-menu,.site-header-football{width:40px;height:40px;display:grid!important;place-items:center;color:#c8e9ff;border:1px solid #244b64!important;border-radius:3px!important;background:#06121d!important;font:800 20px/1 "Rajdhani",sans-serif!important}
 .site-header-menu:hover,.site-header-football:hover{color:#fff;border-color:var(--blue)!important;background:#0a1c2b!important}
 .site-header-menu:focus-visible,.site-header-home:focus-visible,.site-header-football:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
 .site-header-menu span{display:block;transform:translateY(-1px)}
-.site-header-home{justify-self:center;min-width:0;padding:4px 12px;color:#edf7ff;font:900 italic clamp(24px,3vw,36px)/1 "Barlow Condensed",sans-serif!important;letter-spacing:-.5px;text-transform:none;white-space:nowrap}
+.site-header-home{justify-self:start;min-width:0;padding:4px 12px;color:#edf7ff;font:900 italic clamp(24px,3vw,36px)/1 "Barlow Condensed",sans-serif!important;letter-spacing:-.5px;text-transform:uppercase;white-space:nowrap}
 .site-header-home:hover{color:#54c8ff}
 .site-header-football{font-size:21px!important}
 .site-sidebar{position:fixed;inset:0;z-index:3000;visibility:hidden;pointer-events:none}
@@ -41,32 +41,32 @@ body.sidebar-open{overflow:hidden}
   .site-sidebar-panel{width:min(330px,90vw);padding:16px 12px 20px}
 }
 
-/* VIEWPORT-LEVEL HEADER OVERRIDES */
-.site-header{
-    position:fixed;
-    top:0;
-    left:0;
-    right:0;
-    z-index:5000;
-    width:100vw;
-    max-width:none;
-    height:72px;
-    margin:0;
-    padding:0 24px;
-    box-sizing:border-box;
-}
-.site-header-home{
-    display:inline-flex!important;
+
+/* PERSISTENT VIEWPORT HEADER */
+.site-header-brand{
+    min-width:0;
+    display:flex;
     align-items:center;
-    justify-content:center;
     gap:10px;
 }
 .site-header-brand-logo{
     display:block;
-    width:38px;
-    height:38px;
-    flex:0 0 38px;
+    width:34px;
+    height:34px;
+    flex:0 0 34px;
     object-fit:contain;
+}
+.site-header-home{
+    justify-self:start;
+    min-width:0;
+    display:inline-flex!important;
+    align-items:center;
+    justify-content:flex-start;
+    padding:3px 0;
+    color:#edf7ff;
+    font:900 italic clamp(23px,2.8vw,34px)/1 "Barlow Condensed",sans-serif!important;
+    letter-spacing:-.5px;
+    white-space:nowrap;
 }
 .site-header-home span{
     display:inline-block;
@@ -78,20 +78,23 @@ body.sidebar-open{overflow:hidden}
     font-style:inherit;
 }
 .site-header-home:hover span{color:#fff}
+.site-header-football{font-size:21px!important}
+body.sidebar-open{overflow:hidden}
 .menu-screen,#setup-screen,#auction-screen,#formation-screen,.lore-screen{
-    padding-top:90px!important;
+    padding-top:82px!important;
 }
+#formation-screen.standalone-builder-mode [data-main-menu]{display:inline-flex!important}
 @media(max-width:600px){
     .site-header{
-        height:60px;
-        padding:0 12px;
+        height:54px;
+        padding:0 10px;
+        gap:9px;
     }
-    .site-header-brand-logo{
-        width:32px;
-        height:32px;
-        flex-basis:32px;
-    }
+    .site-header-menu,.site-header-football{width:34px;height:34px}
+    .site-header-brand{gap:7px}
+    .site-header-brand-logo{width:30px;height:30px;flex-basis:30px}
+    .site-header-home{font-size:26px!important}
     .menu-screen,#setup-screen,#auction-screen,#formation-screen,.lore-screen{
-        padding-top:76px!important;
+        padding-top:68px!important;
     }
 }

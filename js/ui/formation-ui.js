@@ -266,7 +266,6 @@ document.getElementById("backToResults")?.addEventListener("click",()=>{
     }
 
     if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionResults")){updateRoute("auctionResults");return;}
-    configureFormationHeader?.(false);
     setVisibleScreen(auctionScreen);
     showAuctionComplete();
 });

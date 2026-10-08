@@ -54,9 +54,6 @@ function goToMainMenu(options={}){
     if(uiState.screen==="standalone-builder"){
         formationScreen.classList.remove("standalone-builder-mode");
 
-        if(typeof configureFormationHeader==="function"){
-            configureFormationHeader(false);
-        }
     }
 
     hideSiteError();

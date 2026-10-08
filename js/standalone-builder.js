@@ -44,23 +44,6 @@ function saveStandaloneBuilderState(){
         }));
     }catch(e){}
 }
-function configureFormationHeader(standalone){
-    const code=document.getElementById("formationHeaderCode");
-    const title=document.getElementById("formationHeaderTitle");
-    const status=document.getElementById("formationHeaderStatus");
-    const back=document.getElementById("backToResults");
-    if(standalone){
-        if(code)code.textContent="BL // GLOBAL SQUAD LAB";
-        if(title)title.innerHTML='TEAM <span>BUILDER</span>';
-        if(status)status.innerHTML="<i></i> STANDALONE MODE";
-        if(back)back.textContent="← MAIN MENU";
-    }else{
-        if(code)code.textContent="BL // SQUAD DEPLOYMENT";
-        if(title)title.innerHTML='FORMATION <span>BUILDER</span>';
-        if(status)status.innerHTML="<i></i> TACTICAL MODE";
-        if(back)back.textContent="← RESULTS";
-    }
-}
 function openStandaloneBuilder(){
     if(!historyOnlyNavigation()&&appRelativePath()!==routePath("standaloneTeamBuilder")){updateRoute("standaloneTeamBuilder");return;}
     loadStandaloneBuilderState();
@@ -71,7 +54,6 @@ function openStandaloneBuilder(){
     standaloneBuilderSyncTeam();
     setVisibleScreen(formationScreen);
     formationScreen.classList.add("standalone-builder-mode");
-    configureFormationHeader(true);
     renderFormationBuilder();
     window.scrollTo({top:0,behavior:"instant"});
 }
@@ -80,7 +62,6 @@ function leaveStandaloneBuilder(options={}){
     if(!options.skipHistory&&!historyOnlyNavigation()&&appRelativePath()!==routePath("menu")){updateRoute("menu");return;}
 
     formationScreen.classList.remove("standalone-builder-mode");
-    configureFormationHeader(false);
 
     setVisibleScreen(menuScreen,options);
     refreshMainMenu();

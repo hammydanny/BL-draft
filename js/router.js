@@ -67,6 +67,14 @@ function getScreenRoute(screen){
 function historyOnlyNavigation(){
     return typeof window.location.assign!=="function"&&typeof window.location.replace!=="function";
 }
+function navigateRouteInPlace(route,{replace=false}={}){
+    const url=canonicalRouteUrl(route);
+    const state={blDraftRoute:route};
+    if(replace)history.replaceState(state,"",url.href);
+    else history.pushState(state,"",url.href);
+    pendingRoutePath=null;
+    navigateToRoute(route,{skipHistory:true});
+}
 function replaceLocation(url,route){
     if(typeof window.location.replace==="function")window.location.replace(url.href);
     else history.replaceState({blDraftRoute:route},"",url.href);
