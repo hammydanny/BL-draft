@@ -8,37 +8,35 @@
 @font-face{font-family:"Rajdhani";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/rajdhani-latin-700-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
 
-/* Major page navigation: shared rhythm, independent of the page's content layout. */
-.site-header{position:relative;z-index:1;flex:none;width:100%;max-width:1540px;height:112px;margin:0 auto 20px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--line);text-align:left}
-.site-header-identity{display:grid;grid-template-columns:56px minmax(0,1fr);align-items:center;gap:16px;min-width:0}
-.site-logo{display:block;width:56px;height:56px;min-width:56px;max-width:56px;aspect-ratio:1;object-fit:contain}
-.site-header-copy{min-width:0}
-.site-header .game-header-small{margin:0 0 5px;color:#54c8ff;font-size:10px;font-weight:800;letter-spacing:2px}
-.site-header h1{margin:0;color:#edf7ff;font:900 italic 38px/1 "Barlow Condensed",sans-serif;letter-spacing:-.8px;text-transform:uppercase}
-.site-header h1 span{display:inline;color:var(--blue);text-shadow:none}
-.site-header p{margin:6px 0 0;color:#8ba6ba;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.2px}
-.site-header .header-right-controls{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px;min-width:0}
-.site-header .header-mini-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.site-header button{display:inline-flex;align-items:center;justify-content:center;gap:4px;width:auto;height:36px;min-height:36px;margin:0;padding:8px 10px;color:#abc8dc;background:#06121d;border:1px solid #25465d;border-radius:2px;font:800 10px/1 "Rajdhani",sans-serif;letter-spacing:.8px;white-space:nowrap;box-shadow:none}
-.site-header button:hover{color:#fff;border-color:var(--blue);transform:none}
-.site-header button:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
-.site-header .sound-toggle.muted{opacity:.6}
-.site-header .header-status{display:block;margin-top:6px;color:#8ba6ba;font-size:10px;font-weight:700;line-height:1.4;letter-spacing:1.2px}
-.site-header .players-remaining{display:flex;align-items:baseline;gap:7px;font-size:9px;letter-spacing:1px}
-.site-header .players-remaining span{display:inline;margin:0;font-size:20px}
-.lore-shell .lore-actions{max-width:760px;margin:0 auto}
-@media(max-width:900px){
-  .site-header{height:180px;grid-template-columns:minmax(0,1fr);grid-template-rows:72px 68px;align-content:center;gap:8px;padding:12px 0;margin-bottom:16px}
-  .site-header h1{font-size:34px}
-  .site-header .header-right-controls{height:68px;align-content:flex-start;justify-content:flex-start;gap:8px}
-  .site-header button{height:38px;min-height:38px;padding:8px 10px}
-  .site-header .players-remaining{margin-right:auto;text-align:left}
-}
+/* PERSISTENT SITE HEADER + SIDEBAR */
+.site-header{position:sticky;top:0;z-index:1000;width:100%;max-width:none;height:68px;margin:0 0 18px;padding:0 20px;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;background:rgba(3,10,18,.94);border-bottom:1px solid rgba(68,131,168,.34);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header button{appearance:none;border:0;background:transparent;font:inherit;cursor:pointer}
+.site-header-menu,.site-header-football{width:40px;height:40px;display:grid!important;place-items:center;color:#c8e9ff;border:1px solid #244b64!important;border-radius:3px!important;background:#06121d!important;font:800 20px/1 "Rajdhani",sans-serif!important}
+.site-header-menu:hover,.site-header-football:hover{color:#fff;border-color:var(--blue)!important;background:#0a1c2b!important}
+.site-header-menu:focus-visible,.site-header-home:focus-visible,.site-header-football:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
+.site-header-menu span{display:block;transform:translateY(-1px)}
+.site-header-home{justify-self:center;min-width:0;padding:4px 12px;color:#edf7ff;font:900 italic clamp(24px,3vw,36px)/1 "Barlow Condensed",sans-serif!important;letter-spacing:-.5px;text-transform:none;white-space:nowrap}
+.site-header-home:hover{color:#54c8ff}
+.site-header-football{font-size:21px!important}
+.site-sidebar{position:fixed;inset:0;z-index:3000;visibility:hidden;pointer-events:none}
+.site-sidebar.is-open{visibility:visible;pointer-events:auto}
+.site-sidebar-backdrop{position:absolute;inset:0;width:100%;height:100%;border:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s ease;cursor:default}
+.site-sidebar.is-open .site-sidebar-backdrop{opacity:1}
+.site-sidebar-panel{position:absolute;left:0;top:0;bottom:0;width:min(360px,88vw);padding:20px 16px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px;background:linear-gradient(180deg,#071625 0%,#030911 100%);border-right:1px solid #244b64;box-shadow:16px 0 45px rgba(0,0,0,.38);transform:translateX(-102%);transition:transform .24s cubic-bezier(.2,.75,.2,1)}
+.site-sidebar.is-open .site-sidebar-panel{transform:translateX(0)}
+.site-sidebar-topline{display:flex;align-items:center;justify-content:space-between;padding:0 2px 14px;border-bottom:1px solid rgba(68,131,168,.34);color:#6fd5ff;font:800 11px/1 "Rajdhani",sans-serif;letter-spacing:1.6px}
+.site-sidebar-close{width:34px;height:34px;display:grid;place-items:center;border:1px solid #244b64!important;background:#06121d!important;color:#b8d9eb;font:500 22px/1 "Rajdhani",sans-serif!important}
+.site-sidebar-close:hover{color:#fff;border-color:var(--blue)!important}
+.site-sidebar-nav{display:grid;gap:7px;overflow:auto;padding-right:2px}
+.site-sidebar-nav button{width:100%;min-height:62px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;border:1px solid #183448;background:#06121d;color:#cfe9f8;cursor:pointer}
+.site-sidebar-nav button:hover{border-color:#2c7fac;background:#0a1b2a;transform:translateX(2px)}
+.site-sidebar-nav button:focus-visible{outline:2px solid #68e2ff;outline-offset:2px}
+.site-sidebar-nav button span{font:900 17px/1 "Barlow Condensed",sans-serif;letter-spacing:.2px}
+.site-sidebar-nav button b{color:#6f94a8;font:700 10px/1.2 "Rajdhani",sans-serif;letter-spacing:1px;text-align:right}
+body.sidebar-open{overflow:hidden}
 @media(max-width:600px){
-  .site-header h1{font-size:30px}
-  .site-header-identity{gap:12px}
-  .site-header .game-header-small{font-size:9px;letter-spacing:1.4px}
-  .site-header p{font-size:9px;letter-spacing:.7px}
-  .site-header .header-mini-actions{gap:6px}
-  .site-header .header-status{font-size:9px;letter-spacing:.7px}
+  .site-header{height:60px;margin-bottom:12px;padding:0 12px;gap:8px}
+  .site-header-menu,.site-header-football{width:36px;height:36px}
+  .site-header-home{font-size:28px!important;padding:3px 7px}
+  .site-sidebar-panel{width:min(330px,90vw);padding:16px 12px 20px}
 }

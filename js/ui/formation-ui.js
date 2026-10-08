@@ -253,7 +253,7 @@ function renderFormationBuilder(){
     applyFormationMoveFx();
     if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();
 }
-document.getElementById("backToResults").addEventListener("click",()=>{
+document.getElementById("backToResults")?.addEventListener("click",()=>{
     hideChemistryTooltip();
 
     if(formationTeamNumber===0||uiState.screen==="standalone-builder"){

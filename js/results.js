@@ -76,7 +76,6 @@ function createFullHistory(){
 function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
-    if(!wasComplete)playSfx("result");
     if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionResults")){updateRoute("auctionResults");return;}
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">

@@ -40,7 +40,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
         assert(/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
         assert(!/\btype\s*=\s*["']module["']/i.test(scriptTags[index]),'Keep classic scripts');
     }
-    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/chemistry.js',
+    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/fx.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/app.js'];
@@ -282,7 +282,7 @@ check('CSS loader is unique and obsolete global Back code is absent',()=>{
 check('HTML IDs, contextual navigation, and chapter labels',()=>{
     const ids=[...html.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map(match=>match[1]);
     assert.equal(new Set(ids).size,ids.length,'Duplicate HTML IDs');
-    for(const id of ['menu-screen','setup-screen','auction-screen','formation-screen','menuNewAuction','menuStandaloneBuilder','menuLore','setupBackToMenu','backToResults'])assert(ids.includes(id),`Missing ${id}`);
+    for(const id of ['siteSidebar','menu-screen','setup-screen','auction-screen','formation-screen','menuNewAuction','menuStandaloneBuilder','menuLore'])assert(ids.includes(id),`Missing ${id}`);
     for(const src of ['index.html','style.css',...scripts])assert(!/(?:chapter\s+|ch\.\s*)363\b/i.test(read(src)),`Old chapter label in ${src}`);
     assert(!/initialSaved|getRouteFromHash|history\.replaceState/.test(read('js/ui/formation-ui.js')),'Bootstrap still in Formation UI');
     assert(!/const\s+APP_ROUTES|function\s+navigateToRoute/.test(read('js/ui/menu.js')),'Router still in Menu UI');
