@@ -74,3 +74,11 @@
   .player-stats-heading{flex-wrap:wrap;gap:3px}
   .player-stats-gk>span{font-size:9px}
 }
+
+
+/* v0.6.6.2 readability: keep dense stat modules legible at their existing size. */
+.player-stats-heading span,.player-card-label,.auction-player-ovr>span{font-size:10px}
+.player-stats-heading small,.player-stats-gk>span small{font-size:8px}
+.player-stats-gk>span{font-size:11px}
+.player-stats--auction .player-stats-gk>span{font-size:10px}
+.player-stats--auction .player-stats-gk>span small{font-size:8px}

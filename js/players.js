@@ -19,7 +19,7 @@ const players = [
     { id: 15, name: "Shoei Baro", debutChapter: 5, appearanceOrder: 15, image: "images/shoei-baro.jpg", primaryPosition: "CF", positions: ["CF", "RW"] , stats: { ovr:93, off:96, sho:96, spd:89, def:74, pas:76, dri:91, gk:53 } },
     { id: 16, name: "Ikki Niko", debutChapter: 1, appearanceOrder: 16, image: "images/ikki-niko.jpg", primaryPosition: "CB", positions: ["CB", "DM"] , stats: { ovr:87, off:82, sho:76, spd:78, def:84, pas:88, dri:67, gk:57 } },
     { id: 17, name: "Hibiki Okawa", debutChapter: 1, appearanceOrder: 17, image: "images/hibiki-okawa.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:73, off:78, sho:79, spd:73, def:55, pas:68, dri:73, gk:42 } },
-    { id: 18, name: "Junichi Wanima", debutChapter: 1, appearanceOrder: 18, image: "images/junichi-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:73, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } },
+    { id: 18, name: "Junichi Wanima", debutChapter: 1, appearanceOrder: 18, image: "images/junichi-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:73, off:77, sho:73, spd:77, def:65, pas:73, dri:74, gk:45 } },
     { id: 19, name: "Keisuke Wanima", debutChapter: 1, appearanceOrder: 19, image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } },
     { id: 20, name: "Reo Mikage", debutChapter: 1, appearanceOrder: 20, image: "images/reo-mikage.jpg", primaryPosition: "CM", positions: ["CM", "AM", "CB", "RM"] , stats: { ovr:90, off:89, sho:85, spd:86, def:86, pas:91, dri:89, gk:68 } },
     { id: 21, name: "Seishiro Nagi", debutChapter: 22, appearanceOrder: 21, image: "images/seishiro-nagi.jpg", primaryPosition: "CF", positions: ["CF", "AM", "FW"] , stats: { ovr:91, off:94, sho:92, spd:82, def:69, pas:84, dri:96, gk:55 } },
@@ -63,7 +63,7 @@ const players = [
     { id: 59, name: "Renoir", debutChapter: 248, appearanceOrder: 59, image: "images/renoir.jpg", primaryPosition: "GK", positions: ["GK"] , stats: { ovr:89, off:63, sho:61, spd:82, def:92, pas:84, dri:75, gk:93 } },
     { id: 60, name: "Haneru Shindo", debutChapter: 327, appearanceOrder: 60, image: "images/haneru-shindo.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:80, sho:79, spd:82, def:59, pas:72, dri:78, gk:44 } },
     { id: 61, name: "Bunny Iglesias", debutChapter: 307, appearanceOrder: 61, image: "images/bunny-iglesias.jpg", primaryPosition: "FW", positions: ["FW", "SS"] , stats: { ovr:95, off:96, sho:95, spd:94, def:70, pas:87, dri:94, gk:56 } },
-    { id: 62, name: "Innocent Onazi", debutChapter: 312, appearanceOrder: 62, image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"] , stats: { ovr:89, off:93, sho:91, spd:88, def:70, pas:83, dri:87, gk:54 } },
+    { id: 62, name: "Innocent Onazi", debutChapter: 312, appearanceOrder: 62, image: "images/innocent-onazi.jpg", primaryPosition: "CF", positions: ["CF"] , stats: { ovr:89, off:92, sho:90, spd:88, def:70, pas:82, dri:86, gk:54 } },
     { id: 63, name: "Godwin Kuso", debutChapter: 312, appearanceOrder: 63, image: "images/godwin-kuso.jpg", primaryPosition: "AM", positions: ["AM"] , stats: { ovr:86, off:87, sho:81, spd:82, def:72, pas:89, dri:86, gk:52 } },
     { id: 64, name: "Vivien Hugo", debutChapter: 326, appearanceOrder: 64, image: "images/vivien-hugo.jpg", primaryPosition: "CM", positions: ["CM"] , stats: { ovr:95, off:91, sho:88, spd:89, def:88, pas:95, dri:94, gk:65 } },
     { id: 65, name: "Achanpong", debutChapter: 355, appearanceOrder: 65, image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:86, off:87, sho:83, spd:89, def:68, pas:84, dri:87, gk:50 } },
@@ -107,16 +107,36 @@ function warmPlayerPortrait(player){
     return ready;
 }
 
-// Measure only lazy portraits in the visible module. Off-screen and hidden
-// cards retain native lazy loading; the first visible cards start immediately.
+// Visible and near-viewport portraits load early; distant cards retain native
+// lazy loading. This keeps image-heavy pages responsive without preloading the
+// entire player library or lowering portrait quality.
+let portraitViewportObserver=null;
+function prioritizePortraitImage(image){
+    if(!image||image.dataset.portraitPriority==="ready")return;
+    image.dataset.portraitPriority="ready";
+    image.loading="eager";
+    image.decoding="async";
+    portraitViewportObserver?.unobserve(image);
+}
+function getPortraitViewportObserver(){
+    if(portraitViewportObserver||typeof IntersectionObserver!=="function")return portraitViewportObserver;
+    portraitViewportObserver=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{if(entry.isIntersecting)prioritizePortraitImage(entry.target);});
+    },{root:null,rootMargin:"650px 0px",threshold:0.01});
+    return portraitViewportObserver;
+}
 function prioritizeVisiblePortraits(container){
     if(!container||typeof window.innerHeight!=="number")return;
     const images=[...container.querySelectorAll('img[loading="lazy"]')];
-    const visible=images.filter(image=>{
+    const observer=getPortraitViewportObserver();
+    images.forEach(image=>{
+        if(image.dataset.portraitPriority==="ready")return;
         const rect=image.getBoundingClientRect();
-        return rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<window.innerHeight;
+        const rendered=rect.width>0&&rect.height>0;
+        const nearViewport=rendered&&rect.bottom>-650&&rect.top<window.innerHeight+650;
+        if(nearViewport)prioritizePortraitImage(image);
+        else observer?.observe(image);
     });
-    visible.forEach(image=>{image.loading="eager";});
 }
 
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}

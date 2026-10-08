@@ -1,12 +1,12 @@
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/barlow-condensed-latin-500-normal.woff2") format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/barlow-condensed-latin-600-normal.woff2") format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/barlow-condensed-latin-700-normal.woff2") format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-normal.woff2") format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:900;font-display:swap;src:url("../fonts/barlow-condensed-latin-900-normal.woff2") format("woff2")}
-@font-face{font-family:"Rajdhani";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/rajdhani-latin-500-normal.woff2") format("woff2")}
-@font-face{font-family:"Rajdhani";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/rajdhani-latin-600-normal.woff2") format("woff2")}
-@font-face{font-family:"Rajdhani";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/rajdhani-latin-700-normal.woff2") format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:block;src:url("../fonts/barlow-condensed-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:block;src:url("../fonts/barlow-condensed-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:block;src:url("../fonts/barlow-condensed-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:block;src:url("../fonts/barlow-condensed-latin-800-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:900;font-display:block;src:url("../fonts/barlow-condensed-latin-900-normal.woff2") format("woff2")}
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:500;font-display:block;src:url("../fonts/rajdhani-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:600;font-display:block;src:url("../fonts/rajdhani-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:700;font-display:block;src:url("../fonts/rajdhani-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:block;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
 
 /* Shared directory shell. Page identity and game controls live below it. */
 :root{--directory-height:72px;--directory-width:1540px}
@@ -95,3 +95,14 @@ body{padding-top:var(--directory-height)}
     .page-context-team{max-width:220px}
 }
 @media print{body{padding-top:0}.site-header{display:none}}
+
+
+/* v0.6.6.2 readability: larger navigation microcopy without changing header geometry. */
+.directory-item{font-size:12px}
+.site-breadcrumb{font-size:11px}
+.page-context-code,.page-context-status{font-size:10px}
+.context-control{font-size:11px}
+.players-remaining small{font-size:10px}
+@media(max-width:1200px) and (min-width:1051px){.directory-item{font-size:11px}.site-breadcrumb{font-size:10px}}
+@media(max-width:1050px){.directory-menu-toggle,.site-breadcrumb{font-size:10px}}
+@media(max-width:600px){.page-context-code,.page-context-status{font-size:9px}.context-control{font-size:10px}.players-remaining small{font-size:9px}}

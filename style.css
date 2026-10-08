@@ -1341,3 +1341,29 @@ to{top:110%}}
 .auto-best-loader-status{width:80%;margin:auto;font-size:8px;line-height:1.6}
 .orbit-a{width:88vw;height:88vw}
 .orbit-b{width:60vw;height:60vw}}
+
+
+/* v0.6.6.2 readability pass: lift small UI copy while preserving established panel geometry. */
+.team-code,.turn-indicator span,.history-heading span,.final-team-top span,.biggest-signing span,.final-stats span,
+.pool-status>div:first-child span,.preset-label,.menu-action b,.menu-resume-panel span,.menu-footer-line,.game-mode-card span,
+.game-mode-card small,.formation-control-panel>div:first-child span,.formation-slot strong,.player-info-ovr span,.player-info-name>span,
+.position-rating span,.formation-team-rating small,.chem-score small,.chem-key,.chem-key span,.team-tracker.side-team .team-live-state,
+.comparison-head span,.lore-toolbar label,.lore-toolbar output,.chem-tip-copy span{font-size:10px}
+
+.budget-label,.mini-player-card span,.final-player span,.current-bid-label,.sold-stamp,.sold-to,.overlay-eyebrow,.auction-number,
+.complete-label,.pool-actions button,.formation-instructions span,.formation-instructions strong,.menu-code,.menu-resume-panel strong,
+.setup-back-button,.info-section span,.rule span,.formation-actions button,.player-info-code,.player-info-section-title span,
+.chem-score span,.side-team .mini-player-card strong,.bid-pressure-row b,.database-roster strong,.character-chemistry-link strong{font-size:11px}
+
+.pool-player-info span,.formation-team-tabs button span,.bench-heading>div small,.bench-player b,.bench-player-copy>small,
+.team-economy-grid span,.strategy-warning,.strategy-clear,.side-team .mini-player-card small,.bid-pressure-row span,
+.pool-filter-grid label,.database-toolbar select,.database-roster small,.comparison-grid>div>span,.result-intel-grid span,
+.formation-team-metrics span,.player-captain-control span,.lore-kicker,.lore-subheading,.character-chemistry-link span,
+.character-team-contexts span,.chemistry-lore-characters span,.chemistry-lore-label,.standalone-builder-label span,
+.standalone-pool-head span,.standalone-pool-head small,.standalone-pool-toolbar input,.standalone-pool-toolbar select,
+.standalone-pool-toolbar button,.standalone-pool-player strong{font-size:10px}
+
+.pool-category-grid small,.standalone-pool-player small,.comparison-grid em,.chemistry-lore-score span{font-size:9px}
+#setup-screen label{font-size:12px}
+.category-section .preset-label{font-size:10px!important}
+.category-section .preset-note{font-size:10px!important;line-height:1.45!important}
