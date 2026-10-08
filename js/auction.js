@@ -134,15 +134,19 @@ function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
-    if(!historyOnlyNavigation()){navigateRouteInPlace("auctionRoom");return;}
-    // Start with an empty auction command area so no player card can flash behind
-    // the opening overlays from a previous or newly-created auction state.
+    if(!historyOnlyNavigation()){
+        const url=canonicalRouteUrl("auctionRoom");
+        history.pushState({blDraftRoute:"auctionRoom"},"",url.href);
+    }
+    pendingRoutePath=null;
+    // Render the destination immediately after updating the canonical URL.
+    // Do not wait for a second route pass; that can leave the multi-page shell
+    // with every screen hidden when navigation occurs from the setup page.
     auctionContent.innerHTML="";
     gameOverlay.classList.add("hidden");
     gameOverlay.classList.remove("overlay-out");
-    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    setVisibleScreen(auctionScreen,{skipHistory:true});
     updatePlayersRemaining();
-    updateRoute("auctionRoom");
     showCoinFlip();
 }
 
@@ -165,10 +169,13 @@ function startRandomDraft(){
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
     saveGame();
-    if(!historyOnlyNavigation()){navigateRouteInPlace("auctionResults");return;}
-    setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
+    if(!historyOnlyNavigation()){
+        const url=canonicalRouteUrl("auctionResults");
+        history.pushState({blDraftRoute:"auctionResults"},"",url.href);
+    }
+    pendingRoutePath=null;
+    setVisibleScreen(auctionScreen,{skipHistory:true});
     updatePlayersRemaining();
-    updateRoute("auctionResults");
     showAuctionComplete();
 }
 
