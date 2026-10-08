@@ -6,7 +6,7 @@ let overlayHideTimer=null;
 function createPlayerCard(){
     return `<div class="current-player">
       <div class="auction-identity-rail">
-      <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" decoding="async" width="176" height="200">
+      <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="176" height="200">
       </div>
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
@@ -232,7 +232,7 @@ function renderAuctionScreen(actionHTML){
       </div>
       ${createAuctionHistoryPanel()}
     </div>`;
-    window.scrollTo({top:0,behavior:"auto"});
+    window.scrollTo({top:0,behavior:"instant"});
 }
 
 function updatePlayersRemaining(){
@@ -241,6 +241,7 @@ function updatePlayersRemaining(){
 }
 
 function showOverlay(html){
+    warmPlayerPortrait(currentPlayer);
     clearTimeout(overlayHideTimer);
     overlayContent.innerHTML=html;
     gameOverlay.classList.remove("hidden","overlay-out");

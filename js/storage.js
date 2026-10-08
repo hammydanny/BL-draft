@@ -39,6 +39,36 @@ function isSaveSnapshot(value){
         (value.startingTeam==null||[1,2].includes(value.startingTeam));
 }
 
+// Old saves may contain a player removed from the playable database. Drop only
+// missing IDs; keep recorded budgets, valid players and the save schema intact.
+function cleanSavedPlayerReferences(value,teamPlayerKey="players"){
+    const clean={...value};
+    const known=id=>!!playerById(id);
+    for(const key of ["remainingPlayerIds","selectedPlayerIds"]){
+        if(Array.isArray(value[key]))clean[key]=value[key].filter(known);
+    }
+    for(const key of ["team1","team2"]){
+        if(isSaveRecord(value[key])&&Array.isArray(value[key][teamPlayerKey])){
+            clean[key]={...value[key],[teamPlayerKey]:value[key][teamPlayerKey].filter(known)};
+        }
+    }
+    if(Array.isArray(value.auctionHistory))clean.auctionHistory=value.auctionHistory.filter(entry=>known(entry.playerId));
+    if(value.currentPlayerId!=null&&!known(value.currentPlayerId)){
+        clean.currentPlayerId=null;
+        if(value.uiState?.phase!=="complete"&&value.uiState?.screen!=="formation"){
+            clean.uiState={screen:"auction",phase:"next",turn:null};
+        }
+    }
+    if(isSaveRecord(value.formationAssignments)&&Object.values(value.formationAssignments).every(isSaveRecord)){
+        clean.formationAssignments=Object.fromEntries(Object.entries(value.formationAssignments).map(([team,assignment])=>
+            [team,Object.fromEntries(Object.entries(assignment).filter(([,id])=>id===null||known(id)))]));
+    }
+    if(isSaveRecord(value.formationCaptainByTeam)){
+        clean.formationCaptainByTeam=Object.fromEntries(Object.entries(value.formationCaptainByTeam).map(([team,id])=>[team,known(id)?id:null]));
+    }
+    return clean;
+}
+
 // Missing schemaVersion means the legacy payload. Migration is in memory only.
 // Reject unsupported versions or malformed structures before they reach UI code.
 function normalizeAuctionSave(value){
@@ -85,7 +115,16 @@ function normalizeAuctionSave(value){
         if(value.formationCaptainByTeam!==undefined&&(!isSaveRecord(value.formationCaptainByTeam)||
            !Object.values(value.formationCaptainByTeam).every(id=>id===null||Number.isInteger(id))))return null;
     }
-    const normalized={...value,schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+    const normalized={...cleanSavedPlayerReferences(value),schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+    if(value.setup){
+        normalized.setup={...value.setup};
+        if(value.setup.selected)normalized.setup.selected=value.setup.selected.filter(id=>playerById(id));
+        if(value.setup.poolManualOverrides)normalized.setup.poolManualOverrides=Object.fromEntries(
+            Object.entries(value.setup.poolManualOverrides).filter(([id])=>playerById(Number(id))));
+    }
+    for(const key of ["auctionUndoStack","auctionRedoStack"]){
+        if(Array.isArray(value[key]))normalized[key]=value[key].map(snapshot=>cleanSavedPlayerReferences(snapshot,"playerIds"));
+    }
     if(value.gameActive&&(value.uiState?.screen==="auction-team-builder"||value.uiState?.phase==="team-builder")){
         normalized.uiState={screen:"formation",phase:"complete",turn:null};
     }
@@ -101,14 +140,17 @@ function normalizeStandaloneSave(value){
     for(const key of ["role","sort","formation"]){
         if(value[key]!==undefined&&typeof value[key]!=="string")return null;
     }
+    const playerIds=(value.playerIds||[]).filter(id=>playerById(id));
+    const selected=new Set(playerIds);
     return {...value,schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
-        playerIds:(value.playerIds||[]).filter(id=>players.some(player=>player.id===id)),
+        playerIds,
         formation:Object.hasOwn(FORMATIONS,value.formation)?value.formation:"4-3-3",
-        assignment:value.assignment||{}};
+        assignment:Object.fromEntries(Object.entries(value.assignment||{}).filter(([,id])=>id===null||selected.has(id))),
+        captainId:selected.has(value.captainId)?value.captainId:null};
 }
 
 function serializePlayerList(list){return list.map(p=>p.id);}
-function hydratePlayers(ids=[]){return ids.map(id=>players.find(p=>p.id===id)).filter(Boolean);}
+function hydratePlayers(ids=[]){return ids.map(playerById).filter(Boolean);}
 function saveSetupPreferences(){
     try{
         const existing=normalizeAuctionSave(JSON.parse(localStorage.getItem(SAVE_KEY)||"{}"));

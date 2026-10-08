@@ -109,7 +109,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.2');
+    assert.equal(data.APP_VERSION,'0.6.3');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -320,6 +320,80 @@ function appContext(initialStorage={},hash='#/'){
     for(const file of scripts)vm.runInContext(read(file),context,{filename:file,timeout:30000});
     return {run,saved,element,labels};
 }
+check('v0.6.3 player expansion, conservative estimates and stable chronology',()=>{
+    const requested=['Shigeo Mizuki','Hajime Nishioka','Shizuka Haiji','Reiji Hiiragi','Taiga Tsunzaki',
+        'Oboabona','Bello','Bats','Leyden','Hermes','Aiki Himizu'];
+    for(const name of requested){
+        const player=data.players.find(p=>p.name===name);
+        assert(player,`Missing ${name}`);assert(player.id>68,`${name}: reused existing ID`);
+        assert(player.statEstimate,`${name}: estimates must be identified`);
+        for(const [stat,value] of Object.entries(player.stats))assert(value<=89,`${name}: ${stat} must stay below 90`);
+    }
+    for(const player of data.players){
+        assert(Number.isInteger(player.debutChapter)&&player.debutChapter>=1&&player.debutChapter<=364,`${player.name}: debut chapter`);
+        assert(Number.isInteger(player.appearanceOrder),`${player.name}: stable appearance order`);
+    }
+    assert.equal(data.players.find(p=>p.name==='Innocent Onazi').stats.ovr,89);
+    assert.equal(data.players.find(p=>p.name==='Junichi Wanima').stats.ovr,data.players.find(p=>p.name==='Keisuke Wanima').stats.ovr+1);
+    assert(!data.players.some(p=>p.name==='John Paccini'));
+    assert(!JSON.stringify([data.CHEMISTRY_CONTEXTS,data.CHEMISTRY_SPECIAL_PAIRS]).includes('John Paccini'));
+    for(const name of ['MANSHINE CITY','ENGLAND U-20 // FOX SYSTEM']){
+        assert(data.CHEMISTRY_CONTEXTS.find(c=>c.name===name)?.players.includes('Rooke'),`Rooke: missing ${name}`);
+    }
+    const app=appContext();
+    app.run(`const ordered=[...players].sort(comparePlayerAppearance);
+        assert(ordered.every((p,i)=>!i||comparePlayerAppearance(ordered[i-1],p)<=0));
+        assert.equal(players.find(p=>p.name==='Rooke').primaryPosition,'GK');
+        assert(CHARACTER_DESCRIPTIONS.Rooke.includes('Manshine City')&&CHARACTER_DESCRIPTIONS.Rooke.includes('England U-20'));`);
+});
+check('Every pool category has valid members and first-click selection works with overlaps',()=>{
+    const app=appContext();
+    app.run(`
+        for(const [key,category] of Object.entries(PLAYER_POOL_CATEGORIES)){
+            assert(category.names.length>0,key);
+            assert.equal(new Set(category.names).size,category.names.length,key+' duplicate member');
+            category.names.forEach(name=>assert(players.some(p=>p.name===name),key+' unknown '+name));
+            assert.equal(PLAYER_POOL_CATEGORY_IDS[key].size,category.names.length);
+            playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES).map(k=>[k,true]));
+            playerPoolManualOverrides={};recomputeSelectedPlayersFromCategories();
+            assert.equal(selectedPlayerIds.size,players.length);
+            setPoolCategoryEnabled(key,false);
+            assert.equal(selectedPlayerIds.size,players.length-category.names.length,key+' first click');
+            assert([...PLAYER_POOL_CATEGORY_IDS[key]].every(id=>!selectedPlayerIds.has(id)),key+' remove members');
+            playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES).map(k=>[k,false]));
+            playerPoolManualOverrides={};recomputeSelectedPlayersFromCategories();
+            setPoolCategoryEnabled(key,true);
+            assert.equal(selectedPlayerIds.size,category.names.length,key+' select exact members');
+            const id=[...selectedPlayerIds][0];playerPoolManualOverrides[id]=false;recomputeSelectedPlayersFromCategories();
+            assert(!selectedPlayerIds.has(id));setPoolCategoryEnabled(key,true);assert(selectedPlayerIds.has(id));
+        }
+        assert(PLAYER_POOL_CATEGORY_IDS['master-strikers'].size>0);
+        assert(PLAYER_POOL_CATEGORY_IDS['original-u20'].size>0);
+        assert(PLAYER_POOL_CATEGORY_IDS['japan-world-cup'].size>0);
+    `);
+});
+check('Missing saved IDs drop safely from teams, targets, histories, undo stacks and formations',()=>{
+    const app=appContext();
+    app.run(`
+        const old={gameActive:true,startingBudget:15000,bidIncrement:50,maxPlayers:15,auctionNumber:2,currentBid:50,currentBidder:1,
+            startingTeam:1,currentPlayerId:999999,remainingPlayerIds:[1,999999],selectedPlayerIds:[1,2,999999],
+            team1:{name:'A',color:'#19a7ff',budget:14000,players:[2,999999]},team2:{name:'B',color:'#ff315d',budget:15000,players:[]},
+            uiState:{screen:'auction',phase:'bidding',turn:2},auctionHistory:[{playerId:999999,teamNumber:1,price:1000}],
+            formationAssignments:{1:{0:2,1:999999},2:{}},formationCaptainByTeam:{1:999999,2:null},
+            setup:{selected:[1,999999],poolManualOverrides:{1:true,999999:true}}};
+        const snapshot={...old,team1:{...old.team1,playerIds:old.team1.players},team2:{...old.team2,playerIds:old.team2.players}};
+        old.auctionUndoStack=[snapshot];old.auctionRedoStack=[snapshot];
+        const original=JSON.stringify(old),clean=normalizeAuctionSave(old);
+        assert.equal(JSON.stringify(old),original);assert.equal(clean.team1.budget,14000);
+        assert.deepEqual(clean.team1.players,[2]);assert.deepEqual(clean.remainingPlayerIds,[1]);
+        assert.deepEqual(clean.selectedPlayerIds,[1,2]);assert.equal(clean.currentPlayerId,null);assert.equal(clean.uiState.phase,'next');
+        assert.equal(clean.auctionHistory.length,0);assert.deepEqual(clean.formationAssignments[1],{0:2});assert.equal(clean.formationCaptainByTeam[1],null);
+        assert.deepEqual(clean.setup.selected,[1]);assert.deepEqual(clean.setup.poolManualOverrides,{1:true});
+        for(const stack of [clean.auctionUndoStack,clean.auctionRedoStack]){assert.deepEqual(stack[0].team1.playerIds,[2]);assert.equal(stack[0].currentPlayerId,null);assert.equal(stack[0].auctionHistory.length,0);}
+        const solo=normalizeStandaloneSave({playerIds:[1,999999],assignment:{0:1,1:999999},captainId:999999,formation:'4-4-2'});
+        assert.deepEqual(solo.playerIds,[1]);assert.deepEqual(solo.assignment,{0:1});assert.equal(solo.captainId,null);
+    `);
+});
 check('All classic scripts bootstrap together (simulated platform)',()=>{
     for(const hash of ['#/','#/lore','#/team-builder','#/auction','#/auction/results','#/auction/team-builder']){
         const app=appContext({},hash);

@@ -77,6 +77,7 @@ function showAuctionComplete(){
     const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     if(!wasComplete)playSfx("result");
+    if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionResults")){updateRoute("auctionResults");return;}
     playersRemainingDisplay.innerHTML="COMPLETE";
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
@@ -90,8 +91,7 @@ function showAuctionComplete(){
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
-    window.scrollTo({top:0,behavior:"auto"});
-    requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"auto"}));
+    window.scrollTo({top:0,behavior:"instant"});
     document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);

@@ -30,7 +30,7 @@ function playerStatsRadar(player,variant="sidebar"){
     ).join(" ");
     const description=PLAYER_RADAR_AXES.map(axis=>`${axis.name}: ${stats[axis.key]} out of 100, grade ${playerStatGrade(stats[axis.key])}`).join(". ");
     return `<div class="player-stats player-stats--${size}">
-      <div class="player-stats-heading"><span>ATTRIBUTE ANALYSIS</span><small>06 // FIELD METRICS</small></div>
+      <div class="player-stats-heading"><span>ATTRIBUTE ANALYSIS</span><small>${player.statEstimate?"GAME ESTIMATES":"06 // FIELD METRICS"}</small></div>
       <svg class="player-stats-radar" viewBox="0 0 300 280" role="img" aria-label="${esc(player.name)} attributes. ${esc(description)}">
         <title>${esc(player.name)} // six field attributes</title>
         <desc>${esc(description)}. Goalkeeping is shown separately.</desc>

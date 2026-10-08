@@ -96,7 +96,7 @@ function updateRoute(route,{replace=false}={}){
     }
 
     const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route);
-    if(current===target){
+    if(current===target||(route==="menu"&&current==="")){
         pendingRoutePath=null;
         const currentUrl=new URL(window.location.href,appRootUrl());
         if(currentUrl.hash||currentUrl.pathname!==url.pathname||currentUrl.search!==url.search){
@@ -115,15 +115,20 @@ function setVisibleScreen(screen,options={}){
     }
     [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");
-    window.scrollTo({top:0,behavior:"smooth"});
+    window.scrollTo({top:0,behavior:"instant"});
 }
 window.addEventListener("popstate",()=>navigateToRoute(getRouteFromLocation(),{skipHistory:true}));
+window.addEventListener("pageshow",event=>{
+    pendingRoutePath=null;
+    if(event.persisted)navigateToRoute(getRouteFromLocation(),{skipHistory:true});
+});
 function normalizeCurrentRoute(route){
     // The preflight browser stub has no real navigation API. Treat a recognized
     // legacy hash as canonical there so bootstrap can exercise the destination
     // screen in-place. Real browsers still migrate hashes to clean page URLs.
     if(historyOnlyNavigation()&&legacyHashRoute()===route)return true;
     const target=canonicalRouteUrl(route),current=new URL(window.location.href,appRootUrl());
+    if(route==="menu"&&current.pathname===appRootUrl().pathname&&!current.search&&!current.hash)return true;
     if(current.pathname!==target.pathname||current.search!==target.search||current.hash!==target.hash){
         replaceLocation(target,route);
         return false;

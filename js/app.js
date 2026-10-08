@@ -6,6 +6,7 @@ document.querySelectorAll("[data-app-version]").forEach(el=>{
 });
 
 const initialSaved=loadSavedData();
+if(getRouteFromLocation()==="auctionRoom")warmPlayerPortrait(playerById(initialSaved?.currentPlayerId));
 if(initialSaved?.gameActive) showResumeCard(initialSaved);
 else restoreSetup(initialSaved);
 const initialRoute=getRouteFromLocation();
@@ -21,4 +22,5 @@ history.replaceState(
 );
 
 navigateToRoute(initialRoute,{skipHistory:true});
+if(!pendingRoutePath)document.documentElement.classList.remove("app-initializing");
 }

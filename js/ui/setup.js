@@ -28,7 +28,7 @@ document.querySelectorAll("[data-game-mode]").forEach(button=>{
 const PLAYER_POOL_CATEGORIES = {
     "blue-lock-project":{
         label:"BLUE LOCK PROJECT",
-        names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora"]
+        names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora","Hajime Nishioka","Shizuka Haiji","Reiji Hiiragi","Taiga Tsunzaki","Aiki Himizu"]
     },
     "original-u20":{
         label:"ORIGINAL JAPAN U-20",
@@ -44,11 +44,11 @@ const PLAYER_POOL_CATEGORIES = {
     },
     "new-gen-11":{
         label:"NEW GENERATION XI",
-        names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Julien Loki","Bunny Iglesias","Vivien Hugo","Teddy Knight"]
+        names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Bunny Iglesias","Vivien Hugo","Teddy Knight"]
     },
     "nel-foreign":{
         label:"NEL FOREIGN PLAYERS",
-        names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier"]
+        names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier","Rooke","Renoir"]
     },
     "japan-world-cup":{
         label:"JAPAN U-20 WORLD CUP",
@@ -56,7 +56,11 @@ const PLAYER_POOL_CATEGORIES = {
     },
     "world-cup-new":{
         label:"U-20 WC NEWCOMERS",
-        names:["Rooke","Renoir","Haneru Shindo","Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs"]
+        names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes"]
+    },
+    "side-b":{
+        label:"SIDE-B",
+        names:["Seishiro Nagi","Ryosuke Kira","Haneru Shindo","Hajime Nishioka","Shigeo Mizuki","Reiji Hiiragi","Aiki Himizu","Keisuke Wanima","Hibiki Okawa"]
     }
 };
 const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CATEGORIES).map(([key,data])=>[
@@ -99,9 +103,9 @@ function setPoolCategoryEnabled(key,enabled){
     if(!PLAYER_POOL_CATEGORY_IDS[key])return;
     ensurePoolCategoryState();
     playerPoolCategoryState[key]=!!enabled;
-    // An explicit category action re-syncs its members to category logic.
-    // Overlapping players still remain selected if another enabled category includes them.
-    PLAYER_POOL_CATEGORY_IDS[key].forEach(id=>delete playerPoolManualOverrides[id]);
+    // The checkbox reflects actual members, not a hidden category flag. Apply
+    // the explicit click to every member; overlapping groups show partial state.
+    PLAYER_POOL_CATEGORY_IDS[key].forEach(id=>playerPoolManualOverrides[id]=!!enabled);
     recomputeSelectedPlayersFromCategories();
     renderPlayerPool();
     saveSetupPreferences();
@@ -135,7 +139,7 @@ function renderPlayerPool(){
     visiblePlayers.sort((a,b)=>{
         const av=poolSortValue(a,sort),bv=poolSortValue(b,sort);
         if(typeof av==="string")return av.localeCompare(bv);
-        return sort==="id"?av-bv:bv-av;
+        return sort==="id"?comparePlayerAppearance(a,b):bv-av||comparePlayerAppearance(a,b);
     });
 
     grid.innerHTML=visiblePlayers.map(player => {
@@ -143,7 +147,7 @@ function renderPlayerPool(){
         return `<div class="pool-player-card ${selected?"selected":""}" data-player-id="${player.id}">
             <button type="button" class="pool-select-hit" aria-pressed="${selected}" aria-label="${selected?"Remove":"Add"} ${esc(player.name)} from auction pool">
               <div class="pool-player-check">${selected?"✓":"+"}</div>
-              <img src="${player.image}" alt="${esc(player.name)}" loading="lazy" decoding="async">
+              <img src="${player.image}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
               <div class="pool-player-info">
                   <span>PLAYER // ${String(player.id).padStart(2,"0")} // OVR ${playerOverall(player)}</span>
                   <strong>${esc(player.name)}</strong>
@@ -151,6 +155,7 @@ function renderPlayerPool(){
             </button>
         </div>`;
     }).join("");
+    prioritizeVisiblePortraits(grid);
 
     grid.querySelectorAll(".pool-select-hit").forEach(button => {
         button.addEventListener("click", () => {
@@ -193,7 +198,7 @@ document.querySelectorAll("[data-pool-category]").forEach(input=>{
 ["playerPositionFilter","playerGroupFilter","playerSort"].forEach(id=>{
     document.getElementById(id)?.addEventListener("change",()=>{renderPlayerPool();saveSetupPreferences();});
 });
-renderPlayerPool();
+// The destination route renders the pool after restoring setup preferences.
 
 document.getElementById("startGame").addEventListener("click", startGame);
 document.getElementById("randomDraftGame").addEventListener("click", startRandomDraft);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="app-initializing">
 <head>
     <base href="../">
     <meta charset="UTF-8">
@@ -7,18 +7,21 @@
     <title>Blue Lock Draft — Auction Results</title>
 
     <link rel="icon" type="image/png" href="images/bld-logo.png?v=0.6.1.3">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;0,900;1,800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=0.6.2">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.2">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.2">
+    <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/rajdhani-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="style.css?v=0.6.3">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.3">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.3">
 </head>
 <body>
     <div class="background-tech" aria-hidden="true"></div>
 
 
     <section id="menu-screen" class="menu-screen hidden">
+        <header class="site-header">
+            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div><h1>MAIN <span>MENU</span></h1><p>TEAM DRAFT SIMULATOR // FAN PROJECT</p></div></div>
+            <div class="header-right-controls"></div>
+        </header>
         <div class="menu-shell">
             <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
             <div class="menu-title-wrap">
@@ -49,15 +52,16 @@
     </section>
 
     <section id="lore-menu-screen" class="lore-screen hidden">
-        <div class="lore-shell">
-            <header class="lore-header site-header">
-                <div><div class="game-header-small">BL // DATABASE</div>
+        <header class="lore-header site-header">
+                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // DATABASE</div>
                 <h1>BLUE LOCK <span>LORE</span></h1>
                 <p>CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</p></div>
+                </div>
                 <div class="header-right-controls">
                     <button id="loreBackToMenu" class="header-utility" type="button">← MAIN MENU</button>
                 </div>
             </header>
+        <div class="lore-shell">
             <div class="lore-actions">
                 <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
                 <button id="loreChemistry" class="menu-action lore-action" type="button"><span>CHEMISTRY</span><b>RELATIONSHIP DATABASE</b></button>
@@ -68,14 +72,15 @@
     <section id="character-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
             <header class="lore-page-header site-header">
-                <div><div class="game-header-small">BL // CHARACTER DATABASE</div>
+                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // CHARACTER DATABASE</div>
                 <h1>CHARACTERS</h1><p>PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</p></div>
+                </div>
                 <div class="header-right-controls">
                     <div class="header-mini-actions"><button id="charactersBackToLore" class="header-utility" type="button">← LORE</button></div>
                 </div>
             </header>
             <div class="lore-toolbar" role="search" aria-label="Characters filters">
-                <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></label><label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></select></label><label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label><label>SORT<select id="characterLoreSort"><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option></select></label><button id="characterLoreReset" type="button">RESET FILTERS</button><output id="characterLoreCount" aria-live="polite"></output>
+                <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></label><label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></select></label><label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label><label>SORT<select id="characterLoreSort"><option value="chronological">Manga Appearance</option><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option></select></label><button id="characterLoreReset" type="button">RESET FILTERS</button><output id="characterLoreCount" aria-live="polite"></output>
             </div>
             <div id="characterLoreGrid" class="character-lore-grid"></div>
         </div>
@@ -84,8 +89,9 @@
     <section id="chemistry-lore-screen" class="lore-screen hidden">
         <div class="lore-content-shell">
             <header class="lore-page-header site-header">
-                <div><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
+                <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // CHEMISTRY DATABASE</div>
                 <h1>CHEMISTRY</h1><p>CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</p></div>
+                </div>
                 <div class="header-right-controls">
                     <div class="header-mini-actions"><button id="chemistryBackToLore" class="header-utility" type="button">← LORE</button></div>
                 </div>
@@ -99,9 +105,10 @@
 
     <section id="setup-screen" class="hidden">
         <header class="setup-logo site-header">
-            <div><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div>
+            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy"><div class="game-header-small">BL // STRIKER SELECTION PROGRAM</div>
             <h1>BLUE LOCK <span>DRAFT</span></h1><p>DRAFT // BID // BUILD YOUR XI</p></div>
-            <div class="header-right-controls"><button id="setupBackToMenu" class="header-utility" type="button">← MAIN MENU</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
+            </div>
+                <div class="header-right-controls"><button id="setupBackToMenu" class="header-utility" type="button">← MAIN MENU</button><button class="header-utility" type="button" data-how-to-play>HOW TO PLAY</button></div>
         </header>
 
         <div class="setup-box setup-box-wide">
@@ -193,8 +200,9 @@
                     <label><input type="checkbox" data-pool-category="nel-foreign" checked><span>NEL FOREIGN PLAYERS<small>OVERSEAS NEL CAST</small></span></label>
                     <label><input type="checkbox" data-pool-category="japan-world-cup" checked><span>JAPAN U-20 WORLD CUP<small>CURRENT JAPAN SELECTION</small></span></label>
                     <label><input type="checkbox" data-pool-category="world-cup-new" checked><span>U-20 WC NEWCOMERS<small>NEW INTERNATIONAL PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="side-b" checked><span>SIDE-B<small>BURATSUTA’S SECOND CHANCE</small></span></label>
                 </div>
-                <div class="preset-note">Categories combine as a union. If a player belongs to multiple checked groups, removing one group will not remove that player while another checked group still includes them. Individual player toggles act as manual overrides.</div>
+                <div class="preset-note">Check a category to select all its players; uncheck it to remove them. Shared players update overlapping groups to a partial state. Individual cards can be toggled at any time.</div>
             </div>
 
             <div class="player-pool-toolbar player-database-toolbar">
@@ -227,7 +235,7 @@
                     </label>
                     <label>SORT
                         <select id="playerSort">
-                            <option value="id">PLAYER ID</option>
+                            <option value="id">MANGA APPEARANCE</option>
                             <option value="ovr">OVR ↓</option>
                             <option value="sho">SHOOTING ↓</option>
                             <option value="spd">SPEED ↓</option>
@@ -267,12 +275,13 @@
 
     <section id="auction-screen" class="hidden">
         <header class="game-header site-header">
-            <div>
+            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy">
                 <div class="game-header-small">BL // FINAL SELECTION</div>
                 <h1>AUCTION <span>RESULTS</span></h1>
                 <div class="header-status"><i></i> DRAFT COMPLETE</div>
             </div>
-            <div class="header-right-controls">
+            </div>
+                <div class="header-right-controls">
                 <div id="playersRemaining" class="players-remaining"></div>
                 <div class="header-mini-actions">
                     <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
@@ -285,12 +294,13 @@
 
     <section id="formation-screen" class="hidden">
         <header class="game-header formation-header site-header">
-            <div>
+            <div class="site-header-identity"><img class="site-logo" src="images/bld-logo-header.webp" alt="BLD" width="56" height="56" loading="eager" decoding="async"><div class="site-header-copy">
                 <div id="formationHeaderCode" class="game-header-small">BL // SQUAD DEPLOYMENT</div>
                 <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
                 <div id="formationHeaderStatus" class="header-status"><i></i> TACTICAL MODE</div>
             </div>
-            <div class="header-right-controls">
+            </div>
+                <div class="header-right-controls">
                 <button id="backToResults" class="header-button compact-control">← RESULTS</button>
                 <div class="header-mini-actions">
                     <button class="global-menu-button" type="button" data-main-menu>⌂ <span>MENU</span></button>
@@ -353,23 +363,23 @@
             </div>
         </div>
     </footer>
-    <script defer src="js/version.js?v=0.6.2"></script>
-    <script defer src="js/players.js?v=0.6.2"></script>
-    <script defer src="js/state.js?v=0.6.2"></script>
-    <script defer src="js/ui/player-stats.js?v=0.6.2"></script>
-    <script defer src="js/audio.js?v=0.6.2"></script>
-    <script defer src="js/chemistry.js?v=0.6.2"></script>
-    <script defer src="js/lore.js?v=0.6.2"></script>
-    <script defer src="js/formations.js?v=0.6.2"></script>
-    <script defer src="js/storage.js?v=0.6.2"></script>
-    <script defer src="js/results.js?v=0.6.2"></script>
-    <script defer src="js/auction.js?v=0.6.2"></script>
-    <script defer src="js/ui/auction-ui.js?v=0.6.2"></script>
-    <script defer src="js/router.js?v=0.6.2"></script>
-    <script defer src="js/ui/menu.js?v=0.6.2"></script>
-    <script defer src="js/ui/setup.js?v=0.6.2"></script>
-    <script defer src="js/standalone-builder.js?v=0.6.2"></script>
-    <script defer src="js/ui/formation-ui.js?v=0.6.2"></script>
-    <script defer src="js/app.js?v=0.6.2"></script>
+    <script defer src="js/version.js?v=0.6.3"></script>
+    <script defer src="js/players.js?v=0.6.3"></script>
+    <script defer src="js/state.js?v=0.6.3"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.3"></script>
+    <script defer src="js/audio.js?v=0.6.3"></script>
+    <script defer src="js/chemistry.js?v=0.6.3"></script>
+    <script defer src="js/lore.js?v=0.6.3"></script>
+    <script defer src="js/formations.js?v=0.6.3"></script>
+    <script defer src="js/storage.js?v=0.6.3"></script>
+    <script defer src="js/results.js?v=0.6.3"></script>
+    <script defer src="js/auction.js?v=0.6.3"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.3"></script>
+    <script defer src="js/router.js?v=0.6.3"></script>
+    <script defer src="js/ui/menu.js?v=0.6.3"></script>
+    <script defer src="js/ui/setup.js?v=0.6.3"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.3"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.3"></script>
+    <script defer src="js/app.js?v=0.6.3"></script>
 </body>
 </html>

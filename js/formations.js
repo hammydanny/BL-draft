@@ -592,6 +592,10 @@ function openAuctionTeamBuilder(){
         turn:null
     };
 
+    if(!historyOnlyNavigation()&&appRelativePath()!==routePath("auctionTeamBuilder")){
+        saveGame();updateRoute("auctionTeamBuilder");return;
+    }
+
     if(formationTeamNumber!==1&&formationTeamNumber!==2){
         formationTeamNumber=1;
     }
@@ -657,7 +661,7 @@ function openAuctionTeamBuilder(){
 
     window.scrollTo({
         top:0,
-        behavior:"smooth"
+        behavior:"instant"
     });
 }
 function autoFillFormation(n){

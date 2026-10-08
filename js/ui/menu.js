@@ -14,6 +14,8 @@ function refreshMainMenu(){
 function goToMainMenu(options={}){
     if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
 
+    if(!options.skipHistory&&!historyOnlyNavigation()&&appRelativePath()!==routePath("menu")){updateRoute("menu");return;}
+
     if(uiState.screen==="standalone-builder"){
         formationScreen.classList.remove("standalone-builder-mode");
 
@@ -73,20 +75,16 @@ function openInfoModal(type){
         title.textContent="HOW TO PLAY";
         body.innerHTML=`
           <div class="rule-grid">
-            <div class="rule"><b>01</b><span>BUILD THE PLAYER POOL</span><p>Choose roster size and auction rules, then combine the category checks, use search/role filters, Select All, Invert, Clear All or individual player cards to define exactly who can appear. Overlapping categories remain selected while any enabled category still includes that player.</p></div>
-            <div class="rule"><b>02</b><span>CHOOSE A DRAFT MODE</span><p>Initialize the live auction for two-player bidding, or use Random Draft to skip bidding and instantly create both squads from the selected pool.</p></div>
-            <div class="rule"><b>03</b><span>OPENING BID</span><p>A coin flip chooses the first opener. Opening responsibility alternates by player. Enter a valid opening value that fits the bid interval and available budget.</p></div>
-            <div class="rule"><b>04</b><span>BID OR PASS</span><p>The active side can raise or pass. Every raise must beat the current valuation, respect the interval and stay within that team's remaining capital.</p></div>
-            <div class="rule"><b>05</b><span>SIGNINGS & BUDGET</span><p>Passing awards the player to the current leader. The command-center view keeps both budgets, roster counts, signings and the live bid visible together.</p></div>
-            <div class="rule"><b>06</b><span>SPECIAL AUCTION STATES</span><p>Zero-budget and full-roster situations are handled automatically so the draft can continue without impossible bids or overfilled squads.</p></div>
-            <div class="rule"><b>07</b><span>TEAM BUILDER</span><p>After the draft, place players into formations, swap or bench them, assign a captain, inspect position-adjusted OVR and build around tactical chemistry links.</p></div>
-            <div class="rule"><b>08</b><span>AUTO BEST TEAM</span><p>Auto Best Team searches the selected roster for a stronger positional and chemistry-aware lineup. Players outside the active XI remain in Reserves.</p></div>
-            <div class="rule"><b>09</b><span>PARTIAL SQUADS</span><p>Squads smaller than eleven use only the appropriate number of active formation slots. Team OVR and chemistry are calculated from the players actually deployed.</p></div>
-            <div class="rule"><b>10</b><span>RESULTS & SHARE</span><p>Results compare both squads. Share displays the formation exactly as you built it—including empty or incomplete teams—along with OVR, chemistry, captain and reserves.</p></div>
-            <div class="rule"><b>11</b><span>STANDALONE BUILDER</span><p>TEAM BUILDER on the main menu creates one independent Global XI. Select a roster, use Auto Best, manage reserves, captain, chemistry and formations, and save it locally.</p></div>
-            <div class="rule"><b>12</b><span>LORE DATABASE</span><p>The Lore section contains character descriptions, attributes, positions and chemistry references. Search Characters or Chemistry directly from the main menu.</p></div>
-            <div class="rule"><b>13</b><span>AUTOSAVE & MOBILE</span><p>Active auctions and the standalone builder save locally in this browser. Setup, bidding, formation building, results and Lore all adapt to mobile layouts.</p></div>
-          </div>`;
+            <div class="rule"><b>01</b><span>CHOOSE YOUR SETTINGS</span><p>Name teams. Pick budgets, bid interval, roster size and players. Random Draft skips bidding.</p></div>
+            <div class="rule"><b>02</b><span>AUCTION PLAYERS</span><p>Players appear one at a time. A coin flip picks the first opener; teams alternate openings.</p></div>
+            <div class="rule"><b>03</b><span>BID OR PASS</span><p>Open or raise in multiples of the bid interval, within your budget. Passing awards the player to the bid leader.</p></div>
+            <div class="rule"><b>04</b><span>BUILD YOUR SQUAD</span><p>Manage money and roster space. A full team stops bidding; the other team receives remaining signings free. Zero-budget situations allow free signings.</p></div>
+            <div class="rule"><b>05</b><span>BUILD YOUR FORMATION</span><p>After drafting, drag players into positions, swap them or move them to Reserves. Choose a captain.</p></div>
+            <div class="rule"><b>06</b><span>CHEMISTRY &amp; POSITIONS</span><p>Suitable positions improve player performance. Shared history and demonstrated combinations improve chemistry.</p></div>
+            <div class="rule"><b>07</b><span>AUTO BEST</span><p>Auto Best checks all ten formations for a strong lineup using your selected squad.</p></div>
+            <div class="rule"><b>08</b><span>RESULTS</span><p>Compare both squads. Share saves the exact formation you built, including captain and reserves.</p></div>
+          </div>
+          <div class="info-section"><p><strong>UNDO / REDO</strong> reverses or repeats auction actions. <strong>PARTIAL SQUADS</strong> use only deployed players. <strong>STANDALONE TEAM BUILDER</strong> makes a separate squad. Both modes save locally in this browser.</p></div>`;
     }
     modal.classList.remove("hidden");
 }

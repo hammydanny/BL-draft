@@ -3,7 +3,7 @@
 
 const CHARACTER_DESCRIPTIONS = {
   "Yoichi Isagi": "An adaptive striker whose spatial awareness, off-ball movement and metavision let him read entire attacks and repeatedly reinvent the route to goal.",
-  "Ryosuke Kira": "A highly regarded high-school forward known as the Jewel of Japanese Soccer before Blue Lock's opening test eliminated him and challenged his team-first ideals.",
+  "Ryosuke Kira": "A highly regarded high-school forward known as the Jewel of Japanese Soccer before Blue Lock's opening test eliminated him and challenged his team-first ideals. He later returns through Side-B.",
   "Noel Noa": "The world's benchmark striker and Bastard München master, defined by ruthless rationality, elite two-footed finishing and an ability to choose the most efficient scoring action.",
   "Meguru Bachira": "A free-form dribbler who follows his instinctive 'monster,' using elastic close control, creativity and fearless one-on-one play to break defensive structure.",
   "Gurimu Igarashi": "A survival-focused forward whose persistence and Malicia-style foul drawing let him manufacture value even when he lacks the elite technical weapons of Blue Lock's stars.",
@@ -18,11 +18,11 @@ const CHARACTER_DESCRIPTIONS = {
   "Sae Itoshi": "A New Generation World XI midfielder whose technique, scanning, dribbling and surgical passing let him dictate the tempo and quality of an entire attack.",
   "Shoei Baro": "A domineering striker who treats the field as his kingdom, combining power, chop dribbles, disciplined shooting zones and a predator's willingness to devour teammates' plans.",
   "Ikki Niko": "A cerebral defender converted from striker, using vision, anticipation and metavision-like reading to intercept passing lanes and organize defensive space.",
-  "Hibiki Okawa": "Team Y's recognized ace scorer, used as the focal point of Niko's early tactical system and valued primarily for direct finishing presence.",
+  "Hibiki Okawa": "Team Y's recognized ace scorer, used as the focal point of Niko's early tactical system and valued primarily for direct finishing presence. He later participates in Side-B.",
   "Junichi Wanima": "One half of the Wanima partnership, a forward who thrives on synchronized movement and familiar combination play built through years beside his brother.",
-  "Keisuke Wanima": "One half of the Wanima partnership, relying on coordinated timing, shared reads and rehearsed attacking movement with his brother.",
+  "Keisuke Wanima": "One half of the Wanima partnership, relying on coordinated timing, shared reads and rehearsed attacking movement with his brother. After his First Selection elimination, he later enters Side-B.",
   "Reo Mikage": "An elite all-rounder whose copy ability, passing and tactical flexibility let him reproduce a wide range of techniques and serve as creator, midfielder or defender.",
-  "Seishiro Nagi": "A prodigious trapping genius capable of killing impossible passes and inventing finishes from awkward situations, though his growth depends heavily on finding genuine personal motivation.",
+  "Seishiro Nagi": "A prodigious trapping genius capable of killing impossible passes and inventing finishes from awkward situations, though his growth depends heavily on finding genuine personal motivation. After the NEL, he enters Side-B.",
   "Zantetsu Tsurugi": "A left-footed speedster with exceptional initial acceleration, dangerous diagonal shooting and a simple direct style that contrasts with his poor academic instincts.",
   "Rin Itoshi": "A complete elite striker whose shooting, technique, field control and destructive ego allow him to dominate matches while constantly seeking opponents strong enough to force evolution.",
   "Jyubei Aryu": "Aerial and reach specialist whose long limbs, jumping ability and stylish body control make him dangerous in both penalty boxes and highly useful as a center back.",
@@ -59,7 +59,7 @@ const CHARACTER_DESCRIPTIONS = {
   "Marc Snuffy": "Ubers' master striker and tactical mastermind, famous for designing repeatable team patterns, maximizing player roles and leading through preparation rather than pure individual ego.",
   "Don Lorenzo": "A New Generation World XI center back nicknamed the Ace Eater, combining elite man-marking with unusual dribbling and ball-carrying to erase star attackers and launch counters.",
   "Charles Chevalier": "A gifted French playmaker whose contrarian personality and pinpoint passing make him especially dangerous when a difficult or unexpected attacking route captures his interest.",
-  "Rooke": "A U-20 World Cup goalkeeper in the current player pool, profiled as a high-level shot stopper with the athletic tools expected of an international youth keeper.",
+  "Rooke": "A goalkeeper first shown with Manshine City’s U-20 side in the Neo Egoist League in chapter 173. He later plays in goal for England U-20, wearing number 1 in both roles.",
   "Renoir": "A French U-20 goalkeeper associated with the tournament's elite international generation, offering strong reflexes and composure behind France's talented outfield group.",
   "Haneru Shindo": "A World Cup-era forward in the current database, represented as a developing attacker whose value comes from direct movement and finishing support.",
   "Bunny Iglesias": "An elite U-20 forward recognized among the New Generation World XI, carrying the reputation and technical ceiling of a striker already measured against the world's best youth talent.",
@@ -68,7 +68,18 @@ const CHARACTER_DESCRIPTIONS = {
   "Vivien Hugo": "An elite French central midfielder and New Generation World XI-level presence whose passing, control and tactical confidence make him a major connector in France's attack.",
   "Achanpong": "An England U-20 forward operating inside the team's collective system, offering athletic running and supporting movement rather than being treated as an individual superstar.",
   "Lockhart": "An England U-20 forward with proven penalty-area presence, including the movement and aerial finishing required to convert service from the team's structured wide attacks.",
-  "Teddy Knight": "An elite England U-20 right-sided attacker and New Generation World XI-level talent, combining delivery, pace and high-end chance creation within England's collective system.",
+  "Teddy Knight": "An elite England U-20 left winger and New Generation World XI-level talent, combining delivery, pace and high-end chance creation within England’s collective system.",
+  "Shigeo Mizuki": "A Japanese forward in Side-B, first shown on a screen in chapter 311 and introduced in person in chapter 327. He identifies stamina as his strength and partners with Nagi in the Bird Cage challenge.",
+  "Hajime Nishioka": "The Japanese forward known as Aomori’s Messi. He teamed with Baro and Naruhaya, cleared the Second Selection with Niko and Hiori, joined Manshine City in the NEL and later entered Side-B. His distinctive football weapon is not specifically demonstrated.",
+  "Shizuka Haiji": "A Japanese forward who survived the Second Selection with Nanase, Hiiragi and Tsunzaki. He played on Third Selection Team A3 and joined FC Barcha during the NEL. A distinctive weapon is not specifically demonstrated. His selection jersey number was 19.",
+  "Reiji Hiiragi": "A Japanese forward whose trapping and prediction are explored in Episode Nagi. He teamed with Niko and Zantetsu, cleared the Second Selection with Nanase’s group and played for Manshine City before entering Side-B. His selection number was 22; Manshine number 17.",
+  "Taiga Tsunzaki": "A Japanese forward in the fourth Second Selection clear team alongside Nanase, Hiiragi and Haiji. He played on Third Selection Team C2 and was a Manshine City reserve in the NEL. A distinctive weapon is not specifically demonstrated. His selection number was 100.",
+  "Oboabona": "Nigeria U-20’s number 8 centre-back. His headers and vertical leap support his aerial defending. He grew up playing football with Onazi, Kuso and Bello; their shared Nigeria team history provides his ordinary chemistry links.",
+  "Bello": "Nigeria U-20’s number 11 right midfielder. His quick dribbling tempo is demonstrated against Bachira. He grew up playing football with Onazi, Kuso and Oboabona.",
+  "Bats": "France U-20’s number 5 defensive midfielder. He uses his physique to pressure and obstruct opponents, including Karasu, in France’s match against Japan.",
+  "Leyden": "France U-20’s number 8 left winger. His speed lets him keep pace with Chigiri, and he uses threatening deliveries and decoy movement during the Japan match.",
+  "Hermes": "France U-20’s number 2 centre-back, introduced with the team in chapter 330. He contests Reo in the air during the Japan match. A distinctive named weapon is not specifically demonstrated.",
+  "Aiki Himizu": "A Japanese forward whose feints, reading of deceptive movements and pressing are demonstrated in Episode Nagi. He cleared the Second Selection in Karasu’s group, played on Third Selection Team C2, joined FC Barcha and later entered Side-B. His selection number was 77.",
   "Childs": "An England U-20 forward used as part of the team's system-oriented attack, providing supporting runs and finishing options around the more prominent creators."
 };
 
@@ -100,7 +111,7 @@ function loreDatabase(){
       }
     }
     const characters=players.map(player=>({player,chemistry:byName.get(player.name),
-      search:[player.name,primaryPosition(player),...playerPositions(player)].join(" ").toLowerCase()}));
+      search:[player.name,primaryPosition(player),...playerPositions(player),characterLoreDescription(player),...byName.get(player.name).teamLinks.map(link=>link.name)].join(" ").toLowerCase()}));
     loreDatabaseCache={characters,chemistry,byName};
     return loreDatabaseCache;
 }
@@ -114,9 +125,10 @@ function filteredCharacterLore(){
       (group==="ALL"||playerPositions(record.player).some(pos=>positionGroup(pos)===group))&&
       (grade==="ALL"||playerStatGrade(playerOverall(record.player))===grade)
     );
-    const sort=loreControlValue("characterLoreSort","ovr-desc");
+    const sort=loreControlValue("characterLoreSort","chronological");
     const compareNames=(a,b)=>a.player.name.localeCompare(b.player.name);
     return filtered.sort((a,b)=>{
+      if(sort==="chronological")return comparePlayerAppearance(a.player,b.player);
       if(sort==="name-asc")return compareNames(a,b);
       if(sort==="name-desc")return compareNames(b,a);
       if(sort==="position")return primaryPosition(a.player).localeCompare(primaryPosition(b.player))||compareNames(a,b);
@@ -135,10 +147,10 @@ function characterLoreCard(record){
           <img src="${player.image}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="120" height="136"
             onerror="this.classList.add('lore-image-broken')">
         </div>
-        <div class="character-lore-heading"><span class="lore-kicker">${esc(primaryPosition(player))}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}
+        <div class="character-lore-heading"><span class="lore-kicker">${esc(primaryPosition(player))} // MANGA CH. ${player.debutChapter}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}
           <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>
         </div>
-        <p class="character-lore-description">${esc(characterLoreDescription(player))}</p>
+        <p class="character-lore-description">${esc(characterLoreDescription(player))}${player.statEstimate?"<br><small>RATINGS // GAME BALANCING ESTIMATES, NOT OFFICIAL STATS</small>":""}</p>
       </div>
       ${playerStatsRadar(player,"lore")}
       <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
@@ -169,6 +181,7 @@ function renderCharacterLore(){
     const grid=document.getElementById("characterLoreGrid");if(!grid)return;
     const filtered=filteredCharacterLore();
     renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS.");
+    prioritizeVisiblePortraits(grid);
     const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${players.length} PLAYERS`;
 }
 function filteredChemistryLore(){
@@ -202,7 +215,7 @@ function renderChemistryLore(){
     const count=document.getElementById("chemistryLoreCount");if(count)count.textContent=`${entries.length} / ${loreDatabase().chemistry.length} ENTRIES`;
 }
 function resetLoreFilters(kind){
-    const defaults=kind==="character"?{Search:"",Position:"ALL",Grade:"ALL",Sort:"ovr-desc"}:{Search:"",Type:"ALL",Tier:"ALL",Sort:"score-desc"};
+    const defaults=kind==="character"?{Search:"",Position:"ALL",Grade:"ALL",Sort:"chronological"}:{Search:"",Type:"ALL",Tier:"ALL",Sort:"score-desc"};
     for(const [control,value] of Object.entries(defaults)){const input=document.getElementById(kind+"Lore"+control);if(input)input.value=value;}
     if(kind==="character")renderCharacterLore();else renderChemistryLore();
 }

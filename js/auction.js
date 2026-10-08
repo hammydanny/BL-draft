@@ -134,6 +134,7 @@ function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
+    if(!historyOnlyNavigation()){updateRoute("auctionRoom");return;}
     // Start with an empty auction command area so no player card can flash behind
     // the opening overlays from a previous or newly-created auction state.
     auctionContent.innerHTML="";
@@ -164,6 +165,7 @@ function startRandomDraft(){
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
     saveGame();
+    if(!historyOnlyNavigation()){updateRoute("auctionResults");return;}
     setupScreen.classList.add("hidden");auctionScreen.classList.remove("hidden");
     updatePlayersRemaining();
     updateRoute("auctionResults");
@@ -204,7 +206,7 @@ function showForcedAssignment(teamNumber,resuming=false){
     const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
     showOverlay(`
       <div class="overlay-kicker">ROSTER CAPACITY PROTOCOL // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <p><strong style="color:${accessibleTeamAccent(fullTeam.color)}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
@@ -239,7 +241,7 @@ function showPlayerReveal(){
     playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}"></div>
+      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);

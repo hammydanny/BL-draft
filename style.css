@@ -1,15 +1,16 @@
 :root{--bg:#02050b;--panel:#07111d;--panel2:#0a1828;--blue:#149cff;--bright:#54c8ff;--text:#f5f8ff;--muted:#70869c;--line:rgba(80,174,255,.18)}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;color:var(--text);font-family:"Rajdhani",sans-serif;background:radial-gradient(circle at 50% -10%,#0d3154 0,transparent 38%),linear-gradient(180deg,#040b14,#010308 75%);background-attachment:fixed}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{display:flow-root;margin:0;min-height:100vh;color:var(--text);font-family:"Rajdhani",sans-serif;background:radial-gradient(circle at 50% -10%,#0d3154 0,transparent 38%),linear-gradient(180deg,#040b14,#010308 75%);background-attachment:fixed}
 .hidden{display:none!important}
+.app-initializing body{opacity:0}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(#000,transparent 90%)}
 .background-tech{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .background-tech:before{content:"";position:absolute;width:62vw;height:62vw;left:50%;top:28%;transform:translate(-50%,-50%);border:1px solid rgba(41,163,255,.08);border-radius:50%;box-shadow:0 0 0 9vw rgba(41,163,255,.025),0 0 0 18vw rgba(41,163,255,.02)}
 h1,h2,h3,.current-bid,.sold-word,.winning-price,.budget-amount{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase}
 p{color:var(--muted);line-height:1.5}
 .system-tag,.panel-code,.team-code,.overlay-kicker{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--blue)}
-#setup-screen{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:45px 20px}
+#setup-screen{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:18px 20px}
 .setup-box{position:relative;width:510px;max-width:100%;padding:28px;background:linear-gradient(145deg,rgba(10,25,42,.97),rgba(2,8,15,.98));border:1px solid var(--line);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .setup-box:before{content:"";position:absolute;left:0;top:0;width:90px;height:3px;background:var(--blue);box-shadow:0 0 20px var(--blue)}
 .setup-section-title{margin-top:22px;padding-bottom:7px;border-bottom:1px solid var(--line);color:var(--blue);font-family:"Barlow Condensed";font-weight:800;letter-spacing:3px}
@@ -29,7 +30,7 @@ button{font-family:"Rajdhani";cursor:pointer}
 .primary-button{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:15px;padding:14px 16px;color:#fff;background:linear-gradient(100deg,#0872d4,#159fff);border:0;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:2px;box-shadow:0 8px 28px rgba(20,156,255,.18);transition:.15s}
 .primary-button:hover{transform:translateY(-2px);filter:brightness(1.12)}
 .primary-button b{font-size:18px}
-#auction-screen{min-height:100vh;padding:18px 26px 50px}
+#auction-screen{min-height:100vh;padding:18px 20px 50px}
 .header-status{font-size:10px;letter-spacing:2px;color:#6e879c}
 .header-status i{display:inline-block;width:6px;height:6px;margin-right:6px;background:#39f59b;border-radius:50%;box-shadow:0 0 10px #39f59b}
 .players-remaining{text-align:right;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:2px}
@@ -132,8 +133,7 @@ button{font-family:"Rajdhani";cursor:pointer}
 100%{transform:rotateY(1080deg)}}
 @keyframes scan{from{top:-80px}
 to{top:100%}}
-@media(max-width:700px){#auction-screen{padding:11px 11px 35px}
-.header-status{display:none}
+@media(max-width:700px){.header-status{display:none}
 .team-trackers,.final-team-grid,.history-list,.full-history-list{grid-template-columns:1fr}
 .team-trackers{gap:8px;margin:12px auto 17px}
 .mini-roster{grid-template-columns:repeat(auto-fill,minmax(58px,1fr))}
@@ -193,7 +193,7 @@ to{top:100%}}
 .preset-buttons button{color:#86a2b8;background:#071522;border:1px solid #153a57;font-weight:700}
 .preset-buttons button:hover,.preset-buttons button.active{color:white;border-color:var(--blue);background:rgba(20,156,255,.12);box-shadow:inset 0 -2px var(--blue)}
 .preset-note{margin-top:7px;color:#476177;letter-spacing:1px}
-/* FORMATION BUILDER */ #formation-screen{min-height:100vh;padding:18px 26px 55px}
+/* FORMATION BUILDER */ #formation-screen{min-height:100vh;padding:18px 20px 55px}
 .formation-header{max-width:1250px}
 .header-button{justify-self:end;padding:9px 13px;color:#9bb3c7;background:#071522;border:1px solid #17415f;font-size:11px;font-weight:700;letter-spacing:1px}
 #formation-content{max-width:1250px;margin:20px auto}
@@ -329,9 +329,9 @@ to{opacity:1;transform:none;filter:none}}
 @media(max-width:600px){.sound-toggle{height:34px;padding:0 8px}
 .sound-toggle strong{display:none}
 .sold-burst{font-size:25vw}}
-/* MAIN MENU / HOW TO PLAY / GAME MODE PRESETS */ .menu-screen{position:relative;min-height:100vh;display:grid;place-items:center;padding:35px 20px;overflow:hidden}
+/* MAIN MENU / HOW TO PLAY / GAME MODE PRESETS */ .menu-screen{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px 20px;overflow:hidden}
 .menu-screen:before{content:"";position:absolute;width:min(850px,90vw);height:min(850px,90vw);border:1px solid rgba(20,156,255,.09);border-radius:50%;box-shadow:0 0 0 90px rgba(20,156,255,.025),0 0 0 180px rgba(20,156,255,.018);animation:menuOrbit 18s linear infinite}
-.menu-shell{position:relative;z-index:1;width:min(760px,100%);padding:36px 38px;background:linear-gradient(145deg,rgba(8,24,40,.93),rgba(1,6,12,.97));border:1px solid rgba(73,177,255,.23);box-shadow:0 35px 100px rgba(0,0,0,.55);clip-path:polygon(0 0,calc(100% - 32px) 0,100% 32px,100% 100%,32px 100%,0 calc(100% - 32px))}
+.menu-shell{position:relative;z-index:1;margin:auto 0;width:min(760px,100%);padding:36px 38px;background:linear-gradient(145deg,rgba(8,24,40,.93),rgba(1,6,12,.97));border:1px solid rgba(73,177,255,.23);box-shadow:0 35px 100px rgba(0,0,0,.55);clip-path:polygon(0 0,calc(100% - 32px) 0,100% 32px,100% 100%,32px 100%,0 calc(100% - 32px))}
 .menu-shell:before{content:"";position:absolute;left:0;top:0;width:160px;height:3px;background:var(--blue);box-shadow:0 0 24px var(--blue)}
 .menu-code{color:var(--blue);font-size:10px;font-weight:800;letter-spacing:3px}
 .menu-title-wrap{position:relative;margin:38px 0 28px}
@@ -776,8 +776,7 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 /* Accent text lives on dark panels, so it uses the contrast-safe accent rather than the foreground color intended for filled team-color buttons. */ .team-tracker h3, .final-team-card h3, .share-team h3, .formation-control-panel strong, .player-info-panel .player-info-id{color:var(--team)!important}
 /* Instruction/status copy should remain readable regardless of team hue. */ .turn-indicator strong, .formation-instructions strong, .sold-panel h2{color:var(--team-text)!important}
 /* Keep borders/labels visible for black and near-black teams. */ .team-tracker, .final-team-card, .share-team, .bid-panel, .sold-panel, .turn-indicator, .formation-control-panel, .formation-instructions, .player-info-panel, .bench-panel, .formation-pitch-v2{border-color:var(--team-soft)}
-/* GAMEPLAY + PRESENTATION AUCTION COMMAND CENTER */ @media (min-width:1100px){#auction-screen{padding:14px 18px 42px}
-
+/* GAMEPLAY + PRESENTATION AUCTION COMMAND CENTER */ @media (min-width:1100px){
   .auction-command-shell{max-width:1540px;margin:0 auto}
   .auction-command-grid{
     display:grid;
@@ -1013,7 +1012,7 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .lore-toolbar :focus-visible{outline:2px solid #68e2ff;outline-offset:2px}
 .lore-toolbar output{grid-column:1/-1;color:#7594a9;font-size:9px;letter-spacing:1px}
 @media(max-width:900px){.lore-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}.lore-toolbar .lore-search{grid-column:1/-1}}
-/* LORE DATABASE + RELIABLE PLAYER PORTRAITS */ .lore-screen{min-height:100vh;padding:30px 20px}
+/* LORE DATABASE + RELIABLE PLAYER PORTRAITS */ .lore-screen{min-height:100vh;padding:18px 20px}
 .lore-shell{width:min(1540px,100%);margin:0 auto;padding:24px;background:linear-gradient(145deg,rgba(8,24,40,.95),rgba(1,6,12,.98));border:1px solid rgba(73,177,255,.23);box-shadow:0 35px 100px rgba(0,0,0,.55)}
 .lore-actions{display:grid}
 .lore-content-shell{width:min(1540px,100%);margin:0 auto}
@@ -1072,6 +1071,8 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .share-pitch-empty b{color:#47697e;font:900 15px "Barlow Condensed"}
 .empty-share-pitch:before{border-color:rgba(160,196,218,.18)}
 /* MOBILE OVERHAUL */ @media(max-width:900px){html,body{overflow-x:hidden}
+  .menu-screen,.lore-screen{padding:12px}
+  #auction-screen{padding:12px 12px 35px}
 
   .header-button{min-height:38px!important}
 
@@ -1098,7 +1099,7 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
   .quick-bids{grid-template-columns:repeat(3,1fr)!important}
   .side-team .mini-roster{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:230px!important;overflow:auto!important}
 
-  #formation-screen{padding:8px 8px 30px!important}
+  #formation-screen{padding:12px 12px 30px!important}
   #formation-content{margin:10px auto!important}
   .formation-topbar{align-items:stretch!important;flex-direction:column!important}
   .formation-actions{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important}
@@ -1144,7 +1145,6 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 
   .chemistry-lore-grid{grid-template-columns:1fr!important}}
 @media(max-width:600px){body{font-size:14px}
-.menu-screen{padding:10px!important}
 .menu-shell{width:100%!important;padding:22px 16px!important;clip-path:none!important}
 .menu-title-wrap h1{font-size:46px!important;letter-spacing:-2px!important}
 .menu-title-wrap p{font-size:9px!important;letter-spacing:1.2px!important}
@@ -1174,7 +1174,6 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .share-mini-pitch{height:270px!important}
 .share-pitch-player>b{font-size:5px!important}
 .share-v14-bottom{grid-template-columns:1fr!important}
-.lore-screen{padding:12px 8px!important}
 .lore-shell{padding:22px 16px!important}
 .chemistry-lore-heading h2{font-size:20px!important}}
 /* DESKTOP TEAM SETUP BALANCE */ @media (min-width:901px){.setup-box-wide{
