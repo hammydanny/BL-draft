@@ -2,7 +2,7 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 const players = [
-    { id: 1, name: "Yoichi Isagi", image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"] , stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 } },
+    { id: 1, name: "Yoichi Isagi", image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"] , stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:45 } },
     { id: 2, name: "Ryosuke Kira", image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 } },
     { id: 3, name: "Noel Noa", image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 } },
     { id: 4, name: "Meguru Bachira", image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 } },
@@ -69,7 +69,8 @@ const players = [
     { id: 65, name: "Achanpong", image: "images/achanpong.jpg", primaryPosition: "FW", positions: ["FW", "WM"] , stats: { ovr:86, off:87, sho:83, spd:89, def:68, pas:84, dri:87, gk:50 } },
     { id: 66, name: "Lockhart", image: "images/lockhart.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:91, off:92, sho:90, spd:88, def:73, pas:91, dri:89, gk:56 } },
     { id: 67, name: "Teddy Knight", image: "images/teddy-knight.jpg", primaryPosition: "LW", positions: ["LW", "LM"] , stats: { ovr:95, off:96, sho:95, spd:96, def:75, pas:90, dri:96, gk:58 } },
-    { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:86, sho:85, spd:84, def:65, pas:79, dri:82, gk:49 } }
+    { id: 68, name: "Childs", image: "images/childs.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:84, off:86, sho:85, spd:84, def:65, pas:79, dri:82, gk:49 } },
+    { id: 69, name: "John Paccini", image: "images/john-paccini.jpg", primaryPosition: "CF", positions: ["CB","GK","CM"] , stats: { ovr:100, off:100, sho:100, spd:100, def:100, pas:100, dri:100, gk:100 } },
 ];
 
 players.forEach(player=>{
