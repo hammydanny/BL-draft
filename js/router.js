@@ -1,7 +1,8 @@
 // BLUE LOCK DRAFT // MULTI-PAGE ROUTING
 // APP_ROUTE_PATHS owns the page URLs. APP_ROUTES only maps legacy hashes.
 const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder"};
-const APP_ROUTE_PATHS={menu:"index.html",lore:"lore.html",auctionSetup:"auction/setup.html",auctionRoom:"auction/room.html",auctionResults:"auction/results.html",auctionTeamBuilder:"auction/team-builder.html",standaloneTeamBuilder:"team-builder.html"};
+const APP_ROUTE_PATHS={menu:"",lore:"lore/",auctionSetup:"auction/setup/",auctionRoom:"auction/room/",auctionResults:"auction/results/",auctionTeamBuilder:"auction/team-builder/",standaloneTeamBuilder:"team-builder/"};
+const LEGACY_PAGE_ROUTES={"index.html":"menu","lore.html":"lore","team-builder.html":"standaloneTeamBuilder","auction/setup.html":"auctionSetup","auction/room.html":"auctionRoom","auction/results.html":"auctionResults","auction/team-builder.html":"auctionTeamBuilder"};
 const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([route,hash])=>[hash,route]));
 let pendingRoutePath=null;
 
@@ -43,6 +44,7 @@ function getRouteFromLocation(){
     const path=appRelativePath();
     const match=Object.entries(APP_ROUTE_PATHS).find(([,value])=>value===path);
     if(match)return match[0];
+    if(Object.prototype.hasOwnProperty.call(LEGACY_PAGE_ROUTES,path))return LEGACY_PAGE_ROUTES[path];
     if(path==="")return "menu";
     return "menu";
 }
