@@ -171,6 +171,8 @@ function renderFormationBuilder(){
           </div>
         </div>
 
+        ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
+
         <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
           <div class="formation-identity">
             <span>${standalone?"GLOBAL TEAM // FORMATION":`FORMATION // ${esc(team.name)}`}</span>
@@ -197,6 +199,8 @@ function renderFormationBuilder(){
             </div>
           </details>
         </div>
+
+        ${chemistryHud(formationTeamNumber,team)}
 
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
@@ -233,7 +237,6 @@ function renderFormationBuilder(){
           ${createPlayerInfoSidebar(team)}
 
           <div class="formation-roster-panel ${!standalone&&benchCollapsed?"hidden":""}">
-          ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}" data-formation-bench>
             <div class="bench-heading"><div><span>RESERVES</span><small>${standalone
   ?(team.players.length>11?"SELECTED PLAYERS OUTSIDE THE XI":"SELECT MORE THAN 11 TO CREATE RESERVES")
@@ -251,7 +254,6 @@ function renderFormationBuilder(){
           </aside>
           </div>
         </div>
-        ${chemistryHud(formationTeamNumber,team)}
       </div>`;
     prioritizeVisiblePortraits(formationContent);
     applyFormationMoveFx();

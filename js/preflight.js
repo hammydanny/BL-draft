@@ -111,7 +111,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.7.2');
+    assert.equal(data.APP_VERSION,'0.6.7.3');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -275,7 +275,8 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file));
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html']);
+    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
     for(const page of pages){
@@ -287,6 +288,13 @@ check('Canonical directory shell, global help and contextual recovery targets',(
         assert(!/siteSidebar|site-sidebar|site-header-football|data-site-nav/.test(content),`${page}: obsolete chrome`);
         for(const id of ['startGame','randomDraftGame','playersRemaining','backToResults','formationHeaderTitle'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
         assert(content.includes('class="auction-context-actions"'),`${page}: Auction history target`);
+    }
+    for(const page of standaloneInfoPages){
+        const content=read(page);
+        assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,`${page}: standalone header count`);
+        assert(content.includes('BLUE LOCK <em>DRAFT</em>'),`${page}: brand missing`);
+        assert(content.includes('css/legal.css?v='+data.APP_VERSION),`${page}: legal styling/version`);
+        assert(content.indexOf('js/site-preferences.js')<content.indexOf('rel="stylesheet"'),`${page}: early theme`);
     }
     assert(fs.existsSync(path.join(root,'images/bld-logo-header.webp')),'BLD logo missing');
     const directory=read('js/ui/site-directory.js'),menu=read('js/ui/menu.js'),setup=read('js/ui/setup.js');
@@ -310,7 +318,8 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file));
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html']);
+    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
         const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
@@ -322,6 +331,12 @@ check('Foundation shell, early theme, global utilities and theme assets',()=>{
         assert(content.includes('data-directory-action="quick-draft"'),`${page}: Quick Draft`);
         assert(content.includes('data-about'),`${page}: global About`);
     }
+    for(const page of standaloneInfoPages){
+        const content=read(page);
+        assert(footer(content),`${page}: footer missing`);
+        assert(content.includes('href="privacy/"')||page==='privacy/index.html',`${page}: privacy navigation`);
+        assert(content.includes('href="legal/"')||page==='legal/index.html',`${page}: legal navigation`);
+    }
     for(const asset of ['images/bld-logo-header.webp','images/bld-logo-light.svg','images/bld-favicon-dark.svg','images/bld-favicon-light.svg','css/site-theme.css','DEVELOPMENT.md','RELEASE_CHECKLIST.md'])assert(fs.existsSync(path.join(root,asset)),`Missing ${asset}`);
     assert(!/filter\s*:\s*invert\(/.test(read('style.css')+read('css/site-theme.css')),'Themes must use semantic colors');
 });
@@ -330,7 +345,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.2'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.3'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -384,6 +399,19 @@ check('Readability/builder UX, independent transparent favicon and Quick Draft c
     assert(quick.includes('pool.length<rosterSize*2'),'Validate roster capacity');
     for(const file of ['style.css','css/site-header.css','css/player-stats.css'])for(const match of read(file).matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g))assert(Number(match[1])>=12,`${file}: meaningful text below 12px`);
 });
+check('v0.6.7.3 Team Builder, auction and share hotfix contracts',()=>{
+    const ui=read('js/ui/formation-ui.js'),styles=read('style.css'),stats=read('css/player-stats.css');
+    const poolAt=ui.indexOf('${standalone&&typeof standalonePoolMarkup');
+    const chemistryAt=ui.indexOf('${chemistryHud(formationTeamNumber,team)}');
+    const layoutAt=ui.indexOf('<div class="formation-layout');
+    assert(poolAt>=0&&poolAt<layoutAt,'Standalone player pool must stay above lineup');
+    assert(chemistryAt>=0&&chemistryAt<layoutAt,'Chemistry HUD must stay above lineup');
+    assert(styles.includes('content:"BEST FIT"')&&styles.includes('content:"GOOD FIT"'),'Distinct best/good fit labels');
+    assert(styles.includes('.money-input input:focus,.money-input input:focus-visible{outline:none!important'),'Bid input focus rectangle removed');
+    assert(/\.share-mini-pitch\{[^}]*height:250px/.test(styles),'Desktop share pitch must stay screenshot-compact');
+    assert(/\.standalone-share-team \.share-mini-pitch\{height:330px/.test(styles),'Standalone share pitch must stay screenshot-compact');
+    assert(/\.auction-player-ovr\{[^}]*right:5px;bottom:5px/.test(stats),'Auction OVR badge anchored bottom-right');
+});
 check('Clean canonical directory pages, legacy compatibility and critical fonts',()=>{
     const context=vm.createContext({window:{addEventListener(){}},URL});vm.runInContext(read('js/router.js'),context);
     const routes=vm.runInContext('APP_ROUTE_PATHS',context);
@@ -395,7 +423,9 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
     for(const page of Object.keys(legacy))assert(fs.existsSync(path.join(root,page)),`Missing legacy ${page}`);
     const preload=content=>[...content.matchAll(/<link rel="preload"[^>]+>/g)].map(match=>match[0]);
     for(const page of walk(root).filter(file=>file.endsWith('.html'))){
-        const content=fs.readFileSync(page,'utf8');assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        const content=fs.readFileSync(page,'utf8');
+        const relative=path.relative(root,page);
+        if(!['legal/index.html','privacy/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
@@ -439,7 +469,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.2'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.3'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};

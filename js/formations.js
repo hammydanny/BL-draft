@@ -879,7 +879,7 @@ function updateLiveFormationTargets(playerId){
         if(primaryFit(player,label))slot.classList.add("drag-primary-target");
     });
     const hint=document.querySelector(".formation-instructions strong");
-    if(hint&&player)hint.innerHTML=`${esc(player.name)} // PRIMARY: ${primaryPosition(player)} // BEST FITS GLOWING ON PITCH`;
+    if(hint&&player)hint.innerHTML=`${esc(player.name)} // PRIMARY: ${primaryPosition(player)} // BEST + GOOD FITS MARKED ON PITCH`;
 }
 function clearLiveFormationTargets(){
     document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));

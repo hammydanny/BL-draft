@@ -49,9 +49,10 @@
 .auction-player-heading{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .player-card-label{color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1.1px}
 .player-card-name{margin:6px 0;color:var(--text-primary);font:900 italic 24px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
-.auction-player-ovr{position:absolute;right:4px;bottom:4px;display:grid;grid-template-columns:auto auto auto;align-items:center;gap:4px;padding:3px 5px;border:1px solid var(--border-strong);background:var(--bg-surface)}
-.auction-player-ovr>span{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:1.2px}
-.auction-player-ovr strong{color:var(--text-primary);font:900 26px/1 "Barlow Condensed",sans-serif}
+.auction-player-ovr{position:absolute;right:5px;bottom:5px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"label grade" "value value";align-items:center;min-width:62px;padding:4px 5px 5px;border:1px solid var(--border-strong);background:var(--bg-surface);box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.auction-player-ovr>span{grid-area:label;color:var(--accent-text);font-size:12px;font-weight:900;line-height:1;letter-spacing:.8px}
+.auction-player-ovr strong{grid-area:value;justify-self:end;color:var(--text-primary);font:900 28px/.9 "Barlow Condensed",sans-serif}
+.auction-player-ovr .evaluation-grade{grid-area:grade;min-width:21px;height:22px;padding:0 3px;font-size:17px}
 .player-stats--auction{margin:0;padding:10px;display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:6px 8px;align-items:center}
 .player-stats--auction .player-stats-heading{grid-column:1/-1;flex-wrap:wrap;gap:3px}
 .player-stats--auction .player-stats-radar{max-width:230px}

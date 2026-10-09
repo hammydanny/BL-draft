@@ -21,6 +21,10 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .directory-help{width:116px}
 .directory-item[data-about]{width:56px}
 .directory-group{position:relative}
+@media(min-width:1201px){
+    .directory-group>summary.directory-item{position:relative;justify-content:center;margin:0;box-sizing:border-box}
+    .directory-group>summary.directory-item>span[aria-hidden="true"]{position:absolute;right:7px}
+}
 .directory-options{position:absolute;left:0;top:calc(100% + 10px);display:grid;min-width:200px;padding:6px;gap:3px;background:var(--bg-surface);border:1px solid var(--border-strong);box-shadow:var(--shadow-strong)}
 .directory-options button{min-height:44px;padding:8px 12px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;white-space:nowrap}
 .directory-options small{display:block;margin-top:3px;color:var(--text-muted);font-size:12px;letter-spacing:.5px}
@@ -144,3 +148,12 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .quick-draft-actions [data-quick-edit]{color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-strong)}
 @media(max-width:600px){.quick-draft-overlay{padding:12px}.quick-draft-card{padding:16px;max-height:calc(100dvh - 24px)}.quick-draft-teams{gap:8px}.quick-draft-card fieldset{padding:8px}.quick-draft-actions{grid-template-columns:1fr}.quick-draft-pool{grid-template-columns:1fr}}
 @media print{body{padding-top:0}.site-header,.site-footer{display:none}}
+
+/* Footer legal navigation uses links, matching the existing footer actions. */
+.footer-links a{display:inline-flex;align-items:center;min-height:36px;padding:0;color:var(--accent-text);font:inherit;text-decoration:none;cursor:pointer}
+.footer-links a:hover{color:var(--text-primary)}
+
+/* Developer profile links should remain subtle but discoverable and keyboard accessible. */
+.footer-profile-link{color:inherit;text-decoration:none;text-decoration-color:transparent;text-underline-offset:3px}
+.footer-profile-link:hover,.footer-profile-link:focus-visible{color:var(--accent-text);text-decoration:underline;text-decoration-color:currentColor}
+.footer-profile-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
