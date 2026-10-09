@@ -144,3 +144,7 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .quick-draft-actions [data-quick-edit]{color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-strong)}
 @media(max-width:600px){.quick-draft-overlay{padding:12px}.quick-draft-card{padding:16px;max-height:calc(100dvh - 24px)}.quick-draft-teams{gap:8px}.quick-draft-card fieldset{padding:8px}.quick-draft-actions{grid-template-columns:1fr}.quick-draft-pool{grid-template-columns:1fr}}
 @media print{body{padding-top:0}.site-header,.site-footer{display:none}}
+
+/* Footer legal navigation uses links, matching the existing footer actions. */
+.footer-links a{display:inline-flex;align-items:center;min-height:36px;padding:0;color:var(--accent-text);font:inherit;text-decoration:none;cursor:pointer}
+.footer-links a:hover{color:var(--text-primary)}
