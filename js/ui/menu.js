@@ -38,7 +38,7 @@ function goToMainMenu(options={}){
     refreshMainMenu();
 }
 
-function openSetupFromMenu(){
+function openSetupFromMenu({quickDraft=false}={}){
     const saved=loadSavedData();
     if(saved?.gameActive){
         showConfirm("START A NEW AUCTION","A saved auction already exists. Starting a new setup will discard that unfinished auction.",()=>{
@@ -46,13 +46,13 @@ function openSetupFromMenu(){
             uiState={screen:"setup",phase:"setup",turn:null};
             showResumeCard(null);
             refreshMainMenu();
-            setVisibleScreen(setupScreen);
+            setVisibleScreen(setupScreen,{quickDraft});
             renderPlayerPool();
             saveSetupPreferences();
         });
         return;
     }
-    setVisibleScreen(setupScreen);
+    setVisibleScreen(setupScreen,{quickDraft});
     renderPlayerPool();
 }
 let infoModalReturnFocus=null;
@@ -91,7 +91,7 @@ function openInfoModal(type){
 }
 function closeInfoModal(){
     document.getElementById("infoModal").classList.add("hidden");
-    if(infoModalReturnFocus?.closest(".site-directory")&&window.matchMedia("(max-width: 1050px)").matches){
+    if(infoModalReturnFocus?.closest(".site-directory")&&isMobileSiteNavigation()){
         document.getElementById("directoryMenuToggle").focus();
     }else if(infoModalReturnFocus?.isConnected)infoModalReturnFocus.focus();
 }
@@ -109,6 +109,7 @@ document.getElementById("menuResumeAuction").addEventListener("click",()=>resume
 document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
 document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
 document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
+document.querySelectorAll("[data-about]").forEach(button=>button.addEventListener("click",()=>openInfoModal("about")));
 document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);
 document.getElementById("infoModalDone").addEventListener("click",closeInfoModal);
 document.getElementById("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfoModal();});

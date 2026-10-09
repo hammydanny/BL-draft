@@ -112,7 +112,7 @@ function createPlayerInfoSidebar(team){
       const slot=currentPlayerSlot(formationTeamNumber,player.id);
       const pos=slot?.label||primaryPosition(player);
       const rating=slot?effectiveOVR(player,pos):playerOverall(player);
-      return `<div class="player-info-portrait"><img src="${player.image}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
+      return `<div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
     })()}
     <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
     ${(()=>{
@@ -225,7 +225,7 @@ function renderFormationBuilder(){
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<img src="${p.image}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
+                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
                        </div>`:`<span class="empty-slot">${partialInactive?"·":"+"}</span>`}
                </button>`;
             }).join("")}
@@ -242,7 +242,7 @@ function renderFormationBuilder(){
                     data-player-id="${p.id}"
                     onclick="selectBenchPlayer(${p.id})" draggable="false"
                     onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                    <img src="${p.image}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
+                    <img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
                     <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small></span>
                     <b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}

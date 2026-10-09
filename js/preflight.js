@@ -37,10 +37,12 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     for(const [index,src] of scripts.entries()){
         assert(!/^(?:https?:)?\/\//.test(src),'Unexpected remote application script');
         assert(fs.existsSync(path.join(root,src.split('?')[0])),`Missing ${src}`);
-        assert(/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
+        assert(src==='js/site-preferences.js'||/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
         assert(!/\btype\s*=\s*["']module["']/i.test(scriptTags[index]),'Keep classic scripts');
     }
-    const expected=['js/version.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
+    assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
+    assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
+    const expected=['js/site-preferences.js','js/version.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/app.js'];
@@ -109,7 +111,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.6.4');
+    assert.equal(data.APP_VERSION,'0.6.7');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -118,18 +120,6 @@ check('Release, save schema constants and established storage keys',()=>{
     for(const version of [data.AUCTION_SAVE_SCHEMA_VERSION,data.STANDALONE_SAVE_SCHEMA_VERSION])assert(Number.isInteger(version)&&version>0);
     assert(read('js/state.js').includes('"blAuctionSaveV2"'));
     assert(read('js/state.js').includes('"blStandaloneBuilderV1"'));
-});
-check('Clean routes and portrait acceleration assets',()=>{
-    const router=read('js/router.js'),app=read('js/app.js'),playersSource=read('js/players.js'),results=read('js/results.js');
-    for(const routePath of ['lore/','team-builder/','auction/setup/','auction/room/','auction/results/','auction/team-builder/']){
-        assert(fs.existsSync(path.join(root,routePath,'index.html')),`Missing clean route ${routePath}`);
-    }
-    assert(router.includes('lore:"lore/"')&&router.includes('auctionRoom:"auction/room/"'),'Clean route map missing');
-    assert(fs.existsSync(path.join(root,'service-worker.js')),'Service worker missing');
-    assert(app.includes('serviceWorker.register'),'Service worker registration missing');
-    assert(app.includes('warmAllPlayerPortraits()'),'Global portrait warmup missing');
-    assert(playersSource.includes('rootMargin:"1200px 0px"'),'Near-viewport portrait promotion missing');
-    assert(results.includes('fetchpriority="high" data-player-portrait'),'Results portraits must be eager/high priority');
 });
 check('Legacy/current saves normalize without mutation or storage writes',()=>{
     const run=code=>vm.runInContext(code,sandbox);
@@ -210,8 +200,7 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
     vm.runInContext(read('js/router.js'),context);
     const routes=vm.runInContext('APP_ROUTE_PATHS',context);
     for(const [route,routePath] of Object.entries(routes)){
-        const routeFile=routePath?path.join(root,routePath,'index.html'):path.join(root,'index.html');
-        assert(fs.existsSync(routeFile),`Missing route page ${routePath||'/'}index.html`);
+        assert(fs.existsSync(path.join(root,routePath)),`Missing route page ${routePath}`);
         setLocation(routePath);
         assert.equal(vm.runInContext('getRouteFromLocation()',context),route,`${routePath}: route resolution`);
         assert.equal(vm.runInContext(`canonicalRouteUrl(${JSON.stringify(route)}).href`,context),`https://example.test/BL-draft/${routePath}`);
@@ -227,11 +216,11 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
     setLocation('index.html');navigation.length=0;
     vm.runInContext('updateRoute("auctionResults")',context);
     assert.equal(navigation.at(-1).type,'assign');
-    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/results/');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/results.html');
     setLocation('index.html','#/auction/team-builder');navigation.length=0;
     assert.equal(vm.runInContext('normalizeCurrentRoute(getRouteFromLocation())',context),false);
     assert.equal(navigation.at(-1).type,'replace');
-    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder/');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder.html');
     for(const state of [{screen:'auction',phase:'complete'},{screen:'formation',phase:'complete'},
         {screen:'auction-team-builder',phase:'team-builder'}]){
         context.saved={uiState:state};
@@ -244,33 +233,24 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
             assert.equal(completed.uiState.screen,route==='auctionResults'?'auction':'formation');
         }
     }
-    const legacyPages={
-        'index.html':'menu','lore.html':'lore','team-builder.html':'standaloneTeamBuilder','auction/setup.html':'auctionSetup',
-        'auction/room.html':'auctionRoom','auction/results.html':'auctionResults','auction/team-builder.html':'auctionTeamBuilder'
-    };
-    for(const [legacyPage,route] of Object.entries(legacyPages)){
-        setLocation(legacyPage);
-        assert.equal(vm.runInContext('getRouteFromLocation()',context),route,`${legacyPage}: legacy page route`);
-    }
     vm.runInContext('navigateToRoute=(route,options)=>{globalThis.routed={route,options};}',context);
-    setLocation('lore/');listeners.popstate();
+    setLocation('lore.html');listeners.popstate();
     assert.equal(context.routed.route,'lore');assert.equal(context.routed.options.skipHistory,true);
 });
 check('Every section page has ordered scripts, versioned styles, valid assets and unique IDs',()=>{
     const context=vm.createContext({window:{addEventListener(){}},URL});
     vm.runInContext(read('js/router.js'),context);
-    const routePages=Object.values(vm.runInContext('APP_ROUTE_PATHS',context)).map(routePath=>routePath?`${routePath}index.html`:'index.html');
-    for(const page of routePages){
+    for(const page of Object.values(vm.runInContext('APP_ROUTE_PATHS',context))){
         const content=read(page);
         const tags=[...content.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
         const refs=tags.map(tag=>/\bsrc=["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean);
         assert.deepEqual(refs.map(src=>src.split('?')[0]),scripts,`${page}: script order`);
         refs.forEach((src,index)=>{
-            assert(tags[index].includes('defer'),`${page}: non-deferred script`);
+            assert(src.startsWith('js/site-preferences.js?')||tags[index].includes('defer'),`${page}: non-deferred application script`);
             assert(src.endsWith(`?v=${data.APP_VERSION}`),`${page}: script cache version`);
             assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing ${src}`);
         });
-        for(const css of ['style.css','css/player-stats.css','css/site-header.css']){
+        for(const css of ['css/site-theme.css','style.css','css/player-stats.css','css/site-header.css']){
             assert(content.includes(`${css}?v=${data.APP_VERSION}`),`${page}: missing/versioned ${css}`);
         }
         const ids=[...content.matchAll(/\bid=["']([^"']+)["']/g)].map(match=>match[1]);
@@ -290,13 +270,12 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(/function openAuctionTeamBuilder\(\)[\s\S]*?screen:"formation"[\s\S]*?phase:"complete"/.test(formations),'Team Builder must preserve completed-auction state');
     for(const id of ['menuResumeAuction','resumeSessionButton'])assert(menu.includes(`getElementById("${id}").addEventListener("click",()=>resumeSavedAuction(loadSavedData()))`),`${id}: saved-state navigation`);
     assert(read('js/ui/site-directory.js').includes('resumeSavedAuction(loadSavedData())'),'Directory Resume must reuse save normalization');
-    assert(/function restartAuction\(\)[\s\S]*?updateRoute\("auctionSetup"\)/.test(results),'New Auction must navigate to clean Auction Setup route');
+    assert(/function restartAuction\(\)[\s\S]*?updateRoute\("auctionSetup"\)/.test(results),'New Auction must navigate to auction/setup.html');
     assert(router.includes('auctionRouteForSavedState'),'Saved auction route helper missing');
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
-    assert(router.includes('LEGACY_PAGE_ROUTES'),'Legacy .html route migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const pages=['index.html','lore/index.html','team-builder/index.html','auction/setup/index.html','auction/room/index.html','auction/results/index.html','auction/team-builder/index.html'];
+    const pages=['index.html','lore.html','team-builder.html','auction/setup.html','auction/room.html','auction/results.html','auction/team-builder.html'];
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
     for(const page of pages){
@@ -324,13 +303,70 @@ check('Canonical directory shell, global help and contextual recovery targets',(
 check('Original sound engine, persistence and separate visual feedback',()=>{
     const audio=read('js/audio.js'),fx=read('js/fx.js');
     for(const name of ['ensureAudio','playSfx','toggleSound','unlockAudio'])assert(audio.includes(`function ${name}(`),`Missing ${name}`);
-    assert(audio.includes('"blAuctionSound"'),'Preserve sound preference key');
+    assert(read('js/site-preferences.js').includes('"blAuctionSound"'),'Preserve sound preference key');
+    assert(audio.includes('SitePreferences.set({sfxEnabled:'),'One shared sound preference writer');
     for(const name of ['reveal','bid','pass','error','sold','nav','select','drop','confirm','back','toggle','result','outbid','swap','warning'])assert(audio.includes(`name==="${name}"`),`Missing original ${name} sound`);
     assert(!/function triggerFx/.test(audio),'Audio must not duplicate visual FX');
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
+check('Foundation shell, early theme, global utilities and theme assets',()=>{
+    const pages=['index.html','lore.html','team-builder.html','auction/setup.html','auction/room.html','auction/results.html','auction/team-builder.html'];
+    const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
+    for(const page of pages){
+        const content=read(page);
+        assert.equal(footer(content),footer(html),`${page}: shared footer`);
+        for(const id of ['siteFavicon','soundToggle','siteSettingsToggle','siteSettings','siteMain','setupHeaderTitle'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
+        assert.equal((content.match(/id="soundToggle"/g)||[]).length,1,`${page}: one global SFX control`);
+        assert(!content.includes('data-sound-toggle'),`${page}: obsolete contextual SFX copy`);
+        assert(content.indexOf('js/site-preferences.js')<content.indexOf('rel="stylesheet"'),`${page}: early theme`);
+        assert(content.includes('data-directory-action="quick-draft"'),`${page}: Quick Draft`);
+        assert(content.includes('data-about'),`${page}: global About`);
+    }
+    for(const asset of ['images/bld-logo-header.webp','images/bld-logo-light.svg','images/bld-favicon-dark.svg','images/bld-favicon-light.svg','css/site-theme.css','DEVELOPMENT.md','RELEASE_CHECKLIST.md'])assert(fs.existsSync(path.join(root,asset)),`Missing ${asset}`);
+    assert(!/filter\s*:\s*invert\(/.test(read('style.css')+read('css/site-theme.css')),'Themes must use semantic colors');
+});
+check('Preferences import legacy audio, follow System, preserve saves and reset only preferences',()=>{
+    const saved=new Map([['blAuctionSound','off'],['blAuctionSaveV2','auction sentinel'],['blStandaloneBuilderV1','builder sentinel']]);
+    const root={dataset:{},style:{}},favicon={};let listener;
+    const media={matches:false,addEventListener(type,fn){listener=fn;}};
+    const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
+    const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
+    vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
+    assert.equal(preferences.get().sfxEnabled,false);assert.equal(root.dataset.theme,'dark');
+    preferences.set({theme:'system'});media.matches=true;listener();assert.equal(root.dataset.theme,'light');assert(favicon.href.includes('bld-favicon-light.svg'));
+    media.matches=false;listener();assert.equal(root.dataset.theme,'dark');
+    preferences.set({theme:'light',sfxEnabled:true});assert.equal(saved.get('blAuctionSound'),'on');assert.equal(JSON.parse(saved.get(preferences.key)).theme,'light');
+    media.matches=false;listener();assert.equal(root.dataset.theme,'light','Explicit choice must beat OS');
+    preferences.reset();assert.equal(root.dataset.theme,'dark');assert.equal(preferences.get().sfxEnabled,true);
+    assert.equal(saved.get('blAuctionSaveV2'),'auction sentinel');assert.equal(saved.get('blStandaloneBuilderV1'),'builder sentinel');
+    localStorage.getItem=()=>{throw Error('Storage blocked');};localStorage.setItem=()=>{throw Error('Storage blocked');};preferences.set({theme:'light'});assert.equal(root.dataset.theme,'light');
+});
+check('Shared player image boundary, stable fallback and selected-only warming',()=>{
+    const images=read('js/player-images.js');assert(images.includes('data:image/svg+xml'),'Self-contained neutral fallback');
+    assert(images.includes('image.dataset.fallbackApplied'),'One-shot fallback guard');
+    assert(images.includes('portraitDecodeCache.size>8'),'Bounded target warming');
+    assert(!read('js/lore.js').includes('onerror='),'Lore must use the shared fallback');
+    assert(!read('js/ui/setup.js').includes('image-fallback'),'Remove the superseded image handler');
+    for(const file of ['js/auction.js','js/results.js','js/formations.js','js/lore.js','js/standalone-builder.js','js/ui/auction-ui.js','js/ui/formation-ui.js','js/ui/setup.js']){
+        const source=read(file);assert(!/src="\$\{[\w.]+\.image\}"/.test(source),`${file}: direct image source`);
+        assert(source.includes('data-player-image'),`${file}: shared error handling marker`);
+    }
+});
+check('Worker is scope-safe, version-sensitive and cannot pin an old app shell',()=>{
+    const worker=read('service-worker.js'),app=read('js/app.js');
+    assert(worker.includes(`bld-static-v${data.APP_VERSION}`),'Worker cache version');
+    assert(!/ignoreSearch\s*:\s*true/.test(worker),'Version queries must remain part of cache keys');
+    assert(worker.includes('url.pathname.startsWith(scope.pathname)'),'Worker app scope');
+    assert(worker.includes('cache.delete(request)'),'Deleted assets leave cache');
+    assert(!/CACHEABLE=.*(?:html|css|javascript)/.test(worker),'No app-shell cache');
+    assert(app.includes('updateViaCache:"none"'),'Worker update freshness');
+    assert(app.includes('appRootUrl().pathname'),'Nested Pages registration scope');
+});
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
     const css=read('style.css').replace(/\/\*[\s\S]*?\*\//g,'');
+    assert(!/@media[^{}]*var\(/.test(css),'CSS variables cannot define media-query breakpoints');
     assert.equal((css.match(/(?:^|})\s*\.auto-best-loader\s*\{/g)||[]).length,1,'Duplicate/missing loader rule');
     const animations=[...css.matchAll(/@keyframes\s+([\w-]+)/g)].map(match=>match[1]);
     assert.equal(new Set(animations).size,animations.length,'Duplicate animation definitions');
@@ -355,7 +391,7 @@ function appContext(initialStorage={},hash='#/'){
             classList:{add(...names){names.forEach(n=>classes.add(n));},remove(...names){names.forEach(n=>classes.delete(n));},
                 contains:name=>classes.has(name),toggle(name,force){const add=force??!classes.has(name);if(add)classes.add(name);else classes.delete(name);}},
             addEventListener(){},setAttribute(){},removeAttribute(){},appendChild(){},insertBefore(){},remove(){},focus(){},select(){},
-            querySelector(selector){return ['.auction-context-actions','.directory-backdrop'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
+            querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
     };
     const element=id=>{if(!elements.has(id))elements.set(id,makeElement(id));return elements.get(id);};
     for(const match of html.matchAll(/<[^>]+\bid=["']([^"']+)["'][^>]*>/g)){
@@ -365,18 +401,21 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,getElementById:element,querySelector:selector=>selector==='.site-header'?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
-    const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(){},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){}})};
+    const events={};
+    const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(type,fn){(events[type]??=[]).push(fn);},dispatchEvent(event){for(const fn of events[event.type]||[])fn(event);},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){}})};
     const history={state:null,replaceState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;},
         pushState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;}};
-    const navigator={};
-    const context=vm.createContext({document,window,history,localStorage,navigator,URL,console,assert,
+    const context=vm.createContext({document,window,history,localStorage,URL,console,assert,navigator:{},getComputedStyle:()=>({display:'none'}),CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},
         setTimeout(){return 1;},clearTimeout(){},requestAnimationFrame(){return 1;},cancelAnimationFrame(){}});
     const run=code=>vm.runInContext(code,context,{timeout:30000});
-    for(const file of scripts)vm.runInContext(read(file),context,{filename:file,timeout:30000});
+    for(const file of scripts){
+        vm.runInContext(read(file),context,{filename:file,timeout:30000});
+        if(file==='js/site-preferences.js')context.SitePreferences=window.SitePreferences;
+    }
     return {run,saved,element,labels};
 }
 check('v0.6.3 player expansion, conservative estimates and stable chronology',()=>{

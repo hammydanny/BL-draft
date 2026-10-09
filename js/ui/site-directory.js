@@ -19,6 +19,9 @@ function updateSiteDirectory(screen){
         standaloneTeamBuilder:[home,{text:"TEAM BUILDER"}],lore:[home,database]
     };
     const crumbs=[...(paths[route]||paths.menu)];
+    const quick=route==="auctionSetup"&&new URL(window.location.href).searchParams.get("draft")==="quick";
+    document.getElementById("setupHeaderTitle").innerHTML=quick?'QUICK <span>DRAFT</span>':'AUCTION <span>SETUP</span>';
+    if(quick)crumbs.splice(1,2,{text:"PLAY",action:"setup"},{text:"QUICK DRAFT"});
     if(route==="lore"){
         const view=screen?databaseViewForScreen(screen):databaseViewFromLocation();
         if(view!=="lore")crumbs.push({text:view.toUpperCase()});
@@ -53,18 +56,45 @@ function runDirectoryAction(action){
         case "home":goToMainMenu();break;
         case "setup":updateRoute("auctionSetup");break;
         case "new-auction":openSetupFromMenu();break;
+        case "quick-draft":openSetupFromMenu({quickDraft:true});break;
         case "resume":resumeSavedAuction(loadSavedData());break;
         case "builder":openStandaloneBuilder();break;
         case "lore":case "characters":case "chemistry":updateRoute("lore",{databaseView:action});break;
     }
 }
+function isMobileSiteNavigation(){return getComputedStyle(document.getElementById("directoryMenuToggle")).display!=="none";}
 function initSiteDirectory(){
     const header=document.querySelector(".site-header");
     const directory=document.getElementById("siteDirectory");
     const toggle=document.getElementById("directoryMenuToggle");
     const backdrop=header.querySelector(".directory-backdrop");
     const groups=[...directory.querySelectorAll("details")];
-    const narrow=window.matchMedia("(max-width: 1050px)");
+    const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
+    function closeSettings(restoreFocus=false){
+        const wasOpen=!settings.hidden;settings.hidden=true;settingsToggle.setAttribute("aria-expanded","false");
+        if(wasOpen&&restoreFocus)settingsToggle.focus();
+    }
+    function refreshSettings(){
+        const preferences=SitePreferences.get();
+        settings.querySelectorAll('[name="siteSound"]').forEach(input=>input.checked=(input.value==="on")===preferences.sfxEnabled);
+        settings.querySelectorAll('[name="siteTheme"]').forEach(input=>input.checked=input.value===preferences.theme);
+    }
+    settingsToggle.addEventListener("click",()=>{
+        closeDirectory();
+        if(!settings.hidden){closeSettings(true);return;}
+        settings.hidden=false;settingsToggle.setAttribute("aria-expanded","true");refreshSettings();
+        settings.querySelector("[data-settings-close]").focus();
+    });
+    settings.querySelector("[data-settings-close]").addEventListener("click",()=>closeSettings(true));
+    settings.addEventListener("change",event=>{
+        const input=event.target;
+        if(input.name==="siteSound")SitePreferences.set({sfxEnabled:input.value==="on"});
+        if(input.name==="siteTheme")SitePreferences.set({theme:input.value});
+    });
+    settings.querySelector("[data-preferences-reset]").addEventListener("click",()=>SitePreferences.reset());
+    window.addEventListener("bld:preferences",refreshSettings);
+    refreshSettings();SitePreferences.syncAssets();
+    document.querySelector(".skip-link").addEventListener("click",event=>{event.preventDefault();document.getElementById("siteMain").focus();});
     function closeDirectory(restoreFocus=false){
         const wasOpen=directory.classList.contains("is-open");
         directory.classList.remove("is-open");
@@ -74,6 +104,7 @@ function initSiteDirectory(){
         if(wasOpen&&restoreFocus)toggle.focus();
     }
     toggle.addEventListener("click",()=>{
+        closeSettings();
         if(directory.classList.contains("is-open")){closeDirectory(true);return;}
         directory.classList.add("is-open");
         toggle.setAttribute("aria-expanded","true");
@@ -89,17 +120,31 @@ function initSiteDirectory(){
     header.addEventListener("click",event=>{
         const action=event.target.closest("[data-directory-action]");
         if(action){closeDirectory();runDirectoryAction(action.dataset.directoryAction);}
-        else if(event.target.closest("[data-how-to-play]"))closeDirectory();
+        else if(event.target.closest("[data-how-to-play],[data-about]")){closeDirectory();closeSettings();}
     });
-    document.addEventListener("click",event=>{if(!header.contains(event.target))closeDirectory();});
+    document.addEventListener("click",event=>{
+        if(!header.contains(event.target))closeDirectory();
+        if(!settings.contains(event.target)&&!settingsToggle.contains(event.target))closeSettings();
+    });
     document.addEventListener("keydown",event=>{
         if(event.key==="Escape"){
             const openGroup=groups.find(group=>group.open);
+            if(!settings.hidden){event.preventDefault();closeSettings(true);return;}
             closeDirectory(true);
-            if(openGroup&&!narrow.matches)openGroup.querySelector("summary").focus();
+            if(openGroup&&!isMobileSiteNavigation())openGroup.querySelector("summary").focus();
+        }
+        if(event.key==="ArrowDown"&&event.target.matches("summary.directory-item")){
+            event.preventDefault();event.target.parentElement.open=true;event.target.parentElement.querySelector("button").focus();
+        }
+        if(event.key==="Tab"&&!settings.hidden){
+            const controls=[...settings.querySelectorAll("button,input")];const first=controls[0],last=controls.at(-1);
+            if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+            else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
         }
     });
-    narrow.addEventListener("change",()=>closeDirectory());
-    window.addEventListener("pageshow",()=>closeDirectory());
+    directory.addEventListener("focusout",event=>{if(event.relatedTarget&&!directory.contains(event.relatedTarget)&&!isMobileSiteNavigation())closeDirectory();});
+    let mobile=isMobileSiteNavigation();
+    window.addEventListener("resize",()=>{const next=isMobileSiteNavigation();if(next!==mobile){mobile=next;closeDirectory();closeSettings();}});
+    window.addEventListener("pageshow",()=>{closeDirectory();closeSettings();SitePreferences.syncAssets();});
 }
 initSiteDirectory();

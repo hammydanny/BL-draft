@@ -1,8 +1,7 @@
 // BLUE LOCK DRAFT // MULTI-PAGE ROUTING
 // APP_ROUTE_PATHS owns the page URLs. APP_ROUTES only maps legacy hashes.
 const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder"};
-const APP_ROUTE_PATHS={menu:"",lore:"lore/",auctionSetup:"auction/setup/",auctionRoom:"auction/room/",auctionResults:"auction/results/",auctionTeamBuilder:"auction/team-builder/",standaloneTeamBuilder:"team-builder/"};
-const LEGACY_PAGE_ROUTES={"index.html":"menu","lore.html":"lore","team-builder.html":"standaloneTeamBuilder","auction/setup.html":"auctionSetup","auction/room.html":"auctionRoom","auction/results.html":"auctionResults","auction/team-builder.html":"auctionTeamBuilder"};
+const APP_ROUTE_PATHS={menu:"index.html",lore:"lore.html",auctionSetup:"auction/setup.html",auctionRoom:"auction/room.html",auctionResults:"auction/results.html",auctionTeamBuilder:"auction/team-builder.html",standaloneTeamBuilder:"team-builder.html"};
 const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([route,hash])=>[hash,route]));
 let pendingRoutePath=null;
 
@@ -27,9 +26,10 @@ function databaseViewFromLocation(){
 function databaseViewForScreen(screen){
     return screen?.id==="character-lore-screen"?"characters":screen?.id==="chemistry-lore-screen"?"chemistry":"lore";
 }
-function canonicalRouteUrl(route,{databaseView=null}={}){
+function canonicalRouteUrl(route,{databaseView=null,quickDraft=null}={}){
     const url=new URL(routePath(route),appRootUrl());
     if(route==="lore"&&(databaseView==="characters"||databaseView==="chemistry"))url.searchParams.set("view",databaseView);
+    if(route==="auctionSetup"&&(quickDraft===true||(quickDraft===null&&new URL(window.location.href).searchParams.get("draft")==="quick")))url.searchParams.set("draft","quick");
     return url;
 }
 function legacyHashRoute(){
@@ -44,7 +44,6 @@ function getRouteFromLocation(){
     const path=appRelativePath();
     const match=Object.entries(APP_ROUTE_PATHS).find(([,value])=>value===path);
     if(match)return match[0];
-    if(Object.prototype.hasOwnProperty.call(LEGACY_PAGE_ROUTES,path))return LEGACY_PAGE_ROUTES[path];
     if(path==="")return "menu";
     return "menu";
 }
@@ -96,7 +95,7 @@ function assignLocation(url,route){
     if(typeof window.location.assign==="function")window.location.assign(url.href);
     else history.pushState({blDraftRoute:route},"",url.href);
 }
-function updateRoute(route,{replace=false,databaseView=null}={}){
+function updateRoute(route,{replace=false,databaseView=null,quickDraft=null}={}){
     // openAuctionTeamBuilder() historically saved a transient "team-builder"
     // phase. Normalize it before leaving Results so the destination page can
     // restore the completed auction instead of bouncing back to Auction Room.
@@ -116,7 +115,7 @@ function updateRoute(route,{replace=false,databaseView=null}={}){
         return;
     }
 
-    const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route,{databaseView});
+    const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route,{databaseView,quickDraft});
     if(current===target||(route==="menu"&&current==="")){
         pendingRoutePath=null;
         if(route==="lore"){
@@ -141,7 +140,8 @@ function setVisibleScreen(screen,options={}){
     if(!options.skipHistory){
         const route=getScreenRoute(screen);
         const databaseView=route==="lore"?databaseViewForScreen(screen):null;
-        if(route&&(appRelativePath()!==routePath(route)||(route==="lore"&&databaseView!==databaseViewFromLocation()))){updateRoute(route,{databaseView});return;}
+        if(route&&(appRelativePath()!==routePath(route)||(route==="lore"&&databaseView!==databaseViewFromLocation()))){updateRoute(route,{databaseView,quickDraft:options.quickDraft??null});return;}
+        if(route==="auctionSetup"&&typeof options.quickDraft==="boolean")updateRoute(route,{quickDraft:options.quickDraft});
     }
     [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");

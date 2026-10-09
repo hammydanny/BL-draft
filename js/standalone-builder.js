@@ -143,7 +143,7 @@ function toggleStandalonePoolVisibility(){
 function standalonePoolCard(player){
     const selected=standaloneBuilderPlayerIds.has(player.id);
     return `<button type="button" class="standalone-pool-player ${selected?"selected":""}" data-standalone-player="${player.id}" aria-pressed="${selected}">
-      <img src="${player.image}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="38" height="42">
+      <img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="38" height="42">
       <span><strong>${esc(player.name)}</strong><small>${primaryPosition(player)} // OVR ${playerOverall(player)}</small></span>
       <b>${selected?"✓":"+"}</b>
     </button>`;

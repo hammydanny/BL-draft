@@ -147,7 +147,7 @@ function renderPlayerPool(){
         return `<div class="pool-player-card ${selected?"selected":""}" data-player-id="${player.id}">
             <button type="button" class="pool-select-hit" aria-pressed="${selected}" aria-label="${selected?"Remove":"Add"} ${esc(player.name)} from auction pool">
               <div class="pool-player-check">${selected?"✓":"+"}</div>
-              <img src="${player.image}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
+              <img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
               <div class="pool-player-info">
                   <span>PLAYER // ${String(player.id).padStart(2,"0")} // OVR ${playerOverall(player)}</span>
                   <strong>${esc(player.name)}</strong>
@@ -229,13 +229,4 @@ document.getElementById("maxPlayers").addEventListener("input", updatePoolStatus
 });
 
 ["team1Name","team2Name","team1Color","team2Color","budget","bidIncrement","maxPlayers"].forEach(id=>document.getElementById(id).addEventListener("change",saveSetupPreferences));
-
-document.addEventListener("error",event=>{
-    const img=event.target;
-    if(img?.tagName!=="IMG"||img.dataset.fallbackApplied)return;
-    img.dataset.fallbackApplied="1";
-    img.classList.add("image-fallback");
-    img.removeAttribute("src");
-    img.alt="Player image unavailable";
-},true);
 

@@ -1,7 +1,7 @@
 // BLUE LOCK DRAFT // AUDIO / SFX
 // Split from the former root script.js. Classic scripts share the same global scope.
 
-let soundEnabled=localStorage.getItem("blAuctionSound")!=="off";
+let soundEnabled=SitePreferences.get().sfxEnabled;
 let audioCtx=null;
 
 function ensureAudio(){
@@ -43,14 +43,16 @@ function updateSoundButton(){
         b.classList.toggle("muted",!soundEnabled);
         b.setAttribute("aria-pressed",String(soundEnabled));
         b.setAttribute("aria-label",soundEnabled?"Mute sound effects":"Enable sound effects");
-        const label=b.querySelector("strong");if(label)label.textContent=soundEnabled?"SFX":"MUTED";
+        const label=b.querySelector("strong");if(label)label.textContent=soundEnabled?"SFX ON":"SFX OFF";
         const icon=b.querySelector(".sound-icon");if(icon)icon.textContent=soundEnabled?"◖))":"◖×";
     });
 }
 function toggleSound(){
-    soundEnabled=!soundEnabled;localStorage.setItem("blAuctionSound",soundEnabled?"on":"off");updateSoundButton();
+    // The shared store mirrors the original blAuctionSound key for older builds.
+    SitePreferences.set({sfxEnabled:!soundEnabled});
     if(soundEnabled)playSfx("bid");
 }
+window.addEventListener("bld:preferences",()=>{soundEnabled=SitePreferences.get().sfxEnabled;updateSoundButton();});
 document.getElementById("soundToggle").addEventListener("click",toggleSound);
 document.querySelectorAll("[data-sound-toggle]").forEach(b=>b.addEventListener("click",toggleSound));
 updateSoundButton();

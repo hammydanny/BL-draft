@@ -1,34 +1,33 @@
 /* Shared player evaluation: auction, character lore, and player sidebar. */
 .player-stats{
-  --radar-cyan:#68e2ff;
   width:100%;
   min-width:0;
   margin-top:10px;
   padding:10px;
-  color:#dceef9;
-  border:1px solid #193c52;
-  background:radial-gradient(ellipse at 50% 40%,rgba(20,156,255,.09),transparent 68%),#030c14;
+  color:var(--text-primary);
+  border:1px solid var(--border-subtle);
+  background:radial-gradient(ellipse at 50% 40%,rgba(20,156,255,.09),transparent 68%),var(--bg-surface);
 }
 .player-stats-heading{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.player-stats-heading span{color:#96d5ec;font-size:9px;font-weight:900;letter-spacing:1.1px}
-.player-stats-heading small{color:#8da8bb;font-size:7px;letter-spacing:.8px}
+.player-stats-heading span{color:var(--accent-text);font-size:9px;font-weight:900;letter-spacing:1.1px}
+.player-stats-heading small{color:var(--text-secondary);font-size:7px;letter-spacing:.8px}
 .player-stats-radar{display:block;width:100%;max-width:290px;height:auto;margin:2px auto;overflow:visible}
 .player-stats-backdrop{fill:rgba(20,156,255,.045)}
-.player-stats-grid{fill:none;stroke:#275269;stroke-width:1}
-.player-stats-spoke{stroke:#214154;stroke-width:1}
-.player-stats-shape{fill:rgba(32,183,255,.24);stroke:var(--radar-cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(54,199,255,.55))}
-.player-stats-axis{fill:#b5d6e8;font:800 12px "Rajdhani",sans-serif;letter-spacing:1px}
+.player-stats-grid{fill:none;stroke:var(--radar-grid);stroke-width:1}
+.player-stats-spoke{stroke:var(--radar-spoke);stroke-width:1}
+.player-stats-shape{fill:var(--radar-fill);stroke:var(--radar-cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(54,199,255,.55))}
+.player-stats-axis{fill:var(--text-secondary);font:800 12px "Rajdhani",sans-serif;letter-spacing:1px}
 .player-stats-axis-grade{fill:var(--radar-cyan);font:900 12px "Rajdhani",sans-serif}
-.player-stats-value{fill:#effaff;font:900 19px "Barlow Condensed",sans-serif}
-.player-stats-gk{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid #1a3545;background:#06121c}
+.player-stats-value{fill:var(--text-primary);font:900 19px "Barlow Condensed",sans-serif}
+.player-stats-gk{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--border-subtle);background:var(--bg-surface)}
 .player-stats-gk>span{font-size:10px;font-weight:900;letter-spacing:1px}
 .player-stats-gk>span small{display:block;margin-top:2px;font-size:7px;letter-spacing:.7px}
 .player-stats-gk strong{white-space:nowrap;font:900 26px/1 "Barlow Condensed",sans-serif}
 .player-stats-gk strong small{font:800 10px "Rajdhani",sans-serif}
 .player-stats-grade{display:grid;place-items:center;width:28px;height:30px;border:1px solid currentColor;font:900 22px/1 "Barlow Condensed",sans-serif}
-.player-stats-gk.is-specialist{color:#d8f7ff;border-color:#3da1bc;background:linear-gradient(110deg,rgba(20,156,255,.2),#071622);box-shadow:inset 2px 0 var(--radar-cyan)}
+.player-stats-gk.is-specialist{color:var(--text-primary);border-color:#3da1bc;background:linear-gradient(110deg,rgba(20,156,255,.2),var(--bg-surface-raised));box-shadow:inset 2px 0 var(--radar-cyan)}
 .player-stats-gk.is-specialist strong,.player-stats-gk.is-specialist .player-stats-grade{color:var(--radar-cyan)}
-.player-stats-gk.is-outfield{color:#90a6b6;padding:6px 8px}
+.player-stats-gk.is-outfield{color:var(--text-secondary);padding:6px 8px}
 .player-stats-gk.is-outfield strong{font-size:19px}
 .player-stats-gk.is-outfield .player-stats-grade{width:22px;height:24px;font-size:17px}
 .player-stats--lore{margin:0;padding:8px}
@@ -38,21 +37,21 @@
 .player-stats--sidebar .player-stats-radar{max-width:260px}
 
 /* Shared supplementary rating grade; never replaces the rating number. */
-.evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:#68e2ff;border:1px solid #39728d;background:#071c2a;font:900 21px/1 "Barlow Condensed",sans-serif}
+.evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:var(--accent-text);border:1px solid var(--border-strong);background:var(--bg-surface-raised);font:900 21px/1 "Barlow Condensed",sans-serif}
 .player-info-ovr .evaluation-grade{margin-top:4px}
 .current-ovr-row .evaluation-grade{vertical-align:middle}
 /* Current target: identity rail beside the main attribute evaluation. */
-.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 12px;padding:16px;gap:18px;background:linear-gradient(135deg,#081b2b,#020910);border:1px solid #28566e;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
+.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:176px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 12px;padding:16px;gap:18px;background:linear-gradient(135deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
 .auction-identity-rail{min-width:0}
-.auction-command-center .player-image-container{width:176px;height:200px;overflow:hidden;background:#000;border:1px solid #326078;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.auction-command-center .player-image-container{width:176px;height:200px;overflow:hidden;background:#000;border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 .auction-command-center .player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
 .player-card-identity{margin-top:12px;min-width:0;text-align:left}
 .auction-player-heading{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-.player-card-label{color:#96d5ec;font-size:9px;font-weight:800;letter-spacing:1.1px}
-.player-card-name{margin:6px 0;color:#edf7ff;font:900 italic 27px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
-.auction-player-ovr{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:6px;padding:5px 8px;border:1px solid #39728d;background:#030e18}
-.auction-player-ovr>span{color:#96d5ec;font-size:9px;font-weight:900;letter-spacing:1.2px}
-.auction-player-ovr strong{color:#fff;font:900 32px/1 "Barlow Condensed",sans-serif}
+.player-card-label{color:var(--accent-text);font-size:9px;font-weight:800;letter-spacing:1.1px}
+.player-card-name{margin:6px 0;color:var(--text-primary);font:900 italic 27px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.auction-player-ovr{display:grid;grid-template-columns:auto auto auto;align-items:center;gap:6px;padding:5px 8px;border:1px solid var(--border-strong);background:var(--bg-surface)}
+.auction-player-ovr>span{color:var(--accent-text);font-size:9px;font-weight:900;letter-spacing:1.2px}
+.auction-player-ovr strong{color:var(--text-primary);font:900 32px/1 "Barlow Condensed",sans-serif}
 .player-stats--auction{margin:0;padding:10px;display:grid;grid-template-columns:minmax(0,1fr) 76px;gap:8px 12px;align-items:center}
 .player-stats--auction .player-stats-heading{grid-column:1/-1;flex-wrap:wrap;gap:3px}
 .player-stats--auction .player-stats-radar{max-width:310px}
@@ -74,11 +73,3 @@
   .player-stats-heading{flex-wrap:wrap;gap:3px}
   .player-stats-gk>span{font-size:9px}
 }
-
-
-/* v0.6.6.2 readability: keep dense stat modules legible at their existing size. */
-.player-stats-heading span,.player-card-label,.auction-player-ovr>span{font-size:10px}
-.player-stats-heading small,.player-stats-gk>span small{font-size:8px}
-.player-stats-gk>span{font-size:11px}
-.player-stats--auction .player-stats-gk>span{font-size:10px}
-.player-stats--auction .player-stats-gk>span small{font-size:8px}

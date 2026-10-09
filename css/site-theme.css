@@ -1,0 +1,52 @@
+/* Semantic site palette. Component rules use these tokens, never page-wide filters. */
+:root{
+  color-scheme:dark;
+  --bg-page:#02050b;--bg-surface:#030b13;--bg-surface-raised:#07111d;--bg-input:#020912;
+  --bg-panel-start:#091b2b;--bg-panel-end:#020910;--bg-inset:rgba(1,7,13,.58);
+  --bg-hover:#0b2233;--bg-overlay:rgba(0,4,10,.88);--bg-page-glow:#0d3154;--bg-page-top:#040b14;--bg-page-bottom:#010308;
+  --border-subtle:#193c52;--border-strong:#326078;--border-line:rgba(80,174,255,.18);
+  --text-primary:#f5f8ff;--text-secondary:#adc8da;--text-muted:#819caf;--text-subtle:#718ca3;--text-inverse:#fff;
+  --accent:#149cff;--accent-hover:#37b7ec;--accent-text:#54c8ff;--accent-soft:rgba(20,156,255,.12);
+  --primary-start:#0767bb;--primary-end:#1479c9;
+  --chem-chemical:#ffe65a;--chem-elite:#43ff9a;--chem-strong:#31d7ff;--chem-link:#9c8cff;--chem-weak:#ff496d;
+  --warning:#ffbd55;--success:#39f59b;--danger:#ff5573;
+  --captain-text:#ffe269;--share-text:#d6c9ff;--role-canon:#8affc4;
+  --radar-cyan:#68e2ff;--radar-grid:#275269;--radar-spoke:#214154;--radar-fill:rgba(32,183,255,.24);
+  --header-bg:rgba(3,10,18,.98);--shadow-soft:0 8px 24px rgba(0,0,0,.2);--shadow-strong:0 18px 48px rgba(0,0,0,.4);
+  --site-width:1540px;--content-width:1180px;--header-height:72px;--header-height-mobile:88px;--logo-size:40px;
+  --shell-gutter:20px;--utility-size:40px;--context-gap:18px;
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;
+  /* Compatibility aliases keep the existing game components on the shared palette. */
+  --bg:var(--bg-page);--panel:var(--bg-surface-raised);--panel2:var(--bg-panel-start);
+  --blue:var(--accent);--bright:var(--accent-text);--text:var(--text-primary);--muted:var(--text-muted);--line:var(--border-line);
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --bg-page:#edf3f9;--bg-surface:#fff;--bg-surface-raised:#f5f9fd;--bg-input:#fff;
+  --bg-panel-start:#fff;--bg-panel-end:#f0f6fb;--bg-inset:rgba(224,234,244,.65);
+  --bg-hover:#e4eff9;--bg-overlay:rgba(218,230,241,.9);--bg-page-glow:#d2e5f6;--bg-page-top:#f1f6fb;--bg-page-bottom:#e9f0f7;
+  --border-subtle:#b9cddb;--border-strong:#7595ae;--border-line:rgba(59,102,136,.26);
+  --text-primary:#122c46;--text-secondary:#2d506c;--text-muted:#47667f;--text-subtle:#526e84;
+  --accent:#0072c9;--accent-hover:#005fa7;--accent-text:#005ea8;--accent-soft:rgba(0,114,201,.1);
+  --chem-chemical:#876b00;--chem-elite:#087a49;--chem-strong:#007198;--chem-link:#624ac2;--chem-weak:#bf2347;
+  --warning:#8f5d00;--success:#087a49;--danger:#b82246;
+  --captain-text:#876b00;--share-text:#533dab;--role-canon:#087a49;
+  --radar-cyan:#006393;--radar-grid:#9ab5ca;--radar-spoke:#b9cddb;--radar-fill:rgba(0,114,201,.2);
+  --header-bg:rgba(246,250,254,.98);--shadow-soft:0 8px 24px rgba(35,70,105,.1);--shadow-strong:0 18px 48px rgba(35,70,105,.18);
+}
+/* A football pitch remains a dark tactical canvas; names and chemistry stay readable. */
+.football-pitch,.formation-pitch-v2,.share-mini-pitch,.formation-pointer-preview{
+  --bg-surface:#030b13;--bg-surface-raised:#07111d;--bg-input:#020912;--bg-inset:rgba(1,7,13,.88);
+  --text-primary:#f5f8ff;--text-secondary:#adc8da;--text-muted:#819caf;--text-subtle:#718ca3;
+  --accent:#149cff;--accent-text:#54c8ff;--border-subtle:#193c52;--border-strong:#326078;
+  --chem-chemical:#ffe65a;--chem-elite:#43ff9a;--chem-strong:#31d7ff;--chem-link:#9c8cff;--chem-weak:#ff496d;
+  --captain-text:#ffe269;--role-canon:#8affc4;
+}
+/* Team headings use one presentation value. Raw team colors and calculations stay intact. */
+html[data-theme="light"] :is(.team-tracker,.final-team-card,.formation-control-panel,.player-info-panel,.bid-panel,.sold-panel,.turn-indicator,.formation-instructions,.bench-panel,.share-team,.formation-team-tabs button,.comparison-grid b,.final-history-row>div>span,.history-player b,.overlay-content strong,.chemistry-hud){--team-heading:color-mix(in srgb,var(--team) 32%,#122c46);--team-text:var(--text-primary)}
+:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+input:focus-visible,select:focus-visible{outline-offset:1px}
+.skip-link{position:fixed;left:12px;top:-80px;z-index:110000;padding:12px 16px;color:var(--text-primary);background:var(--bg-surface);border:2px solid var(--accent)}
+.skip-link:focus{top:8px}
+#siteMain:focus{outline:none}
+@media(prefers-reduced-motion:reduce){.site-header *,.site-footer *{animation:none;transition:none;scroll-behavior:auto}}

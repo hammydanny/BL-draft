@@ -38,16 +38,16 @@ function createResultsComparison(){
     return `<section class="results-comparison">
       <div class="comparison-head"><span>HEAD-TO-HEAD // DRAFT INTELLIGENCE</span><strong>POST-AUCTION COMPARISON</strong></div>
       <div class="comparison-grid">
-        <div><span>SQUAD OVR</span><b style="${teamVars(team1)};color:var(--team)">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">${o2}</b></div>
-        <div><span>CAPITAL REMAINING</span><b style="${teamVars(team1)};color:var(--team)">$${team1.budget.toLocaleString()}</b><em>${esc(resultMetricLeader(team1.budget,team2.budget))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">$${team2.budget.toLocaleString()}</b></div>
-        <div><span>BEST CHEMISTRY</span><b style="${teamVars(team1)};color:var(--team)">${c1?.score||"--"}</b><em>${esc(resultMetricLeader(c1?.score||0,c2?.score||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team)">${c2?.score||"--"}</b></div>
-        <div><span>CAPITAL SPENT</span><b style="${teamVars(team1)};color:var(--team)">$${spent1.toLocaleString()}</b><em>${spent1===spent2?"EVEN SPEND":"DRAFT PROFILE"}</em><b style="${teamVars(team2)};color:var(--team)">$${spent2.toLocaleString()}</b></div>
+        <div><span>SQUAD OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${o2}</b></div>
+        <div><span>CAPITAL REMAINING</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${team1.budget.toLocaleString()}</b><em>${esc(resultMetricLeader(team1.budget,team2.budget))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${team2.budget.toLocaleString()}</b></div>
+        <div><span>BEST CHEMISTRY</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${c1?.score||"--"}</b><em>${esc(resultMetricLeader(c1?.score||0,c2?.score||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${c2?.score||"--"}</b></div>
+        <div><span>CAPITAL SPENT</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${spent1.toLocaleString()}</b><em>${spent1===spent2?"EVEN SPEND":"DRAFT PROFILE"}</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${spent2.toLocaleString()}</b></div>
       </div>
     </section>`;
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chem=strongestRosterChemistry(team);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img src="${p.image}" alt="${esc(p.name)}" loading="eager" decoding="async" fetchpriority="high" data-player-portrait><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
@@ -69,8 +69,8 @@ function createFinalTeamCard(team,n){
 function createFullHistory(){
     if(!auctionHistory.length)return `<div class="history-empty">NO COMPLETED AUCTIONS</div>`;
     return auctionHistory.map(x=>`<div class="final-history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
-      <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img src="${x.player.image}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
-      <div><strong>${esc(x.player.name)}</strong><span style="color:${accessibleTeamAccent(x.teamColor)}">${esc(x.teamName)}</span></div>
+      <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img data-player-image src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
+      <div><strong>${esc(x.player.name)}</strong><span style="${teamVars({color:x.teamColor})};color:var(--team-heading,var(--team))">${esc(x.teamName)}</span></div>
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
@@ -91,7 +91,6 @@ function showAuctionComplete(){
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
-    prioritizeVisiblePortraits(auctionContent);
     window.scrollTo({top:0,behavior:"instant"});
     document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
@@ -141,7 +140,7 @@ function createShareTeam(team,n){
           if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
           const isCaptain=player.id===snap.captainId;
           return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
+            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img data-player-image src="${playerImageUrl(player)}" alt=""><b>${esc(player.name)}</b>
           </div>`;
         }).join("")}
       </div>
@@ -149,7 +148,7 @@ function createShareTeam(team,n){
         <div class="share-money compact"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
         <div class="share-chem-note"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
       </div>
-      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${playerImageUrl(p)}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 function openShareScreen(){
@@ -219,7 +218,7 @@ function createStandaloneShareTeam(){
           if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
           const isCaptain=player.id===snap.captainId;
           return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img src="${player.image}" alt=""><b>${esc(player.name)}</b>
+            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img data-player-image src="${playerImageUrl(player)}" alt=""><b>${esc(player.name)}</b>
           </div>`;
         }).join("")}
       </div>
@@ -227,7 +226,7 @@ function createStandaloneShareTeam(){
         <div><span>FORMATION</span><strong>${snap.formation}</strong></div>
         <div><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
       </div>
-      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img src="${p.image}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${playerImageUrl(p)}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 

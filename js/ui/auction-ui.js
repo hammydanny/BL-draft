@@ -6,7 +6,7 @@ let overlayHideTimer=null;
 function createPlayerCard(){
     return `<div class="current-player">
       <div class="auction-identity-rail">
-      <div class="player-image-container"><img class="player-image" src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="176" height="200">
+      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="176" height="200">
       </div>
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
@@ -32,7 +32,7 @@ function createTeamTracker(team,number){
     const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
       <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
-        <img src="${p.image}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
+        <img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
     const warnings=[];
     if(full)warnings.push("ROSTER FULL");
@@ -178,8 +178,8 @@ function createAuctionHistoryPanel(){
     const latest=[...auctionHistory].reverse().slice(0,6);
     const rows=latest.length?latest.map(x=>`
       <div class="history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
-        <img src="${x.player.image}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
-        <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="color:${accessibleTeamAccent(x.teamColor)}">${esc(x.teamName)}</b></span></div>
+        <img data-player-image src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
+        <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="${teamVars({color:x.teamColor})};color:var(--team-heading,var(--team))">${esc(x.teamName)}</b></span></div>
         <div class="history-price">${x.price===0?"FREE":"$"+x.price.toLocaleString()}</div>
       </div>`).join(""):`<div class="history-empty">AWAITING FIRST TRANSFER...</div>`;
     return `<section class="auction-history-panel">

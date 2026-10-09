@@ -921,7 +921,7 @@ function createFormationPointerPreview(player,x,y){
     document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
     const preview=document.createElement("div");
     preview.className="formation-pointer-preview";
-    preview.innerHTML=`<div class="formation-pointer-ring"><img src="${player.image}" alt="" draggable="false"></div><span>${esc(player.name)}</span>`;
+    preview.innerHTML=`<div class="formation-pointer-ring"><img data-player-image src="${playerImageUrl(player)}" alt="" draggable="false"></div><span>${esc(player.name)}</span>`;
     document.body.appendChild(preview);
     moveFormationPointerPreview(x,y);
     return preview;

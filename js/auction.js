@@ -205,10 +205,10 @@ function showForcedAssignment(teamNumber,resuming=false){
     const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
     showOverlay(`
       <div class="overlay-kicker">ROSTER CAPACITY PROTOCOL // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
+      <div class="reveal-image"><img data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
       <h2>${esc(currentPlayer.name)}</h2>
-      <p><strong style="color:${accessibleTeamAccent(fullTeam.color)}">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
+      <p><strong style="${teamVars(fullTeam)};color:var(--team-heading,var(--team))">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
       <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
     const delay=resuming?500:1500;
     setTimeout(()=>hideOverlay(()=>{
@@ -240,7 +240,7 @@ function showPlayerReveal(){
     playSfx("reveal");
     showOverlay(`
       <div class="overlay-kicker">TARGET ACQUIRED // ${String(auctionNumber).padStart(2,"0")}</div>
-      <div class="reveal-image"><img src="${currentPlayer.image}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
+      <div class="reveal-image"><img data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);

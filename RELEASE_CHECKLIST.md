@@ -1,0 +1,30 @@
+# Release checklist
+
+- [ ] Central version correct
+- [ ] All project JavaScript syntax valid
+- [ ] `node scripts/preflight.js` PASS, 0 failed checks
+- [ ] Desktop smoke test (1920×1080 and 1366×768)
+- [ ] Mobile smoke test (390×844 and 430×932)
+- [ ] All URLs load and refresh correctly, including `/BL-draft/`
+- [ ] Browser Back/Forward works
+- [ ] No console errors
+- [ ] No broken images; neutral fallback works
+- [ ] Existing Auction and standalone saves restore
+- [ ] Auction bidding, passing and Undo/Redo work
+- [ ] Random/Quick Draft works
+- [ ] Team Builder dragging, reserves and Captain work
+- [ ] Auto Best checks all formations without changed scoring
+- [ ] Sharing preserves the exact built formation
+- [ ] SFX persists between pages and refreshes
+- [ ] Dark theme works
+- [ ] Light theme works
+- [ ] System theme works and follows OS changes
+- [ ] Correct logo per theme, without movement
+- [ ] Correct favicon per theme, without reload
+- [ ] Settings/reset work without clearing saves
+- [ ] No header jitter, including delayed font/logo loading
+- [ ] No wrong-page or theme flash
+- [ ] Service-worker/cache freshness checked across deployments
+- [ ] Version/cache-busting checked
+- [ ] No unrelated player, chemistry or gameplay changes
+- [ ] Changed-files ZIP reviewed; paths and contents verified
