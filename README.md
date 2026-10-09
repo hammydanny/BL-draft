@@ -152,7 +152,7 @@ Contributions, improvements, bug fixes, UI ideas, balancing suggestions, and add
 
 **Blue Lock Draft**
 
-Originally developed by **hammydanny** and **syaafibwn**
+Originally developed by [hammydanny](https://github.com/hammydanny) and [syaafibwn (Syaafi)](https://github.com/syaafibwn)
 
 ## License / Rights
 
