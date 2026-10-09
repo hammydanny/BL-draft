@@ -134,29 +134,56 @@ function filteredCharacterLore(){
 }
 function characterLoreCard(record){
     if(record.html)return record.html;
-    const {player,chemistry}=record;
-    const preview=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score).slice(0,3);
-    const duo=chemistry.pairLinks.find(link=>link.label==="SECOND SELECTION DUO");
-    if(duo&&!preview.includes(duo))preview.push(duo);
-    record.html=`<article class="character-lore-card">
-      <div class="character-lore-identity">
-        <div class="character-lore-image-wrap">
-          <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="120" height="136">
-        </div>
-        <div class="character-lore-heading"><span class="lore-kicker">${esc(primaryPosition(player))} // MANGA CH. ${player.debutChapter}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}
-          <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>
-        </div>
-        <p class="character-lore-description">${esc(characterLoreDescription(player))}${player.statEstimate?"<br><small>RATINGS // GAME BALANCING ESTIMATES, NOT OFFICIAL STATS</small>":""}</p>
-      </div>
-      ${playerStatsRadar(player,"lore")}
-      <div class="character-lore-chemistry"><div class="lore-subheading">RELEVANT CHEMISTRY</div>
-        ${preview.length?preview.map(link=>`<div class="character-chemistry-link"><div>
-          <strong>${esc(link.characters.filter(name=>name!==player.name).join(" × "))}</strong><span>${esc(link.label)}</span>
-          </div><b class="${chemistryTier(link.score)}">${link.score}</b></div>`).join(""):`<div class="lore-muted">NO NAMED CHEMISTRY LINKS</div>`}
-        ${chemistry.teamLinks.length?`<div class="character-team-contexts">${chemistry.teamLinks.slice(0,5).map(context=>`<span>${esc(context.name)}</span>`).join("")}</div>`:""}
-      </div>
-    </article>`;
+    const player=record.player;
+    record.html=`<button type="button" class="character-lore-card" data-character-id="${player.id}" aria-label="View ${esc(player.name)} profile">
+      <span class="character-lore-image-wrap"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="180" height="225"></span>
+      <span class="character-lore-card-name">${esc(player.name)}</span>
+    </button>`;
     return record.html;
+}
+function characterLoreProfileMarkup(player){
+    const ratings=playerStats(player),chemistry=getCharacterChemistry(player);
+    const pairLinks=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title));
+    const teamLinks=chemistry.teamLinks.slice().sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
+    const partnerMarkup=name=>{
+        const partner=players.find(candidate=>candidate.name===name);
+        return partner?`<button type="button" class="character-profile-person-link" data-character-id="${partner.id}">${esc(name)}</button>`:esc(name);
+    };
+    const statRows=[["OVR","OVERALL",playerOverall(player)],["SPD","SPEED",ratings.spd],["DEF","DEFENCE",ratings.def],["PAS","PASSING",ratings.pas],["DRI","DRIBBLING",ratings.dri],["SHO","SHOOTING",ratings.sho],["OFF","OFFENCE",ratings.off],["GK","GOALKEEPING",ratings.gk]];
+    return `<div class="character-profile-page">
+      <div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER DOSSIER // ${String(player.id).padStart(2,"0")}</span></div>
+      <section class="character-profile-hero">
+        <div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div>
+        <div class="character-profile-overview">
+          <span class="character-profile-kicker">CHARACTER FILE // MANGA CHAPTER ${player.debutChapter}</span><h2>${esc(player.name)}</h2>
+          <div class="character-profile-positions">${positionBadges(player)}</div>
+          <div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>
+          <div class="character-profile-description"><h3>PLAYER DESCRIPTION</h3><p>${esc(characterLoreDescription(player))}</p></div>
+          ${player.statEstimate?`<p class="character-profile-rating-note">RATINGS // GAME-BALANCING ESTIMATES, NOT OFFICIAL STATS</p>`:""}
+        </div>
+      </section>
+      <section class="character-profile-section">
+        <div class="character-profile-section-heading"><span>01 // PLAYER ATTRIBUTES</span><h3>FIELD RATINGS</h3></div>
+        <div class="character-profile-stat-grid">${statRows.map(([short,label,value])=>`<div class="character-profile-stat"><span>${short}</span><small>${label}</small><strong>${value}</strong><b class="evaluation-grade">${playerStatGrade(value)}</b></div>`).join("")}</div>
+        ${playerStatsRadar(player,"lore")}
+      </section>
+      <section class="character-profile-section">
+        <div class="character-profile-section-heading"><span>02 // RELATIONSHIP DATABASE</span><h3>PAIR CHEMISTRY</h3><small>${pairLinks.length} REGISTERED LINKS</small></div>
+        <div class="character-profile-chemistry-grid">${pairLinks.length?pairLinks.map(link=>`<article class="character-profile-chemistry-card">
+          <div class="character-profile-chemistry-top"><div class="character-profile-chemistry-names">${link.characters.filter(name=>name!==player.name).map(partnerMarkup).join(" × ")}</div>
+          <div class="character-profile-score ${chemistryTier(link.score)}"><small>CHEMISTRY</small><strong>${link.score}</strong><span>/ 100</span></div></div>
+          <span class="character-profile-chemistry-label">${esc(link.label)}</span><p>${esc(link.description||"No additional description is recorded for this relationship.")}</p>
+        </article>`).join(""):`<div class="lore-empty">NO PAIR CHEMISTRY RECORDED FOR THIS CHARACTER.</div>`}</div>
+      </section>
+      <section class="character-profile-section">
+        <div class="character-profile-section-heading"><span>03 // SHARED HISTORY & TACTICS</span><h3>TEAM CHEMISTRY & CONTEXTS</h3><small>${teamLinks.length} REGISTERED CONTEXTS</small></div>
+        <div class="character-profile-team-grid">${teamLinks.length?teamLinks.map(context=>`<article class="character-profile-team-card">
+          <div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CHEMISTRY</small><strong>${context.score}</strong><span>/ 100</span></div></div>
+          <p>${esc(context.description||"No additional description is recorded for this context.")}</p>
+          <div class="character-profile-context-members">${context.characters.map(partnerMarkup).join("")}</div>
+        </article>`).join(""):`<div class="lore-empty">NO TEAM CONTEXTS RECORDED FOR THIS CHARACTER.</div>`}</div>
+      </section>
+    </div>`;
 }
 function renderLoreCards(grid,records,cardMarkup,emptyMessage){
     if(!records.length){grid.innerHTML=`<div class="lore-empty">${emptyMessage}</div>`;return;}
@@ -175,11 +202,35 @@ function renderLoreCards(grid,records,cardMarkup,emptyMessage){
 }
 function renderCharacterLore(){
     const grid=document.getElementById("characterLoreGrid");if(!grid)return;
+    grid.classList.remove("character-lore-profile-grid");
+    const screen=document.getElementById("character-lore-screen");
+    screen?.classList.remove("character-lore-detail-view");
+    const title=screen?.querySelector(".page-context h1");if(title)title.textContent="CHARACTERS";
+    const code=screen?.querySelector(".page-context-code");if(code)code.textContent="BL // CHARACTER DATABASE";
+    const status=screen?.querySelector(".page-context-status");if(status)status.textContent="PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY";
     const filtered=filteredCharacterLore();
     renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS.");
     prioritizeVisiblePortraits(grid);
     const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${players.length} PLAYERS`;
 }
+function renderCharacterProfile(player){
+    const grid=document.getElementById("characterLoreGrid");if(!grid)return;
+    grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);prioritizeVisiblePortraits(grid);
+}
+function openCharacterProfileById(value,options={}){
+    const player=players.find(candidate=>candidate.id===Number(value));if(!player)return;
+    if(!options.skipHistory){
+        const url=canonicalRouteUrl("lore",{databaseView:"characters"});url.searchParams.set("character",String(player.id));
+        const current=new URL(window.location.href);
+        if(current.href!==url.href){if(options.replace)history.replaceState({blDraftRoute:"lore"},"",url.href);else history.pushState({blDraftRoute:"lore"},"",url.href);}
+    }
+    const screen=document.getElementById("character-lore-screen");screen?.classList.add("character-lore-detail-view");
+    const title=screen?.querySelector(".page-context h1");if(title)title.textContent=player.name;
+    const code=screen?.querySelector(".page-context-code");if(code)code.textContent="BL // CHARACTER PROFILE";
+    const status=screen?.querySelector(".page-context-status");if(status)status.textContent="PLAYER RATINGS // CHEMISTRY LINKS // CHARACTER DESCRIPTION";
+    setVisibleScreen(screen,{...options,skipHistory:true});renderCharacterProfile(player);
+}
+function returnToCharacterDirectory(){updateRoute("lore",{databaseView:"characters"});}
 function filteredChemistryLore(){
     const query=loreControlValue("chemistryLoreSearch").trim().toLowerCase();
     const type=loreControlValue("chemistryLoreType","ALL"),tier=loreControlValue("chemistryLoreTier","ALL");
@@ -216,9 +267,21 @@ function resetLoreFilters(kind){
     if(kind==="character")renderCharacterLore();else renderChemistryLore();
 }
 function openLoreMenu(options={}){setVisibleScreen(document.getElementById("lore-menu-screen"),options);}
-function openCharacterLore(options={}){setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();}
+function openCharacterLore(options={}){
+    const profileId=new URL(window.location.href).searchParams.get("character");
+    if(profileId&&players.some(candidate=>candidate.id===Number(profileId))){openCharacterProfileById(profileId,{...options,skipHistory:true});return;}
+    if(profileId){updateRoute("lore",{databaseView:"characters",replace:true});return;}
+    setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();
+}
 function openChemistryLore(options={}){setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();}
 function bindLoreUI(){
+    const characterGrid=document.getElementById("characterLoreGrid");
+    characterGrid?.addEventListener("click",event=>{
+        const back=event.target.closest("[data-character-back]");
+        if(back){event.preventDefault();returnToCharacterDirectory();return;}
+        const character=event.target.closest("[data-character-id]");
+        if(character&&characterGrid.contains(character)){event.preventDefault();openCharacterProfileById(character.dataset.characterId);}
+    });
     document.getElementById("menuLore")?.addEventListener("click",openLoreMenu);
     document.getElementById("loreCharacters")?.addEventListener("click",openCharacterLore);
     document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);

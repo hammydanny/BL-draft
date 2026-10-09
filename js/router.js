@@ -160,7 +160,10 @@ function normalizeCurrentRoute(route){
     // legacy hash as canonical there so bootstrap can exercise the destination
     // screen in-place. Real browsers still migrate hashes to clean page URLs.
     if(historyOnlyNavigation()&&legacyHashRoute()===route)return true;
-    const target=canonicalRouteUrl(route,{databaseView:route==="lore"?databaseViewFromLocation():null}),current=new URL(window.location.href,appRootUrl());
+    const current=new URL(window.location.href,appRootUrl());
+    const target=canonicalRouteUrl(route,{databaseView:route==="lore"?databaseViewFromLocation():null});
+    const characterId=route==="lore"&&databaseViewFromLocation()==="characters"?current.searchParams.get("character"):null;
+    if(characterId&&/^\\d+$/.test(characterId))target.searchParams.set("character",characterId);
     if(route==="menu"&&current.pathname===appRootUrl().pathname&&!current.search&&!current.hash)return true;
     if(current.pathname!==target.pathname||current.search!==target.search||current.hash!==target.hash){
         replaceLocation(target,route);
