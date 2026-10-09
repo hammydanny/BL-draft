@@ -531,7 +531,7 @@ to{opacity:1;transform:none;filter:none}}
 .player-info-id{display:block;color:var(--text-muted);font:900 18px "Barlow Condensed"}
 .player-info-close{width:28px;height:28px;padding:0;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:18px}
 .player-info-portrait{position:relative;overflow:hidden;background:var(--bg-surface)}
-.player-info-portrait img{display:block;width:100%;height:180px;object-fit:cover;object-position:center top}
+.player-info-portrait img{display:block;width:100%;height:auto;aspect-ratio:1 / 1;object-fit:cover;object-position:center 20%}
 .player-info-ovr{position:absolute;right:12px;bottom:12px;width:66px;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-surface);border:2px solid var(--team);box-shadow:0 0 20px var(--team-glow)}
 .player-info-ovr span{font-size:12px;color:var(--text-muted)}
 .player-info-ovr strong{font:900 28px "Barlow Condensed"}

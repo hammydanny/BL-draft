@@ -115,6 +115,16 @@ function createPlayerInfoSidebar(team){
       return `<div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
     })()}
     <div class="player-info-name"><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
+    <div class="player-info-section">
+      <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
+      ${playerStatsRadar(player,"sidebar")}
+    </div>
+    <div class="player-info-section current-position-rating">${(()=>{
+      const slot=currentPlayerSlot(formationTeamNumber,player.id);
+      const pos=slot?.label||primaryPosition(player);
+      const rating=slot?effectiveOVR(player,pos):playerOverall(player);
+      return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${rating} <small class="evaluation-grade">${playerStatGrade(rating)}</small></b></div>`;
+    })()}</div>
     ${(()=>{
       const deployed=assignedIds(formationTeamNumber).has(player.id);
       const isCaptain=formationCaptainByTeam[formationTeamNumber]===player.id;
@@ -123,16 +133,7 @@ function createPlayerInfoSidebar(team){
         <button type="button" ${deployed?`onclick="setFormationCaptain(${player.id})"`:"disabled"}>${isCaptain?"REMOVE C":"SET CAPTAIN"}</button>
       </div>`;
     })()}
-    <div class="player-info-section current-position-rating">${(()=>{
-      const slot=currentPlayerSlot(formationTeamNumber,player.id);
-      const pos=slot?.label||primaryPosition(player);
-      const rating=slot?effectiveOVR(player,pos):playerOverall(player);
-      return `<div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div><div class="current-ovr-row"><strong>${pos}</strong><b>${rating} <small class="evaluation-grade">${playerStatGrade(rating)}</small></b></div>`;
-    })()}</div>
-    <div class="player-info-section">
-      <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
-      ${playerStatsRadar(player,"sidebar")}
-    </div>
+
   </aside>`;
 }
 
