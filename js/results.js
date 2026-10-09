@@ -47,7 +47,7 @@ function createResultsComparison(){
 }
 function createFinalTeamCard(team,n){
     const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chem=strongestRosterChemistry(team);
-    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
+    const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
@@ -69,7 +69,7 @@ function createFinalTeamCard(team,n){
 function createFullHistory(){
     if(!auctionHistory.length)return `<div class="history-empty">NO COMPLETED AUCTIONS</div>`;
     return auctionHistory.map(x=>`<div class="final-history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
-      <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img data-player-image src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
+      <span class="history-number">${String(x.auction).padStart(2,"0")}</span><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
       <div><strong>${esc(x.player.name)}</strong><span style="${teamVars({color:x.teamColor})};color:var(--team-heading,var(--team))">${esc(x.teamName)}</span></div>
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
@@ -190,43 +190,35 @@ function restartAuction(){
 
 
 function createStandaloneShareTeam(){
-    const team=standaloneBuilderTeam;
-    const snap=shareFormationSnapshot(0);
+    const team=standaloneBuilderTeam,snap=shareFormationSnapshot(0);
     const captain=team.players.find(p=>p.id===snap.captainId)||null;
     const target=Math.min(11,team.players.length);
-    const stateLabel=snap.deployedCount===0
-      ?"NO FORMATION BUILT"
-      :snap.complete
-        ?"FORMATION COMPLETE"
-        :`INCOMPLETE ${snap.deployedCount}/${target}`;
-
-    return `<article class="share-team share-team-v15 standalone-share-team" style="${teamVars(team)}">
-      <div class="share-team-head">
-        <div><span>GLOBAL XI // ${stateLabel}</span><h3>${esc(team.name)}</h3></div>
-        <b>${team.players.length}</b>
-      </div>
+    const stateLabel=snap.deployedCount===0?"NO FORMATION BUILT":snap.complete?"FORMATION COMPLETE":`INCOMPLETE ${snap.deployedCount}/${target}`;
+    return `<article class="share-team standalone-share-team" style="${teamVars(team)}">
+      <div class="squad-report-status"><span>${stateLabel}</span><b>${team.players.length} SELECTED</b></div>
       <div class="share-v14-metrics">
+        <div><span>FORMATION</span><strong>${snap.formation}</strong></div>
         <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
         <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
-        <div><span>CAPTAIN</span><strong>${captain?esc(captain.name):"—"}</strong></div>
         <div><span>DEPLOYED</span><strong>${snap.deployedCount}<small> / ${target}</small></strong></div>
       </div>
-      <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
-        <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
-        ${snap.shape.map((slot,i)=>{
-          const player=team.players.find(p=>p.id===snap.assignment[i]);
-          if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
-          const isCaptain=player.id===snap.captainId;
-          return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img data-player-image src="${playerImageUrl(player)}" alt=""><b>${esc(player.name)}</b>
-          </div>`;
-        }).join("")}
+      <div class="squad-report-layout">
+        <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
+          <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
+          ${snap.shape.map((slot,i)=>{
+            const player=team.players.find(p=>p.id===snap.assignment[i]);
+            if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
+            return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
+              <div class="report-player-portrait">${player.id===snap.captainId?'<i class="report-captain">C</i>':""}<img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="60" height="60" loading="eager" decoding="async"><span class="report-position">${slot.label}</span><em>${effectiveOVR(player,slot.label)}</em></div><b>${esc(player.name)}</b>
+            </div>`;
+          }).join("")}
+        </div>
+        <aside class="squad-report-info">
+          <div class="report-info-item"><span>CAPTAIN</span><strong>${captain?esc(captain.name):"UNASSIGNED"}</strong></div>
+          <div class="report-info-item report-best-link"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"NO ACTIVE LINK"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
+          <div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.length?snap.reserves.map(p=>`<b><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="36" height="40" loading="lazy" decoding="async"><span>${esc(p.name)}</span><i>${playerOverall(p)}</i></b>`).join(""):'<p>NO RESERVES</p>'}</div></div>
+        </aside>
       </div>
-      <div class="standalone-share-summary">
-        <div><span>FORMATION</span><strong>${snap.formation}</strong></div>
-        <div><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
-      </div>
-      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${playerImageUrl(p)}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 
@@ -282,11 +274,21 @@ function openStandaloneShareScreen(){
         </div>
       </div>
     </div>`;
+    screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","Standalone squad report");
+    const previousFocus=document.activeElement;
     document.body.appendChild(screen);
-
-    document.getElementById("closeShareScreen").onclick=()=>{
-        screen.remove();
-    };
+    prioritizeVisiblePortraits(screen);
+    function close(){screen.remove();previousFocus?.focus();}
+    screen.addEventListener("keydown",event=>{
+        if(event.key==="Escape"){event.preventDefault();close();}
+        if(event.key==="Tab"){
+            const buttons=[...screen.querySelectorAll("button")],first=buttons[0],last=buttons.at(-1);
+            if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+            else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+        }
+    });
+    document.getElementById("closeShareScreen").onclick=close;
+    document.getElementById("closeShareScreen").focus();
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
 }

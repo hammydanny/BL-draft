@@ -141,7 +141,7 @@ function characterLoreCard(record){
     record.html=`<article class="character-lore-card">
       <div class="character-lore-identity">
         <div class="character-lore-image-wrap">
-          <img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="120" height="136">
+          <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="120" height="136">
         </div>
         <div class="character-lore-heading"><span class="lore-kicker">${esc(primaryPosition(player))} // MANGA CH. ${player.debutChapter}</span><h2>${esc(player.name)}</h2>${positionBadges(player)}
           <div class="character-lore-ovr" aria-label="Overall ${playerOverall(player)}, grade ${playerStatGrade(playerOverall(player))}"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>

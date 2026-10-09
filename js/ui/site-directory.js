@@ -56,7 +56,7 @@ function runDirectoryAction(action){
         case "home":goToMainMenu();break;
         case "setup":updateRoute("auctionSetup");break;
         case "new-auction":openSetupFromMenu();break;
-        case "quick-draft":openSetupFromMenu({quickDraft:true});break;
+        case "quick-draft":openQuickDraft();break;
         case "resume":resumeSavedAuction(loadSavedData());break;
         case "builder":openStandaloneBuilder();break;
         case "lore":case "characters":case "chemistry":updateRoute("lore",{databaseView:action});break;

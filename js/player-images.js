@@ -20,22 +20,71 @@ document.addEventListener("error",event=>{
     image.src=PLAYER_IMAGE_FALLBACK;
 },true);
 
-// Only the selected target is warmed. Never prefetch the full roster or draw a player.
+// Retain decoded images for this document; bounded queues never draw a draft target.
 const portraitDecodeCache=new Map();
-function warmPlayerPortrait(player){
+function warmPlayerPortrait(player,priority="high"){
     if(!player||typeof Image!=="function")return Promise.resolve();
     const url=playerImageUrl(player);
-    if(portraitDecodeCache.has(url))return portraitDecodeCache.get(url);
-    const image=new Image();image.decoding="async";image.fetchPriority="high";image.src=url;
+    if(portraitDecodeCache.has(url))return portraitDecodeCache.get(url).ready;
+    const image=new Image();image.decoding="async";image.fetchPriority=priority;image.src=url;
     const ready=image.decode().catch(()=>{});
-    portraitDecodeCache.set(url,ready);
-    if(portraitDecodeCache.size>8)portraitDecodeCache.delete(portraitDecodeCache.keys().next().value);
+    portraitDecodeCache.set(url,{image,ready});
+    if(portraitDecodeCache.size>64)portraitDecodeCache.delete(portraitDecodeCache.keys().next().value);
     return ready;
 }
-function prioritizeVisiblePortraits(container){
-    if(!container||typeof window.innerHeight!=="number")return;
-    container.querySelectorAll('img[loading="lazy"]').forEach(image=>{
-        const rect=image.getBoundingClientRect();
-        if(rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<window.innerHeight)image.loading="eager";
-    });
+function warmSquadPortraits(squad){
+    const queue=[...new Map(squad.filter(Boolean).slice(0,30).map(player=>[player.id,player])).values()];
+    return Promise.all(Array.from({length:Math.min(3,queue.length)},async()=>{
+        while(queue.length)await warmPlayerPortrait(queue.shift());
+    }));
 }
+const deferredPortraitQueue=[];
+let deferredPortraitLoads=0;
+function revealPlayerPortrait(image,priority="auto"){
+    if(!image.dataset.portraitSrc)return;
+    const url=image.dataset.portraitSrc;
+    delete image.dataset.portraitSrc;
+    image.fetchPriority=priority;image.loading="eager";image.src=url;
+}
+function drainPortraitQueue(){
+    while(deferredPortraitLoads<2&&deferredPortraitQueue.length){
+        const image=deferredPortraitQueue.shift();
+        if(!image.isConnected||!image.dataset.portraitSrc)continue;
+        deferredPortraitLoads++;
+        const finish=()=>{image.removeEventListener("load",finish);image.removeEventListener("error",finish);deferredPortraitLoads--;drainPortraitQueue();};
+        image.addEventListener("load",finish,{once:true});image.addEventListener("error",finish,{once:true});
+        revealPlayerPortrait(image,"low");
+    }
+}
+const portraitObserver=typeof IntersectionObserver==="function"?new IntersectionObserver(entries=>{
+    for(const entry of entries)if(entry.isIntersecting){portraitObserver.unobserve(entry.target);deferredPortraitQueue.push(entry.target);}
+    const idle=window.requestIdleCallback||((callback)=>window.setTimeout(callback,16));
+    idle(drainPortraitQueue,{timeout:200});
+},{rootMargin:"100px 0px"}):null;
+function observePlayerPortraits(container){
+    if(!container?.querySelectorAll)return;
+    const images=[...(container.matches?.("img[data-portrait-src]")?[container]:[]),...container.querySelectorAll("img[data-portrait-src]")];
+    for(const image of images)if(portraitObserver)portraitObserver.observe(image);else revealPlayerPortrait(image);
+}
+function prioritizeVisiblePortraits(container){
+    if(!container||typeof window.innerHeight!=="number")return [];
+    const visible=[],clips=new WeakMap();
+    container.querySelectorAll('img[data-player-image]').forEach(image=>{
+        const rect=image.getBoundingClientRect();
+        if(!rect.width||!rect.height||rect.bottom<=0||rect.top>=window.innerHeight)return;
+        let top=Math.max(0,rect.top),bottom=Math.min(window.innerHeight,rect.bottom);
+        for(let parent=image.parentElement;parent&&parent!==document.body;parent=parent.parentElement){
+            if(!clips.has(parent)){const style=getComputedStyle(parent);clips.set(parent,/hidden|clip|auto|scroll/.test(style.overflowY)?parent.getBoundingClientRect():null);}
+            const clip=clips.get(parent);if(clip){top=Math.max(top,clip.top);bottom=Math.min(bottom,clip.bottom);}
+        }
+        if(top>=bottom)return;
+        image.loading="eager";image.fetchPriority="high";revealPlayerPortrait(image,"high");
+        visible.push(image);
+    });
+    observePlayerPortraits(container);
+    return visible;
+}
+if(document.documentElement?.style)document.documentElement.style.setProperty("--portrait-placeholder",`url("${PLAYER_IMAGE_FALLBACK}")`);
+if(typeof MutationObserver==="function")new MutationObserver(records=>{
+    for(const record of records)for(const node of record.addedNodes)if(node.nodeType===1)observePlayerPortraits(node);
+}).observe(document.body,{childList:true,subtree:true});

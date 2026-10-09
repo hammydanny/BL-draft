@@ -147,7 +147,7 @@ function renderPlayerPool(){
         return `<div class="pool-player-card ${selected?"selected":""}" data-player-id="${player.id}">
             <button type="button" class="pool-select-hit" aria-pressed="${selected}" aria-label="${selected?"Remove":"Add"} ${esc(player.name)} from auction pool">
               <div class="pool-player-check">${selected?"✓":"+"}</div>
-              <img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
+              <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
               <div class="pool-player-info">
                   <span>PLAYER // ${String(player.id).padStart(2,"0")} // OVR ${playerOverall(player)}</span>
                   <strong>${esc(player.name)}</strong>

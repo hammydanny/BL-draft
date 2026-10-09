@@ -45,7 +45,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     const expected=['js/site-preferences.js','js/version.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
-        'js/standalone-builder.js','js/ui/formation-ui.js','js/app.js'];
+        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
         assert(scripts.includes(expected[i]),`Missing ${expected[i]}`);
         if(i)assert(scripts.indexOf(expected[i])>scripts.indexOf(expected[i-1]),`Order: ${expected[i]}`);
@@ -111,7 +111,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.7');
+    assert.equal(data.APP_VERSION,'0.6.7.2');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -216,11 +216,11 @@ check('Multi-page routes, legacy hashes and navigation helpers',()=>{
     setLocation('index.html');navigation.length=0;
     vm.runInContext('updateRoute("auctionResults")',context);
     assert.equal(navigation.at(-1).type,'assign');
-    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/results.html');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/results/');
     setLocation('index.html','#/auction/team-builder');navigation.length=0;
     assert.equal(vm.runInContext('normalizeCurrentRoute(getRouteFromLocation())',context),false);
     assert.equal(navigation.at(-1).type,'replace');
-    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder.html');
+    assert.equal(navigation.at(-1).url,'https://example.test/BL-draft/auction/team-builder/');
     for(const state of [{screen:'auction',phase:'complete'},{screen:'formation',phase:'complete'},
         {screen:'auction-team-builder',phase:'team-builder'}]){
         context.saved={uiState:state};
@@ -241,7 +241,7 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
     const context=vm.createContext({window:{addEventListener(){}},URL});
     vm.runInContext(read('js/router.js'),context);
     for(const page of Object.values(vm.runInContext('APP_ROUTE_PATHS',context))){
-        const content=read(page);
+        const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
         const tags=[...content.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
         const refs=tags.map(tag=>/\bsrc=["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean);
         assert.deepEqual(refs.map(src=>src.split('?')[0]),scripts,`${page}: script order`);
@@ -250,13 +250,13 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
             assert(src.endsWith(`?v=${data.APP_VERSION}`),`${page}: script cache version`);
             assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing ${src}`);
         });
-        for(const css of ['css/site-theme.css','style.css','css/player-stats.css','css/site-header.css']){
+        for(const css of ['css/fonts.css','css/site-theme.css','style.css','css/player-stats.css','css/site-header.css']){
             assert(content.includes(`${css}?v=${data.APP_VERSION}`),`${page}: missing/versioned ${css}`);
         }
         const ids=[...content.matchAll(/\bid=["']([^"']+)["']/g)].map(match=>match[1]);
         assert.equal(new Set(ids).size,ids.length,`${page}: duplicate ID`);
         const base=/\bhref=["']([^"']+)["']/.exec(content.match(/<base\b[^>]*>/i)?.[0]||'')?.[1]||'./';
-        const pageUrl=new URL(page,baseURI),resolved=new URL(base,pageUrl);
+        const pageUrl=new URL(page||'index.html',baseURI),resolved=new URL(base,pageUrl);
         assert.equal(resolved.href,baseURI,`${page}: incorrect subdirectory asset base`);
         for(const [,src] of content.matchAll(/<(?:img|link)\b[^>]*?\b(?:src|href)=["']([^"']+)["']/gi)){
             if(/^(?:https?:|data:)/.test(src))continue;
@@ -275,11 +275,11 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const pages=['index.html','lore.html','team-builder.html','auction/setup.html','auction/room.html','auction/results.html','auction/team-builder.html'];
+    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
     for(const page of pages){
-        const content=read(page);
+        const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
         assert.equal(shell(content),expected,`${page}: header shell differs`);
         assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,`${page}: global header count`);
         assert.equal((content.match(/id="infoModal"/g)||[]).length,1,`${page}: shared information modal`);
@@ -310,10 +310,10 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const pages=['index.html','lore.html','team-builder.html','auction/setup.html','auction/room.html','auction/results.html','auction/team-builder.html'];
+    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
-        const content=read(page);
+        const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
         assert.equal(footer(content),footer(html),`${page}: shared footer`);
         for(const id of ['siteFavicon','soundToggle','siteSettingsToggle','siteSettings','siteMain','setupHeaderTitle'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
         assert.equal((content.match(/id="soundToggle"/g)||[]).length,1,`${page}: one global SFX control`);
@@ -330,7 +330,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.2'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -343,10 +343,10 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     assert.equal(saved.get('blAuctionSaveV2'),'auction sentinel');assert.equal(saved.get('blStandaloneBuilderV1'),'builder sentinel');
     localStorage.getItem=()=>{throw Error('Storage blocked');};localStorage.setItem=()=>{throw Error('Storage blocked');};preferences.set({theme:'light'});assert.equal(root.dataset.theme,'light');
 });
-check('Shared player image boundary, stable fallback and selected-only warming',()=>{
+check('Shared image fallback, bounded squad/visible warming and background queue',()=>{
     const images=read('js/player-images.js');assert(images.includes('data:image/svg+xml'),'Self-contained neutral fallback');
     assert(images.includes('image.dataset.fallbackApplied'),'One-shot fallback guard');
-    assert(images.includes('portraitDecodeCache.size>8'),'Bounded target warming');
+    assert(images.includes('portraitDecodeCache.size>64'),'Bounded decode cache');assert(images.includes('deferredPortraitLoads<2'),'Low concurrency background queue');assert(images.includes('slice(0,30)'),'Bounded squad warming');
     assert(!read('js/lore.js').includes('onerror='),'Lore must use the shared fallback');
     assert(!read('js/ui/setup.js').includes('image-fallback'),'Remove the superseded image handler');
     for(const file of ['js/auction.js','js/results.js','js/formations.js','js/lore.js','js/standalone-builder.js','js/ui/auction-ui.js','js/ui/formation-ui.js','js/ui/setup.js']){
@@ -363,6 +363,44 @@ check('Worker is scope-safe, version-sensitive and cannot pin an old app shell',
     assert(!/CACHEABLE=.*(?:html|css|javascript)/.test(worker),'No app-shell cache');
     assert(app.includes('updateViaCache:"none"'),'Worker update freshness');
     assert(app.includes('appRootUrl().pathname'),'Nested Pages registration scope');
+});
+check('Readability/builder UX, independent transparent favicon and Quick Draft contracts',()=>{
+    const ui=read('js/ui/formation-ui.js'),standalone=read('js/standalone-builder.js'),quick=read('js/ui/quick-draft.js'),preferences=read('js/site-preferences.js');
+    const pitch=ui.slice(ui.indexOf('${slots.map'),ui.indexOf('${createPlayerInfoSidebar'));
+    assert(pitch.includes('effectiveOVR(p,s.label)'),'Pitch must display current adjusted OVR');
+    assert(!pitch.includes('positionBadges('),'No player position lists beneath pitch portraits');
+    assert(ui.includes('<span>${pos}</span>'),'Portrait uses current/natural position');
+    assert(!ui.includes('<span>PLAYER</span>'),'Redundant profile label removed');
+    assert(ui.includes('bench.sort(compareStandalonePlayers)'),'Standalone reserves share the pool comparator');
+    assert(standalone.includes('list.sort(compareStandalonePlayers)'),'Pool uses the same comparator');
+    const toggle=standalone.slice(standalone.indexOf('function toggleStandalonePoolVisibility'),standalone.indexOf('function standalonePoolCard'));
+    assert(!toggle.includes('renderFormationBuilder()'),'Pool collapse preserves the live DOM');
+    assert(toggle.includes('aria-expanded'),'Collapse exposes its state');
+    const favicon=preferences.slice(preferences.indexOf('function syncFavicon'),preferences.indexOf('function apply'));
+    assert(favicon.includes('system.matches')&&!/preferences|resolvedTheme/.test(favicon),'Favicon follows browser/OS rather than site theme');
+    for(const file of ['images/bld-favicon-dark.svg','images/bld-favicon-light.svg'])assert(!read(file).includes('<rect'),'Favicon has no background tile');
+    assert(read('js/ui/site-directory.js').includes('case "quick-draft":openQuickDraft()'),'Header opens mini setup');
+    assert(quick.includes('startRandomDraft()')&&!quick.includes('shufflePlayers('),'Reuse the existing Random Draft algorithm');
+    assert(quick.includes('pool.length<rosterSize*2'),'Validate roster capacity');
+    for(const file of ['style.css','css/site-header.css','css/player-stats.css'])for(const match of read(file).matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g))assert(Number(match[1])>=12,`${file}: meaningful text below 12px`);
+});
+check('Clean canonical directory pages, legacy compatibility and critical fonts',()=>{
+    const context=vm.createContext({window:{addEventListener(){}},URL});vm.runInContext(read('js/router.js'),context);
+    const routes=vm.runInContext('APP_ROUTE_PATHS',context);
+    for(const route of Object.values(routes)){
+        assert(!route.includes('.html'),'Canonical route must be extensionless');
+        assert(fs.existsSync(path.join(root,route,'index.html')),`Missing canonical ${route}`);
+    }
+    const legacy=vm.runInContext('LEGACY_PAGE_ROUTES',context);
+    for(const page of Object.keys(legacy))assert(fs.existsSync(path.join(root,page)),`Missing legacy ${page}`);
+    const preload=content=>[...content.matchAll(/<link rel="preload"[^>]+>/g)].map(match=>match[0]);
+    for(const page of walk(root).filter(file=>file.endsWith('.html'))){
+        const content=fs.readFileSync(page,'utf8');assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
+        assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
+    }
+    assert.equal((read('css/fonts.css').match(/@font-face/g)||[]).length,9,'Retain self-hosted font faces');
+    assert(!read('css/site-header.css').includes('@font-face'),'No duplicate font definitions');
 });
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
     const css=read('style.css').replace(/\/\*[\s\S]*?\*\//g,'');
@@ -401,7 +439,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.2'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};

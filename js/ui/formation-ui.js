@@ -112,9 +112,9 @@ function createPlayerInfoSidebar(team){
       const slot=currentPlayerSlot(formationTeamNumber,player.id);
       const pos=slot?.label||primaryPosition(player);
       const rating=slot?effectiveOVR(player,pos):playerOverall(player);
-      return `<div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${slot?pos:"OVR"}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
+      return `<div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
     })()}
-    <div class="player-info-name"><span>PLAYER</span><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
+    <div class="player-info-name"><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
     ${(()=>{
       const deployed=assignedIds(formationTeamNumber).has(player.id);
       const isCaptain=formationCaptainByTeam[formationTeamNumber]===player.id;
@@ -146,6 +146,7 @@ function renderFormationBuilder(){
     sanitizeFormationAssignments(formationTeamNumber);
     const used=assignedIds(formationTeamNumber);
     const bench=team.players.filter(p=>!used.has(p.id));
+    if(standalone)bench.sort(compareStandalonePlayers);
     const selectedPlayer=team.players.find(p=>p.id===selectedFormationPlayerId);
     const deploymentLimit=formationDeploymentLimit(formationTeamNumber);
     const activeSlots=activeFormationSlotIndices(formationTeamNumber);
@@ -168,8 +169,6 @@ function renderFormationBuilder(){
             <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
           </div>
         </div>
-
-        ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
 
         <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
           <div class="formation-identity">
@@ -198,13 +197,12 @@ function renderFormationBuilder(){
           </details>
         </div>
 
-        ${chemistryHud(formationTeamNumber,team)}
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
           <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
         </div>
 
-        <div class="formation-layout ${benchCollapsed?"bench-hidden":""} ${playerDatabaseHidden?"database-hidden":""}">
+        <div class="formation-layout ${standalone?"standalone-layout":""} ${benchCollapsed?"bench-hidden":""} ${playerDatabaseHidden?"database-hidden":""}">
           <div class="football-pitch formation-pitch-v2" style="${teamVars(team)}">
             <div class="pitch-stripes"></div>
             ${chemistrySvg(formationTeamNumber)}
@@ -225,7 +223,7 @@ function renderFormationBuilder(){
                     ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}
+                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<div class="pitch-player-portrait"><img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><span class="effective-ovr" aria-label="${s.label} overall ${effectiveOVR(p,s.label)}">${effectiveOVR(p,s.label)}</span></div><strong title="${esc(p.name)}">${esc(p.name)}</strong>
                        </div>`:`<span class="empty-slot">${partialInactive?"·":"+"}</span>`}
                </button>`;
             }).join("")}
@@ -233,6 +231,8 @@ function renderFormationBuilder(){
 
           ${createPlayerInfoSidebar(team)}
 
+          <div class="formation-roster-panel ${!standalone&&benchCollapsed?"hidden":""}">
+          ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
           <aside class="bench-panel ${benchCollapsed?"collapsed":""}" style="${teamVars(team)}" data-formation-bench>
             <div class="bench-heading"><div><span>RESERVES</span><small>${standalone
   ?(team.players.length>11?"SELECTED PLAYERS OUTSIDE THE XI":"SELECT MORE THAN 11 TO CREATE RESERVES")
@@ -242,13 +242,15 @@ function renderFormationBuilder(){
                     data-player-id="${p.id}"
                     onclick="selectBenchPlayer(${p.id})" draggable="false"
                     onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                    <img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
+                    <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
                     <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small></span>
                     <b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
           </aside>
+          </div>
         </div>
+        ${chemistryHud(formationTeamNumber,team)}
       </div>`;
     prioritizeVisiblePortraits(formationContent);
     applyFormationMoveFx();

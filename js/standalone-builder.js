@@ -66,6 +66,18 @@ function leaveStandaloneBuilder(options={}){
     setVisibleScreen(menuScreen,options);
     refreshMainMenu();
 }
+function compareStandalonePlayers(a,b){
+    if(standaloneBuilderSort==="name")return a.name.localeCompare(b.name)||comparePlayerAppearance(a,b);
+    if(standaloneBuilderSort==="id")return comparePlayerAppearance(a,b);
+    return playerOverall(b)-playerOverall(a)||comparePlayerAppearance(a,b);
+}
+function refreshStandaloneReserveOrder(){
+    const list=formationContent.querySelector(".bench-list");
+    if(!list||formationTeamNumber!==0)return;
+    [...list.querySelectorAll("[data-player-id]")]
+        .sort((a,b)=>compareStandalonePlayers(playerById(Number(a.dataset.playerId)),playerById(Number(b.dataset.playerId))))
+        .forEach(card=>list.appendChild(card));
+}
 function standaloneBuilderPoolPlayers(){
     const query=standaloneBuilderQuery.trim().toLowerCase();
     let list=players.filter(player=>{
@@ -74,11 +86,7 @@ function standaloneBuilderPoolPlayers(){
         const textOk=!query||player.name.toLowerCase().includes(query)||playerPositions(player).some(x=>x.toLowerCase().includes(query));
         return roleOk&&textOk;
     });
-    list.sort((a,b)=>{
-        if(standaloneBuilderSort==="name")return a.name.localeCompare(b.name);
-        if(standaloneBuilderSort==="id")return comparePlayerAppearance(a,b);
-        return playerOverall(b)-playerOverall(a)||comparePlayerAppearance(a,b);
-    });
+    list.sort(compareStandalonePlayers);
     return list;
 }
 async function autoBestStandaloneTeam(){
@@ -137,34 +145,37 @@ async function autoBestStandaloneTeam(){
 function toggleStandalonePoolVisibility(){
     standalonePoolHidden=!standalonePoolHidden;
     saveStandaloneBuilderState();
-    renderFormationBuilder();
+    const panel=formationContent.querySelector(".standalone-pool-panel");
+    const reveal=panel?.querySelector(".standalone-pool-reveal");
+    const button=panel?.querySelector("[data-standalone-pool-toggle]");
+    if(!panel||!reveal||!button)return;
+    if(standalonePoolHidden&&reveal.contains(document.activeElement))button.focus();
+    panel.classList.toggle("standalone-pool-collapsed",standalonePoolHidden);
+    reveal.inert=standalonePoolHidden;
+    reveal.setAttribute("aria-hidden",String(standalonePoolHidden));
+    button.setAttribute("aria-expanded",String(!standalonePoolHidden));
+    button.textContent=standalonePoolHidden?"SHOW PLAYER POOL":"HIDE PLAYER POOL";
+    if(!standalonePoolHidden)prioritizeVisiblePortraits(reveal);
 }
 
 function standalonePoolCard(player){
     const selected=standaloneBuilderPlayerIds.has(player.id);
     return `<button type="button" class="standalone-pool-player ${selected?"selected":""}" data-standalone-player="${player.id}" aria-pressed="${selected}">
-      <img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="38" height="42">
+      <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="38" height="42">
       <span><strong>${esc(player.name)}</strong><small>${primaryPosition(player)} // OVR ${playerOverall(player)}</small></span>
       <b>${selected?"✓":"+"}</b>
     </button>`;
 }
 function standalonePoolMarkup(){
-    if(standalonePoolHidden){
-        return `<section class="standalone-pool-panel standalone-pool-collapsed">
-          <div class="standalone-pool-head">
-            <div><span>GLOBAL PLAYER POOL</span><strong>${standaloneBuilderPlayerIds.size} SELECTED</strong></div>
-            <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle>SHOW PLAYER POOL</button>
-          </div>
-        </section>`;
-    }
-    return `<section class="standalone-pool-panel">
+    return `<section class="standalone-pool-panel ${standalonePoolHidden?"standalone-pool-collapsed":""}">
       <div class="standalone-pool-head">
         <div><span>GLOBAL PLAYER POOL</span><strong>${standaloneBuilderPlayerIds.size} SELECTED</strong></div>
         <div class="standalone-pool-head-actions">
-          <small>SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</small>
-          <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle>HIDE PLAYER POOL</button>
+          <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle aria-expanded="${!standalonePoolHidden}" aria-controls="standalonePoolBody">${standalonePoolHidden?"SHOW":"HIDE"} PLAYER POOL</button>
         </div>
       </div>
+      <div class="standalone-pool-reveal" aria-hidden="${standalonePoolHidden}" ${standalonePoolHidden?"inert":""}><div id="standalonePoolBody" class="standalone-pool-body">
+      <p class="standalone-pool-note">SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</p>
       <div class="standalone-pool-toolbar">
         <input id="standalonePoolSearch" type="search" value="${esc(standaloneBuilderQuery)}" placeholder="SEARCH PLAYERS..." autocomplete="off">
         <select id="standalonePoolRole">
@@ -184,6 +195,7 @@ function standalonePoolMarkup(){
         <button type="button" data-standalone-action="clear">CLEAR</button>
       </div>
       <div id="standalonePoolGrid" class="standalone-pool-grid">${standaloneBuilderPoolPlayers().map(standalonePoolCard).join("")}</div>
+      </div></div>
     </section>`;
 }
 function refreshStandalonePoolGrid(){
@@ -214,7 +226,7 @@ function bindStandaloneBuilderPoolUI(){
     const sort=document.getElementById("standalonePoolSort");
     if(search)search.oninput=()=>{standaloneBuilderQuery=search.value;refreshStandalonePoolGrid();};
     if(role)role.onchange=()=>{standaloneBuilderRole=role.value;refreshStandalonePoolGrid();saveStandaloneBuilderState();};
-    if(sort)sort.onchange=()=>{standaloneBuilderSort=sort.value;refreshStandalonePoolGrid();saveStandaloneBuilderState();};
+    if(sort)sort.onchange=()=>{standaloneBuilderSort=sort.value;refreshStandalonePoolGrid();refreshStandaloneReserveOrder();saveStandaloneBuilderState();};
     document.querySelectorAll("[data-standalone-action]").forEach(button=>{
         button.onclick=()=>{
             const action=button.dataset.standaloneAction;

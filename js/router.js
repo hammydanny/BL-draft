@@ -1,26 +1,12 @@
 // BLUE LOCK DRAFT // MULTI-PAGE ROUTING
-// APP_ROUTE_PATHS owns the canonical clean page URLs. APP_ROUTES only maps legacy hashes.
+// APP_ROUTE_PATHS owns the page URLs. APP_ROUTES only maps legacy hashes.
 const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder"};
 const APP_ROUTE_PATHS={menu:"",lore:"lore/",auctionSetup:"auction/setup/",auctionRoom:"auction/room/",auctionResults:"auction/results/",auctionTeamBuilder:"auction/team-builder/",standaloneTeamBuilder:"team-builder/"};
-const LEGACY_PAGE_ROUTES={
-    "index.html":"menu",
-    "lore.html":"lore",
-    "lore/index.html":"lore",
-    "team-builder.html":"standaloneTeamBuilder",
-    "team-builder/index.html":"standaloneTeamBuilder",
-    "auction/setup.html":"auctionSetup",
-    "auction/setup/index.html":"auctionSetup",
-    "auction/room.html":"auctionRoom",
-    "auction/room/index.html":"auctionRoom",
-    "auction/results.html":"auctionResults",
-    "auction/results/index.html":"auctionResults",
-    "auction/team-builder.html":"auctionTeamBuilder",
-    "auction/team-builder/index.html":"auctionTeamBuilder"
-};
+const LEGACY_PAGE_ROUTES={"index.html":"menu","lore.html":"lore","team-builder.html":"standaloneTeamBuilder","auction/setup.html":"auctionSetup","auction/room.html":"auctionRoom","auction/results.html":"auctionResults","auction/team-builder.html":"auctionTeamBuilder"};
 const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([route,hash])=>[hash,route]));
 let pendingRoutePath=null;
 
-function routePath(route){return APP_ROUTE_PATHS[route]??APP_ROUTE_PATHS.menu;}
+function routePath(route){return APP_ROUTE_PATHS[route]||APP_ROUTE_PATHS.menu;}
 function appRootUrl(){
     const doc=typeof document!=="undefined"?document:null;
     const baseHref=doc?.querySelector?.("base")?.href;
@@ -57,9 +43,9 @@ function getRouteFromLocation(){
     const legacy=legacyHashRoute();
     if(legacy)return legacy;
     const path=appRelativePath();
-    const match=Object.entries(APP_ROUTE_PATHS).find(([,value])=>value===path);
+    const match=Object.entries(APP_ROUTE_PATHS).find(([,value])=>value===path||value+"index.html"===path);
     if(match)return match[0];
-    if(Object.prototype.hasOwnProperty.call(LEGACY_PAGE_ROUTES,path))return LEGACY_PAGE_ROUTES[path];
+    if(LEGACY_PAGE_ROUTES[path])return LEGACY_PAGE_ROUTES[path];
     if(path==="")return "menu";
     return "menu";
 }
@@ -132,7 +118,7 @@ function updateRoute(route,{replace=false,databaseView=null,quickDraft=null}={})
     }
 
     const target=routePath(route),current=appRelativePath(),url=canonicalRouteUrl(route,{databaseView,quickDraft});
-    if(current===target||(route==="menu"&&(current===""||current==="index.html"))){
+    if(current===target||(route==="menu"&&current==="")){
         pendingRoutePath=null;
         if(route==="lore"){
             if(window.location.href!==url.href){
@@ -172,8 +158,7 @@ window.addEventListener("pageshow",event=>{
 function normalizeCurrentRoute(route){
     // The preflight browser stub has no real navigation API. Treat a recognized
     // legacy hash as canonical there so bootstrap can exercise the destination
-    // screen in-place. Real browsers still migrate hashes and legacy .html paths
-    // to clean directory URLs.
+    // screen in-place. Real browsers still migrate hashes to clean page URLs.
     if(historyOnlyNavigation()&&legacyHashRoute()===route)return true;
     const target=canonicalRouteUrl(route,{databaseView:route==="lore"?databaseViewFromLocation():null}),current=new URL(window.location.href,appRootUrl());
     if(route==="menu"&&current.pathname===appRootUrl().pathname&&!current.search&&!current.hash)return true;

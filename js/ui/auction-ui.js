@@ -6,13 +6,14 @@ let overlayHideTimer=null;
 function createPlayerCard(){
     return `<div class="current-player">
       <div class="auction-identity-rail">
-      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="176" height="200">
+      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="120" height="136">
+        <div class="auction-player-ovr" aria-label="Overall ${playerOverall(currentPlayer)}, grade ${playerStatGrade(playerOverall(currentPlayer))}"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(currentPlayer))}</b></div>
       </div>
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
-          <div class="player-card-label">CURRENT TARGET // AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
+          <div class="player-card-label">AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
           <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
-          </div><div class="auction-player-ovr" aria-label="Overall ${playerOverall(currentPlayer)}, grade ${playerStatGrade(playerOverall(currentPlayer))}"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(currentPlayer))}</b></div></div>
+          </div></div>
         </div>
       </div>
         ${playerStatsRadar(currentPlayer,"auction")}
@@ -32,7 +33,7 @@ function createTeamTracker(team,number){
     const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
       <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
-        <img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
+        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
     const warnings=[];
     if(full)warnings.push("ROSTER FULL");
@@ -118,14 +119,13 @@ function displayBiddingTurn(teamNumber){
       ${turnIndicator("YOUR TURN // BID OR PASS",team)}
       <div class="bid-panel" style="${teamVars(team)}">
         <div class="panel-code">LIVE VALUATION // ACTIVE</div>
-        <div class="current-bid-label">CURRENT BID</div>
-        <div class="current-bid">$${currentBid.toLocaleString()}</div>
-        <div class="bid-holder">CONTROLLED BY <strong style="color:${accessibleTeamAccent(holder.color)}">${esc(holder.name)}</strong></div>
+        <div class="bid-valuation"><div><span class="current-bid-label">CURRENT BID</span><strong class="current-bid">$${currentBid.toLocaleString()}</strong></div>
+        <div class="bid-holder">CONTROLLED BY <strong style="${teamVars(holder)};color:var(--team-heading,var(--team))">${esc(holder.name)}</strong></div></div>
         ${bidPressureRow(team,min)}
         ${moneyInput("nextBid",min,min)}
         ${createQuickBidButtons("nextBid")}
-        <button id="placeBidButton" class="primary-button team-action"><span>PLACE BID</span><b>→</b></button>
-        <button id="passButton" class="pass-button">PASS // WITHDRAW</button>
+        <div class="bid-actions"><button id="placeBidButton" class="primary-button team-action"><span>PLACE BID</span><b>→</b></button>
+        <button id="passButton" class="pass-button">PASS // WITHDRAW</button></div>
       </div>`);
     const input=document.getElementById("nextBid");
     document.getElementById("placeBidButton").addEventListener("click",()=>placeBid(teamNumber));
@@ -154,12 +154,12 @@ function displayZeroBudgetChoice(n){
       ${turnIndicator("AUCTION CONTROL",rich)}
       <div class="bid-panel" style="${teamVars(rich)}">
         <div class="panel-code">ZERO-BUDGET PROTOCOL</div>
-        <p><strong style="color:${accessibleTeamAccent(broke.color)}">${esc(broke.name)}</strong> has no remaining budget. Buy ${esc(currentPlayer.name)}, or pass and they receive the player for free.</p>
+        <p><strong style="${teamVars(broke)};color:var(--team-heading,var(--team))">${esc(broke.name)}</strong> has no remaining budget. Buy ${esc(currentPlayer.name)}, or pass and they receive the player for free.</p>
         ${bidPressureRow(rich,bidIncrement)}
         ${moneyInput("controlBid",bidIncrement,bidIncrement)}
         ${createQuickBidButtons("controlBid")}
-        <button id="buyPlayerButton" class="primary-button team-action"><span>BUY PLAYER</span><b>→</b></button>
-        <button id="controlPassButton" class="pass-button">PASS // RELEASE</button>
+        <div class="bid-actions"><button id="buyPlayerButton" class="primary-button team-action"><span>BUY PLAYER</span><b>→</b></button>
+        <button id="controlPassButton" class="pass-button">PASS // RELEASE</button></div>
       </div>`);
     const input=document.getElementById("controlBid");
     document.getElementById("buyPlayerButton").addEventListener("click",()=>buyWithControl(n));
@@ -178,7 +178,7 @@ function createAuctionHistoryPanel(){
     const latest=[...auctionHistory].reverse().slice(0,6);
     const rows=latest.length?latest.map(x=>`
       <div class="history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
-        <img data-player-image src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
+        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
         <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="${teamVars({color:x.teamColor})};color:var(--team-heading,var(--team))">${esc(x.teamName)}</b></span></div>
         <div class="history-price">${x.price===0?"FREE":"$"+x.price.toLocaleString()}</div>
       </div>`).join(""):`<div class="history-empty">AWAITING FIRST TRANSFER...</div>`;
