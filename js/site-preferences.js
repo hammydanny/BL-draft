@@ -14,22 +14,12 @@
     // An older build may have changed sound since this model was last written.
     const legacySound=read(soundKey);
     if(legacySound==="on"||legacySound==="off")preferences.sfxEnabled=legacySound==="on";
-    const warmedBrandAssets=new Set();
     function asset(path){return new URL(path+(assetVersion?`?v=${encodeURIComponent(assetVersion)}`:""),document.baseURI).href;}
     function resolvedTheme(){return preferences.theme==="system"?(system.matches?"light":"dark"):preferences.theme;}
     function syncAssets(){
         const light=resolvedTheme()==="light";
-        const theme=light?"light":"dark";
-        const logoUrl=asset(light?"images/bld-logo-light.svg":"images/bld-logo-header.webp");
-        if(typeof Image==="function"&&!warmedBrandAssets.has(logoUrl)){
-            warmedBrandAssets.add(logoUrl);const preload=new Image();preload.fetchPriority="high";preload.src=logoUrl;
-        }
         const favicon=document.getElementById("siteFavicon");
         if(favicon)favicon.href=asset(light?"images/bld-favicon-light.svg":"images/bld-favicon-dark.svg");
-        document.querySelectorAll("[data-theme-logo]").forEach(image=>{
-            if(image.src!==logoUrl){image.dataset.logoTheme="";image.src=logoUrl;}
-            image.decode().then(()=>{if(image.src===logoUrl)image.dataset.logoTheme=theme;}).catch(()=>{});
-        });
     }
     function apply(){
         root.dataset.theme=resolvedTheme();

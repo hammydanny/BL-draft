@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blue Lock Draft — Lore</title>
 
-    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.7">
-    <script src="js/site-preferences.js?v=0.6.7"></script>
-    <link rel="stylesheet" href="css/site-theme.css?v=0.6.7">
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.7.1">
+    <script src="js/site-preferences.js?v=0.6.7.1"></script>
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.7.1">
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/rajdhani-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=0.6.7">
-    <link rel="stylesheet" href="css/player-stats.css?v=0.6.7">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.7">
+    <link rel="stylesheet" href="style.css?v=0.6.7.1">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.7.1">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.7.1">
 </head>
 <body>
     <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
@@ -23,7 +23,6 @@
     <header class="site-header" role="banner">
         <div class="site-header-inner">
             <button class="site-header-brand" type="button" data-directory-action="home" aria-label="Blue Lock Draft home">
-                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.7" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
                 <span>BLUE LOCK <em>DRAFT</em></span>
             </button>
             <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
@@ -67,7 +66,7 @@
 
 <main id="siteMain" tabindex="-1">
 <section id="menu-screen" class="menu-screen hidden">
-        
+
         <div class="menu-shell">
             <div class="menu-code">BL // STRIKER SELECTION PROGRAM</div>
             <div class="menu-title-wrap">
@@ -106,7 +105,7 @@
             </div>
             <div class="page-context-tools"></div>
         </header>
-        
+
         <div class="lore-shell">
             <div class="lore-actions">
                 <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTERS</span><b>PLAYER DATABASE</b></button>
@@ -125,7 +124,7 @@
             <div class="page-context-tools"></div>
         </header>
         <div class="lore-content-shell">
-            
+
             <div class="lore-toolbar" role="search" aria-label="Characters filters">
                 <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="SEARCH CHARACTERS..." autocomplete="off"></label><label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></select></label><label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label><label>SORT<select id="characterLoreSort"><option value="chronological">Manga Appearance</option><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option></select></label><button id="characterLoreReset" type="button">RESET FILTERS</button><output id="characterLoreCount" aria-live="polite"></output>
             </div>
@@ -143,7 +142,7 @@
             <div class="page-context-tools"></div>
         </header>
         <div class="lore-content-shell">
-            
+
             <div class="lore-toolbar" role="search" aria-label="Chemistry filters">
                 <label class="lore-search">SEARCH<input id="chemistryLoreSearch" type="search" placeholder="SEARCH CHEMISTRY..." autocomplete="off"></label><label>TYPE<select id="chemistryLoreType"><option value="ALL">All</option><option value="pair">Player Links</option><option value="context">Team Contexts</option></select></label><label>TIER<select id="chemistryLoreTier"><option value="ALL">All Tiers</option><option value="chemical">Chemical</option><option value="elite">Elite</option><option value="strong">Strong</option><option value="link">Link</option><option value="weak">Weak</option></select></label><label>SORT<select id="chemistryLoreSort"><option value="score-desc">Chemistry High → Low</option><option value="score-asc">Chemistry Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option></select></label><button id="chemistryLoreReset" type="button">RESET FILTERS</button><output id="chemistryLoreCount" aria-live="polite"></output>
             </div>
@@ -160,7 +159,7 @@
             </div>
             <div class="page-context-tools"></div>
         </header>
-        
+
 
         <div class="setup-box setup-box-wide">
             <div class="panel-code">SYSTEM_CONFIG // 001</div>
@@ -333,7 +332,7 @@
             </div>
             <div class="page-context-tools"><div id="playersRemaining" class="players-remaining" aria-live="polite"></div><div class="auction-context-actions"></div></div>
         </header>
-        
+
         <div id="auction-content"></div>
     </section>
 
@@ -346,7 +345,7 @@
             </div>
             <div class="page-context-tools"><span id="formationTeamContext" class="page-context-team"></span><button id="backToResults" class="context-control" type="button">← RESULTS</button></div>
         </header>
-        
+
         <div id="formation-content"></div>
     </section>
 
@@ -397,26 +396,26 @@
             <div class="footer-meta"><span data-app-version></span><span>DATA THROUGH CH. <b data-supported-chapter></b></span><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b><br>WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span></div>
         </div>
     </footer>
-    <script defer src="js/version.js?v=0.6.7"></script>
-    <script defer src="js/player-images.js?v=0.6.7"></script>
-    <script defer src="js/players.js?v=0.6.7"></script>
-    <script defer src="js/state.js?v=0.6.7"></script>
-    <script defer src="js/ui/player-stats.js?v=0.6.7"></script>
-    <script defer src="js/audio.js?v=0.6.7"></script>
-    <script defer src="js/fx.js?v=0.6.7"></script>
-    <script defer src="js/chemistry.js?v=0.6.7"></script>
-    <script defer src="js/lore.js?v=0.6.7"></script>
-    <script defer src="js/formations.js?v=0.6.7"></script>
-    <script defer src="js/storage.js?v=0.6.7"></script>
-    <script defer src="js/results.js?v=0.6.7"></script>
-    <script defer src="js/auction.js?v=0.6.7"></script>
-    <script defer src="js/ui/auction-ui.js?v=0.6.7"></script>
-    <script defer src="js/router.js?v=0.6.7"></script>
-    <script defer src="js/ui/menu.js?v=0.6.7"></script>
-    <script defer src="js/ui/site-directory.js?v=0.6.7"></script>
-    <script defer src="js/ui/setup.js?v=0.6.7"></script>
-    <script defer src="js/standalone-builder.js?v=0.6.7"></script>
-    <script defer src="js/ui/formation-ui.js?v=0.6.7"></script>
-    <script defer src="js/app.js?v=0.6.7"></script>
+    <script defer src="js/version.js?v=0.6.7.1"></script>
+    <script defer src="js/player-images.js?v=0.6.7.1"></script>
+    <script defer src="js/players.js?v=0.6.7.1"></script>
+    <script defer src="js/state.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.7.1"></script>
+    <script defer src="js/audio.js?v=0.6.7.1"></script>
+    <script defer src="js/fx.js?v=0.6.7.1"></script>
+    <script defer src="js/chemistry.js?v=0.6.7.1"></script>
+    <script defer src="js/lore.js?v=0.6.7.1"></script>
+    <script defer src="js/formations.js?v=0.6.7.1"></script>
+    <script defer src="js/storage.js?v=0.6.7.1"></script>
+    <script defer src="js/results.js?v=0.6.7.1"></script>
+    <script defer src="js/auction.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.7.1"></script>
+    <script defer src="js/router.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/menu.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/setup.js?v=0.6.7.1"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.7.1"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.7.1"></script>
+    <script defer src="js/app.js?v=0.6.7.1"></script>
 </body>
 </html>
