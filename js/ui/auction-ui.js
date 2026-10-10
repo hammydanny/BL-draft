@@ -6,7 +6,7 @@ let overlayHideTimer=null;
 function createPlayerCard(){
     return `<div class="current-player">
       <div class="auction-identity-rail">
-      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="136" height="155">
+      <div class="player-image-container"><img class="player-image" data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="136" height="155">
       </div>
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>

@@ -838,33 +838,26 @@ function clickFormationSlot(slotIndex){
         movePlayerToSlot(selectedFormationPlayerId,slotIndex);
     }else if(current){
         selectedFormationPlayerId=current.id;
-        renderFormationBuilder();saveGame();
+        refreshFormationSelection(`.formation-slot[data-slot-index="${slotIndex}"]`);saveGame();
     }
 }
 function selectFormationPlayerOnly(id){
     selectedFormationPlayerId = selectedFormationPlayerId===id ? null : id;
-    renderFormationBuilder();
+    const slot=Object.keys(formationAssignments[formationTeamNumber]||{}).find(index=>formationAssignments[formationTeamNumber][index]===id);
+    refreshFormationSelection(slot===undefined?null:`.formation-slot[data-slot-index="${slot}"]`);
     saveGame();
 }
 function selectBenchPlayer(id) {
-    const benchList = document.querySelector('.bench-list');
-    const scrollTop = benchList ? benchList.scrollTop : 0;
-
     if (selectedFormationPlayerId === id) selectedFormationPlayerId = null;
     else selectedFormationPlayerId = id;
-
-    renderFormationBuilder();
+    refreshFormationSelection(`.bench-player[data-player-id="${id}"]`);
     saveGame();
-
-    requestAnimationFrame(() => {
-        const newBenchList = document.querySelector('.bench-list');
-        if (newBenchList) {
-            newBenchList.scrollTop = scrollTop;
-            if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-        }
-    });
 }
 function updateLiveFormationTargets(playerId){
+    const source=formationPointerDrag?.source;
+    const slot=source?.closest(".formation-slot");
+    const anchor=slot?`.formation-slot[data-slot-index="${slot.dataset.slotIndex}"]`:`.bench-player[data-player-id="${playerId}"]`;
+    const snapshot=captureFormationViewport(anchor);
     selectedFormationPlayerId=playerId;
     const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===playerId);
     const panel=document.querySelector(".player-info-panel");
@@ -872,17 +865,14 @@ function updateLiveFormationTargets(playerId){
       panel.outerHTML=createPlayerInfoSidebar(teamByNumber(formationTeamNumber));
     }
     document.querySelectorAll(".formation-slot").forEach(slot=>{
-        slot.classList.remove("drag-canonical-target","drag-primary-target");
-        if(!player)return;
-        const label=slot.dataset.slotLabel;
-        if(canonicalFit(player,label))slot.classList.add("drag-canonical-target");
-        if(primaryFit(player,label))slot.classList.add("drag-primary-target");
+        setFormationSlotHint(slot,formationSlotFit(player,slot.dataset.slotLabel));
     });
     const hint=document.querySelector(".formation-instructions strong");
     if(hint&&player)hint.innerHTML=`${esc(player.name)} // PRIMARY: ${primaryPosition(player)} // BEST + GOOD FITS MARKED ON PITCH`;
+    restoreFormationViewport(snapshot);prioritizeVisiblePortraits(formationContent);
 }
 function clearLiveFormationTargets(){
-    document.querySelectorAll(".formation-slot").forEach(slot=>slot.classList.remove("drag-canonical-target","drag-primary-target"));
+    document.querySelectorAll(".formation-slot").forEach(slot=>setFormationSlotHint(slot,""));
 }
 
 let formationPointerDrag=null;
@@ -895,7 +885,12 @@ function updateFormationPointerTarget(d){
     d.target=target;
     if(target){
         target.classList.add("pointer-drop-target");
-        if(target.matches(".formation-slot.occupied"))target.classList.add("pointer-swap-target");
+        if(target.matches(".formation-slot")){
+            const occupied=getFormationPlayer(formationTeamNumber,Number(target.dataset.slotIndex));
+            const action=occupied&&occupied.id!==d.id?"swap":formationSlotFit(d.player,target.dataset.slotLabel)||"valid";
+            target.classList.toggle("pointer-swap-target",action==="swap");
+            setFormationSlotHint(target,target.dataset.fit||"",action);
+        }
     }
 }
 function scrollFormationDragFrame(time){
@@ -921,7 +916,7 @@ function createFormationPointerPreview(player,x,y){
     document.querySelectorAll(".formation-pointer-preview").forEach(el=>el.remove());
     const preview=document.createElement("div");
     preview.className="formation-pointer-preview";
-    preview.innerHTML=`<div class="formation-pointer-ring"><img data-player-image src="${playerImageUrl(player)}" alt="" draggable="false"></div><span>${esc(player.name)}</span>`;
+    preview.innerHTML=`<div class="formation-pointer-ring"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="" draggable="false"></div><span>${esc(player.name)}</span>`;
     document.body.appendChild(preview);
     moveFormationPointerPreview(x,y);
     return preview;
@@ -934,7 +929,7 @@ function moveFormationPointerPreview(x,y){
 }
 function clearFormationPointerHover(){
     document.querySelectorAll(".formation-slot.pointer-drop-target,.formation-slot.pointer-swap-target,.bench-panel.pointer-drop-target")
-      .forEach(el=>el.classList.remove("pointer-drop-target","pointer-swap-target"));
+      .forEach(el=>{el.classList.remove("pointer-drop-target","pointer-swap-target");if(el.matches(".formation-slot"))setFormationSlotHint(el,el.dataset.fit||"");});
 }
 function formationDropTargetAt(x,y){
     const hit=document.elementFromPoint(x,y);

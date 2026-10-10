@@ -343,13 +343,10 @@ to{opacity:1;transform:none;filter:none}}
 .goal-box.bottom{bottom:2.5%;border-bottom:0}
 .formation-slot{z-index:5}
 .formation-slot:hover{z-index:8;transform:translate(-50%,-50%) scale(1.05)}
-.formation-slot.drag-over{border-color:#fff!important;box-shadow:0 0 0 2px var(--team),0 0 28px var(--team-glow)}
 .formation-player-token{display:flex;flex-direction:column;align-items:center;justify-self:center;margin-inline:auto;cursor:grab}
 .formation-player-token:active{cursor:grabbing}
 .formation-player-token strong{pointer-events:none}
-.formation-player-token.dragging,.bench-player.dragging{opacity:.35;filter:grayscale(.5)}
 .bench-panel{transition:width .25s,opacity .2s,transform .25s}
-.bench-panel.drag-over{border-color:var(--team-heading,var(--team));box-shadow:inset 0 0 30px var(--team-soft)}
 .bench-heading>div span,.bench-heading>div small{display:block}
 .bench-heading>div small{margin-top:2px;color:var(--text-muted);font-size:12px;letter-spacing:1px}
 .bench-player{position:relative}
@@ -376,33 +373,30 @@ to{opacity:1;transform:none;filter:none}}
 .share-toolbar{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
 .share-toolbar>div{display:flex;gap:6px}
 .share-toolbar button{min-height:36px;padding:6px 10px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-strong);font-size:12px;font-weight:800;letter-spacing:1.4px}
-.share-card{position:relative;padding:12px 14px;background:radial-gradient(circle at 50% 0,rgba(20,156,255,.14),transparent 34%),linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface) 72%);border:1px solid rgba(64,172,255,.28);box-shadow:0 30px 100px rgba(0,0,0,.55)}
+.share-card{position:relative;padding:8px 10px;background:radial-gradient(circle at 50% 0,rgba(20,156,255,.14),transparent 34%),linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface) 72%);border:1px solid rgba(64,172,255,.28);box-shadow:var(--shadow-strong)}
 .share-card:before{content:"";position:absolute;left:0;top:0;width:160px;height:3px;background:var(--blue)}
-.share-card-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px}
-.share-card-top span{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:1px}
-.share-card-top h2{margin:1px 0;font-size:30px;font-style:italic}
+.share-card-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:4px}
+.share-card-top span{display:block;line-height:1;color:var(--blue);font-size:12px;font-weight:800;letter-spacing:1px}
+.share-card-top>div{font-size:12px;line-height:1.1}
+.share-card-top h2{margin:2px 0;font:900 italic 30px/1 "Barlow Condensed",sans-serif}
 .share-card-top h2 b{color:var(--blue)}
 .share-card-top>strong{font:900 38px "Barlow Condensed";font-style:italic;color:rgba(70,181,255,.12)}
-.share-versus{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin:5px 0;text-align:center;font:900 clamp(22px,2.4vw,30px) "Barlow Condensed";font-style:italic}
+.share-versus{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin:3px 0;text-align:center;font:900 clamp(20px,2vw,24px)/1 "Barlow Condensed";font-style:italic}
 .share-versus span:first-child{text-align:right}
 .share-versus span:last-child{text-align:left}
 .share-versus b{color:var(--blue);font-size:18px}
 .share-team-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.share-team{min-width:0;padding:8px 10px;background:linear-gradient(145deg,var(--team-soft),var(--bg-inset));border:1px solid var(--team-soft);border-top:2px solid var(--team)}
+.share-team{min-width:0;padding:6px 10px;background:linear-gradient(145deg,var(--team-soft),var(--bg-inset));border:1px solid var(--team-soft);border-top:2px solid var(--team)}
 .share-team-head{display:flex;justify-content:space-between}
-.share-team-head span{font-size:12px;font-weight:800;letter-spacing:1px}
-.share-team-head h3{margin:0;color:var(--team-heading,var(--team));font-size:22px}
+.share-team-head span{display:block;line-height:1;font-size:12px;font-weight:800;letter-spacing:1px}
+.share-team-head>div{min-width:0;font-size:12px;line-height:1.1}
+.share-team-head h3{margin:3px 0 0;color:var(--team-heading,var(--team));font:800 22px/1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
 .share-team-head>b{color:var(--team-heading,var(--team));font:900 26px "Barlow Condensed"}
 .share-money{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
 .share-money>div{padding:8px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
-.share-money span{display:block;color:var(--text-muted);font-size:12px}
+.share-money span{display:block;line-height:1;color:var(--text-muted);font-size:12px}
 .share-money strong{font:800 16px "Barlow Condensed"}
-.share-lineup{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:5px}
-.share-player{min-width:0;background:var(--bg-surface);border:1px solid var(--border-subtle);text-align:center;overflow:hidden}
-.share-player>span{display:block;color:var(--team-heading,var(--team));font-size:12px;font-weight:800}
-.share-player img{display:block;width:100%;height:76px;object-fit:cover}
-.share-player strong{display:block;overflow:hidden;padding:4px 3px;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
-.share-card-footer{display:flex;justify-content:space-between;gap:12px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);color:var(--text-muted);font-size:12px;letter-spacing:1.4px}
+.share-card-footer{font:600 12px/1.2 "Rajdhani",sans-serif;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;margin-top:6px;padding-top:4px;border-top:1px solid var(--line);color:var(--text-muted);font-size:12px;letter-spacing:1.4px}
 @media(max-width:760px){.results-actions-top{grid-template-columns:1fr}
 .share-team-grid{grid-template-columns:1fr}
 .share-card{padding:16px}
@@ -420,16 +414,21 @@ to{opacity:1;transform:none;filter:none}}
 .position-badges.compact i{min-width:23px;padding:2px 4px;font-size:12px}
 .formation-slot>.slot-position{margin-inline:auto;text-align:center}
 .bench-player span .position-badges{justify-content:flex-start;margin-top:3px}
-/* Fit hints: primary role is the blue BEST FIT; other canonical roles are green GOOD FIT. */
-.formation-slot.canonical-target,.formation-slot.primary-target{border-color:transparent!important;box-shadow:none!important;outline:0!important}
-.formation-slot.canonical-target:after{content:none!important}
-.formation-slot.canonical-target:not(.primary-target):before,.formation-slot.primary-target:before{position:absolute;z-index:14;left:50%;top:-22px;transform:translateX(-50%);padding:3px 7px;font-size:12px;font-weight:900;line-height:1;letter-spacing:.7px;white-space:nowrap;pointer-events:none}
-.formation-slot.primary-target:before{content:"BEST FIT";color:#bcecff;background:#041825;border:1px solid #20aefe}
-.formation-slot.canonical-target:not(.primary-target):before{content:"GOOD FIT";color:#a7ffd4;background:#061b13;border:1px solid #46d995}
-.formation-slot.primary-target .slot-position{color:#9be1ff!important;background:#061a28!important;border-color:#20aefe!important}
-.formation-slot.canonical-target:not(.primary-target) .slot-position{color:#a7ffd4!important;background:#08251b!important;border-color:#46d995!important}
-.formation-slot.canonical-target .empty-slot,.formation-slot.primary-target .empty-slot,.formation-slot.canonical-target img,.formation-slot.primary-target img{box-shadow:none!important;outline:0!important}
-.formation-slot.natural-fit:not(.canonical-target){border-color:rgba(84,200,255,.55)}
+/* One marker per slot. Suggested fits are gold; the hovered action has priority. */
+.formation-slot{--target-color:var(--accent-text)}
+.formation-slot[data-fit="best"],.formation-slot[data-fit="good"]{--target-color:var(--chem-chemical)}
+.slot-target-label{position:absolute;z-index:14;left:50%;top:-22px;transform:translateX(-50%);padding:3px 7px;color:var(--target-color);background:var(--bg-surface);border:1px solid currentColor;border-radius:2px;font-size:12px;font-weight:900;line-height:1;letter-spacing:.7px;white-space:nowrap;pointer-events:none}
+.slot-target-label[hidden]{display:none}
+.formation-slot[data-fit="good"]:not([data-target-action]) .slot-target-label{border-color:color-mix(in srgb,var(--chem-chemical),transparent 42%);font-weight:700}
+.formation-slot[data-fit]>.slot-position{color:var(--chem-chemical);background:color-mix(in srgb,var(--chem-chemical) 12%,var(--bg-surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--chem-chemical),transparent 55%)}
+.formation-slot[data-target-action="swap"]{--target-color:var(--chem-strong)}
+.formation-slot[data-target-action]{z-index:12;outline:2px solid var(--target-color);outline-offset:4px;border-radius:3px;background:color-mix(in srgb,var(--target-color) 12%,transparent);box-shadow:0 0 0 5px color-mix(in srgb,var(--target-color),transparent 88%),0 0 18px color-mix(in srgb,var(--target-color),transparent 70%);filter:none}
+.formation-slot[data-target-action="good"]{outline-width:1px;background:color-mix(in srgb,var(--target-color) 7%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--target-color),transparent 93%),0 0 10px color-mix(in srgb,var(--target-color),transparent 82%)}
+.formation-slot[data-target-action]>.slot-position{color:var(--target-color);background:var(--bg-surface);box-shadow:inset 0 0 0 1px var(--target-color)}
+.formation-slot[data-target-action] .slot-target-label{z-index:20;border-color:var(--target-color);box-shadow:0 2px 8px color-mix(in srgb,var(--target-color),transparent 82%)}
+.formation-slot[data-target-action="valid"]{--target-color:var(--border-strong);outline-width:1px;background:color-mix(in srgb,var(--accent-text) 5%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--border-strong),transparent 92%)}
+.formation-slot[data-target-action="swap"] .pitch-player-portrait>img{border-color:var(--chem-strong)}
+.formation-layout,.standalone-pool-grid{overflow-anchor:none}
 .formation-instructions strong{line-height:1.4}
 /* Desktop-only secondary sizing; shared labels use their component defaults. */
 @media(min-width:761px){
@@ -465,14 +464,6 @@ to{opacity:1;transform:none;filter:none}}
   .bench-heading{font-size:12px}
   .formation-instructions span{font-size:12px!important}
   .formation-instructions strong{font-size:13px}}
-/* Live drag fit preview uses labels only; no square/box glow around slots. */
-.formation-slot.drag-canonical-target,.formation-slot.drag-primary-target{z-index:12!important;filter:none!important;border-color:transparent!important;box-shadow:none!important;outline:0!important}
-.formation-slot.drag-canonical-target .empty-slot,.formation-slot.drag-primary-target .empty-slot,.formation-slot.drag-canonical-target img,.formation-slot.drag-primary-target img{box-shadow:none!important;outline:0!important}
-.formation-slot.drag-canonical-target:not(.drag-primary-target) .slot-position{color:#a7ffd4!important;border-color:#46d995!important;background:#08251b!important}
-.formation-slot.drag-primary-target .slot-position{color:#9be1ff!important;border-color:#20aefe!important;background:#061a28!important}
-.formation-slot.drag-canonical-target:not(.drag-primary-target):before,.formation-slot.drag-primary-target:before{position:absolute;z-index:14;left:50%;top:-22px;transform:translateX(-50%);padding:3px 7px;font-size:12px;font-weight:900;line-height:1;letter-spacing:.7px;white-space:nowrap;pointer-events:none}
-.formation-slot.drag-primary-target:before{content:"BEST FIT";color:#bcecff;background:#041825;border:1px solid #20aefe}
-.formation-slot.drag-canonical-target:not(.drag-primary-target):before{content:"GOOD FIT";color:#a7ffd4;background:#061b13;border:1px solid #46d995}
 @media(max-width:700px){.formation-menu{width:100%;min-width:0}
 .formation-menu-popover{left:0;right:auto;width:min(100%,340px)}
 .formation-menu-group button{min-width:67px}
@@ -607,12 +598,9 @@ button,.player-pool-card,.bench-player-card,.formation-slot{transition:none!impo
         0 0 0 2px var(--team-soft),
         0 0 20px var(--team-glow)}
 .formation-pointer-ring img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top}
-.formation-pointer-preview>span{display:block;width:max-content;max-width:118px;margin:5px auto 0;padding:3px 7px;background:rgba(1,8,14,.94);border:1px solid var(--team-glow);color:var(--team-text);font:900 12px "Barlow Condensed";letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.formation-slot.pointer-drop-target{transform:translate(-50%,-50%)!important;border-color:var(--team-heading,var(--team))!important;box-shadow:
-        0 0 0 2px var(--team-soft),
-        0 0 24px var(--team-glow)!important}
+.formation-pointer-preview>span{display:block;width:max-content;max-width:118px;margin:5px auto 0;padding:3px 7px;background:var(--bg-surface);border:1px solid var(--border-strong);color:var(--text-primary);font:900 12px "Barlow Condensed";letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.formation-slot.pointer-drop-target{transform:translate(-50%,-50%)!important}
 .bench-panel.pointer-drop-target{outline:2px solid var(--team);outline-offset:-4px;box-shadow:inset 0 0 28px var(--team-soft)}
-/* Native drag classes are intentionally neutralized in Team Builder. */ .formation-slot.drag-over, .formation-slot.drag-over.drag-canonical-target{transform:translate(-50%,-50%)!important}
 /* TEAM BUILDER DRAG FINAL STABILITY Keep absolutely-positioned formation buttons anchored. */ .formation-slot:active:not(:disabled){transform:translate(-50%,-50%)!important}
 .formation-slot.pointer-drag-origin, .formation-slot.pointer-drag-origin:hover, .formation-slot.pointer-drag-origin:active{transform:translate(-50%,-50%)!important;transition:none!important;z-index:8}
 .formation-slot.pointer-drag-origin .formation-player-token{transform:none!important}
@@ -651,10 +639,7 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .chem-tip-copy small{display:block;color:var(--text-muted)}
 /* TEAM BUILDER INTERACTION POLISH // NO POSITION MOVEMENT */ .formation-slot{transition:border-color .12s ease,box-shadow .12s ease,filter .12s ease!important}
 .formation-slot:hover:not(.pointer-drag-origin){transform:translate(-50%,-50%)!important;filter:brightness(1.06)}
-.formation-slot.selected{border-color:#fff!important;box-shadow:0 0 0 2px var(--team),0 0 24px var(--team-glow)!important}
-.formation-slot.canonical-target,.formation-slot.primary-target,.formation-slot.drag-canonical-target,.formation-slot.drag-primary-target{border-color:transparent!important;box-shadow:none!important;outline:0!important}
-.formation-slot.pointer-swap-target{border-color:#ffd85a!important;box-shadow:0 0 0 2px rgba(255,216,90,.35),0 0 26px rgba(255,216,90,.42)!important}
-.formation-slot.pointer-swap-target:before{content:"SWAP"!important;position:absolute;z-index:20;left:50%;top:-18px;transform:translateX(-50%);padding:2px 5px;background:#181301;border:1px solid #ffd85a;color:#ffe990;font-size:12px;font-weight:900;letter-spacing:1px;pointer-events:none}
+.formation-slot.selected:not([data-target-action]){outline:2px solid var(--accent-text);outline-offset:3px;box-shadow:0 0 16px var(--accent-soft)}
 .formation-slot.slot-landed{animation:slotLanded .4s ease-out}
 .formation-slot.slot-swapped{animation:slotSwapped .4s ease-out}
 @keyframes slotLanded{0%{box-shadow:0 0 0 0 rgba(66,220,255,.75)}
@@ -860,14 +845,14 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .player-captain-control>div{min-width:0}
 .player-captain-control span{display:block;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
 .player-captain-control strong{display:block;margin-top:2px;color:var(--text-primary);font:900 12px "Barlow Condensed"}
-.player-captain-control button{flex:0 0 auto;padding:7px 9px;color:#ffe269;background:#171203;border:1px solid #806b18;font:900 12px "Rajdhani";letter-spacing:.8px}
+.player-captain-control button{flex:0 0 auto;padding:7px 9px;color:var(--captain-text);background:var(--bg-surface-raised);border:1px solid var(--captain-text);font:900 12px "Rajdhani";letter-spacing:.8px}
 .player-captain-control button:disabled{opacity:.35;cursor:not-allowed}
-.player-captain-control.active{border-color:#b99d2a;box-shadow:inset 3px 0 0 #ffe269}
+.player-captain-control.active{border-color:var(--captain-text);box-shadow:inset 3px 0 0 var(--captain-text)}
 .player-captain-control.active button{background:#ffe269;color:#151000;border-color:#ffe269}
 .captain-badge{position:absolute;z-index:8;left:calc(50% - 22px);top:4px;transform:translate(-35%,-35%);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#101000;background:#ffe269;border:2px solid #fff3a8;box-shadow:0 0 12px rgba(255,226,105,.5);font:900 12px "Barlow Condensed";pointer-events:none}
 /* Captain status is shown by the close badge only; no slot-border treatment. */ /* When a roster contains fewer than eleven players, the unused parts of the 11-a-side shape become quiet optional positions rather than fake empty starters. They remain clickable/draggable so the user can relocate a deployed player. */ .formation-slot.partial-inactive:not(.occupied){opacity:.24;border-style:dashed;filter:saturate(.45)}
 .formation-slot.partial-inactive:not(.occupied) .empty-slot{font-size:25px;color:var(--text-muted)}
-.formation-slot.partial-inactive:not(.occupied):hover, .formation-slot.partial-inactive.pointer-drop-target{opacity:.72;filter:none}
+.formation-slot.partial-inactive:not(.occupied):hover, .formation-slot.partial-inactive.pointer-drop-target{opacity:1;filter:none}
 @media(max-width:1180px){.formation-control-v13{grid-template-columns:1fr auto}
 .formation-team-metrics{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(4,1fr)}}
 @media(max-width:700px){.formation-team-metrics{grid-template-columns:1fr 1fr}
@@ -878,38 +863,38 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .pool-actions{display:flex;gap:5px}
 .pool-actions button{flex:1}
 /* SHARE SCREEN: FORMATION + CHEMISTRY + RESERVES */ .share-team-v14{display:flex;flex-direction:column}
-.share-v14-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:9px 0}
-.share-v14-metrics>div{min-width:0;padding:7px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
-.share-v14-metrics span{display:block;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:.8px}
-.share-v14-metrics strong{display:block;overflow:hidden;margin-top:2px;color:var(--text-primary);font:900 15px "Barlow Condensed";text-overflow:ellipsis;white-space:nowrap}
+.share-v14-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:5px 0}
+.share-v14-metrics>div{min-width:0;padding:5px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
+.share-v14-metrics span{display:block;line-height:1.1;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:.8px}
+.share-v14-metrics strong{display:block;overflow:hidden;margin-top:2px;color:var(--text-primary);font:900 18px/1 "Barlow Condensed";overflow-wrap:anywhere;white-space:normal}
 .share-v14-metrics strong.chemical{color:var(--chem-chemical)}
 .share-v14-metrics strong.elite{color:var(--chem-elite)}
 .share-v14-metrics strong.strong{color:var(--chem-strong)}
 .share-v14-metrics strong.link{color:var(--chem-link)}
 .share-v14-metrics strong.weak{color:var(--chem-weak)}
-.share-mini-pitch{position:relative;height:250px;overflow:hidden;background:
+.share-mini-pitch{position:relative;height:370px;overflow:hidden;background:
     linear-gradient(90deg,color-mix(in srgb,var(--pitch-stripe),transparent 76%) 50%,transparent 50%),
     linear-gradient(180deg,var(--pitch-share-start),var(--pitch-share-end));background-size:25% 100%,100% 100%;border:1px solid var(--pitch-share-border)}
 .share-mini-pitch:before{content:"";position:absolute;inset:4%;border:1px solid var(--pitch-share-line)}
 .share-mini-pitch:after{content:"";position:absolute;left:50%;top:4%;bottom:4%;width:1px;background:var(--pitch-share-soft)}
 .share-pitch-half{position:absolute;left:4%;right:4%;top:50%;height:1px;background:var(--pitch-share-line)}
 .share-pitch-circle{position:absolute;left:50%;top:50%;width:54px;height:54px;transform:translate(-50%,-50%);border:1px solid var(--pitch-share-line);border-radius:50%}
-.share-pitch-player{position:absolute;width:72px;z-index:2;transform:translate(-50%,-50%);text-align:center}
-.share-pitch-player>span{display:block;width:max-content;margin:0 auto 2px;padding:1px 4px;color:var(--accent-text);background:var(--bg-surface);font-size:12px;font-weight:900}
-.share-pitch-player img{display:block;width:38px;height:38px;margin:auto;object-fit:cover;border-radius:50%;border:2px solid var(--team);box-shadow:0 0 10px var(--team-glow)}
-.share-pitch-player>b{display:block;margin-top:2px;padding:2px 3px;color:var(--text-primary);background:var(--bg-surface);font-size:12px}
-.share-pitch-player>i{position:absolute;z-index:3;right:1px;top:9px;display:grid;place-items:center;width:14px;height:14px;border-radius:50%;color:#191500;background:#ffe269;border:1px solid #fff0a0;font:900 12px "Barlow Condensed";font-style:normal}
-/* Portrait badges leave room for names within the compact, unchanged slot coordinates. */
-.share-team-v15 .share-pitch-player{width:min(100px,18%)}
-.share-team-v15 .share-pitch-player>span{position:absolute;left:50%;top:14px;min-width:28px;margin:0;padding:1px 2px;line-height:1;transform:translateX(-50%)}
-.share-team-v15 .share-pitch-player img{width:28px;height:28px}
-.share-team-v15 .share-pitch-player>b{margin-top:2px;padding:0;font:800 12px/1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
-.share-team-v15 .share-pitch-player>i{left:calc(50% - 18px);right:auto;top:-3px}
+/* The portrait, position and Captain share one frame; names sit below it. */
+.share-pitch-player{position:absolute;width:min(100px,18%);z-index:2;transform:translate(-50%,-50%);text-align:center}
+.share-pitch-player img{display:block;width:50px;height:50px;margin:auto;object-fit:cover;object-position:center top;border-radius:50%;border:2px solid var(--team)}
+.share-pitch-player>b{display:block;width:fit-content;max-width:100%;margin:1px auto 0;padding:0 2px;color:var(--text-primary);background:var(--bg-surface);font:800 12px/1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.report-player-portrait{position:relative;width:50px;margin:auto}
+.report-player-portrait em,.report-position{position:absolute;bottom:-2px;min-width:24px;padding:2px 3px;color:var(--text-primary);background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:3px;font:800 12px/1 "Rajdhani",sans-serif}
+.report-position{left:-6px}
+.report-player-portrait em{right:-6px;font:900 14px/1 "Barlow Condensed",sans-serif;font-style:normal}
+.report-captain{position:absolute;left:-5px;top:-2px;z-index:3;display:grid;place-items:center;width:20px;height:20px;color:#191500;background:#ffe269;border:1px solid #fff0a0;border-radius:50%;font:900 12px "Barlow Condensed";font-style:normal}
 .share-v14-bottom{display:grid;grid-template-columns:1fr 1.4fr;gap:5px;margin-top:4px}
 .share-money.compact{margin:0}
-.share-chem-note{position:relative;min-width:0;padding:7px 40px 7px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
-.share-chem-note span{display:block;color:var(--text-muted);font-size:12px;font-weight:900}
-.share-chem-note strong{display:block;overflow:hidden;margin-top:2px;color:var(--text-primary);font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.share-money.compact>div{padding:5px 7px}
+.share-money.compact strong{display:block;line-height:1.1}
+.share-chem-note{position:relative;min-width:0;padding:5px 40px 5px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
+.share-chem-note span{display:block;line-height:1;color:var(--text-muted);font-size:12px;font-weight:900}
+.share-chem-note strong{display:block;overflow:hidden;margin-top:2px;color:var(--text-primary);font-size:12px;overflow-wrap:anywhere;white-space:normal;line-height:1.1}
 .share-chem-note>b{position:absolute;right:8px;top:50%;transform:translateY(-50%);font:900 16px "Barlow Condensed"}
 .share-chem-note>b.chemical{color:var(--chem-chemical)}
 .share-chem-note>b.elite{color:var(--chem-elite)}
@@ -917,19 +902,15 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .share-chem-note>b.link{color:var(--chem-link)}
 .share-chem-note>b.weak{color:var(--chem-weak)}
 .share-reserves{margin-top:4px;padding-top:4px;border-top:1px solid var(--border-subtle)}
-.share-reserves>span{display:block;margin-bottom:4px;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
+.share-reserves>span{display:block;line-height:1;margin-bottom:4px;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
 .share-reserves>div{display:flex;flex-wrap:wrap;gap:4px}
-.share-reserves b{display:flex;align-items:center;gap:4px;min-width:0;max-width:150px;padding:3px 5px;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:800}
-.share-reserves img{width:18px;height:18px;object-fit:cover}
+.share-reserves b{display:flex;align-items:center;gap:4px;min-width:0;max-width:calc(50% - 2px);padding:3px 5px;line-height:1.1;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:800}
+.share-reserves img{width:24px;height:26px;flex:0 0 auto;object-fit:cover;object-position:center top}
+.share-reserves b>span{min-width:0;overflow-wrap:anywhere}
 .share-reserves i{margin-left:auto;color:var(--team-heading,var(--team));font-style:normal}
-@media(max-width:760px){.share-v14-metrics{grid-template-columns:1fr 1fr}
-.share-v14-bottom{grid-template-columns:1fr}
-.share-team-v15 .share-mini-pitch{height:420px}
-.share-team-v15 .share-pitch-player{display:block;width:min(72px,18%)}
-.share-team-v15 .share-pitch-player img{width:36px;height:36px}
-.share-team-v15 .share-pitch-player>span{left:50%;top:22px;bottom:auto;transform:translateX(-50%)}
-.share-team-v15 .share-pitch-player>b{margin-top:1px;padding:0 2px}
-.share-team-v15 .share-pitch-player>i{left:calc(50% - 22px);top:-3px}}
+@media(min-width:761px) and (max-width:1100px){.share-team-v15 .share-mini-pitch{height:490px}}
+@media(min-width:1101px) and (min-height:850px){.share-team-v15 .share-mini-pitch{height:400px}.share-team-v15 .share-pitch-player img,.share-team-v15 .report-player-portrait{width:54px}.share-team-v15 .share-pitch-player img{height:54px}}
+@media(max-width:760px){.share-v14-metrics{grid-template-columns:1fr 1fr}.share-v14-bottom{grid-template-columns:1fr}.share-team-v15 .share-mini-pitch{height:520px}.share-pitch-player{width:min(80px,19%)}.share-card-footer{letter-spacing:.6px}}
 @media print{.share-pitch-player img{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 /* BLUE LOCK SCROLL SYSTEM */ html, body, .share-screen, .lore-screen, .bench-list, .standalone-pool-grid, .player-pool-grid{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) var(--scroll-track)}
 html::-webkit-scrollbar, body::-webkit-scrollbar, .share-screen::-webkit-scrollbar, .lore-screen::-webkit-scrollbar{width:11px;height:11px}
@@ -1011,10 +992,11 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .standalone-pool-player>b{color:var(--text-muted);font-size:14px;text-align:center}
 .standalone-pool-player.selected{border-color:#20bfff;background:rgba(20,156,255,.1);box-shadow:inset 2px 0 #20bfff}
 .standalone-pool-player.selected>b{color:var(--accent-text)}
-/* Share screen empty/incomplete formation rendering */ .share-v14-metrics strong small{font-size:12px;color:var(--text-muted)}
+/* Share screen empty/incomplete formation rendering */ .share-v14-metrics strong small{font-size:12px;line-height:1;color:var(--text-muted)}
 .share-pitch-empty{position:absolute;z-index:2;width:34px;height:34px;transform:translate(-50%,-50%);display:grid;place-items:center;border:1px dashed var(--border-strong);border-radius:50%;background:var(--bg-surface)}
 .share-pitch-empty span{position:absolute;bottom:36px;padding:1px 3px;color:var(--text-muted);background:var(--bg-surface);font-size:12px;font-weight:900}
 .share-pitch-empty b{color:var(--text-muted);font:900 15px "Barlow Condensed"}
+.share-team .empty-share-pitch{height:250px}
 .empty-share-pitch:before{border-color:rgba(160,196,218,.18)}
 /* MOBILE OVERHAUL */ @media(max-width:900px){html,body{overflow-x:hidden}
   .lore-screen{padding:12px}
@@ -1220,22 +1202,16 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .report-best-link{padding-right:48px}
 .report-best-link>b{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:900 28px "Barlow Condensed"}
 .report-best-link .chemical{color:var(--chem-chemical)}.report-best-link .elite{color:var(--chem-elite)}.report-best-link .strong{color:var(--chem-strong)}.report-best-link .link{color:var(--chem-link)}.report-best-link .weak{color:var(--chem-weak)}
-.standalone-share-team .share-mini-pitch{height:330px;overflow:hidden}
+.standalone-share-team .share-mini-pitch{height:390px;overflow:hidden}
 .standalone-share-team .share-pitch-player{width:min(96px,17%)}
-.report-player-portrait{position:relative;width:40px;margin:auto}
-.standalone-share-team .share-pitch-player img{width:40px;height:40px}
-.standalone-share-team .share-pitch-player>b{min-height:0;padding:1px 2px;font:800 12px/1 "Barlow Condensed",sans-serif;white-space:normal;overflow-wrap:anywhere}
-.report-player-portrait em{position:absolute;right:-7px;bottom:0;min-width:24px;padding:2px 3px;color:white;background:#030b13;border:1px solid var(--team);border-radius:3px;font:900 14px/1 "Barlow Condensed";font-style:normal}
-.report-position{position:absolute;left:-7px;bottom:0;min-width:24px;padding:2px 3px;color:white;background:#030b13;border:1px solid var(--team);border-radius:3px;font:800 12px/1 "Rajdhani"}
-.report-captain{position:absolute;left:-5px;top:0;z-index:3;display:grid;place-items:center;width:20px;height:20px;color:#191500;background:#ffe269;border:1px solid #fff0a0;border-radius:50%;font:900 12px "Barlow Condensed";font-style:normal}
 .standalone-share-team .share-reserves{margin:0;padding:7px 9px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
 .standalone-share-team .share-reserves>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:5px}
 .standalone-share-team .share-reserves b{max-width:none;padding:4px 6px;gap:6px;font-size:12px;line-height:1.25}
 .standalone-share-team .share-reserves img{width:28px;height:30px;flex:0 0 auto}
 .standalone-share-team .share-reserves b>span{overflow-wrap:anywhere}
 .standalone-share-team .share-reserves i{font-size:14px}
-@media(max-width:760px){.squad-report-layout{grid-template-columns:1fr}.standalone-share-team .share-mini-pitch{height:440px}.standalone-share-team .share-pitch-player{width:min(72px,18%)}.report-player-portrait{width:44px}.standalone-share-team .share-pitch-player img{width:44px;height:44px}.squad-report-status{flex-wrap:wrap}.standalone-share-team .share-v14-metrics strong{font-size:24px}}
-@media print{.standalone-share-card{padding:8px}.squad-report-layout{grid-template-columns:minmax(0,1.55fr) minmax(230px,.85fr)}.standalone-share-team .share-mini-pitch{height:330px;overflow:hidden}.standalone-share-team .share-reserves{break-inside:avoid}.standalone-share-card{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+@media(max-width:760px){.squad-report-layout{grid-template-columns:1fr}.standalone-share-team .share-mini-pitch{height:520px}.standalone-share-team .share-pitch-player{width:min(72px,18%)}.squad-report-status{flex-wrap:wrap}.standalone-share-team .share-v14-metrics strong{font-size:24px}}
+@media print{.standalone-share-card{padding:8px}.squad-report-layout{grid-template-columns:minmax(0,1.55fr) minmax(230px,.85fr)}.standalone-share-team .share-mini-pitch{height:390px;overflow:hidden}.standalone-share-team .share-reserves{break-inside:avoid}.standalone-share-card{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 /* PLAYER POOL SIZING ONLY Restore the previous full portrait-card dimensions. */ .setup-box-wide .player-pool-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important;max-height:620px!important;align-items:start!important}
 .setup-box-wide .pool-player-card{min-height:218px!important}
 .setup-box-wide .pool-select-hit{display:flex!important;width:100%!important;height:auto!important;min-height:216px!important;flex-direction:column!important;align-items:stretch!important}
@@ -1300,16 +1276,12 @@ to{top:110%}}
 .orbit-a{width:88vw;height:88vw}
 .orbit-b{width:60vw;height:60vw}}
 
-/* V0.6.8.1 light-theme consistency: tactical surfaces, scrollbars and readable links. */
+/* Light tactical ink and restrained chemistry effects. */
 .bench-list,.standalone-pool-grid,.player-pool-grid,.database-roster,.side-team .mini-roster,.info-card{scrollbar-color:var(--scroll-thumb) var(--scroll-track)}
 html[data-theme="light"] body:before{background-image:linear-gradient(rgba(30,78,108,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(30,78,108,.045) 1px,transparent 1px)}
 html[data-theme="light"] img[data-player-image]{background-color:#d8e6ef}
 html[data-theme="light"] .formation-slot strong{color:#18384f;background:rgba(248,252,254,.94);border:1px solid rgba(71,116,140,.24)}
 html[data-theme="light"] .empty-slot{background:rgba(249,252,254,.58)}
-html[data-theme="light"] .bench-list::-webkit-scrollbar-track{background:var(--scroll-track);border-left-color:var(--border-subtle)}
-html[data-theme="light"] .bench-list::-webkit-scrollbar-thumb,
-html[data-theme="light"] .side-team .mini-roster::-webkit-scrollbar-thumb{background:linear-gradient(180deg,color-mix(in srgb,var(--scroll-thumb),white 20%),var(--scroll-thumb));border-color:var(--border-subtle);box-shadow:none}
-html[data-theme="light"] .side-team .mini-roster::-webkit-scrollbar-track{background:var(--scroll-track)}
 html[data-theme="light"] :is(.chem-link.chemical,.chem-link.elite,.chem-link.strong,.chem-link.link,.chem-link.weak){filter:none}
 html[data-theme="light"] :is(.chemistry-featured b.chemical,.chemistry-featured b.elite,.chemistry-featured b.strong,.chemistry-featured b.link,.chemistry-featured b.weak){text-shadow:none!important}
 html[data-theme="light"] .formation-player-token .effective-ovr{color:#17364d;background:rgba(248,252,254,.96);box-shadow:0 2px 8px rgba(37,79,103,.12)}

@@ -140,7 +140,7 @@ function createShareTeam(team,n){
           if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
           const isCaptain=player.id===snap.captainId;
           return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-            ${isCaptain?`<i>C</i>`:""}<span>${slot.label}</span><img data-player-image src="${playerImageUrl(player)}" alt=""><b>${esc(player.name)}</b>
+            <div class="report-player-portrait">${isCaptain?`<i class="report-captain" aria-label="Captain">C</i>`:""}<img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="50" height="50" loading="eager" decoding="async"><span class="report-position">${slot.label}</span></div><b>${esc(player.name)}</b>
           </div>`;
         }).join("")}
       </div>
@@ -148,7 +148,7 @@ function createShareTeam(team,n){
         <div class="share-money compact"><div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div><div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div></div>
         <div class="share-chem-note"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"—"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
       </div>
-      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${playerImageUrl(p)}" alt="">${esc(p.name)} <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
+      ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="24" height="26" loading="lazy" decoding="async"><span>${esc(p.name)}</span> <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
 function openShareScreen(){
@@ -209,7 +209,7 @@ function createStandaloneShareTeam(){
             const player=team.players.find(p=>p.id===snap.assignment[i]);
             if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
             return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-              <div class="report-player-portrait">${player.id===snap.captainId?'<i class="report-captain">C</i>':""}<img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="60" height="60" loading="eager" decoding="async"><span class="report-position">${slot.label}</span><em>${effectiveOVR(player,slot.label)}</em></div><b>${esc(player.name)}</b>
+              <div class="report-player-portrait">${player.id===snap.captainId?'<i class="report-captain">C</i>':""}<img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="60" height="60" loading="eager" decoding="async"><span class="report-position">${slot.label}</span><em>${effectiveOVR(player,slot.label)}</em></div><b>${esc(player.name)}</b>
             </div>`;
           }).join("")}
         </div>

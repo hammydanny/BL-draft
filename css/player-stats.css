@@ -21,7 +21,7 @@
 .player-stats-backdrop{fill:rgba(20,156,255,.045)}
 .player-stats-grid{fill:none;stroke:var(--radar-grid);stroke-width:1}
 .player-stats-spoke{stroke:var(--radar-spoke);stroke-width:1}
-.player-stats-shape{fill:var(--radar-fill);stroke:var(--radar-cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px rgba(54,199,255,.55))}
+.player-stats-shape{fill:var(--radar-fill);stroke:var(--radar-cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px var(--radar-glow))}
 .player-stats-axis{fill:var(--text-secondary);font:800 18px "Rajdhani",sans-serif;letter-spacing:1px}
 .player-stats-axis-grade{fill:var(--radar-cyan);font:900 18px "Rajdhani",sans-serif}
 .player-stats-value{fill:var(--text-primary);font:900 24px "Barlow Condensed",sans-serif}
@@ -48,9 +48,9 @@
 .evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:var(--accent-text);border:1px solid var(--border-strong);background:var(--bg-surface-raised);font:900 21px/1 "Barlow Condensed",sans-serif}
 .current-ovr-row .evaluation-grade{vertical-align:middle}
 /* Current target: identity rail beside the main attribute evaluation. */
-.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:136px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 6px;padding:8px;gap:12px;background:linear-gradient(135deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}
+.auction-command-center .current-player{position:relative;display:grid;grid-template-columns:136px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 6px;padding:8px;gap:12px;background:linear-gradient(135deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:var(--shadow-strong);animation:playerIn .4s ease}
 .auction-identity-rail{min-width:0}
-.auction-command-center .player-image-container{position:relative;width:136px;height:154.55px;overflow:hidden;background:#000;border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.auction-command-center .player-image-container{position:relative;width:136px;height:154.55px;overflow:hidden;background:var(--bg-inset);border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
 .auction-command-center .player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
 .player-card-identity{margin-top:6px;min-width:0;text-align:left}
 .auction-player-heading{display:flex;flex-direction:column;align-items:flex-start;gap:5px}

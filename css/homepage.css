@@ -19,18 +19,19 @@
 .home-introduction{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin-top:6px;color:var(--text-muted);font-size:12px}
 .home-text-button,.home-section-link{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:0;border:0;background:transparent;color:var(--link-text);font:800 12px "Rajdhani",sans-serif;letter-spacing:.8px;text-decoration:none;cursor:pointer}
 .home-text-button:hover,.home-section-link:hover{color:var(--text-primary)}
-.home-art{position:relative;isolation:isolate;overflow:hidden;padding:15px 19px 12px;background:linear-gradient(130deg,#0b2336,#061320 74%);border:1px solid #24495f;border-top:2px solid var(--accent);border-radius:3px;color:#adc8da;box-shadow:var(--shadow-soft)}
+.home-art{position:relative;isolation:isolate;overflow:hidden;padding:15px 19px 12px;background:linear-gradient(130deg,var(--pitch-mid),var(--pitch-start) 74%);border:1px solid var(--pitch-share-border);border-top:2px solid var(--accent);border-radius:3px;color:var(--text-secondary);box-shadow:var(--shadow-soft)}
 .home-art:before{content:"XI";position:absolute;z-index:-1;right:-5px;top:0;color:rgba(84,200,255,.045);font:900 280px/.9 "Barlow Condensed";transform:skew(-9deg)}
-.home-art-heading{display:flex;justify-content:space-between;gap:12px;line-height:1.2;color:#91b9d1}
-.home-art-heading>span:first-child{color:#68d7ff}
+.home-art-heading{display:flex;justify-content:space-between;gap:12px;line-height:1.2;color:var(--text-secondary)}
+.home-art-heading>span:first-child{color:var(--accent-text)}
 .home-art svg{display:block;width:100%;height:242px;margin:6px auto 0;overflow:visible}
-.home-pitch-lines{fill:none;stroke:#2f586c;stroke-width:1.2}
-.home-pitch-guide{stroke:#16374b;stroke-width:1;stroke-dasharray:3 5}
-#homeTacticalMarkers circle{fill:#082436;stroke:#50b8e7;stroke-width:1.2}
-#homeTacticalMarkers circle.is-striker{fill:#0873c2;stroke:#81e4ff;stroke-width:2}
-#homeTacticalMarkers text{fill:#d3edf9;font:700 16px "Rajdhani",sans-serif}
-.home-art-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid #24495f;font-size:12px;letter-spacing:.7px}
-.home-art-footer b{color:#68d7ff}
+.home-pitch-lines{fill:none;stroke:var(--pitch-line-strong);stroke-width:1.2}
+.home-pitch-guide{stroke:var(--pitch-line);stroke-width:1;stroke-dasharray:3 5}
+#homeTacticalMarkers circle{fill:var(--bg-surface);stroke:var(--accent-text);stroke-width:1.2}
+#homeTacticalMarkers circle.is-striker{fill:var(--primary-start);stroke:var(--accent-text);stroke-width:2}
+#homeTacticalMarkers text{fill:var(--text-primary);font:700 16px "Rajdhani",sans-serif}
+#homeTacticalMarkers circle.is-striker+text{fill:var(--text-inverse)}
+.home-art-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid var(--pitch-share-border);font-size:12px;letter-spacing:.7px}
+.home-art-footer b{color:var(--accent-text)}
 .home-section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:25px 0 12px}
 .home-section-heading>div>span{color:var(--text-muted);font-size:12px;display:block;line-height:1.2}
 .home-section-heading h2{margin:3px 0 0;font:800 italic 28px/1 "Barlow Condensed",sans-serif;letter-spacing:.3px}
@@ -59,44 +60,57 @@
 .home-resume-facts{display:flex;gap:26px}
 .home-resume-facts>div>span{display:block;color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:.7px}
 .home-resume-facts strong{font:800 30px/1.1 "Barlow Condensed";color:var(--text-primary)}
-.home-discovery{display:grid;grid-template-columns:minmax(0,2fr) minmax(250px,1fr);gap:24px;margin:0 0 26px}
-.home-players{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.home-player{display:block;min-width:0;border:1px solid var(--border-subtle);border-radius:3px;background:var(--bg-surface);text-decoration:none;color:var(--text-primary);overflow:hidden;transition:transform var(--motion-fast),border-color var(--motion-fast)}
-.home-player:hover{transform:translateY(-3px);border-color:var(--accent)}
-.home-player-image{position:relative;aspect-ratio:1;overflow:hidden;background:#0b2035}
-.home-player-image img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 20%}
-.home-player-image>span{position:absolute;left:8px;bottom:8px;padding:2px 7px;background:#061320;color:#b5e7ff;border:1px solid #3b7d9d;font-size:12px;font-weight:800}
-.home-player-copy{padding:10px}
-.home-player-copy h3{min-height:38px;margin:0 0 4px;font:800 18px/1.05 "Barlow Condensed";text-wrap:balance}
-.home-player-copy>div{display:flex;align-items:center;justify-content:space-between;gap:5px;color:var(--text-muted);font-size:12px;font-weight:800}
-.home-player-copy strong{color:var(--text-primary);font-size:18px}
-.home-player-copy .evaluation-grade{font-size:14px;margin-left:3px}
-.home-player-copy>div>span:last-child{color:var(--accent-text);font-size:18px}
-.home-reaction{display:flex;flex-direction:column;align-self:stretch;min-width:0}
-.home-reaction .home-section-heading{flex-shrink:0}
-.home-reaction-body{flex:1;min-height:210px;padding:18px 20px;background:linear-gradient(135deg,var(--bg-panel-start),var(--bg-surface));border:1px solid var(--border-subtle);border-radius:3px}
-.home-reaction-pair{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.home-reaction-pair a{min-width:0;color:var(--text-primary);font:800 20px/1.1 "Barlow Condensed";text-decoration:none}
-.home-reaction-pair a:hover{color:var(--accent-text)}
-.home-reaction-pair>span{color:var(--accent-text);font-size:22px}
-.home-reaction-score{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:17px;padding:12px 0 8px;border-top:1px solid var(--border-line);color:var(--chem-strong)}
-.home-reaction-score.chemical{color:var(--chem-chemical)}
-.home-reaction-score.elite{color:var(--chem-elite)}
-.home-reaction-score.link{color:var(--chem-link)}
-.home-reaction-score.weak{color:var(--chem-weak)}
-.home-reaction-score strong{font:800 42px/1 "Barlow Condensed"}
-.home-reaction-score small{color:var(--text-muted);font:700 12px "Rajdhani";margin-left:5px}
-.home-reaction-score>span{font-size:12px;font-weight:800;letter-spacing:.9px}
-#homeChemistryFeature>p{margin:4px 0 8px;font-size:12px;letter-spacing:.8px;color:var(--text-secondary)}
+.home-scouting{margin:0 0 26px}
+.scouting-tools{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.scout-tool{min-width:0;padding:18px;border:1px solid var(--border-subtle);border-radius:var(--panel-radius);background:linear-gradient(135deg,var(--bg-panel-start),var(--bg-surface));box-shadow:var(--shadow-soft)}
+.scout-tool-heading>span{color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:1px}
+.scout-tool-heading h3{margin:4px 0 16px;font:800 24px/1.1 "Barlow Condensed",sans-serif}
+.scout-field{display:block;min-width:0;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:.8px}
+.scout-field input{display:block;width:100%;min-height:44px;margin-top:5px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:var(--panel-radius);background:var(--bg-input);color:var(--text-primary);font:600 15px "Rajdhani",sans-serif;letter-spacing:0}
+.scout-field input::placeholder{color:var(--text-muted);opacity:1}
+.scout-result-status{display:block;min-height:22px;margin:8px 0 4px;color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:.5px}
+.scout-player-results{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:224px}
+.scout-player{display:flex;align-items:center;gap:9px;min-width:0;min-height:68px;padding:6px;background:var(--bg-surface);color:var(--text-primary);text-decoration:none;border:1px solid var(--border-subtle);border-radius:var(--panel-radius);transition:background var(--motion-fast),border-color var(--motion-fast)}
+.scout-player:hover{border-color:var(--accent);background:var(--bg-hover)}
+.scout-player>img{flex:0 0 48px;width:48px;height:54px;object-fit:cover;object-position:center top;border:1px solid var(--border-subtle);background:var(--bg-inset)}
+.scout-player>span{min-width:0;flex:1}
+.scout-player strong{display:block;font:800 17px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.scout-player small{display:block;margin-top:5px;color:var(--text-secondary);font-size:12px;font-weight:700;white-space:nowrap}
+.scout-player .evaluation-grade{min-width:18px;height:20px;font-size:15px;vertical-align:middle}
+.scout-player>b{color:var(--accent-text);font-size:18px}
+.scout-empty{grid-column:1/-1;align-self:start;margin:0;padding:20px 12px;color:var(--text-muted);background:var(--bg-inset);border:1px dashed var(--border-subtle);font-size:14px;line-height:1.5}
+.scout-tool>.home-section-link{min-height:44px;margin-top:8px}
+.scout-pair-fields{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:end}
+.scout-pair-plus{align-self:center;padding-top:18px;color:var(--accent-text);font-size:22px}
+.scout-picker{position:relative;min-width:0}
+.scout-options{position:absolute;z-index:30;top:calc(100% + 5px);left:0;right:0;max-height:288px;overflow:auto;padding:5px;background:var(--bg-surface);border:1px solid var(--border-strong);border-radius:var(--panel-radius);box-shadow:var(--shadow-strong);scrollbar-color:var(--scroll-thumb) var(--scroll-track)}
+.scout-options[hidden]{display:none}
+.scout-options button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;min-height:44px;padding:8px;color:var(--text-primary);background:transparent;border:1px solid transparent;text-align:left}
+.scout-options strong{font:800 16px/1.1 "Barlow Condensed",sans-serif}
+.scout-options small{color:var(--text-muted);font-size:12px}
+.scout-options button:hover,.scout-options button[aria-selected="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.scout-chemistry-result{min-height:188px;margin-top:16px;padding:15px 16px;background:var(--bg-inset);border:1px solid var(--border-subtle)}
+.scout-chemistry-pair{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.scout-chemistry-pair a{min-width:0;color:var(--text-primary);font:800 20px/1.1 "Barlow Condensed",sans-serif;text-decoration:none}
+.scout-chemistry-pair a:hover{color:var(--accent-text)}
+.scout-chemistry-pair>span{color:var(--accent-text);font-size:22px}
+.scout-chemistry-score{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:17px;padding:12px 0 8px;border-top:1px solid var(--border-line);color:var(--chem-strong)}
+.scout-chemistry-score.chemical{color:var(--chem-chemical)}
+.scout-chemistry-score.elite{color:var(--chem-elite)}
+.scout-chemistry-score.link{color:var(--chem-link)}
+.scout-chemistry-score.weak{color:var(--chem-weak)}
+.scout-chemistry-score strong{font:800 42px/1 "Barlow Condensed",sans-serif}
+.scout-chemistry-score small{color:var(--text-muted);font:700 12px "Rajdhani",sans-serif;margin-left:5px}
+.scout-chemistry-score>span{font-size:12px;font-weight:800;letter-spacing:.9px}
+.scout-chemistry-result>p:not(.scout-empty){margin:4px 0;color:var(--text-secondary);font-size:12px;letter-spacing:.8px}
+.scout-tool-note{margin:10px 0 0;color:var(--text-muted);font-size:13px;line-height:1.4}
 .home-starter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:14px 0 0;border-top:1px solid var(--border-line);color:var(--text-muted);font-size:14px}
 .home-starter>p{margin:0}
 .home-starter strong{color:var(--text-primary)}
 @media(min-width:1201px){.home-hero-copy{animation:site-reveal var(--motion-enter) ease-out both}.home-art{animation:site-reveal var(--motion-enter) ease-out both;animation-delay:40ms}}
-@media(max-width:1024px){.home-hero{gap:22px}.home-hero h1{font-size:68px}.home-art{padding:15px 14px 12px}.home-art svg{height:236px}.home-discovery{grid-template-columns:minmax(0,2fr) minmax(245px,1fr);gap:18px}.home-player-copy{padding:8px}}
-@media(max-width:760px){.menu-screen{padding-top:16px}.home-hero{grid-template-columns:1fr;gap:22px;padding-top:4px}.home-hero h1{font-size:76px;line-height:.88;letter-spacing:-1.5px}.home-hero-description{max-width:100%}.home-art{display:none}.home-modes{grid-template-columns:1fr}.home-mode{min-height:0;padding:16px;display:grid;grid-template-columns:36px 1fr;gap:0 12px}.home-mode-top{grid-column:1;grid-row:1/3;display:block}.home-mode-top>span{display:none}.home-mode-title{grid-column:2;margin:0 0 6px}.home-mode-description{grid-column:2;margin:0 0 12px;font-size:14px}.home-mode-action{grid-column:2}.home-discovery{grid-template-columns:1fr;gap:0}.home-section-heading{margin-top:24px}.home-players{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-player-copy h3{min-height:22px;font-size:20px}.home-reaction-body{height:auto;min-height:0}.home-resume{grid-template-columns:1fr;padding:16px;gap:16px}.home-resume-side{grid-template-columns:1fr}.home-resume-side .home-button{width:100%}.home-resume-teams{gap:12px}.home-resume-teams h3{font-size:23px}.home-resume-facts{justify-content:space-between}.home-starter{align-items:flex-start}}
-@media(prefers-reduced-motion:reduce){.home-shell *{animation:none;transition:none}.home-button:hover,.home-mode:hover,.home-player:hover{transform:none}}
+@media(max-width:1024px){.home-hero{gap:22px}.home-hero h1{font-size:68px}.home-art{padding:15px 14px 12px}.home-art svg{height:236px}.scout-tool{padding:14px}.scout-player-results{grid-template-columns:1fr;min-height:0}}
+@media(max-width:760px){.menu-screen{padding-top:16px}.home-hero{grid-template-columns:1fr;gap:22px;padding-top:4px}.home-hero h1{font-size:76px;line-height:.88;letter-spacing:-1.5px}.home-hero-description{max-width:100%}.home-art{display:none}.home-modes{grid-template-columns:1fr}.home-mode{min-height:0;padding:16px;display:grid;grid-template-columns:36px 1fr;gap:0 12px}.home-mode-top{grid-column:1;grid-row:1/3;display:block}.home-mode-top>span{display:none}.home-mode-title{grid-column:2;margin:0 0 6px}.home-mode-description{grid-column:2;margin:0 0 12px;font-size:14px}.home-mode-action{grid-column:2}.scouting-tools{grid-template-columns:1fr}.scout-tool{padding:16px}.scout-player-results{grid-template-columns:1fr 1fr}.home-section-heading{margin-top:24px}.scout-player{gap:7px}.scout-player>b{display:none}.scout-player>img{width:38px;height:46px;flex-basis:38px}.scout-player strong{font-size:16px}.scout-player small{font-size:12px}.scout-pair-fields{grid-template-columns:1fr}.scout-pair-plus{display:none}.scout-chemistry-result{min-height:170px}.home-resume{grid-template-columns:1fr;padding:16px;gap:16px}.home-resume-side{grid-template-columns:1fr}.home-resume-side .home-button{width:100%}.home-resume-teams{gap:12px}.home-resume-teams h3{font-size:23px}.home-resume-facts{justify-content:space-between}.home-starter{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){.home-shell *{animation:none;transition:none}.home-button:hover,.home-mode:hover{transform:none}}
 
-html[data-theme="light"] .home-player-image{background:#d9e7f0}
-html[data-theme="light"] .home-player-image>span{color:var(--link-text);background:rgba(249,252,255,.94);border-color:var(--border-strong)}
 
-html[data-theme="light"] .home-section-link:visited,html[data-theme="light"] .home-player:visited,html[data-theme="light"] .home-reaction-pair a:visited{color:inherit}
+html[data-theme="light"] .home-section-link:visited,html[data-theme="light"] .scout-player:visited,html[data-theme="light"] .scout-chemistry-pair a:visited{color:inherit}

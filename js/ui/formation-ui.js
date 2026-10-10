@@ -118,7 +118,7 @@ function createPlayerInfoSidebar(team){
       <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
       <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button>
     </div>
-    <div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>
+    <div class="player-info-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>
     <div class="player-info-name"><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
     ${captainControl}
     <div class="player-info-section">
@@ -132,10 +132,56 @@ function createPlayerInfoSidebar(team){
   </aside>`;
 }
 
-function renderFormationBuilder(){
+function captureFormationViewport(anchorSelector){
+    const active=document.activeElement,anchor=anchorSelector?formationContent.querySelector(anchorSelector):active;
+    const scrolls=["#standalonePoolGrid",".bench-list",".database-roster",".player-info-panel"].map(selector=>{
+        const node=formationContent.querySelector(selector);return node?{selector,top:node.scrollTop,left:node.scrollLeft}:null;
+    }).filter(Boolean);
+    let focus=null;
+    if(formationContent.contains(active)){
+        if(active.id)focus=`#${active.id}`;
+        else for(const name of ["data-standalone-player","data-player-id","data-slot-index"]){
+            if(active.hasAttribute(name)){focus=`[${name}="${active.getAttribute(name)}"]`;break;}
+        }
+    }
+    const rect=anchor&&formationContent.contains(anchor)?anchor.getBoundingClientRect():null;
+    return {x:window.scrollX,y:window.scrollY,scrolls,focus,anchor:rect&&rect.top>=0&&rect.bottom<=window.innerHeight?{selector:anchorSelector||focus,top:rect.top}:null};
+}
+function restoreFormationViewport(snapshot){
+    if(!snapshot)return;
+    for(const scroll of snapshot.scrolls){const node=formationContent.querySelector(scroll.selector);if(node){node.scrollTop=scroll.top;node.scrollLeft=scroll.left;}}
+    if(snapshot.focus)formationContent.querySelector(snapshot.focus)?.focus({preventScroll:true});
+    const anchor=snapshot.anchor?.selector?formationContent.querySelector(snapshot.anchor.selector):null;
+    const adjustment=anchor?anchor.getBoundingClientRect().top-snapshot.anchor.top:0;
+    window.scrollTo({left:snapshot.x,top:snapshot.y+adjustment,behavior:"instant"});
+}
+function formationSlotFit(player,label){return player&&primaryFit(player,label)?"best":player&&canonicalFit(player,label)?"good":"";}
+function setFormationSlotHint(slot,fit,action=""){
+    if(fit)slot.dataset.fit=fit;else delete slot.dataset.fit;
+    if(action)slot.dataset.targetAction=action;else delete slot.dataset.targetAction;
+    const label=slot.querySelector(".slot-target-label"),state=action||fit;
+    if(label){label.textContent=state==="swap"?"SWAP":state==="best"?"BEST FIT":state==="good"?"GOOD FIT":"";label.hidden=!label.textContent;}
+}
+function refreshFormationSelection(anchorSelector){
+    const snapshot=captureFormationViewport(anchorSelector),team=teamByNumber(formationTeamNumber);
+    const player=team.players.find(p=>p.id===selectedFormationPlayerId);
+    const panel=formationContent.querySelector(".player-info-panel");
+    if(panel)panel.outerHTML=createPlayerInfoSidebar(team);
+    formationContent.querySelectorAll(".formation-slot").forEach(slot=>{
+        slot.classList.toggle("selected",getFormationPlayer(formationTeamNumber,Number(slot.dataset.slotIndex))?.id===selectedFormationPlayerId);
+        setFormationSlotHint(slot,formationSlotFit(player,slot.dataset.slotLabel));
+    });
+    formationContent.querySelectorAll(".bench-player").forEach(card=>card.classList.toggle("selected",Number(card.dataset.playerId)===selectedFormationPlayerId));
+    const hint=formationContent.querySelector(".formation-instructions strong");
+    if(hint)hint.textContent=player?`${player.name} // PRIMARY: ${primaryPosition(player)} // CANON: ${playerPositions(player).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE";
+    restoreFormationViewport(snapshot);prioritizeVisiblePortraits(formationContent);
+}
+function renderFormationBuilder({preserveScroll=true}={}){
+    const snapshot=preserveScroll&&formationContent.firstElementChild?captureFormationViewport():null;
     configureTeamBuilderHeader(formationTeamNumber===0);
     hideChemistryTooltip();
     const standalone=formationTeamNumber===0;
+    const pool=standalone?formationContent.querySelector(".standalone-pool-panel"):null;
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
     const slots=FORMATIONS[activeFormation];
@@ -166,7 +212,7 @@ function renderFormationBuilder(){
           </div>
         </div>
 
-        ${standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
+        ${pool?'<div data-standalone-pool-mount></div>':standalone&&typeof standalonePoolMarkup==="function"?standalonePoolMarkup():""}
 
         <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
           <div class="formation-identity">
@@ -212,18 +258,17 @@ function renderFormationBuilder(){
             ${slots.map((s,i)=>{
                const p=getFormationPlayer(formationTeamNumber,i);
                const selected=p&&p.id===selectedFormationPlayerId;
-               const canonicalTarget=selectedPlayer&&canonicalFit(selectedPlayer,s.label);
-               const primaryTarget=selectedPlayer&&primaryFit(selectedPlayer,s.label);
+               const fit=formationSlotFit(selectedPlayer,s.label);
                const currentFit=p&&canonicalFit(p,s.label);
                const partialInactive=team.players.length<11&&!p&&!activeSlots.has(i);
                const isCaptain=p&&formationCaptainByTeam[formationTeamNumber]===p.id;
-               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${canonicalTarget?"canonical-target":""} ${primaryTarget?"primary-target":""} ${currentFit?"natural-fit":""} ${partialInactive?"partial-inactive":""}"
-                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}" data-slot-index="${i}"
-                    onclick="clickFormationSlot(${i})"
-                    ondragover="allowFormationDrop(event)" ondragleave="leaveFormationDrop(event)" ondrop="dropOnFormationSlot(event,${i})">
+               return `<button class="formation-slot ${p?"occupied":""} ${selected?"selected":""} ${currentFit?"natural-fit":""} ${partialInactive?"partial-inactive":""}"
+                    style="left:${s.x}%;top:${s.y}%" data-slot-label="${s.label}" data-slot-index="${i}" ${fit?`data-fit="${fit}"`:""}
+                    onclick="clickFormationSlot(${i})">
+                  <span class="slot-target-label" ${fit?"":"hidden"}>${fit==="best"?"BEST FIT":fit==="good"?"GOOD FIT":""}</span>
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();selectFormationPlayerOnly(${p.id})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<div class="pitch-player-portrait"><img data-player-image src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><span class="effective-ovr" aria-label="${s.label} overall ${effectiveOVR(p,s.label)}">${effectiveOVR(p,s.label)}</span></div><strong title="${esc(p.name)}">${esc(p.name)}</strong>
+                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<div class="pitch-player-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><span class="effective-ovr" aria-label="${s.label} overall ${effectiveOVR(p,s.label)}">${effectiveOVR(p,s.label)}</span></div><strong title="${esc(p.name)}">${esc(p.name)}</strong>
                        </div>`:`<span class="empty-slot">${partialInactive?"·":"+"}</span>`}
                </button>`;
             }).join("")}
@@ -250,6 +295,8 @@ function renderFormationBuilder(){
           </div>
         </div>
       </div>`;
+    if(pool){formationContent.querySelector("[data-standalone-pool-mount]").replaceWith(pool);syncStandalonePoolSelection();}
+    restoreFormationViewport(snapshot);
     prioritizeVisiblePortraits(formationContent);
     applyFormationMoveFx();
     if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();

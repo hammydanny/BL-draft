@@ -54,7 +54,7 @@ function openStandaloneBuilder(){
     standaloneBuilderSyncTeam();
     setVisibleScreen(formationScreen);
     formationScreen.classList.add("standalone-builder-mode");
-    renderFormationBuilder();
+    renderFormationBuilder({preserveScroll:false});
     window.scrollTo({top:0,behavior:"instant"});
 }
 function leaveStandaloneBuilder(options={}){
@@ -217,6 +217,16 @@ function bindStandalonePoolCards(){
             renderFormationBuilder();
         };
     });
+}
+function syncStandalonePoolSelection(){
+    const grid=document.getElementById("standalonePoolGrid");
+    grid?.querySelectorAll("[data-standalone-player]").forEach(button=>{
+        const selected=standaloneBuilderPlayerIds.has(Number(button.dataset.standalonePlayer));
+        button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));
+        button.querySelector("b").textContent=selected?"✓":"+";
+    });
+    const heading=formationContent.querySelector(".standalone-pool-head strong");
+    if(heading)heading.textContent=`${standaloneBuilderPlayerIds.size} SELECTED`;
 }
 function bindStandaloneBuilderPoolUI(){
     if(formationTeamNumber!==0)return;

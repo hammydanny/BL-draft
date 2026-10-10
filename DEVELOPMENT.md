@@ -133,3 +133,11 @@ on game documents and owns only game bootstrap. No save keys/schemas changed.
 Changelog summaries are based on the existing release notes and repository
 snapshots, including the recorded V0.5 page and the V0.6.7.4 stabilization notes.
 Do not add dates or historical claims without an identifiable source.
+
+## V0.6.8.2 reliability and UX
+
+The Scouting Desk reads the existing player and chemistry helpers. Portraits share one script-root URL resolver, bounded request/decode queue and identity-safe DOM binding in `js/player-images.js`; keep new player imagery behind `data-player-image` / `data-portrait-src`. Visible work takes priority over bounded squad warming. Failed requests retry once, and detached UI releases pending work.
+
+Builder selection updates the profile and hints without recreating the pitch or reserve list. Roster changes retain the Global Player Pool DOM and restore internal scroll. Slot hints use one `.slot-target-label`: an active swap takes priority over positional fit. The pointer engine, formation geometry and lineup scoring remain unchanged.
+
+Reports use a shared portrait / position / Captain frame. Desktop keeps the two-team screenshot layout; narrow screens stack with taller pitches. Cache-busting references and the images/fonts worker namespace follow the central release version.

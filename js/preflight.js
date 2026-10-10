@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.8.1');
+    assert.equal(data.APP_VERSION,'0.6.8.2');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -406,7 +406,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.1'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.2'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -422,7 +422,8 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
 check('Shared image fallback, bounded squad/visible warming and background queue',()=>{
     const images=read('js/player-images.js');assert(images.includes('data:image/svg+xml'),'Self-contained neutral fallback');
     assert(images.includes('image.dataset.fallbackApplied'),'One-shot fallback guard');
-    assert(images.includes('portraitDecodeCache.size>64'),'Bounded decode cache');assert(images.includes('deferredPortraitLoads<2'),'Low concurrency background queue');assert(images.includes('slice(0,30)'),'Bounded squad warming');
+    assert(images.includes('portraitDecodeCache.size<=64'),'Bounded settled decode cache');assert(images.includes('portraitBackgroundLoads<2')&&images.includes('portraitActiveLoads<6'),'Bounded background and visible concurrency');assert(images.includes('slice(0,30)'),'Bounded squad warming');
+    for(const guard of ['binding?.entry!==entry','binding.url!==image.dataset.portraitSrc','entry.attempts>=2','8000','releasePlayerPortrait','document.currentScript?.src'])assert(images.includes(guard),`Central portrait guard ${guard}`);
     assert(!read('js/lore.js').includes('onerror='),'Lore must use the shared fallback');
     assert(!read('js/ui/setup.js').includes('image-fallback'),'Remove the superseded image handler');
     for(const file of ['js/auction.js','js/results.js','js/formations.js','js/lore.js','js/standalone-builder.js','js/ui/auction-ui.js','js/ui/formation-ui.js','js/ui/setup.js']){
@@ -476,17 +477,19 @@ check('Character routes retain IDs while non-auction profile layouts stay unchan
     assert(lore.includes('<div class="character-profile-ovr"><span>OVERALL RATING</span>'),'Dedicated dossier keeps its original OVR placement');
     assert(!lore.includes('character-profile-attributes-heading'),'Dedicated dossier was not changed by the Auction OVR fix');
 });
-check('v0.6.7.3 Team Builder, auction and share hotfix contracts',()=>{
+check('Team Builder target presentation, Auction OVR and shared report contracts',()=>{
     const ui=read('js/ui/formation-ui.js'),auctionUi=read('js/ui/auction-ui.js'),styles=read('style.css'),stats=read('css/player-stats.css');
-    const poolAt=ui.indexOf('${standalone&&typeof standalonePoolMarkup');
+    const poolAt=ui.indexOf('${pool?');
     const chemistryAt=ui.indexOf('${chemistryHud(formationTeamNumber,team)}');
     const layoutAt=ui.indexOf('<div class="formation-layout');
     assert(poolAt>=0&&poolAt<layoutAt,'Standalone player pool must stay above lineup');
     assert(chemistryAt>=0&&chemistryAt<layoutAt,'Chemistry HUD must stay above lineup');
-    assert(styles.includes('content:"BEST FIT"')&&styles.includes('content:"GOOD FIT"'),'Distinct best/good fit labels');
+    assert(ui.includes('function setFormationSlotHint')&&ui.includes('action||fit')&&ui.includes('BEST FIT')&&ui.includes('GOOD FIT'),'One target label with action priority');
+    assert(!/content:"(?:BEST FIT|GOOD FIT|SWAP)"/.test(styles),'No overlapping pseudo-labels');
+    assert(styles.includes('[data-target-action="swap"]')&&styles.includes('--target-color:var(--chem-strong)'),'Swap uses chemistry blue');
     assert(styles.includes('.money-input input:focus,.money-input input:focus-visible{outline:none!important'),'Bid input focus rectangle removed');
-    assert(/\.share-mini-pitch\{[^}]*height:250px/.test(styles),'Desktop share pitch must stay screenshot-compact');
-    assert(/\.standalone-share-team \.share-mini-pitch\{height:330px/.test(styles),'Standalone share pitch must stay screenshot-compact');
+    assert(styles.includes('.share-team-grid{display:grid')&&styles.includes('.report-player-portrait{'),'Shared report retains squad columns and portrait frames');
+    assert(read('js/results.js').includes('report-position')&&read('js/results.js').includes('report-captain'),'Report keeps readable position and Captain indicators');
     assert(!auctionUi.includes('auction-player-ovr')&&!stats.includes('.auction-player-ovr'),'Auction OVR must not cover the portrait');
     assert(/playerStatsRadar\(currentPlayer,"auction",\{overall:playerOverall\(currentPlayer\),position:primaryPosition\(currentPlayer\)\}\)/.test(auctionUi),'Auction OVR must render inside Attribute Analysis');
 });
@@ -547,7 +550,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.1'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.2'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
@@ -792,12 +795,12 @@ check('Auto Best cached scoring equals live scoring and uses conservative OVR we
     `);
 });
 
-check('Homepage discovery reuses database helpers and valid saved-phase navigation',()=>{
+check('Homepage Scouting Desk reuses database helpers and valid saved-phase navigation',()=>{
     const source=read('js/ui/homepage.js');
-    for(const helper of ['playerById','playerImageUrl','playerOverall','playerStatGrade','chemistryRelation','canonicalRouteUrl','observePlayerPortraits'])assert(source.includes(helper),`Homepage must reuse ${helper}`);
+    for(const helper of ['playerById','playerImageUrl','playerOverall','playerStatGrade','chemistryRelation','canonicalRouteUrl','prioritizeVisiblePortraits'])assert(source.includes(helper),`Homepage must reuse ${helper}`);
     assert(!/Math\.random|startRandomDraft\(|localStorage\.setItem|function playerStatGrade/.test(source),'Discovery must not draft, write saves or duplicate grades');
     const content=read('index.html');
-    for(const id of ['homeTitle','homeFeaturedPlayers','homeChemistryFeature','menuResumePanel','menuResumeAuction'])assert(content.includes(`id="${id}"`),`Missing Homepage ${id}`);
+    for(const id of ['homeTitle','homePlayerSearch','homePlayerResults','homeChemistryA','homeChemistryB','homeChemistryResult','menuResumePanel','menuResumeAuction'])assert(content.includes(`id="${id}"`),`Missing Homepage ${id}`);
     for(const route of ['lore/?view=characters','lore/?view=chemistry','changelog/'])assert(content.includes(`href="${route}"`),`Homepage discovery link ${route}`);
     const app=appContext();
     app.run(`
@@ -814,6 +817,9 @@ check('Homepage discovery reuses database helpers and valid saved-phase navigati
         assert.equal(homepageResumeSummary(saved).route,'auctionResults');
         saved.uiState.screen='formation';
         assert.equal(homepageResumeSummary(saved).route,'auctionTeamBuilder');
+        assert(homepagePlayerMatches('isagi').some(p=>p.id===1));
+        assert.equal(homepagePlayerMatches('no such player').length,0);
+        assert.equal(homepagePlayerMatches('').length,players.length);
         const dossier=new URL(homepageCharacterUrl(playerById(1)));
         assert.equal(dossier.searchParams.get('view'),'characters');
         assert.equal(dossier.searchParams.get('character'),'1');

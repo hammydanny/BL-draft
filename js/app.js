@@ -40,7 +40,7 @@ if(!pendingRoutePath){
         // that row before revealing the screen, while retaining the early fetch.
         fonts.then(()=>{
             const visible=prioritizeVisiblePortraits(main);
-            return Promise.race([Promise.all(visible.map(image=>image.decode().catch(()=>{}))),new Promise(resolve=>setTimeout(resolve,180))]);
+            return Promise.race([Promise.all(visible.map(playerPortraitReady)),new Promise(resolve=>setTimeout(resolve,180))]);
         }).then(()=>document.documentElement.classList.remove("app-initializing"));
     }else document.documentElement.classList.remove("app-initializing");
 }
