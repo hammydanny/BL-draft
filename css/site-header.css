@@ -23,14 +23,15 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .directory-item[data-about]{width:56px}
 .directory-group{position:relative;flex-shrink:0}
 .directory-group>summary.directory-item{user-select:none}
+.directory-group[open]>summary>span{color:var(--accent-text)}
 @media(min-width:1201px){
     .directory-group>summary.directory-item{position:relative;justify-content:center;margin:0;box-sizing:border-box}
     .directory-group>summary.directory-item>span[aria-hidden="true"]{position:absolute;right:7px;top:50%;transform:translateY(-50%);line-height:1;pointer-events:none}
 }
-.directory-options{position:absolute;left:0;top:calc(100% + 10px);display:grid;min-width:200px;padding:6px;gap:3px;background:var(--bg-surface);border:1px solid var(--border-strong);box-shadow:var(--shadow-strong)}
+.directory-options{animation:site-reveal var(--motion-enter) ease-out both;border-radius:var(--panel-radius);position:absolute;left:0;top:calc(100% + 10px);display:grid;min-width:200px;padding:6px;gap:3px;background:var(--bg-surface);border:1px solid var(--border-strong);box-shadow:var(--shadow-strong)}
 .directory-options button{min-height:44px;padding:8px 12px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;white-space:nowrap}
 .directory-options small{display:block;margin-top:3px;color:var(--text-muted);font-size:12px;letter-spacing:.5px}
-.directory-options button:hover{border-color:var(--border-subtle);background:var(--bg-hover);color:var(--accent-text)}
+.directory-options button:hover,.directory-options button:focus-visible{border-color:var(--border-subtle);background:var(--bg-hover);color:var(--accent-text)}
 .site-utilities{display:flex;align-items:center;gap:4px;width:calc(64px + var(--utility-size) + 4px)}
 .site-utility{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:var(--utility-size);padding:0 6px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:3px;font-size:12px;font-weight:800;white-space:nowrap}
 .site-utility:hover,.site-utility[aria-expanded="true"]{color:var(--accent-text);border-color:var(--accent)}
@@ -44,7 +45,7 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .directory-separator{color:var(--text-muted)}
 .directory-menu-toggle,.directory-backdrop{display:none}
 .site-header [hidden],.page-context [hidden]{display:none}
-.site-settings{position:absolute;right:0;top:calc(100% + 10px);z-index:3;width:320px;max-width:calc(100vw - 24px);max-height:calc(100dvh - var(--header-height) - 24px);overflow:auto;padding:18px;color:var(--text-primary);background:var(--bg-surface);border:1px solid var(--border-strong);border-top:2px solid var(--accent);box-shadow:var(--shadow-strong)}
+.site-settings{animation:site-reveal var(--motion-enter) ease-out both;border-radius:var(--panel-radius);position:absolute;right:0;top:calc(100% + 10px);z-index:3;width:320px;max-width:calc(100vw - 24px);max-height:calc(100dvh - var(--header-height) - 24px);overflow:auto;padding:18px;color:var(--text-primary);background:var(--bg-surface);border:1px solid var(--border-strong);border-top:2px solid var(--accent);box-shadow:var(--shadow-strong)}
 .site-settings-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .site-settings h2{margin:0;font:800 24px/1 "Barlow Condensed",sans-serif;letter-spacing:1px}
 .site-settings-heading button{width:32px;height:32px;padding:0;border:1px solid var(--border-subtle);background:var(--bg-surface-raised);color:var(--text-secondary);font-size:24px}
@@ -52,9 +53,11 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .site-settings legend{margin:0 0 8px;color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:1.4px}
 .preference-options{display:flex;gap:6px}
 .preference-options label{display:flex;flex:1;align-items:center;justify-content:center;gap:5px;min-height:42px;margin:0;padding:8px 5px;color:var(--text-secondary);border:1px solid var(--border-subtle);font-size:12px;letter-spacing:.5px;cursor:pointer}
+.preference-options label:focus-within{outline:2px solid var(--accent-text);outline-offset:2px}
 .preference-options label:has(input:checked){color:var(--accent-text);border-color:var(--accent);background:var(--accent-soft)}
 .preference-options input{width:14px;height:14px;margin:0;padding:0;accent-color:var(--accent);box-shadow:none;cursor:pointer}
-.site-settings p{margin:0 0 12px;color:var(--text-muted);font-size:12px}
+.site-settings p{margin:0 0 12px;color:var(--text-secondary);font-size:14px;line-height:1.4}
+.site-settings .settings-preservation{padding:10px;background:var(--bg-inset);border-left:2px solid var(--accent);font-size:12px;line-height:1.5}
 .settings-reset{width:100%;min-height:40px;padding:8px;color:var(--text-secondary);border:1px solid var(--border-subtle);background:var(--bg-surface-raised);font-size:12px;font-weight:800;letter-spacing:1px}
 /* Compact page identity and game-specific controls. */
 .page-context{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;max-width:var(--site-width);min-height:80px;margin:0 auto 10px;padding:8px 0;border-bottom:1px solid var(--border-line)}
@@ -73,18 +76,22 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .players-remaining span{color:var(--text-primary);font:900 23px/1 "Barlow Condensed",sans-serif;letter-spacing:0}
 .players-remaining small{font-size:12px;letter-spacing:1.4px}
 .page-context-team{overflow:hidden;max-width:240px;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;text-overflow:ellipsis;white-space:nowrap}
-/* One understated footer, including valid About/Credits and future-safe labels. */
-.site-footer{position:relative;margin-top:48px;padding:24px var(--shell-gutter);color:var(--text-muted);border-top:1px solid var(--border-line);background:var(--bg-surface-raised)}
-.footer-inner{display:grid;grid-template-columns:180px minmax(0,1fr) 220px;gap:28px;align-items:start;max-width:var(--site-width);margin:auto}
-.footer-brand strong{display:block;color:var(--text-primary);font:italic 900 21px "Barlow Condensed";letter-spacing:.5px}
-.footer-brand span{display:block;margin-top:4px;color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1.3px}
-.site-footer p{max-width:720px;margin:0;color:var(--text-muted)}
-.footer-meta{color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:1px;text-align:right}
-.footer-meta span{display:block;margin-bottom:8px}
-.footer-meta b{color:var(--text-secondary)}
-.footer-links{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:12px;font-size:12px;font-weight:800;letter-spacing:.7px}
-.footer-links button{min-height:36px;padding:0;color:var(--accent-text);background:transparent;border:0;font:inherit;cursor:pointer}
-.footer-links [aria-disabled]{color:var(--text-muted);opacity:.75}
+/* Shared project footer; information and development remain easy to scan. */
+.site-footer{position:relative;margin-top:36px;padding:26px var(--shell-gutter) 16px;color:var(--text-muted);border-top:1px solid var(--border-strong);background:var(--bg-surface-raised)}
+.footer-inner{display:grid;grid-template-columns:minmax(0,2fr) minmax(130px,1fr) minmax(130px,1fr) minmax(170px,1fr);gap:28px;align-items:start;max-width:var(--content-width);margin:auto}
+.footer-brand strong{display:block;color:var(--text-primary);font:italic 900 23px/1 "Barlow Condensed";letter-spacing:.4px}
+.footer-brand span{display:block;margin-top:6px;color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1px}
+.site-footer p{max-width:410px;margin:10px 0 0;color:var(--text-muted);font-size:12px;line-height:1.5}
+.footer-links{display:flex;flex-direction:column;align-items:flex-start;gap:0;font-size:12px;font-weight:800;letter-spacing:.7px}
+.footer-links>strong,.footer-developers>strong{display:block;margin-bottom:7px;color:var(--text-primary);font-size:12px;letter-spacing:1px}
+.footer-links button,.footer-links a{display:inline-flex;align-items:center;min-height:36px;padding:0;color:var(--text-secondary);border:0;background:transparent;font:inherit;text-decoration:none;cursor:pointer}
+.footer-links button:hover,.footer-links a:hover,.footer-links a[aria-current="page"]{color:var(--accent-text)}
+.footer-developers{display:flex;flex-direction:column;align-items:flex-start;font-size:12px;font-weight:800;letter-spacing:.6px}
+.footer-developers>span{margin-top:4px;color:var(--text-muted);font-size:12px;font-weight:600;letter-spacing:.5px}
+.footer-developers>a{display:inline-flex;align-items:center;min-height:32px;color:var(--text-secondary)}
+.footer-system{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 18px;max-width:var(--content-width);margin:20px auto 0;padding-top:12px;border-top:1px solid var(--border-line);color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:1px}
+.footer-system [data-app-version]{color:var(--accent-text)}
+.footer-system b{color:var(--text-secondary)}
 @media(max-width:1200px){
     :root{--header-height:var(--header-height-mobile);--shell-gutter:12px;--utility-size:44px}
     .site-header-inner{grid-template-columns:minmax(0,1fr) calc(64px + var(--utility-size) + 4px) var(--utility-size);grid-template-rows:54px 33px;gap:0 8px}
@@ -117,12 +124,16 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
     .players-remaining span{font-size:21px}
     .players-remaining small{font-size:12px;letter-spacing:.9px}
     .page-context-team{max-width:220px}
-    .footer-inner{grid-template-columns:1fr;gap:16px}
-    .footer-meta{text-align:left}
+    .footer-inner{grid-template-columns:1fr 1fr;gap:22px 16px}
+    .footer-brand{grid-column:1/-1}
+    .footer-developers{grid-column:1/-1}
+    .footer-links button,.footer-links a,.footer-developers>a{min-height:44px}
+    .footer-system{gap:10px 16px}
+    .footer-system>span:last-child{display:none}
 }
 /* Quick Draft is a compact global utility, backed by the existing Random Draft. */
 .quick-draft-overlay{position:fixed;inset:0;z-index:11000;display:grid;align-items:center;justify-items:center;overflow:auto;padding:20px;background:var(--bg-overlay);backdrop-filter:blur(8px)}
-.quick-draft-card{width:min(620px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:22px;background:var(--bg-surface-raised);border:1px solid var(--border-strong);border-top:3px solid var(--accent);box-shadow:var(--shadow-strong)}
+.quick-draft-card{border-radius:var(--panel-radius);animation:site-reveal var(--motion-enter) ease-out both;width:min(620px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:22px;background:var(--bg-surface-raised);border:1px solid var(--border-strong);border-top:3px solid var(--accent);box-shadow:var(--shadow-strong)}
 .quick-draft-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .quick-draft-heading span{color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1px}
 .quick-draft-heading h2{margin:3px 0;font:900 italic 34px/1.1 "Barlow Condensed"}
@@ -150,10 +161,6 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .quick-draft-actions [data-quick-edit]{color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-strong)}
 @media(max-width:600px){.quick-draft-overlay{padding:12px}.quick-draft-card{padding:16px;max-height:calc(100dvh - 24px)}.quick-draft-teams{gap:8px}.quick-draft-card fieldset{padding:8px}.quick-draft-actions{grid-template-columns:1fr}.quick-draft-pool{grid-template-columns:1fr}}
 @media print{body{padding-top:0}.site-header,.site-footer{display:none}}
-
-/* Footer legal navigation uses links, matching the existing footer actions. */
-.footer-links a{display:inline-flex;align-items:center;min-height:36px;padding:0;color:var(--accent-text);font:inherit;text-decoration:none;cursor:pointer}
-.footer-links a:hover{color:var(--text-primary)}
 
 /* Developer profile links should remain subtle but discoverable and keyboard accessible. */
 .footer-profile-link{color:inherit;text-decoration:none;text-decoration-color:transparent;text-underline-offset:3px}

@@ -1,9 +1,9 @@
 /* Character directory + dedicated character dossiers. */
 .character-lore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));align-items:start;gap:12px}
-.character-lore-card{position:relative;display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0;margin:0;padding:0;overflow:hidden;text-align:left;color:var(--text-primary);font:inherit;cursor:pointer;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-subtle);border-radius:0;clip-path:none;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.character-lore-card{position:relative;display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0;margin:0;padding:0;overflow:hidden;text-align:left;color:var(--text-primary);font:inherit;cursor:pointer;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-subtle);border-radius:var(--panel-radius);clip-path:none;transition:transform var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast)}
 .character-lore-card:before{content:none}
-.character-lore-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 12px 28px rgba(0,0,0,.25)}
-.character-lore-card:focus-visible,.character-profile-page button:focus-visible{outline:2px solid #68e2ff;outline-offset:3px}
+.character-lore-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow-soft)}
+.character-lore-card:focus-visible,.character-profile-page button:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
 .character-lore-card .character-lore-image-wrap{position:relative;display:block;width:100%;height:auto;aspect-ratio:4/5;overflow:hidden;background:#000;border:0;clip-path:none}
 .character-lore-card .character-lore-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .22s ease}
 .character-lore-card:hover .character-lore-image{transform:scale(1.035)}

@@ -2,15 +2,8 @@
 function refreshMainMenu(){
     refreshDirectoryResume();
     const saved=loadSavedData();
-    const hasGame=!!saved?.gameActive;
-    const resume=document.getElementById("menuResumeAuction");
-    const panel=document.getElementById("menuResumePanel");
-    resume.classList.toggle("hidden",!hasGame);
-    panel.classList.toggle("hidden",!hasGame);
-    if(hasGame){
-        document.getElementById("menuResumeMeta").textContent=
-          `AUCTION ${String(saved.auctionNumber||0).padStart(2,"0")} // ${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers} VS ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
-    }
+    renderHomepageDiscovery();
+    refreshHomepageSession(saved);
 }
 function goToMainMenu(options={}){
     if(uiState.screen==="setup")saveSetupPreferences();
@@ -26,10 +19,10 @@ function goToMainMenu(options={}){
     hideSiteError();
 
     const info=document.getElementById("infoModal");
-    if(info)info.classList.add("hidden");
+    if(info)setSiteDialogState(info,false);
 
     const confirm=document.getElementById("confirmModal");
-    if(confirm)confirm.classList.add("hidden");
+    if(confirm)setSiteDialogState(confirm,false);
 
     gameOverlay.classList.add("hidden");
     gameOverlay.classList.remove("overlay-out");
@@ -55,72 +48,27 @@ function openSetupFromMenu({quickDraft=false}={}){
     setVisibleScreen(setupScreen,{quickDraft});
     renderPlayerPool();
 }
-let infoModalReturnFocus=null;
-function openInfoModal(type){
-    infoModalReturnFocus=document.activeElement;
-    const modal=document.getElementById("infoModal");
-    const title=document.getElementById("infoModalTitle");
-    const code=document.getElementById("infoModalCode");
-    const body=document.getElementById("infoModalBody");
-    if(type==="about"){
-        code.textContent="BL // PROJECT INFORMATION";
-        title.textContent="ABOUT";
-        body.innerHTML=`
-          <div class="info-section"><span>PROJECT</span><h3>BLUE LOCK DRAFT</h3>
-          <p>A local two-player auction team builder developed by <strong>hammydanny@Github</strong>, with the support of <strong>syaafibwn@Github</strong>. Draft a custom player pool, compete for every signing, then arrange your finished squads in the formation builder.</p></div>
-          <div class="info-section"><span>STATUS</span><h3>UNOFFICIAL FAN PROJECT</h3>
-          <p>This is a non-commercial fan-made project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors, or rights holders of Blue Lock. Blue Lock and related characters and imagery belong to their respective rights holders.</p></div>`;
-    }else{
-        code.textContent="BL // AUCTION PROTOCOL";
-        title.textContent="HOW TO PLAY";
-        body.innerHTML=`
-          <div class="rule-grid">
-            <div class="rule"><b>01</b><span>CHOOSE YOUR SETTINGS</span><p>Name teams. Pick budgets, bid interval, roster size and players. Random Draft skips bidding.</p></div>
-            <div class="rule"><b>02</b><span>AUCTION PLAYERS</span><p>Players appear one at a time. A coin flip picks the first opener; teams alternate openings.</p></div>
-            <div class="rule"><b>03</b><span>BID OR PASS</span><p>Open or raise in multiples of the bid interval, within your budget. Passing awards the player to the bid leader.</p></div>
-            <div class="rule"><b>04</b><span>BUILD YOUR SQUAD</span><p>Manage money and roster space. A full team stops bidding; the other team receives remaining signings free. Zero-budget situations allow free signings.</p></div>
-            <div class="rule"><b>05</b><span>BUILD YOUR FORMATION</span><p>After drafting, drag players into positions, swap them or move them to Reserves. Choose a captain.</p></div>
-            <div class="rule"><b>06</b><span>CHEMISTRY &amp; POSITIONS</span><p>Suitable positions improve player performance. Shared history and demonstrated combinations improve chemistry.</p></div>
-            <div class="rule"><b>07</b><span>AUTO BEST</span><p>Auto Best checks all ten formations for a strong lineup using your selected squad.</p></div>
-            <div class="rule"><b>08</b><span>RESULTS</span><p>Compare both squads. Share saves the exact formation you built, including captain and reserves.</p></div>
-          </div>
-          <div class="info-section"><p><strong>UNDO / REDO</strong> reverses or repeats auction actions. <strong>PARTIAL SQUADS</strong> use only deployed players. <strong>STANDALONE TEAM BUILDER</strong> makes a separate squad. Both modes save locally in this browser.</p></div>`;
-    }
-    modal.classList.remove("hidden");
-    document.getElementById("infoModalClose").focus();
-}
-function closeInfoModal(){
-    document.getElementById("infoModal").classList.add("hidden");
-    if(infoModalReturnFocus?.closest(".site-directory")&&isMobileSiteNavigation()){
-        document.getElementById("directoryMenuToggle").focus();
-    }else if(infoModalReturnFocus?.isConnected)infoModalReturnFocus.focus();
-}
-document.getElementById("infoModal").addEventListener("keydown",event=>{
-    if(event.key==="Escape"){event.preventDefault();closeInfoModal();return;}
-    if(event.key!=="Tab")return;
-    const controls=[...event.currentTarget.querySelectorAll('button,a[href],input,select,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
-    const first=controls[0],last=controls.at(-1);
-    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-});
-
 document.getElementById("menuNewAuction").addEventListener("click",openSetupFromMenu);
 document.getElementById("menuResumeAuction").addEventListener("click",()=>resumeSavedAuction(loadSavedData()));
-document.getElementById("menuHowToPlay").addEventListener("click",()=>openInfoModal("how"));
-document.querySelectorAll("[data-how-to-play]").forEach(button=>button.addEventListener("click",()=>openInfoModal("how")));
-document.getElementById("menuAbout").addEventListener("click",()=>openInfoModal("about"));
-document.querySelectorAll("[data-about]").forEach(button=>button.addEventListener("click",()=>openInfoModal("about")));
-document.getElementById("infoModalClose").addEventListener("click",closeInfoModal);
-document.getElementById("infoModalDone").addEventListener("click",closeInfoModal);
-document.getElementById("infoModal").addEventListener("click",e=>{if(e.target.id==="infoModal")closeInfoModal();});
 
+let confirmReturnFocus=null;
 function showConfirm(title,message,onAccept){
+    confirmReturnFocus=document.activeElement;
     pendingConfirmAction=onAccept;
     document.getElementById("confirmTitle").textContent=title;
     document.getElementById("confirmMessage").textContent=message;
-    document.getElementById("confirmModal").classList.remove("hidden");
+    setSiteDialogState(document.getElementById("confirmModal"),true);
+    document.getElementById("confirmCancel").focus();
 }
-function closeConfirm(){document.getElementById("confirmModal").classList.add("hidden");pendingConfirmAction=null;}
+function closeConfirm(){
+    setSiteDialogState(document.getElementById("confirmModal"),false);
+    pendingConfirmAction=null;
+    if(confirmReturnFocus?.isConnected)confirmReturnFocus.focus();
+}
+document.getElementById("confirmModal").addEventListener("keydown",event=>{
+    if(event.key==="Escape"){event.preventDefault();closeConfirm();return;}
+    trapSiteDialogFocus(event);
+});
 document.getElementById("confirmCancel").addEventListener("click",closeConfirm);
 document.getElementById("confirmAccept").addEventListener("click",()=>{const fn=pendingConfirmAction;closeConfirm();if(fn)fn();});
 document.getElementById("resumeSessionButton").addEventListener("click",()=>resumeSavedAuction(loadSavedData()));

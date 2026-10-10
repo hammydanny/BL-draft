@@ -1,0 +1,47 @@
+/* Shared information modal, field manual and credits. */
+body.dialog-open{overflow:hidden}
+.info-modal{position:fixed;z-index:100001;inset:0;display:grid;place-items:center;padding:20px;background:var(--bg-overlay);backdrop-filter:blur(7px)}
+.info-card{position:relative;width:min(820px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:28px;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);border-top:3px solid var(--accent);border-radius:var(--panel-radius);box-shadow:var(--shadow-strong);animation:site-reveal var(--motion-enter) ease-out both;scrollbar-width:thin;scrollbar-color:var(--border-strong) var(--bg-surface)}
+.info-card h2{margin:7px 50px 18px 0;font:800 italic 38px/1 "Barlow Condensed";letter-spacing:.4px}
+.info-close{position:absolute;right:15px;top:13px;width:44px;height:44px;padding:0;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--panel-radius);font-size:26px;line-height:1}
+.info-close:hover{color:var(--text-primary);border-color:var(--accent)}
+.info-body{color:var(--text-secondary)}
+.info-body p{font-size:15px;line-height:1.55;color:var(--text-secondary)}
+.info-body a{color:var(--accent-text);text-underline-offset:3px}
+.info-section{padding:18px 0 0;margin-top:20px;border-top:1px solid var(--border-subtle)}
+.info-section h3{margin:3px 0;font:800 24px/1.15 "Barlow Condensed"}
+.info-section p{margin:8px 0}
+.info-section strong{color:var(--text-primary)}
+.info-eyebrow{color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1.1px}
+.about-intro h3{margin:6px 0 12px;font:800 32px/1 "Barlow Condensed"}
+.about-intro p{margin:0 0 18px}
+.about-features{display:flex;flex-wrap:wrap;gap:6px;padding-bottom:20px}
+.about-features>span{padding:6px 9px;color:var(--accent-text);border:1px solid var(--border-subtle);background:var(--accent-soft);font-size:12px;font-weight:800;letter-spacing:.4px}
+.credit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.credit-card{display:grid;gap:8px;padding:18px;border:1px solid var(--border-strong);border-radius:var(--panel-radius);background:var(--bg-surface);text-decoration:none;transition:background var(--motion-fast),border-color var(--motion-fast)}
+.credit-card>span{color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:1px}
+.credit-card>strong{font:800 29px/1 "Barlow Condensed";color:var(--text-primary)}
+.credit-card>small{font-size:12px;font-weight:800;letter-spacing:.5px}
+.credit-card:hover{border-color:var(--accent);background:var(--bg-hover)}
+.info-release{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:16px 0 0;color:var(--text-muted);font-size:12px;letter-spacing:.6px}
+.info-release b{margin-left:5px;color:var(--accent-text)}
+.info-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:16px;font-size:12px;font-weight:800;letter-spacing:.5px}
+.info-links a{display:inline-flex;align-items:center;min-height:36px;text-decoration:none}
+.guide-intro{margin:0 0 16px}
+.guide-jump{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.guide-jump a{display:inline-flex;align-items:center;min-height:44px;padding:8px 12px;border:1px solid var(--border-subtle);border-radius:var(--panel-radius);background:var(--bg-surface);text-decoration:none;font-size:12px;font-weight:800;letter-spacing:.5px}
+.guide-jump a:hover{border-color:var(--accent);background:var(--accent-soft)}
+.guide-section{scroll-margin-top:20px;padding-top:18px;margin-top:18px;border-top:1px solid var(--border-subtle)}
+.guide-heading>span{color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1px}
+.guide-heading h3{margin:5px 0 15px;font:800 28px/1 "Barlow Condensed"}
+.guide-steps{counter-reset:guide;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0;padding:0;list-style:none}
+.guide-steps li{position:relative;padding:15px 15px 15px 44px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--panel-radius)}
+.guide-steps li:before{counter-increment:guide;content:counter(guide,decimal-leading-zero);position:absolute;left:12px;top:16px;color:var(--accent-text);font:800 18px/1 "Barlow Condensed"}
+.guide-steps h4{margin:0;font:800 18px/1.15 "Barlow Condensed";color:var(--text-primary)}
+.guide-steps p{margin:7px 0 0;font-size:14px;line-height:1.45}
+.guide-extras{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.guide-note{padding:0 0 4px}
+.guide-note h3{margin:0;font:800 22px/1 "Barlow Condensed";color:var(--accent-text)}
+.guide-note p{margin:8px 0 0;font-size:14px}
+@media(max-width:600px){.info-modal{padding:12px}.info-card{max-height:calc(100dvh - 24px);padding:20px 16px}.info-card h2{font-size:32px;margin-right:48px}.credit-grid,.guide-steps,.guide-extras{grid-template-columns:1fr}.info-links{gap:8px 14px}.info-release{flex-direction:column}.credit-card{padding:16px}}
+@media(prefers-reduced-motion:reduce){.info-card{animation:none}}

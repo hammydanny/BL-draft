@@ -74,7 +74,7 @@ The following is the future migration plan, not additional live URLs:
 | Chemistry | `lore/?view=chemistry` | `database/chemistry/` |
 | How to Play | existing shared modal | `how-to-play/` |
 | About | existing shared modal | `about/` |
-| Changelog | planned; no active link | `changelog/` |
+| Changelog | `changelog/` | already implemented |
 
 A later URL migration must provide compatibility redirects, preserve saved-phase
 Resume and browser history, and test GitHub Pages without a catch-all server.
@@ -82,15 +82,14 @@ Header Quick Draft opens a compact name/color/size setup, validates the saved po
 
 ## Later release requirements
 
-- **V0.6.8:** full homepage and artistic theme polish, beyond this foundation.
+- **V0.6.8:** delivered the Homepage/discovery, shared theme polish and project-information release.
 - **V0.6.9:** player database overhaul. Optional short player quotes must be real
   canon lines, independently verified, not simply the Wiki featured quote, invented
   dialogue, AI paraphrases or another player's line. Store source/chapter internally;
   show **only the quote**, without name, chapter or source label. Omit unverifiable quotes.
 - **V0.6.9.5:** dedicated mobile website overhaul, including deeper gameplay layouts
   and a possible settings bottom sheet. Current mobile navigation is the foundation.
-- **Later release hardening:** image credits/rights review and proper legal/privacy
-  documents. Disabled footer labels must not pretend those pages already exist.
+- **Later release hardening:** continue image credits/rights review. The v0.6.8 Legal/Privacy notices describe current behavior; they do not establish rights clearance or legal compliance.
 
 ## V0.6.7.2 readability and loading
 
@@ -111,4 +110,26 @@ grids defer their real sources until near view, using a two-load background
 queue. Squad warming is bounded to 30 images with three workers; decoded image
 references are retained in a 64-entry document cache. Cold network bytes remain
 unavoidable; branded placeholders preserve every portrait frame meanwhile.
-Full Light Mode artistic polish remains scheduled for V0.6.8.
+V0.6.8 adds the shared Dark/Light polish while retaining this theme architecture.
+
+
+## V0.6.8 website experience
+
+`css/homepage.css` owns the landing page. `js/ui/homepage.js` reads existing
+players, grades, image URLs, chemistry and normalized saves; it never draws a
+player or writes a save. Featured identities are stable, with four lazy portraits.
+The tactical preview reads the existing formation without altering it.
+
+`js/ui/site-information.js` owns the one shared About/How to Play modal and its
+focus/background handling. Information pages load this same modal and directory,
+plus audio/preferences, without loading the game database or game-state modules.
+Their header buttons resolve the existing `data-directory-href` destinations.
+Gameplay pages continue using the existing router and guarded destination loads.
+
+`js/site-runtime.js` applies centralized release/chapter labels and registers the
+scope-safe image/font worker on both kinds of page. `js/app.js` still loads last
+on game documents and owns only game bootstrap. No save keys/schemas changed.
+
+Changelog summaries are based on the existing release notes and repository
+snapshots, including the recorded V0.5 page and the V0.6.7.4 stabilization notes.
+Do not add dates or historical claims without an identifiable source.

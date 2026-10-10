@@ -30,7 +30,7 @@ check(`JavaScript syntax (${jsFiles.length} files)`,()=>{
     assert.equal(errors.length,0,errors.join('\n'));
 });
 check('No unresolved merges or duplicate document asset declarations',()=>{
-    const marker=new RegExp('^\\s*(?:'+'<'.repeat(7)+'|'+'>'.repeat(7)+'|={7}\\s*$)','m');
+    const marker=new RegExp('^\\s*(?:'+'<'.repeat(7)+'|'+'>'.repeat(7)+'|'+'[|]'.repeat(7)+')(?:[ \t].*)?$','m');
     for(const file of walk(root).filter(file=>/\.(?:html|css|js|md|yml|json|svg)$/.test(file))){
         const content=fs.readFileSync(file,'utf8'),relative=path.relative(root,file);
         assert(!marker.test(content),`${relative}: unresolved conflict`);
@@ -39,6 +39,47 @@ check('No unresolved merges or duplicate document asset declarations',()=>{
         assert.equal((head.match(/rel="icon"/g)||[]).length,1,`${relative}: exactly one favicon in head`);
         const assets=[...content.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="([^"?]+)(?:\?[^"]*)?"/g)].map(match=>match[1]);
         assert.equal(new Set(assets).size,assets.length,`${relative}: duplicate script/style/font reference`);
+    }
+});
+check('Conflict detection accepts documentation separators and rejects merge headers',()=>{
+    const marker=new RegExp('^\\s*(?:'+'<'.repeat(7)+'|'+'>'.repeat(7)+'|'+'[|]'.repeat(7)+')(?:[ \t].*)?$','m');
+    assert(!marker.test('A section\n'+'='.repeat(7)+'\nA paragraph'),'Ordinary documentation separator');
+    for(const character of ['<','>','|'])assert(marker.test(character.repeat(7)+' HEAD'),'Merge or diff3 header');
+});
+check('Information routes, shared shell, metadata and nested local assets',()=>{
+    const pages=['privacy/index.html','legal/index.html','changelog/index.html'];
+    const version=/const APP_VERSION="([^"]+)"/.exec(read('js/version.js'))[1];
+    const home=read('index.html');
+    const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
+    const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
+    for(const page of pages){
+        const content=read(page);
+        assert.equal(shell(content),shell(home),`${page}: shared header`);
+        assert.equal(footer(content),footer(home),`${page}: shared footer`);
+        for(const id of ['siteMain','siteSettings','infoModal','siteFavicon'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
+        const ids=[...content.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
+        assert.equal(new Set(ids).size,ids.length,`${page}: duplicate ID`);
+        for(const [,source] of content.matchAll(/<(?:script|link|img)\b[^>]*\b(?:src|href)="([^"?#]+)(?:\?[^"#]*)?"/g)){
+            assert(fs.existsSync(path.join(root,source)),`${page}: missing ${source}`);
+        }
+        for(const deployment of ['https://example.test/','https://example.test/BL-draft/']){
+            const pageUrl=new URL(page,deployment),base=new URL('../',pageUrl);
+            assert.equal(base.href,deployment,`${page}: base path`);
+            for(const [,destination] of content.matchAll(/data-directory-href="([^"]+)"/g)){
+                const url=new URL(destination.replace(/&amp;/g,'&'),base);
+                assert(url.href.startsWith(deployment),`${page}: escaped deployment`);
+                const relative=url.pathname.slice(base.pathname.length);
+                assert(fs.existsSync(path.join(root,relative.endsWith('/')?relative+'index.html':relative||'index.html')),`${page}: broken destination ${relative}`);
+            }
+        }
+        assert(content.includes('js/site-runtime.js?v='+version),'Shared version/cache runtime');
+        assert(!content.includes('js/players.js'),'Information pages need no game database payload');
+    }
+    for(const file of walk(root).filter(file=>file.endsWith('.html'))){
+        const content=fs.readFileSync(file,'utf8');
+        assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,'One shared header');
+        assert.equal((content.match(/<footer class="site-footer"/g)||[]).length,1,'One shared footer');
+        assert(!content.includes('aria-disabled="true"'),'No planned footer destinations');
     }
 });
 const html=read('index.html');
@@ -56,8 +97,8 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
     const expected=['js/site-preferences.js','js/version.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
         'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
-        'js/ui/auction-ui.js','js/router.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
-        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/app.js'];
+        'js/ui/auction-ui.js','js/router.js','js/ui/site-information.js','js/ui/homepage.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
+        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
         assert(scripts.includes(expected[i]),`Missing ${expected[i]}`);
         if(i)assert(scripts.indexOf(expected[i])>scripts.indexOf(expected[i-1]),`Order: ${expected[i]}`);
@@ -123,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.7.4');
+    assert.equal(data.APP_VERSION,'0.6.8');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -287,7 +328,7 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
@@ -296,7 +337,7 @@ check('Canonical directory shell, global help and contextual recovery targets',(
         assert.equal(shell(content),expected,`${page}: header shell differs`);
         assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,`${page}: global header count`);
         assert.equal((content.match(/id="infoModal"/g)||[]).length,1,`${page}: shared information modal`);
-        assert.equal((content.match(/data-how-to-play/g)||[]).length,1,`${page}: one global help action`);
+        assert.equal((shell(content).match(/data-how-to-play/g)||[]).length,1,`${page}: one header help action`);
         assert(!/siteSidebar|site-sidebar|site-header-football|data-site-nav/.test(content),`${page}: obsolete chrome`);
         for(const id of ['startGame','randomDraftGame','playersRemaining','backToResults','formationHeaderTitle'])assert(content.includes(`id="${id}"`),`${page}: missing ${id}`);
         assert(content.includes('class="auction-context-actions"'),`${page}: Auction history target`);
@@ -309,7 +350,7 @@ check('Canonical directory shell, global help and contextual recovery targets',(
         assert(content.indexOf('js/site-preferences.js')<content.indexOf('rel="stylesheet"'),`${page}: early theme`);
     }
     assert(fs.existsSync(path.join(root,'images/bld-logo-header.webp')),'BLD logo missing');
-    const directory=read('js/ui/site-directory.js'),menu=read('js/ui/menu.js'),setup=read('js/ui/setup.js');
+    const directory=read('js/ui/site-directory.js'),menu=read('js/ui/site-information.js'),setup=read('js/ui/setup.js');
     assert(directory.includes('button.hidden=!saved?.gameActive'),'Hide unavailable Resume');
     assert(directory.includes('getElementById("backToResults").hidden=standalone'),'No Results action in standalone');
     assert(menu.includes('openInfoModal("how")'),'Help must use the existing information modal');
@@ -330,7 +371,7 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
@@ -357,7 +398,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.4'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -382,14 +423,14 @@ check('Shared image fallback, bounded squad/visible warming and background queue
     }
 });
 check('Worker is scope-safe, version-sensitive and cannot pin an old app shell',()=>{
-    const worker=read('service-worker.js'),app=read('js/app.js');
+    const worker=read('service-worker.js'),app=read('js/site-runtime.js');
     assert(worker.includes(`bld-static-v${data.APP_VERSION}`),'Worker cache version');
     assert(!/ignoreSearch\s*:\s*true/.test(worker),'Version queries must remain part of cache keys');
     assert(worker.includes('url.pathname.startsWith(scope.pathname)'),'Worker app scope');
     assert(worker.includes('cache.delete(request)'),'Deleted assets leave cache');
     assert(!/CACHEABLE=.*(?:html|css|javascript)/.test(worker),'No app-shell cache');
     assert(app.includes('updateViaCache:"none"'),'Worker update freshness');
-    assert(app.includes('appRootUrl().pathname'),'Nested Pages registration scope');
+    assert(app.includes('scope:root.pathname')&&app.includes('document.baseURI'),'Nested Pages registration scope');
 });
 check('Readability/builder UX, independent transparent favicon and Quick Draft contracts',()=>{
     const ui=read('js/ui/formation-ui.js'),standalone=read('js/standalone-builder.js'),quick=read('js/ui/quick-draft.js'),preferences=read('js/site-preferences.js');
@@ -454,7 +495,7 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
     for(const page of walk(root).filter(file=>file.endsWith('.html'))){
         const content=fs.readFileSync(page,'utf8');
         const relative=path.relative(root,page);
-        if(!['legal/index.html','privacy/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        if(!['legal/index.html','privacy/index.html','changelog/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
@@ -498,7 +539,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.4'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
@@ -743,5 +784,32 @@ check('Auto Best cached scoring equals live scoring and uses conservative OVR we
     `);
 });
 
+check('Homepage discovery reuses database helpers and valid saved-phase navigation',()=>{
+    const source=read('js/ui/homepage.js');
+    for(const helper of ['playerById','playerImageUrl','playerOverall','playerStatGrade','chemistryRelation','canonicalRouteUrl','observePlayerPortraits'])assert(source.includes(helper),`Homepage must reuse ${helper}`);
+    assert(!/Math\.random|startRandomDraft\(|localStorage\.setItem|function playerStatGrade/.test(source),'Discovery must not draft, write saves or duplicate grades');
+    const content=read('index.html');
+    for(const id of ['homeTitle','homeFeaturedPlayers','homeChemistryFeature','homePlayerCount','homeThemeStatus','menuResumePanel','menuResumeAuction'])assert(content.includes(`id="${id}"`),`Missing Homepage ${id}`);
+    for(const route of ['lore/?view=characters','lore/?view=chemistry','changelog/'])assert(content.includes(`href="${route}"`),`Homepage discovery link ${route}`);
+    const app=appContext();
+    app.run(`
+        assert.equal(homepageResumeSummary(null),null);
+        assert.equal(homepageResumeSummary({gameActive:false}),null);
+        const saved={gameActive:true,maxPlayers:5,auctionNumber:8,currentPlayerId:8,remainingPlayerIds:[9,10],
+            team1:{name:'A',players:[1,2]},team2:{name:'B',players:[3]},uiState:{screen:'auction',phase:'bidding'}};
+        assert.equal(homepageResumeSummary(saved).remaining,3);
+        assert.equal(homepageResumeSummary(saved).filled,3);
+        assert.equal(homepageResumeSummary(saved).route,'auctionRoom');
+        saved.team1.players.push(8);saved.uiState.phase='sold';
+        assert.equal(homepageResumeSummary(saved).remaining,2,'Signed target must not be counted twice');
+        saved.uiState.phase='complete';
+        assert.equal(homepageResumeSummary(saved).route,'auctionResults');
+        saved.uiState.screen='formation';
+        assert.equal(homepageResumeSummary(saved).route,'auctionTeamBuilder');
+        const dossier=new URL(homepageCharacterUrl(playerById(1)));
+        assert.equal(dossier.searchParams.get('view'),'characters');
+        assert.equal(dossier.searchParams.get('character'),'1');
+    `);
+});
 console.log(`\n${failures?'FAIL':'PASS'} preflight — ${failures} failed check(s). Browser UI testing is separate.`);
 process.exitCode=failures?1:0;

@@ -1,11 +1,20 @@
 // BLUE LOCK DRAFT // SHARED DIRECTORY + PAGE CONTEXT
 function refreshDirectoryResume(){
-    const saved=loadSavedData();
+    const saved=typeof loadSavedData==="function"?loadSavedData():null;
     document.querySelectorAll('[data-directory-action="resume"]').forEach(button=>{
         button.hidden=!saved?.gameActive;
     });
 }
 function updateSiteDirectory(screen){
+    const informationPage=document.body.dataset.sitePage;
+    if(informationPage){
+        document.getElementById("siteBreadcrumb").textContent=`HOME / ${informationPage.toUpperCase()}`;
+        document.querySelectorAll(".footer-links a").forEach(link=>{
+            if(new URL(link.href).pathname.endsWith(`/${informationPage}/`))link.setAttribute("aria-current","page");
+        });
+        refreshDirectoryResume();
+        return;
+    }
     const route=getRouteFromLocation();
     const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":"home";
     document.querySelectorAll("[data-directory-section]").forEach(item=>{
@@ -50,6 +59,11 @@ function configureTeamBuilderHeader(standalone){
     updateSiteDirectory(formationScreen);
 }
 function runDirectoryAction(action){
+    if(document.body.dataset.sitePage){
+        const button=document.querySelector(`[data-directory-action="${action}"][data-directory-href]`);
+        if(button)window.location.assign(new URL(button.dataset.directoryHref,document.baseURI).href);
+        return;
+    }
     if(uiState.screen==="setup")saveSetupPreferences();
     else if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
     switch(action){
@@ -72,6 +86,7 @@ function initSiteDirectory(){
     const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
     function closeSettings(restoreFocus=false){
         const wasOpen=!settings.hidden;settings.hidden=true;settingsToggle.setAttribute("aria-expanded","false");
+        if(wasOpen)document.getElementById("siteMain").inert=false;
         if(wasOpen&&restoreFocus)settingsToggle.focus();
     }
     function refreshSettings(){
@@ -83,6 +98,7 @@ function initSiteDirectory(){
         closeDirectory();
         if(!settings.hidden){closeSettings(true);return;}
         settings.hidden=false;settingsToggle.setAttribute("aria-expanded","true");refreshSettings();
+        document.getElementById("siteMain").inert=true;
         settings.querySelector("[data-settings-close]").focus();
     });
     settings.querySelector("[data-settings-close]").addEventListener("click",()=>closeSettings(true));
@@ -136,6 +152,14 @@ function initSiteDirectory(){
         if(event.key==="ArrowDown"&&event.target.matches("summary.directory-item")){
             event.preventDefault();event.target.parentElement.open=true;event.target.parentElement.querySelector("button").focus();
         }
+        const options=event.target.closest(".directory-options");
+        if(options&&["ArrowDown","ArrowUp","Home","End"].includes(event.key)){
+            event.preventDefault();
+            const controls=[...options.querySelectorAll("button")].filter(button=>!button.hidden);
+            const index=controls.indexOf(document.activeElement);
+            const next=event.key==="Home"?0:event.key==="End"?controls.length-1:(index+(event.key==="ArrowDown"?1:-1)+controls.length)%controls.length;
+            controls[next]?.focus();
+        }
         if(event.key==="Tab"&&!settings.hidden){
             const controls=[...settings.querySelectorAll("button,input")];const first=controls[0],last=controls.at(-1);
             if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
@@ -146,5 +170,7 @@ function initSiteDirectory(){
     let mobile=isMobileSiteNavigation();
     window.addEventListener("resize",()=>{const next=isMobileSiteNavigation();if(next!==mobile){mobile=next;closeDirectory();closeSettings();}});
     window.addEventListener("pageshow",()=>{closeDirectory();closeSettings();SitePreferences.syncAssets();});
+    window.addEventListener("bld:dialog-open",()=>{closeDirectory();closeSettings();});
+    if(document.body.dataset.sitePage)updateSiteDirectory();
 }
 initSiteDirectory();
