@@ -11,6 +11,12 @@
 .player-stats-heading{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .player-stats-heading span{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:1.1px}
 .player-stats-heading small{color:var(--text-secondary);font-size:12px;letter-spacing:.8px}
+.player-stats-title{min-width:0}
+.player-stats-title small{display:block;margin-top:4px;letter-spacing:.4px}
+.player-stats-overall{display:grid;grid-template-columns:auto auto;align-items:center;gap:3px 7px;flex-shrink:0;padding:5px 7px;border:1px solid var(--border-strong);background:var(--bg-surface-raised)}
+.player-stats-overall>span{grid-column:1/-1;font-size:12px;line-height:1;letter-spacing:.4px}
+.player-stats-overall>strong{color:var(--text-primary);font:900 32px/1 "Barlow Condensed",sans-serif}
+.player-stats-overall>.evaluation-grade{min-width:23px;height:25px;font-size:20px}
 .player-stats-radar{display:block;width:100%;max-width:290px;height:auto;margin:2px auto;overflow:visible}
 .player-stats-backdrop{fill:rgba(20,156,255,.045)}
 .player-stats-grid{fill:none;stroke:var(--radar-grid);stroke-width:1}
@@ -33,12 +39,13 @@
 .player-stats--lore{margin:0;padding:8px}
 .player-stats--lore .player-stats-radar{max-width:250px}
 .player-stats--sidebar{padding:7px}
+.player-info-section .player-stats--sidebar{margin-top:0}
 .player-stats--sidebar .player-stats-heading{flex-wrap:wrap;gap:3px}
+.player-stats--sidebar .player-stats-heading--rated{flex-wrap:nowrap;gap:6px}
 .player-stats--sidebar .player-stats-radar{max-width:260px}
 
 /* Shared supplementary rating grade; never replaces the rating number. */
 .evaluation-grade{display:inline-grid;place-items:center;min-width:25px;height:28px;padding:0 4px;color:var(--accent-text);border:1px solid var(--border-strong);background:var(--bg-surface-raised);font:900 21px/1 "Barlow Condensed",sans-serif}
-.player-info-ovr .evaluation-grade{margin-top:4px}
 .current-ovr-row .evaluation-grade{vertical-align:middle}
 /* Current target: identity rail beside the main attribute evaluation. */
 .auction-command-center .current-player{position:relative;display:grid;grid-template-columns:120px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 6px;padding:8px;gap:12px;background:linear-gradient(135deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:0 20px 55px rgba(0,0,0,.35);animation:playerIn .4s ease}

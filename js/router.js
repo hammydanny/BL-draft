@@ -163,7 +163,7 @@ function normalizeCurrentRoute(route){
     const current=new URL(window.location.href,appRootUrl());
     const target=canonicalRouteUrl(route,{databaseView:route==="lore"?databaseViewFromLocation():null});
     const characterId=route==="lore"&&databaseViewFromLocation()==="characters"?current.searchParams.get("character"):null;
-    if(characterId&&/^\\d+$/.test(characterId))target.searchParams.set("character",characterId);
+    if(characterId&&/^\d+$/.test(characterId))target.searchParams.set("character",characterId);
     if(route==="menu"&&current.pathname===appRootUrl().pathname&&!current.search&&!current.hash)return true;
     if(current.pathname!==target.pathname||current.search!==target.search||current.hash!==target.hash){
         replaceLocation(target,route);

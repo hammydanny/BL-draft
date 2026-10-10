@@ -24,9 +24,14 @@
 .legal-document-body a:hover{color:var(--text-primary)}
 .legal-document-callout{margin-top:18px;padding:15px 17px;background:var(--bg-surface);border:1px solid var(--border-subtle);border-left:3px solid var(--accent)}
 .legal-document-callout p{margin:0}
-.legal-page-footer-note{margin:14px 0 0;color:var(--text-muted);font-size:11px;line-height:1.6;text-align:center}
-.footer-links a{display:inline-flex;align-items:center;min-height:36px;padding:0;color:var(--accent-text);font:inherit;text-decoration:none;cursor:pointer}
-.footer-links a:hover{color:var(--text-primary)}
+.legal-page-footer-note{margin:14px 0 0;color:var(--text-muted);font-size:12px;line-height:1.6;text-align:center}
 .footer-links a[aria-current="page"]{color:var(--text-primary)}
-@media(max-width:760px){.legal-page{width:calc(100% - 24px);padding-top:12px}.legal-document-header{padding:22px 18px 18px}.legal-document-body{padding:2px 18px 22px}.legal-document-body section{padding:17px 0 14px}.legal-document-body p,.legal-document-body li{font-size:14px;line-height:1.65}.legal-header-fill{display:none}}
+@media(max-width:1200px){
+    .site-header-inner:has(.legal-navigation){grid-template-columns:minmax(0,1fr) auto;grid-template-rows:54px 33px}
+    .legal-header-fill{display:none}
+    .legal-navigation{grid-column:1/-1;grid-row:2;position:static;display:flex;gap:6px;height:33px;padding:0;border:0;border-top:1px solid var(--border-line);background:transparent;box-shadow:none;overflow:visible}
+    .legal-navigation .directory-item{width:auto;min-width:0;height:30px;padding:0 8px;border-color:transparent;font-size:12px}
+    .legal-home-link{grid-column:2;grid-row:1}
+}
+@media(max-width:760px){.legal-page{width:calc(100% - 24px);padding-top:12px}.legal-document-header{padding:22px 18px 18px}.legal-document-body{padding:2px 18px 22px}.legal-document-body section{padding:17px 0 14px}.legal-document-body p,.legal-document-body li{font-size:14px;line-height:1.65}}
 @media(prefers-reduced-motion:reduce){.legal-document *{scroll-behavior:auto}}

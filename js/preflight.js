@@ -29,6 +29,18 @@ check(`JavaScript syntax (${jsFiles.length} files)`,()=>{
     }
     assert.equal(errors.length,0,errors.join('\n'));
 });
+check('No unresolved merges or duplicate document asset declarations',()=>{
+    const marker=new RegExp('^\\s*(?:'+'<'.repeat(7)+'|'+'>'.repeat(7)+'|={7}\\s*$)','m');
+    for(const file of walk(root).filter(file=>/\.(?:html|css|js|md|yml|json|svg)$/.test(file))){
+        const content=fs.readFileSync(file,'utf8'),relative=path.relative(root,file);
+        assert(!marker.test(content),`${relative}: unresolved conflict`);
+        if(!file.endsWith('.html'))continue;
+        const head=content.match(/<head>[\s\S]*?<\/head>/i)?.[0]||'';
+        assert.equal((head.match(/rel="icon"/g)||[]).length,1,`${relative}: exactly one favicon in head`);
+        const assets=[...content.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="([^"?]+)(?:\?[^"]*)?"/g)].map(match=>match[1]);
+        assert.equal(new Set(assets).size,assets.length,`${relative}: duplicate script/style/font reference`);
+    }
+});
 const html=read('index.html');
 const scriptTags=[...html.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
 const scripts=scriptTags.map(tag=>/\bsrc\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean).map(src=>src.split('?')[0]);
@@ -111,7 +123,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.7.3');
+    assert.equal(data.APP_VERSION,'0.6.7.4');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -345,7 +357,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.3'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.4'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -384,7 +396,7 @@ check('Readability/builder UX, independent transparent favicon and Quick Draft c
     const pitch=ui.slice(ui.indexOf('${slots.map'),ui.indexOf('${createPlayerInfoSidebar'));
     assert(pitch.includes('effectiveOVR(p,s.label)'),'Pitch must display current adjusted OVR');
     assert(!pitch.includes('positionBadges('),'No player position lists beneath pitch portraits');
-    assert(ui.includes('<span>${pos}</span>'),'Portrait uses current/natural position');
+    assert(ui.includes('playerStatsRadar(player,"sidebar",{overall:rating,position:pos})'),'Attribute analysis uses current/natural position and OVR');
     assert(!ui.includes('<span>PLAYER</span>'),'Redundant profile label removed');
     assert(ui.includes('bench.sort(compareStandalonePlayers)'),'Standalone reserves share the pool comparator');
     assert(standalone.includes('list.sort(compareStandalonePlayers)'),'Pool uses the same comparator');
@@ -398,6 +410,22 @@ check('Readability/builder UX, independent transparent favicon and Quick Draft c
     assert(quick.includes('startRandomDraft()')&&!quick.includes('shufflePlayers('),'Reuse the existing Random Draft algorithm');
     assert(quick.includes('pool.length<rosterSize*2'),'Validate roster capacity');
     for(const file of ['style.css','css/site-header.css','css/player-stats.css'])for(const match of read(file).matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g))assert(Number(match[1])>=12,`${file}: meaningful text below 12px`);
+});
+check('Character routes retain IDs and profile ratings live outside artwork',()=>{
+    const context=vm.createContext({window:{addEventListener(){}},URL});vm.runInContext(read('js/router.js'),context);
+    for(const file of ['lore/','lore.html']){
+        let destination;
+        context.document={baseURI,querySelector:()=>({href:baseURI})};
+        context.window.location={href:baseURI+file+'?view=characters&character=8',assign(){},replace:url=>destination=url};
+        const canonical=vm.runInContext('normalizeCurrentRoute("lore")',context);
+        assert.equal(canonical,file==='lore/');
+        if(destination)assert.equal(new URL(destination).searchParams.get('character'),'8','Legacy profile must retain the selected character');
+    }
+    const ui=read('js/ui/formation-ui.js');
+    const portrait=ui.match(/<div class="player-info-portrait">[\s\S]*?<\/div>/)?.[0];
+    assert(portrait&&!portrait.includes('evaluation-grade'),'Profile artwork has no rating overlay');
+    const lore=read('js/lore.js');
+    assert(lore.includes('character-profile-attributes-heading'),'Dedicated dossier retains its rating in the attributes panel');
 });
 check('v0.6.7.3 Team Builder, auction and share hotfix contracts',()=>{
     const ui=read('js/ui/formation-ui.js'),styles=read('style.css'),stats=read('css/player-stats.css');
@@ -469,7 +497,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.3'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.7.4'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};

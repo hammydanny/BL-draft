@@ -47,6 +47,7 @@
     window.SitePreferences=Object.freeze({get:()=>({...preferences}),set,reset,syncAssets,resolvedTheme,key,soundKey});
     apply();
     syncFavicon();
+    window.addEventListener("DOMContentLoaded",syncAssets,{once:true});
     system.addEventListener("change",()=>{syncFavicon();if(preferences.theme==="system"){apply();notify();}});
     window.addEventListener("storage",event=>{
         if(event.key===key){preferences=normalize(stored());apply();notify();}

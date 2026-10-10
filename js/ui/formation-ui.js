@@ -103,21 +103,19 @@ function createPlayerInfoSidebar(team){
     </div>
   </aside>`;
 
+  const slot=currentPlayerSlot(formationTeamNumber,player.id);
+  const pos=slot?.label||primaryPosition(player);
+  const rating=slot?effectiveOVR(player,pos):playerOverall(player);
+
   return `<aside class="player-info-panel" style="${teamVars(team)}">
     <div class="player-info-top">
       <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
       <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button>
     </div>
-    ${(()=>{
-      const slot=currentPlayerSlot(formationTeamNumber,player.id);
-      const pos=slot?.label||primaryPosition(player);
-      const rating=slot?effectiveOVR(player,pos):playerOverall(player);
-      return `<div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>`;
-    })()}
+    <div class="player-info-portrait"><img data-player-image src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="280"></div>
     <div class="player-info-name"><h2>${esc(player.name)}</h2>${positionBadges(player)}</div>
     <div class="player-info-section">
-      <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
-      ${playerStatsRadar(player,"sidebar")}
+      ${playerStatsRadar(player,"sidebar",{overall:rating,position:pos})}
     </div>
     <div class="player-info-section current-position-rating">${(()=>{
       const slot=currentPlayerSlot(formationTeamNumber,player.id);

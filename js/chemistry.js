@@ -1,14 +1,14 @@
 // BLUE LOCK DRAFT // CHEMISTRY MODEL
 // Split from the former root script.js. Classic scripts share the same global scope.
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 364
 // ----------------------------------------------------------------------------
 // Blue Lock does NOT publish an official 0-100 chemistry statistic.
 // These scores are a fan-game model. Strong overrides are based on demonstrated
 // combinations, chemical reactions, tactical systems, or clear incompatibility.
 // Generic fallback scores come from repeated shared-team history.
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 const CHEMISTRY_CONTEXTS = [
   {name:"TEAM Z",score:79,players:["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"]},
