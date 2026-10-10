@@ -6,8 +6,7 @@ let overlayHideTimer=null;
 function createPlayerCard(){
     return `<div class="current-player">
       <div class="auction-identity-rail">
-      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="120" height="136">
-        <div class="auction-player-ovr" aria-label="Overall ${playerOverall(currentPlayer)}, grade ${playerStatGrade(playerOverall(currentPlayer))}"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(currentPlayer))}</b></div>
+      <div class="player-image-container"><img class="player-image" data-player-image src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="136" height="155">
       </div>
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
@@ -16,7 +15,7 @@ function createPlayerCard(){
           </div></div>
         </div>
       </div>
-        ${playerStatsRadar(currentPlayer,"auction")}
+        ${playerStatsRadar(currentPlayer,"auction",{overall:playerOverall(currentPlayer),position:primaryPosition(currentPlayer)})}
     </div>`;
 }
 

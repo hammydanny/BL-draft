@@ -528,11 +528,11 @@ to{opacity:1;transform:none;filter:none}}
 .squad-rating-hud b{margin-right:auto;color:var(--text-primary);font:900 16px "Barlow Condensed";letter-spacing:1px}
 .squad-rating-hud span{padding:4px 7px;border:1px solid var(--border-subtle);color:var(--text-secondary);font:800 12px "Barlow Condensed";letter-spacing:.7px}
 @media(max-width:700px){.squad-rating-hud{flex-wrap:wrap}}
-/* Player profile uses existing horizontal space; panel height stays tied to the pitch. */ .formation-layout{grid-template-columns:minmax(400px,1fr) 280px 310px;align-items:start}
+/* PLAYER DATABASE OPTIMIZATION */ .formation-layout{grid-template-columns:minmax(400px,1fr) 260px 310px;align-items:start}
 .formation-roster-panel{display:flex;flex-direction:column;gap:10px;min-width:0;max-height:var(--pitch-height)}
 .formation-roster-panel .bench-panel{min-height:0;flex:1}
 .formation-layout.standalone-layout.database-hidden{grid-template-columns:minmax(400px,1fr) 310px}
-.formation-layout.standalone-layout.bench-hidden:not(.database-hidden){grid-template-columns:minmax(400px,1fr) 280px 310px}
+.formation-layout.standalone-layout.bench-hidden:not(.database-hidden){grid-template-columns:minmax(400px,1fr) 260px 310px}
 .formation-layout.standalone-layout.database-hidden.bench-hidden{grid-template-columns:minmax(400px,1fr) 310px}
 .player-info-panel{height:var(--pitch-height);overflow-y:auto;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-panel-end));border:1px solid var(--team-soft);border-top:2px solid var(--team)}
 .player-info-top{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 12px;border-bottom:1px solid var(--border-subtle)}
@@ -541,7 +541,10 @@ to{opacity:1;transform:none;filter:none}}
 .player-info-close{width:28px;height:28px;padding:0;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:18px}
 .player-info-portrait{position:relative;overflow:hidden;background:var(--bg-surface)}
 .player-info-portrait img{display:block;width:100%;height:auto;aspect-ratio:1 / 1;object-fit:cover;object-position:center 20%}
-.player-info-name,.player-info-section{padding:10px 12px;border-bottom:1px solid var(--border-subtle)}
+.player-info-ovr{position:absolute;right:12px;bottom:12px;width:66px;min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-surface);border:2px solid var(--team);box-shadow:0 0 20px var(--team-glow)}
+.player-info-ovr span{font-size:12px;color:var(--text-muted)}
+.player-info-ovr strong{font:900 28px "Barlow Condensed"}
+.player-info-name,.player-info-section{padding:12px;border-bottom:1px solid var(--border-subtle)}
 .player-info-name>span{color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
 .player-info-name h2{margin:2px 0 7px;font:italic 900 28px "Barlow Condensed"}
 .player-info-empty{min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:25px;text-align:center}

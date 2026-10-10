@@ -149,7 +149,7 @@ function characterLoreProfileMarkup(player){
         const partner=players.find(candidate=>candidate.name===name);
         return partner?`<button type="button" class="character-profile-person-link" data-character-id="${partner.id}">${esc(name)}</button>`:esc(name);
     };
-    const statRows=[["SPD","SPEED",ratings.spd],["DEF","DEFENCE",ratings.def],["PAS","PASSING",ratings.pas],["DRI","DRIBBLING",ratings.dri],["SHO","SHOOTING",ratings.sho],["OFF","OFFENCE",ratings.off],["GK","GOALKEEPING",ratings.gk]];
+    const statRows=[["OVR","OVERALL",playerOverall(player)],["SPD","SPEED",ratings.spd],["DEF","DEFENCE",ratings.def],["PAS","PASSING",ratings.pas],["DRI","DRIBBLING",ratings.dri],["SHO","SHOOTING",ratings.sho],["OFF","OFFENCE",ratings.off],["GK","GOALKEEPING",ratings.gk]];
     return `<div class="character-profile-page">
       <div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER DOSSIER // ${String(player.id).padStart(2,"0")}</span></div>
       <section class="character-profile-hero">
@@ -157,12 +157,13 @@ function characterLoreProfileMarkup(player){
         <div class="character-profile-overview">
           <span class="character-profile-kicker">CHARACTER FILE // MANGA CHAPTER ${player.debutChapter}</span><h2>${esc(player.name)}</h2>
           <div class="character-profile-positions">${positionBadges(player)}</div>
+          <div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div>
           <div class="character-profile-description"><h3>PLAYER DESCRIPTION</h3><p>${esc(characterLoreDescription(player))}</p></div>
           ${player.statEstimate?`<p class="character-profile-rating-note">RATINGS // GAME-BALANCING ESTIMATES, NOT OFFICIAL STATS</p>`:""}
         </div>
       </section>
       <section class="character-profile-section">
-        <div class="character-profile-section-heading character-profile-attributes-heading"><span>01 // PLAYER ATTRIBUTES</span><h3>FIELD RATINGS</h3><div class="character-profile-ovr"><span>OVR</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div></div>
+        <div class="character-profile-section-heading"><span>01 // PLAYER ATTRIBUTES</span><h3>FIELD RATINGS</h3></div>
         <div class="character-profile-stat-grid">${statRows.map(([short,label,value])=>`<div class="character-profile-stat"><span>${short}</span><small>${label}</small><strong>${value}</strong><b class="evaluation-grade">${playerStatGrade(value)}</b></div>`).join("")}</div>
         ${playerStatsRadar(player,"lore")}
       </section>

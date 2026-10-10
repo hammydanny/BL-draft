@@ -1,6 +1,6 @@
 # Blue Lock Draft — V0.6.7.4 Alpha
 
-Based on the latest `origin/main` fetched for this task: `722fa85`.
+Corrected against the latest `origin/main` fetched for this task: `d288ceb`.
 This archive contains the complete working project with repository-relative paths.
 No changes were committed, pushed, or submitted as a pull request.
 
@@ -17,12 +17,12 @@ No changes were committed, pushed, or submitted as a pull request.
 - Centered Auction navigation text and its arrow using the existing header
   system. Auction and Database controls reserve enough room for their arrows;
   keyboard focus, dropdown behavior, and responsive navigation remain intact.
-- Moved Builder profile OVR, its grade, and deployment position into Attribute
-  Analysis. The portrait is wider, while the profile panel height and its internal
-  scroll height remain unchanged at the representative laptop viewport.
-- Moved dedicated character dossier OVR into the attributes heading. Its portrait
-  is wider without increasing the hero panel height. All seven individual field/GK
-  values and grades, the radar, descriptions, positions, and chemistry remain.
+- Corrected the OVR layout target: the change applies to the current player profile
+  in the Auction Room only. Its OVR, grade, and primary position now live inside
+  Attribute Analysis instead of covering the portrait, and the auction portrait is
+  slightly larger while the overall command card footprint stays bounded.
+- Restored the Team Builder player profile and dedicated character dossier OVR
+  layouts to their pre-v0.6.7.4 behavior; those screens were not the requested target.
 - Corrected character-ID validation so direct profile links, refreshes, legacy
   URLs, and Back/Forward retain the selected character.
 - Restored narrow-screen navigation and Light-mode logos on legal/privacy pages.
@@ -30,7 +30,7 @@ No changes were committed, pushed, or submitted as a pull request.
   formations. Desktop pitch heights remain 250px for two-team results and 330px
   for standalone reports; both desktop reports fit within a 1366×768 frame.
   Mobile reports stack cleanly. Standalone Print uses the same safe 330px pitch.
-- Removed obsolete character-card CSS, superseded portrait-overlay rules, and
+- Removed obsolete character-card CSS, the obsolete Auction portrait OVR overlay rule, and
   duplicate declarations. Newly introduced profile labels retain the existing
   12px readability floor. Chemistry comment separators were normalized so literal
   conflict-marker searches return zero matches; its data and functions are unchanged.
@@ -46,24 +46,14 @@ The gameplay/data modules were compared with the fetched source; chemistry diffe
 only in two decorative comment lines. Every HTML document's page content matches
 latest main after resolving equivalent conflicts and updating asset versions.
 
-Validation performed with Chromium and Playwright:
+Validation for this corrected archive:
 
-- 147 page/state cases and 36 utility-modal cases across 1920px, 1366px, 1024px,
-  and 390px widths in Dark, Light, and System themes.
-- All 79 dossiers: numerical stats, letter grades, GK, and chemistry entries.
-- Canonical and legacy pages at both root hosting and `/BL-draft/`; favicon loads,
-  profile reload/history, and navigation without a Main Menu flash.
-- Opening bid, bid/pass, Undo/Redo, next player, Quick Draft, reserves, Captain,
-  and Auto Best visiting every formation.
-- Desktop mouse and 390px touch dragging, swaps, edge scrolling, and cleanup.
-- Exact chemistry-line endpoints for all ten formations.
-- 80 standalone share layouts and 40 two-team share layouts with no token
-  collisions or clipping; copy/close/print controls and all ten Print formations.
-- Real service-worker activation, root/subdirectory scope, versioned asset caching,
-  obsolete cache purge, and fresh HTML/CSS/JavaScript after deployment changes.
-- Zero unexpected runtime errors, missing assets, or horizontal page overflow.
-- `node scripts/preflight.js`: PASS, 0 failed checks; syntax checked for all 26
-  project JavaScript files. Final diff and literal conflict-marker scans are clean.
+- `node scripts/preflight.js`: PASS, 0 failed checks.
+- `node --check` completed successfully for every project JavaScript file.
+- Final literal merge-conflict-marker scan is clean.
+- Browser automation could not be rerun for this correction because this sandbox
+  blocks local/file navigation with `ERR_BLOCKED_BY_ADMINISTRATOR`; no browser
+  testing is claimed for the corrected Auction-only layout.
 
 ## Changed files
 
@@ -86,6 +76,7 @@ js/lore.js
 js/preflight.js
 js/router.js
 js/site-preferences.js
+js/ui/auction-ui.js
 js/ui/formation-ui.js
 js/ui/player-stats.js
 js/version.js

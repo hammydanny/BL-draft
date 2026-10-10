@@ -396,7 +396,7 @@ check('Readability/builder UX, independent transparent favicon and Quick Draft c
     const pitch=ui.slice(ui.indexOf('${slots.map'),ui.indexOf('${createPlayerInfoSidebar'));
     assert(pitch.includes('effectiveOVR(p,s.label)'),'Pitch must display current adjusted OVR');
     assert(!pitch.includes('positionBadges('),'No player position lists beneath pitch portraits');
-    assert(ui.includes('playerStatsRadar(player,"sidebar",{overall:rating,position:pos})'),'Attribute analysis uses current/natural position and OVR');
+    assert(ui.includes('playerStatsRadar(player,"sidebar")'),'Builder profile keeps the shared attribute radar');
     assert(!ui.includes('<span>PLAYER</span>'),'Redundant profile label removed');
     assert(ui.includes('bench.sort(compareStandalonePlayers)'),'Standalone reserves share the pool comparator');
     assert(standalone.includes('list.sort(compareStandalonePlayers)'),'Pool uses the same comparator');
@@ -411,7 +411,7 @@ check('Readability/builder UX, independent transparent favicon and Quick Draft c
     assert(quick.includes('pool.length<rosterSize*2'),'Validate roster capacity');
     for(const file of ['style.css','css/site-header.css','css/player-stats.css'])for(const match of read(file).matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g))assert(Number(match[1])>=12,`${file}: meaningful text below 12px`);
 });
-check('Character routes retain IDs and profile ratings live outside artwork',()=>{
+check('Character routes retain IDs while non-auction profile layouts stay unchanged',()=>{
     const context=vm.createContext({window:{addEventListener(){}},URL});vm.runInContext(read('js/router.js'),context);
     for(const file of ['lore/','lore.html']){
         let destination;
@@ -422,13 +422,13 @@ check('Character routes retain IDs and profile ratings live outside artwork',()=
         if(destination)assert.equal(new URL(destination).searchParams.get('character'),'8','Legacy profile must retain the selected character');
     }
     const ui=read('js/ui/formation-ui.js');
-    const portrait=ui.match(/<div class="player-info-portrait">[\s\S]*?<\/div>/)?.[0];
-    assert(portrait&&!portrait.includes('evaluation-grade'),'Profile artwork has no rating overlay');
+    assert(ui.includes('player-info-ovr'),'Team Builder profile keeps its portrait OVR overlay');
     const lore=read('js/lore.js');
-    assert(lore.includes('character-profile-attributes-heading'),'Dedicated dossier retains its rating in the attributes panel');
+    assert(lore.includes('<div class="character-profile-ovr"><span>OVERALL RATING</span>'),'Dedicated dossier keeps its original OVR placement');
+    assert(!lore.includes('character-profile-attributes-heading'),'Dedicated dossier was not changed by the Auction OVR fix');
 });
 check('v0.6.7.3 Team Builder, auction and share hotfix contracts',()=>{
-    const ui=read('js/ui/formation-ui.js'),styles=read('style.css'),stats=read('css/player-stats.css');
+    const ui=read('js/ui/formation-ui.js'),auctionUi=read('js/ui/auction-ui.js'),styles=read('style.css'),stats=read('css/player-stats.css');
     const poolAt=ui.indexOf('${standalone&&typeof standalonePoolMarkup');
     const chemistryAt=ui.indexOf('${chemistryHud(formationTeamNumber,team)}');
     const layoutAt=ui.indexOf('<div class="formation-layout');
@@ -438,7 +438,8 @@ check('v0.6.7.3 Team Builder, auction and share hotfix contracts',()=>{
     assert(styles.includes('.money-input input:focus,.money-input input:focus-visible{outline:none!important'),'Bid input focus rectangle removed');
     assert(/\.share-mini-pitch\{[^}]*height:250px/.test(styles),'Desktop share pitch must stay screenshot-compact');
     assert(/\.standalone-share-team \.share-mini-pitch\{height:330px/.test(styles),'Standalone share pitch must stay screenshot-compact');
-    assert(/\.auction-player-ovr\{[^}]*right:5px;bottom:5px/.test(stats),'Auction OVR badge anchored bottom-right');
+    assert(!auctionUi.includes('auction-player-ovr')&&!stats.includes('.auction-player-ovr'),'Auction OVR must not cover the portrait');
+    assert(/playerStatsRadar\(currentPlayer,"auction",\{overall:playerOverall\(currentPlayer\),position:primaryPosition\(currentPlayer\)\}\)/.test(auctionUi),'Auction OVR must render inside Attribute Analysis');
 });
 check('Clean canonical directory pages, legacy compatibility and critical fonts',()=>{
     const context=vm.createContext({window:{addEventListener(){}},URL});vm.runInContext(read('js/router.js'),context);
