@@ -7,7 +7,8 @@ body.dialog-open{overflow:hidden}
 .info-close:hover{color:var(--text-primary);border-color:var(--accent)}
 .info-body{color:var(--text-secondary)}
 .info-body p{font-size:15px;line-height:1.55;color:var(--text-secondary)}
-.info-body a{color:var(--accent-text);text-underline-offset:3px}
+.info-body a{color:var(--link-text);text-underline-offset:3px}
+.info-body a:hover{color:var(--link-hover)}
 .info-section{padding:18px 0 0;margin-top:20px;border-top:1px solid var(--border-subtle)}
 .info-section h3{margin:3px 0;font:800 24px/1.15 "Barlow Condensed"}
 .info-section p{margin:8px 0}
@@ -45,3 +46,5 @@ body.dialog-open{overflow:hidden}
 .guide-note p{margin:8px 0 0;font-size:14px}
 @media(max-width:600px){.info-modal{padding:12px}.info-card{max-height:calc(100dvh - 24px);padding:20px 16px}.info-card h2{font-size:32px;margin-right:48px}.credit-grid,.guide-steps,.guide-extras{grid-template-columns:1fr}.info-links{gap:8px 14px}.info-release{flex-direction:column}.credit-card{padding:16px}}
 @media(prefers-reduced-motion:reduce){.info-card{animation:none}}
+
+html[data-theme="light"] .info-body a:visited{color:var(--link-text)}

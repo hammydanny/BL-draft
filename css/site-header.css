@@ -2,7 +2,7 @@
 /* Permanent site shell: geometry belongs here; palette belongs to site-theme.css. */
 body{padding-top:var(--header-height)}
 .site-header{position:fixed;inset:0 0 auto;z-index:1000;height:var(--header-height);background:var(--header-bg);border-bottom:1px solid var(--border-strong)}
-.site-header-inner{position:relative;display:grid;grid-template-columns:220px auto minmax(0,1fr) 108px;align-items:center;gap:16px;width:min(var(--site-width),calc(100% - var(--shell-gutter)*2));height:100%;margin:auto}
+.site-header-inner{position:relative;display:grid;grid-template-columns:220px auto minmax(0,1fr) 120px;align-items:center;gap:16px;width:min(var(--site-width),calc(100% - var(--shell-gutter)*2));height:100%;margin:auto}
 .site-header button,.site-header summary{font-family:"Rajdhani",sans-serif;cursor:pointer}
 .site-header-brand{display:flex;align-items:center;gap:10px;width:220px;height:48px;padding:0;background:transparent;border:0;color:var(--text-primary);text-align:left}
 .site-header-brand-logo{display:block;flex:0 0 var(--logo-size);width:var(--logo-size);height:var(--logo-size);object-fit:contain;visibility:hidden}
@@ -32,10 +32,15 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .directory-options button{min-height:44px;padding:8px 12px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;white-space:nowrap}
 .directory-options small{display:block;margin-top:3px;color:var(--text-muted);font-size:12px;letter-spacing:.5px}
 .directory-options button:hover,.directory-options button:focus-visible{border-color:var(--border-subtle);background:var(--bg-hover);color:var(--accent-text)}
-.site-utilities{display:flex;align-items:center;gap:4px;width:calc(64px + var(--utility-size) + 4px)}
+.site-utilities{display:flex;align-items:center;gap:4px;width:calc(76px + var(--utility-size) + 4px)}
 .site-utility{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:var(--utility-size);padding:0 6px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:3px;font-size:12px;font-weight:800;white-space:nowrap}
 .site-utility:hover,.site-utility[aria-expanded="true"]{color:var(--accent-text);border-color:var(--accent)}
-.site-utility.sound-toggle{width:64px}
+.site-utility.sound-toggle{width:76px;padding:0 8px;gap:7px}
+.sound-toggle strong{line-height:1;letter-spacing:.2px}
+.sound-toggle .sound-icon{position:relative;display:inline-block;flex:0 0 15px;width:15px;height:14px;overflow:hidden;font-size:0;line-height:0}
+.sound-toggle .sound-icon:before{content:"";position:absolute;left:0;top:4px;width:9px;height:7px;background:currentColor;clip-path:polygon(0 24%,42% 24%,100% 0,100% 100%,42% 76%,0 76%)}
+.sound-toggle .sound-icon:after{content:"";position:absolute;right:0;top:2px;width:6px;height:10px;border-right:2px solid currentColor;border-radius:0 50% 50% 0}
+.sound-toggle.muted .sound-icon:after{top:6px;right:0;width:6px;height:0;border:0;border-top:2px solid currentColor;border-radius:0;transform:rotate(-45deg)}
 .site-utility.muted{color:var(--text-muted)}
 .settings-toggle{width:var(--utility-size);padding:0}
 .settings-toggle svg{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
@@ -94,7 +99,7 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .footer-system b{color:var(--text-secondary)}
 @media(max-width:1200px){
     :root{--header-height:var(--header-height-mobile);--shell-gutter:12px;--utility-size:44px}
-    .site-header-inner{grid-template-columns:minmax(0,1fr) calc(64px + var(--utility-size) + 4px) var(--utility-size);grid-template-rows:54px 33px;gap:0 8px}
+    .site-header-inner{grid-template-columns:minmax(0,1fr) calc(76px + var(--utility-size) + 4px) var(--utility-size);grid-template-rows:54px 33px;gap:0 8px}
     .site-header-brand{width:100%;max-width:160px;height:48px;gap:8px;grid-column:1;grid-row:1}
     .site-header-brand>span{width:104px;max-width:calc(100% - 48px);white-space:normal;font-size:21px;line-height:.9}
     .site-header-brand em{display:block}

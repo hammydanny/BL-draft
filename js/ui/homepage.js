@@ -53,20 +53,11 @@ function renderHomepageDiscovery(){
           <div class="home-reaction-score ${chemistryTier(relation.score)}"><strong>${relation.score}<small>/ 100</small></strong><span>${chemistryTierLabel(relation.score)}</span></div>
           <p>${esc(relation.label)}</p>`;
     }else chemistry.innerHTML='<p>Explore the registered player relationships.</p>';
-    document.getElementById("homePlayerCount").textContent=players.length;
     document.getElementById("homeFormationCount").textContent=Object.keys(FORMATIONS).length;
     const markers=document.getElementById("homeTacticalMarkers");
     markers.innerHTML=FORMATIONS["4-3-3"].map((slot,index)=>`<g transform="translate(${46+slot.x*3.08} ${20+slot.y*2.35})"><circle r="${index===9?14:11}" class="${index===9?"is-striker":""}"/><text text-anchor="middle" dominant-baseline="central">${esc(slot.label)}</text></g>`).join("");
-    refreshHomepageTheme();
     observePlayerPortraits(grid);
 }
-function refreshHomepageTheme(){
-    const label=document.getElementById("homeThemeStatus");
-    if(!label)return;
-    const preferences=SitePreferences.get();
-    label.textContent=preferences.theme==="system"?`SYSTEM / ${SitePreferences.resolvedTheme().toUpperCase()}`:preferences.theme.toUpperCase();
-}
-window.addEventListener("bld:preferences",refreshHomepageTheme);
 window.addEventListener("storage",event=>{
     if((event.key===SAVE_KEY||event.key===null)&&typeof refreshMainMenu==="function")refreshMainMenu();
 });

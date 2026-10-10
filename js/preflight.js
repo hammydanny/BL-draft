@@ -164,12 +164,20 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.8');
+    assert.equal(data.APP_VERSION,'0.6.8.1');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
+    assert(!html.includes('class="home-status"'),'Homepage status strip removed');
+    assert(!read('js/ui/player-stats.js').includes('06 // FIELD METRICS'),'Obsolete field-metrics sublabel removed');
+    const formationUi=read('js/ui/formation-ui.js');
+    assert(formationUi.indexOf('${captainControl}')<formationUi.indexOf('CORE ATTRIBUTES'),'Captain control precedes core attributes');
+    const auctionUi=read('js/ui/auction-ui.js');
+    assert(auctionUi.includes('top:previousPlayerId?scroll:0'),'Auction player advance preserves scroll position');
+    assert(read('css/site-theme.css').includes('--scroll-track:#dfe9f1'),'Light scrollbar tokens present');
+    assert(read('style.css').includes('html[data-theme="light"] .formation-slot strong'),'Light pitch labels have a dedicated treatment');
     assert(fs.existsSync(path.join(root,'scripts/preflight.js')),'Validation entry point missing');
-    assert.equal((html.match(/data-app-version/g)||[]).length,2,'Version label targets');
+    assert.equal((html.match(/data-app-version/g)||[]).length,1,'Version label targets');
     for(const version of [data.AUCTION_SAVE_SCHEMA_VERSION,data.STANDALONE_SAVE_SCHEMA_VERSION])assert(Number.isInteger(version)&&version>0);
     assert(read('js/state.js').includes('"blAuctionSaveV2"'));
     assert(read('js/state.js').includes('"blStandaloneBuilderV1"'));
@@ -315,7 +323,7 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
             if(/^(?:https?:|data:)/.test(src))continue;
             assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing asset ${src}`);
         }
-        assert.equal((content.match(/data-app-version/g)||[]).length,2,`${page}: version targets`);
+        assert.equal((content.match(/data-app-version/g)||[]).length,1,`${page}: version targets`);
     }
 });
 check('Auction page state stays aligned with canonical URLs',()=>{
@@ -398,7 +406,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.1'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -539,7 +547,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.1'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
@@ -789,7 +797,7 @@ check('Homepage discovery reuses database helpers and valid saved-phase navigati
     for(const helper of ['playerById','playerImageUrl','playerOverall','playerStatGrade','chemistryRelation','canonicalRouteUrl','observePlayerPortraits'])assert(source.includes(helper),`Homepage must reuse ${helper}`);
     assert(!/Math\.random|startRandomDraft\(|localStorage\.setItem|function playerStatGrade/.test(source),'Discovery must not draft, write saves or duplicate grades');
     const content=read('index.html');
-    for(const id of ['homeTitle','homeFeaturedPlayers','homeChemistryFeature','homePlayerCount','homeThemeStatus','menuResumePanel','menuResumeAuction'])assert(content.includes(`id="${id}"`),`Missing Homepage ${id}`);
+    for(const id of ['homeTitle','homeFeaturedPlayers','homeChemistryFeature','menuResumePanel','menuResumeAuction'])assert(content.includes(`id="${id}"`),`Missing Homepage ${id}`);
     for(const route of ['lore/?view=characters','lore/?view=chemistry','changelog/'])assert(content.includes(`href="${route}"`),`Homepage discovery link ${route}`);
     const app=appContext();
     app.run(`

@@ -7,6 +7,11 @@
   --border-subtle:#254456;--border-strong:#3c657c;--border-line:rgba(112,172,208,.22);
   --text-primary:#f5f8ff;--text-secondary:#adc8da;--text-muted:#819caf;--text-subtle:#718ca3;--text-inverse:#fff;
   --accent:#149cff;--accent-hover:#37b7ec;--accent-text:#54c8ff;--accent-soft:rgba(20,156,255,.12);
+  --link-text:#54c8ff;--link-hover:#f5f8ff;
+  --scroll-track:#020811;--scroll-thumb:#169eff;--scroll-thumb-hover:#29b8ff;
+  --pitch-legacy-start:#082d27;--pitch-legacy-end:#061f1c;
+  --pitch-start:#071e2b;--pitch-mid:#082737;--pitch-end:#071e2b;--pitch-share-start:#082432;--pitch-share-end:#051824;
+  --pitch-stripe:rgba(255,255,255,.09);--pitch-line:rgba(185,226,255,.26);--pitch-line-strong:rgba(255,255,255,.45);--pitch-goal:rgba(190,225,255,.25);--pitch-dot:rgba(220,240,255,.45);--pitch-share-line:rgba(210,237,255,.25);--pitch-share-soft:rgba(210,237,255,.18);--pitch-share-border:#25485e;
   --primary-start:#0767bb;--primary-end:#1479c9;
   --chem-chemical:#ffe65a;--chem-elite:#43ff9a;--chem-strong:#31d7ff;--chem-link:#9c8cff;--chem-weak:#ff496d;
   --warning:#ffbd55;--success:#39f59b;--danger:#ff5573;
@@ -28,9 +33,14 @@ html[data-theme="light"]{
   --bg-hover:#e4eff9;--bg-overlay:rgba(218,230,241,.9);--bg-page-glow:#d2e5f6;--bg-page-top:#f1f6fb;--bg-page-bottom:#e9f0f7;
   --border-subtle:#b3c8d9;--border-strong:#6b8ca6;--border-line:rgba(59,102,136,.24);
   --text-primary:#122c46;--text-secondary:#2d506c;--text-muted:#47667f;--text-subtle:#526e84;
-  --accent:#0072c9;--accent-hover:#005fa7;--accent-text:#005ea8;--accent-soft:rgba(0,114,201,.1);
+  --accent:#0072c9;--accent-hover:#005f9e;--accent-text:#075f91;--accent-soft:rgba(0,114,201,.09);
+  --link-text:#155f87;--link-hover:#0d405f;
+  --scroll-track:#dfe9f1;--scroll-thumb:#5a91b0;--scroll-thumb-hover:#34799e;
+  --pitch-legacy-start:#d9e9e1;--pitch-legacy-end:#c8ddd5;
+  --pitch-start:#dceaf1;--pitch-mid:#cddfe8;--pitch-end:#dceaf1;--pitch-share-start:#deebf2;--pitch-share-end:#cfdee7;
+  --pitch-stripe:rgba(30,87,111,.065);--pitch-line:rgba(37,91,115,.32);--pitch-line-strong:rgba(31,81,104,.42);--pitch-goal:rgba(38,93,117,.28);--pitch-dot:rgba(25,73,94,.52);--pitch-share-line:rgba(37,91,115,.32);--pitch-share-soft:rgba(37,91,115,.18);--pitch-share-border:#87a8ba;
   --primary-start:#075fa9;--primary-end:#0870bb;
-  --chem-chemical:#876b00;--chem-elite:#087a49;--chem-strong:#007198;--chem-link:#624ac2;--chem-weak:#bf2347;
+  --chem-chemical:#876b00;--chem-elite:#087a49;--chem-strong:#007198;--chem-link:#55529a;--chem-weak:#bf2347;
   --warning:#8f5d00;--success:#087a49;--danger:#b82246;
   --captain-text:#876b00;--share-text:#533dab;--role-canon:#087a49;
   --radar-cyan:#006393;--radar-grid:#9ab5ca;--radar-spoke:#b9cddb;--radar-fill:rgba(0,114,201,.2);
@@ -43,6 +53,13 @@ html[data-theme="light"]{
   --accent:#149cff;--accent-text:#54c8ff;--border-subtle:#193c52;--border-strong:#326078;
   --chem-chemical:#ffe65a;--chem-elite:#43ff9a;--chem-strong:#31d7ff;--chem-link:#9c8cff;--chem-weak:#ff496d;
   --captain-text:#ffe269;--role-canon:#8affc4;
+}
+html[data-theme="light"] :is(.football-pitch,.formation-pitch-v2,.share-mini-pitch,.formation-pointer-preview){
+  --bg-surface:#f4f9fc;--bg-surface-raised:#e8f1f6;--bg-input:#f9fcfe;--bg-inset:rgba(215,230,240,.8);
+  --text-primary:#17364d;--text-secondary:#335971;--text-muted:#52738a;--text-subtle:#617d90;
+  --accent:#0877ad;--accent-text:#155f87;--border-subtle:#9db8c8;--border-strong:#6f96aa;
+  --chem-chemical:#806700;--chem-elite:#14714a;--chem-strong:#146e8c;--chem-link:#55529a;--chem-weak:#a93350;
+  --captain-text:#806700;--role-canon:#14714a;
 }
 /* Team headings use one presentation value. Raw team colors and calculations stay intact. */
 html[data-theme="light"] :is(.team-tracker,.final-team-card,.formation-control-panel,.player-info-panel,.bid-panel,.bid-holder strong,.bid-panel p>strong,.sold-panel,.turn-indicator,.formation-instructions,.bench-panel,.share-team,.formation-team-tabs button,.comparison-grid b,.final-history-row>div>span,.history-player b,.overlay-content strong,.chemistry-hud){--team-heading:color-mix(in srgb,var(--team) 32%,#122c46);--team-text:var(--text-primary)}

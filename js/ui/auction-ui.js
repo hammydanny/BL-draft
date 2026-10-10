@@ -205,7 +205,8 @@ function ensureAuctionHistoryControls(){
 function renderAuctionScreen(actionHTML){
     ensureAuctionHistoryControls();
     const action=auctionContent.querySelector(".action-container");
-    const samePlayer=auctionContent.dataset.playerId===String(currentPlayer.id)&&!!action;
+    const previousPlayerId=auctionContent.dataset.playerId;
+    const samePlayer=previousPlayerId===String(currentPlayer.id)&&!!action;
     const scroll=window.scrollY;
     if(samePlayer){
         // Keep the immutable evaluation SVG/image and stabilize the action area
@@ -230,7 +231,7 @@ function renderAuctionScreen(actionHTML){
       </div>
       ${createAuctionHistoryPanel()}
     </div>`;
-    window.scrollTo({top:0,behavior:"instant"});
+    window.scrollTo({top:previousPlayerId?scroll:0,behavior:"instant"});
 }
 
 function updatePlayersRemaining(){

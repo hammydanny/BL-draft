@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Blue Lock Draft release history: website improvements, stabilization and earlier game milestones.">
     <title>Blue Lock Draft — Change Log</title>
-    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.8">
-    <script src="js/site-preferences.js?v=0.6.8"></script>
-    <link rel="stylesheet" href="css/fonts.css?v=0.6.8">
-    <link rel="stylesheet" href="css/site-theme.css?v=0.6.8">
-    <link rel="stylesheet" href="style.css?v=0.6.8">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.8">
-    <link rel="stylesheet" href="css/site-information.css?v=0.6.8">
-    <link rel="stylesheet" href="css/legal.css?v=0.6.8">
-    <script defer src="js/version.js?v=0.6.8"></script>
-    <script defer src="js/audio.js?v=0.6.8"></script>
-    <script defer src="js/ui/site-information.js?v=0.6.8"></script>
-    <script defer src="js/ui/site-directory.js?v=0.6.8"></script>
-    <script defer src="js/site-runtime.js?v=0.6.8"></script>
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.8.1">
+    <script src="js/site-preferences.js?v=0.6.8.1"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.6.8.1">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.8.1">
+    <link rel="stylesheet" href="style.css?v=0.6.8.1">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.8.1">
+    <link rel="stylesheet" href="css/site-information.css?v=0.6.8.1">
+    <link rel="stylesheet" href="css/legal.css?v=0.6.8.1">
+    <script defer src="js/version.js?v=0.6.8.1"></script>
+    <script defer src="js/audio.js?v=0.6.8.1"></script>
+    <script defer src="js/ui/site-information.js?v=0.6.8.1"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.8.1"></script>
+    <script defer src="js/site-runtime.js?v=0.6.8.1"></script>
 </head>
 <body data-site-page="changelog">
     <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
@@ -26,7 +26,7 @@
     <header class="site-header" role="banner">
         <div class="site-header-inner">
             <button class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
-                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.8" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.8.1" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
                 <span>BLUE LOCK <em>DRAFT</em></span>
             </button>
             <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
@@ -74,7 +74,7 @@
             <article class="legal-document changelog-document">
                 <header class="legal-document-header"><span class="legal-document-kicker">THE PROGRAM EVOLVES</span><h2>Release notes, without the noise.</h2><p>Website and game milestones from the project's documented history.</p></header>
                 <div class="legal-document-body release-timeline">
-                    <section id="release-current" class="release-entry"><div class="release-heading"><h3 data-app-version></h3><span class="release-tag">LATEST // WEBSITE EXPERIENCE</span></div><p>A new landing experience and a more cohesive website, with the current game preserved.</p><ul><li>A focused Hero, destination cards and a saved-session summary.</li><li>Featured players and chemistry discovery drawn from the live database.</li><li>Intentional Dark and Light styling, shared motion and accessible navigation.</li><li>Expanded About / Credits and How to Play, rewritten Privacy / Legal notices, and this Changelog.</li><li>A compact shared footer and stronger release-integrity checks.</li></ul></section>
+                    <section id="release-current" class="release-entry"><div class="release-heading"><h3 data-app-version></h3><span class="release-tag">LATEST // WEBSITE EXPERIENCE</span></div><p>A focused v0.6.8.1 polish pass on the Homepage, Team Builder, Auction flow and Light Mode.</p><ul><li>Removed the Homepage system-status strip and cleaned up the header SFX control.</li><li>Moved Captain controls above Core Attributes and removed the redundant field-metrics sublabel.</li><li>Auction player advances preserve the current scroll position instead of jumping to the top.</li><li>Light Mode now has coherent tactical pitches, calmer scrollbars, cleaner chemistry/link colors and fewer dark-theme leftovers.</li><li>Retains the v0.6.8 Homepage discovery, information pages, footer and website-experience overhaul.</li></ul></section>
                     <section id="release-0674" class="release-entry"><div class="release-heading"><h3>V0.6.7.4 ALPHA</h3><span class="release-tag">STABILIZATION</span></div><p>Resolved conflicting document imports and stabilized the website foundation.</p><ul><li>Removed merge artifacts and duplicate assets; repaired favicon placement.</li><li>Centered Auction navigation and preserved dedicated character links on reload.</li><li>Moved Auction player OVR into Attribute Analysis and enlarged its portrait within the existing panel.</li><li>Fixed clipping and overlaps in compact share reports.</li></ul></section>
                     <section id="release-067" class="release-entry"><div class="release-heading"><h3>V0.6.7.x</h3><span class="release-tag">WEBSITE FOUNDATION</span></div><p>Established the multi-page website shell around the existing game.</p><ul><li>Shared navigation, contextual headers, browser-history routing and page-transition guards.</li><li>Dark / Light / System preferences, Settings, global SFX and Quick Draft access.</li><li>Readable player evaluations, consistent local fonts and bounded portrait loading.</li></ul></section>
                     <section id="release-06" class="release-entry"><div class="release-heading"><h3>V0.6</h3><span class="release-tag">PLAYER EVALUATION</span></div><p>The v0.6 series developed the player-stat presentation, lineup optimization and maintenance foundation.</p><ul><li>Six-axis field-attribute radar, numerical values and supplementary letter grades, with GK shown separately.</li><li>Auto Best evaluates all ten formations; shared reports preserve the chosen lineup.</li><li>Later v0.6 updates documented an expanded player database, image-loading improvements and save compatibility work.</li></ul></section>

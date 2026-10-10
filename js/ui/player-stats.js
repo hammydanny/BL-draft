@@ -31,8 +31,8 @@ function playerStatsRadar(player,variant="sidebar",{overall=null,position=""}={}
     const description=PLAYER_RADAR_AXES.map(axis=>`${axis.name}: ${stats[axis.key]} out of 100, grade ${playerStatGrade(stats[axis.key])}`).join(". ");
     return `<div class="player-stats player-stats--${size}">
       <div class="player-stats-heading${overall===null?"":" player-stats-heading--rated"}">${overall===null?
-        `<span>ATTRIBUTE ANALYSIS</span><small>${player.statEstimate?"GAME ESTIMATES":"06 // FIELD METRICS"}</small>`:
-        `<div class="player-stats-title"><span>ATTRIBUTE ANALYSIS</span><small>${player.statEstimate?"GAME ESTIMATES":"06 // FIELD METRICS"}</small></div>
+        `<span>ATTRIBUTE ANALYSIS</span>${player.statEstimate?"<small>GAME ESTIMATES</small>":""}`:
+        `<div class="player-stats-title"><span>ATTRIBUTE ANALYSIS</span>${player.statEstimate?"<small>GAME ESTIMATES</small>":""}</div>
         <div class="player-stats-overall" aria-label="${esc(position)} overall rating ${overall}, grade ${playerStatGrade(overall)}"><span>OVR${position?` // ${esc(position)}`:""}</span><strong>${overall}</strong><b class="evaluation-grade">${playerStatGrade(overall)}</b></div>`}</div>
       <svg class="player-stats-radar" viewBox="0 0 300 280" role="img" aria-label="${esc(player.name)} attributes. ${esc(description)}">
         <title>${esc(player.name)} // six field attributes</title>
