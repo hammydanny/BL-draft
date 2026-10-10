@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.8.2');
+    assert.equal(data.APP_VERSION,'0.6.8.3');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -406,7 +406,7 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     const root={dataset:{},style:{}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.2'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.3'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value)};
     const context=vm.createContext({document,window,localStorage,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}}});
     vm.runInContext(read('js/site-preferences.js'),context);const preferences=window.SitePreferences;
@@ -550,7 +550,7 @@ function appContext(initialStorage={},hash='#/'){
         el.classList.add(...classes.split(/\s+/));
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
-    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.2'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
+    const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.3'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
         createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};

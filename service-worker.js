@@ -1,5 +1,5 @@
 // Images/fonts only. HTML, CSS and JavaScript always use the network/browser cache.
-const CACHE_NAME="bld-static-v0.6.8.2";
+const CACHE_NAME="bld-static-v0.6.8.3";
 const CACHEABLE=/\.(?:avif|webp|svg|png|jpe?g|woff2)$/i;
 const scope=new URL(self.registration.scope);
 function staticAsset(url){return url.origin===scope.origin&&url.pathname.startsWith(scope.pathname)&&CACHEABLE.test(url.pathname);}
