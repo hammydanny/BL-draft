@@ -5,7 +5,7 @@ body{font-size:16px;line-height:1.4;display:flow-root;margin:0;min-height:100vh;
 .app-initializing body{opacity:0}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(#000,transparent 90%)}
 .background-tech{position:fixed;inset:0;pointer-events:none;overflow:hidden}
-.background-tech:before{content:"";position:absolute;width:min(86vw,1200px);height:min(86vw,1200px);left:50%;top:50%;transform:translate(-50%,-50%);background-color:var(--bg-page-glow);opacity:.22;-webkit-mask-image:url("images/background-symbol.svg");mask-image:url("images/background-symbol.svg");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
+.background-tech:before{content:"";position:absolute;width:min(100vw,1200px);height:min(100vw,1200px);left:50%;top:50%;transform:translate(-50%,-50%);background-color:var(--bg-page-glow);opacity:.22;-webkit-mask-image:url("images/background-symbol.svg");mask-image:url("images/background-symbol.svg");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
 h1,h2,h3,.current-bid,.sold-word,.winning-price,.budget-amount{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase}
 p{color:var(--muted);line-height:1.5}
 .system-tag,.panel-code,.team-code,.overlay-kicker{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue)}
