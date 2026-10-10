@@ -5,7 +5,7 @@ body{font-size:16px;line-height:1.4;display:flow-root;margin:0;min-height:100vh;
 .app-initializing body{opacity:0}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(#000,transparent 90%)}
 .background-tech{position:fixed;inset:0;pointer-events:none;overflow:hidden}
-.background-tech:before{content:"";position:absolute;width:62vw;height:62vw;left:50%;top:28%;transform:translate(-50%,-50%);border:1px solid rgba(41,163,255,.08);border-radius:50%;box-shadow:0 0 0 9vw rgba(41,163,255,.025),0 0 0 18vw rgba(41,163,255,.02)}
+.background-tech:before{content:"";position:absolute;width:min(100vw,1200px);height:min(100vw,1200px);left:50%;top:50%;transform:translate(-50%,-50%);background-color:var(--bg-page-glow);opacity:.22;-webkit-mask-image:url("images/background-symbol.svg");mask-image:url("images/background-symbol.svg");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
 h1,h2,h3,.current-bid,.sold-word,.winning-price,.budget-amount{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase}
 p{color:var(--muted);line-height:1.5}
 .system-tag,.panel-code,.team-code,.overlay-kicker{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue)}
@@ -414,13 +414,14 @@ to{opacity:1;transform:none;filter:none}}
 .position-badges.compact i{min-width:23px;padding:2px 4px;font-size:12px}
 .formation-slot>.slot-position{margin-inline:auto;text-align:center}
 .bench-player span .position-badges{justify-content:flex-start;margin-top:3px}
-/* One marker per slot. Suggested fits are gold; the hovered action has priority. */
+/* One marker per slot. Best fit is gold, good fit is green; the hovered action has priority. */
 .formation-slot{--target-color:var(--accent-text)}
-.formation-slot[data-fit="best"],.formation-slot[data-fit="good"]{--target-color:var(--chem-chemical)}
+.formation-slot[data-fit="best"]{--target-color:var(--chem-chemical)}
+.formation-slot[data-fit="good"]{--target-color:var(--chem-elite)}
 .slot-target-label{position:absolute;z-index:14;left:50%;top:-22px;transform:translateX(-50%);padding:3px 7px;color:var(--target-color);background:var(--bg-surface);border:1px solid currentColor;border-radius:2px;font-size:12px;font-weight:900;line-height:1;letter-spacing:.7px;white-space:nowrap;pointer-events:none}
 .slot-target-label[hidden]{display:none}
-.formation-slot[data-fit="good"]:not([data-target-action]) .slot-target-label{border-color:color-mix(in srgb,var(--chem-chemical),transparent 42%);font-weight:700}
-.formation-slot[data-fit]>.slot-position{color:var(--chem-chemical);background:color-mix(in srgb,var(--chem-chemical) 12%,var(--bg-surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--chem-chemical),transparent 55%)}
+.formation-slot[data-fit="good"]:not([data-target-action]) .slot-target-label{border-color:color-mix(in srgb,var(--target-color),transparent 42%);font-weight:700}
+.formation-slot[data-fit]>.slot-position{color:var(--target-color);background:color-mix(in srgb,var(--target-color) 12%,var(--bg-surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--target-color),transparent 55%)}
 .formation-slot[data-target-action="swap"]{--target-color:var(--chem-strong)}
 .formation-slot[data-target-action]{z-index:12;outline:2px solid var(--target-color);outline-offset:4px;border-radius:3px;background:color-mix(in srgb,var(--target-color) 12%,transparent);box-shadow:0 0 0 5px color-mix(in srgb,var(--target-color),transparent 88%),0 0 18px color-mix(in srgb,var(--target-color),transparent 70%);filter:none}
 .formation-slot[data-target-action="good"]{outline-width:1px;background:color-mix(in srgb,var(--target-color) 7%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--target-color),transparent 93%),0 0 10px color-mix(in srgb,var(--target-color),transparent 82%)}
