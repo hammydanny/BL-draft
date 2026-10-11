@@ -9,6 +9,8 @@
 .character-lore-card:hover .character-lore-image{transform:scale(1.035)}
 .character-lore-card-name{display:block;min-height:42px;padding:11px 10px;color:var(--text-primary);font:900 italic 17px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
 .character-lore-grid.character-lore-profile-grid{display:block;width:min(1240px,100%);margin:0 auto}
+/* Keep dossier text and portraits above the fixed emblem while panel backgrounds remain translucent. */
+.character-lore-detail-view{position:relative;z-index:1}
 .character-lore-detail-view .lore-toolbar{display:none}
 .character-lore-detail-view .page-context h1{overflow-wrap:anywhere}
 .character-profile-page{display:grid;gap:18px;min-width:0}
