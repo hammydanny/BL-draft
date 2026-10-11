@@ -96,7 +96,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
     assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
     const expected=['js/site-preferences.js','js/version.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
-        'js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
+        'js/player-reference.js','js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/site-information.js','js/ui/homepage.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
@@ -109,10 +109,10 @@ const baseURI='https://example.test/BL-draft/';
 const sandbox=vm.createContext({URL,document:{baseURI,addEventListener(){}},window:{addEventListener(){}}});
 let data;
 check('Data modules initialize in classic shared scope',()=>{
-    for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/formations.js','js/storage.js']){
+    for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/formations.js','js/storage.js']){
         vm.runInContext(read(file),sandbox,{filename:file});
     }
-    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
+    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
 });
 check('Unique player IDs, required records, numeric stats and image paths',()=>{
     assert(data?.players.length>0,'No players loaded');
@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.8.3');
+    assert.equal(data.APP_VERSION,'0.6.9');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -486,7 +486,7 @@ check('Team Builder target presentation, Auction OVR and shared report contracts
     assert(chemistryAt>=0&&chemistryAt<layoutAt,'Chemistry HUD must stay above lineup');
     assert(ui.includes('function setFormationSlotHint')&&ui.includes('action||fit')&&ui.includes('BEST FIT')&&ui.includes('GOOD FIT'),'One target label with action priority');
     assert(!/content:"(?:BEST FIT|GOOD FIT|SWAP)"/.test(styles),'No overlapping pseudo-labels');
-    assert(styles.includes('[data-target-action="swap"]')&&styles.includes('--target-color:var(--chem-strong)'),'Swap uses chemistry blue');
+    assert(styles.includes('[data-target-action="swap"]')&&styles.includes('--target-color:var(--fit-swap)')&&read('css/site-theme.css').includes('--fit-swap:var(--chem-strong)'),'Swap uses chemistry blue');
     assert(styles.includes('.money-input input:focus,.money-input input:focus-visible{outline:none!important'),'Bid input focus rectangle removed');
     assert(styles.includes('.share-team-grid{display:grid')&&styles.includes('.report-player-portrait{'),'Shared report retains squad columns and portrait frames');
     assert(read('js/results.js').includes('report-position')&&read('js/results.js').includes('report-captain'),'Report keeps readable position and Captain indicators');
@@ -551,7 +551,7 @@ function appContext(initialStorage={},hash='#/'){
     }
     const labels=[makeElement(),makeElement()];labels.forEach(el=>el.textContent=' // FAN PROJECT // 2026');
     const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.3'},getElementById:element,querySelector:selector=>['.site-header','.skip-link'].includes(selector)?element(selector):null,querySelectorAll:selector=>selector==='[data-app-version]'?labels:[],
-        createElement:()=>makeElement(),addEventListener(){},body:makeElement(),documentElement:makeElement()};
+        createElement:()=>makeElement(),addEventListener(){},body:makeElement(),head:makeElement(),documentElement:makeElement()};
     const saved=new Map(Object.entries(initialStorage));
     const localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,String(value)),removeItem:key=>saved.delete(key)};
     const events={};
@@ -591,7 +591,7 @@ check('v0.6.3 player expansion, conservative estimates and stable chronology',()
     app.run(`const ordered=[...players].sort(comparePlayerAppearance);
         assert(ordered.every((p,i)=>!i||comparePlayerAppearance(ordered[i-1],p)<=0));
         assert.equal(players.find(p=>p.name==='Rooke').primaryPosition,'GK');
-        assert(CHARACTER_DESCRIPTIONS.Rooke.includes('Manshine City')&&CHARACTER_DESCRIPTIONS.Rooke.includes('England U-20'));`);
+        assert(characterLoreDescription(playerById(58)).includes('Manshine City')&&characterLoreDescription(playerById(58)).includes('England U-20'));`);
 });
 check('Every pool category has valid members and first-click selection works with overlaps',()=>{
     const app=appContext();
@@ -825,5 +825,55 @@ check('Homepage Scouting Desk reuses database helpers and valid saved-phase navi
         assert.equal(dossier.searchParams.get('character'),'1');
     `);
 });
+
+// v0.6.9 integrity baseline: latest-main a05c482e08f85aabb4206fc56feae2a496860b22.
+const {validateReferenceData,formationFingerprint}=require('../scripts/data-validation.js');
+function referenceValidationInput(){return {
+    players:data.players,contexts:data.CHEMISTRY_CONTEXTS,pairs:data.CHEMISTRY_SPECIAL_PAIRS,
+    metadata:data.PLAYER_PROFILE_METADATA,categories:data.PLAYER_POOL_CATEGORIES,categoryIds:data.PLAYER_POOL_CATEGORY_IDS,
+    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,
+    formations:data.FORMATIONS,expectedFormationFingerprint:'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e',
+    assetExists(source){try{const url=new URL(source,baseURI);return url.href.startsWith(baseURI)&&fs.existsSync(path.join(root,decodeURIComponent(url.pathname.slice(new URL(baseURI).pathname.length))));}catch{return false;}}
+};}
+check('Player/reference integrity, chemistry ID adapters, verified quotes and immutable formation baseline',()=>{
+    assert.deepEqual(validateReferenceData(referenceValidationInput()),[]);
+    assert.equal(formationFingerprint(data.FORMATIONS),'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e');
+    const app=appContext();app.run(`
+        assert.equal(PLAYER_RECORDS.size,players.length);
+        for(const player of players){const record=playerRecord(player.id);assert.equal(record.player,player);assert(record.profile?.overview);assert.equal(verifiedPlayerQuotes(player.id).length,0);}
+        for(const pair of CHEMISTRY_REFERENCE_PAIRS){assert.equal(pair.score,playerChemistry(...pair.playerIds.map(playerById)));}
+        const missing={playerId:1,text:'Validation fixture only',sourceType:'manga',chapterOrEpisode:'1',sourceReference:'Integrity test',verification:'DRAFT'};
+        assert(!isVerifiedCanonQuote(missing));assert(!isVerifiedCanonQuote({...missing,verification:'VERIFIED',sourceReference:''}));
+    `);
+});
+check('Data validation rejects malformed players, reversed pairs, missing labels, bad IDs, quotes and coordinates',()=>{
+    const baseline=referenceValidationInput();
+    const reject=(changes,fragment)=>assert(validateReferenceData({...baseline,...changes}).some(error=>error.includes(fragment)),fragment);
+    reject({players:[...data.players,data.players[0]]},'duplicated');
+    reject({players:data.players.map((player,index)=>index?player:{...player,positions:['CF','CF'],stats:{...player.stats,spd:101}})},'secondary positions');
+    reject({players:data.players.map((player,index)=>index?player:{...player,image:'images/nonexistent.jpg'})},'image reference');
+    const first=data.CHEMISTRY_SPECIAL_PAIRS[0];reject({pairs:[...data.CHEMISTRY_SPECIAL_PAIRS,[first[1],first[0],...first.slice(2)]]},'reversed');
+    reject({pairs:[['Unknown Player',first[0],101,'','']]},'Unknown/self');
+    reject({pairs:[[first[0],first[0],50,'LABEL','Reason']]},'Unknown/self');
+    reject({pairs:[[first[0],first[1],50,'','']]},'label/reason');
+    reject({referencePairs:[{id:'bad',playerIds:[1,999999]}]},'Bad reference IDs');
+    reject({quotes:[{playerId:1,text:'Validation fixture only',sourceType:'manga',chapterOrEpisode:'1',sourceReference:'Integrity test',verification:'UNVERIFIED'}]},'quote');
+    const formations=JSON.parse(JSON.stringify(data.FORMATIONS));formations['4-3-3'][0].x=51;reject({formations},'coordinates changed');
+    reject({metadata:{999999:{overview:'Unknown',classification:'CANON'}}},'Unknown/malformed profile');
+    reject({metadata:{1:{overview:'Role test',classification:'CANON',canonPositions:[{position:'INVALID'}]}}},'canon role');
+    reject({categories:{unknown:{label:'Unknown',names:['Unknown Player']}}},'category');
+});
+check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
+    const lore=read('js/lore.js'),css=read('css/character-lore.css');
+    assert(!lore.includes('BATTLE SIM')&&!lore.includes('Placeholder:'),'No future-mode placeholder UI');
+    for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
+    for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
+    assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
+    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accessible compare controls');
+    assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
+    for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"','rel="canonical"'])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
+    for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
+});
+
 console.log(`\n${failures?'FAIL':'PASS'} preflight — ${failures} failed check(s). Browser UI testing is separate.`);
 process.exitCode=failures?1:0;

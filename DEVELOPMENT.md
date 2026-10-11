@@ -83,7 +83,7 @@ Header Quick Draft opens a compact name/color/size setup, validates the saved po
 ## Later release requirements
 
 - **V0.6.8:** delivered the Homepage/discovery, shared theme polish and project-information release.
-- **V0.6.9:** player database overhaul. Optional short player quotes must be real
+- **V0.6.9:** delivered player intelligence, ID-based reference adapters, comparison, exact chemistry evaluation and integrity validation. Optional short player quotes must be real
   canon lines, independently verified, not simply the Wiki featured quote, invented
   dialogue, AI paraphrases or another player's line. Store source/chapter internally;
   show **only the quote**, without name, chapter or source label. Omit unverifiable quotes.
@@ -117,7 +117,8 @@ V0.6.8 adds the shared Dark/Light polish while retaining this theme architecture
 
 `css/homepage.css` owns the landing page. `js/ui/homepage.js` reads existing
 players, grades, image URLs, chemistry and normalized saves; it never draws a
-player or writes a save. Featured identities are stable, with four lazy portraits.
+player or writes a save. The Scouting Desk searches real players, opens dossiers
+and evaluates chemistry through the existing shared helper.
 The tactical preview reads the existing formation without altering it.
 
 `js/ui/site-information.js` owns the one shared About/How to Play modal and its
@@ -141,3 +142,39 @@ The Scouting Desk reads the existing player and chemistry helpers. Portraits sha
 Builder selection updates the profile and hints without recreating the pitch or reserve list. Roster changes retain the Global Player Pool DOM and restore internal scroll. Slot hints use one `.slot-target-label`: an active swap takes priority over positional fit. The pointer engine, formation geometry and lineup scoring remain unchanged.
 
 Reports use a shared portrait / position / Captain frame. Desktop keeps the two-team screenshot layout; narrow screens stack with taller pitches. Cache-busting references and the images/fonts worker namespace follow the central release version.
+
+## V0.6.9 reference data
+
+`js/players.js` remains the authority for identity, ratings, attributes, gameplay
+positions and existing weapons. `js/player-reference.js` adds the ID-keyed
+profiles, explicit demonstrated-role notes, quote verification boundary and shared
+category registry. `PLAYER_RECORDS` references the original player object rather
+than copying its ratings. Auction category keys, labels and members are unchanged;
+the registry now loads once before both Database and Setup.
+
+Chemistry reference adapters resolve existing name-based tuples and team histories
+to stable player IDs once. The gameplay chemistry records and calculations remain
+unchanged. Team-context baselines are distinguished from exact pair evaluation.
+Affiliation/history describes recorded membership, not a claim of a current club.
+No nationality filter is exposed without a reliable nationality registry.
+
+`PLAYER_REFERENCE_SCHEMA_VERSION` identifies the reference format. Existing
+Auction/Standalone schema constants, storage keys and normalizers are retained.
+No save writes or migration occur in the Database. Ratings are project values;
+gameplay positions and demonstrated canon roles are separate classifications.
+
+`PLAYER_QUOTES` is empty until actual dialogue has been independently verified.
+A future entry needs player ID, exact text, manga/anime source, chapter/episode,
+source reference and `VERIFIED` status. Unverified, draft, missing-source and
+unknown-player quotes fail validation and are never shown. The UI shows only
+the quote; verification metadata remains internal.
+
+`node scripts/preflight.js` uses `scripts/data-validation.js` to reject invalid
+players, images, positions, categories, profiles, chemistry references, duplicate
+or reversed pairs, malformed explanations, unverified quotes and changed formation
+coordinates. The formation fingerprint is pinned to latest-main commit
+`a05c482e08f85aabb4206fc56feae2a496860b22`. This release's pitch sizing is CSS only.
+
+Directory cards reuse DOM nodes and decoded images. Search is debounced; sort
+orders and relationship indexes are cached. Compare accepts up to three players,
+uses the same six-axis radar and grade helper, and stays in page memory.

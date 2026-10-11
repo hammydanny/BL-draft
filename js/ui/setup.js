@@ -25,48 +25,6 @@ document.querySelectorAll("[data-game-mode]").forEach(button=>{
     });
 });
 
-const PLAYER_POOL_CATEGORIES = {
-    "blue-lock-project":{
-        label:"BLUE LOCK PROJECT",
-        names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora","Hajime Nishioka","Shizuka Haiji","Reiji Hiiragi","Taiga Tsunzaki","Aiki Himizu"]
-    },
-    "original-u20":{
-        label:"ORIGINAL JAPAN U-20",
-        names:["Sae Itoshi","Gen Fukaku","Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato","Shuto Sendo","Ryusei Shido"]
-    },
-    "world-five":{
-        label:"WORLD FIVE",
-        names:["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"]
-    },
-    "master-strikers":{
-        label:"MASTER STRIKERS",
-        names:["Noel Noa","Lavinho","Chris Prince","Marc Snuffy","Julien Loki"]
-    },
-    "new-gen-11":{
-        label:"NEW GENERATION XI",
-        names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Bunny Iglesias","Vivien Hugo","Teddy Knight"]
-    },
-    "nel-foreign":{
-        label:"NEL FOREIGN PLAYERS",
-        names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier","Rooke","Renoir"]
-    },
-    "japan-world-cup":{
-        label:"JAPAN U-20 WORLD CUP",
-        names:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Meguru Bachira","Hyoma Chigiri","Reo Mikage","Rensuke Kunigami","Eita Otoya","Oliver Aiku","Tabito Karasu","Gin Gagamaru","Jyubei Aryu","Kenyu Yukimiya","Ikki Niko","Yo Hiori","Shuto Sendo","Ranze Kurona","Zantetsu Tsurugi","Gen Fukaku","Jingo Raichi","Jin Kiyora","Nijiro Nanase","Shoei Baro"]
-    },
-    "world-cup-new":{
-        label:"U-20 WC NEWCOMERS",
-        names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes"]
-    },
-    "side-b":{
-        label:"SIDE-B",
-        names:["Seishiro Nagi","Ryosuke Kira","Haneru Shindo","Hajime Nishioka","Shigeo Mizuki","Reiji Hiiragi","Aiki Himizu","Keisuke Wanima","Hibiki Okawa"]
-    }
-};
-const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CATEGORIES).map(([key,data])=>[
-    key,new Set(players.filter(p=>data.names.includes(p.name)).map(p=>p.id))
-]));
-
 function ensurePoolCategoryState(){
     const keys=Object.keys(PLAYER_POOL_CATEGORIES);
     if(!playerPoolCategoryState||typeof playerPoolCategoryState!=="object")playerPoolCategoryState={};

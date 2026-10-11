@@ -173,7 +173,7 @@ function refreshFormationSelection(anchorSelector){
     });
     formationContent.querySelectorAll(".bench-player").forEach(card=>card.classList.toggle("selected",Number(card.dataset.playerId)===selectedFormationPlayerId));
     const hint=formationContent.querySelector(".formation-instructions strong");
-    if(hint)hint.textContent=player?`${player.name} // PRIMARY: ${primaryPosition(player)} // CANON: ${playerPositions(player).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE";
+    if(hint)hint.textContent=player?`${player.name} // PRIMARY: ${primaryPosition(player)} // GAMEPLAY ROLES: ${playerPositions(player).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT COMPATIBLE POSITIONS // DRAG OR TAP TO PLACE";
     restoreFormationViewport(snapshot);prioritizeVisiblePortraits(formationContent);
 }
 function renderFormationBuilder({preserveScroll=true}={}){
@@ -245,7 +245,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
 
         <div class="formation-instructions" style="${teamVars(team)}">
           <span>TACTICAL BOARD // DRAG & DROP ENABLED</span>
-          <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // CANON: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT CANONICAL POSITIONS // DRAG OR TAP TO PLACE"}</strong>
+          <strong>${selectedPlayer?`${esc(selectedPlayer.name)} // PRIMARY: ${primaryPosition(selectedPlayer)} // GAMEPLAY ROLES: ${playerPositions(selectedPlayer).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT COMPATIBLE POSITIONS // DRAG OR TAP TO PLACE"}</strong>
         </div>
 
         <div class="formation-layout ${standalone?"standalone-layout":""} ${benchCollapsed?"bench-hidden":""} ${playerDatabaseHidden?"database-hidden":""}">

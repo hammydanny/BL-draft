@@ -7,6 +7,7 @@
   --border-subtle:#254456;--border-strong:#3c657c;--border-line:rgba(112,172,208,.22);
   --text-primary:#f5f8ff;--text-secondary:#adc8da;--text-muted:#819caf;--text-subtle:#718ca3;--text-inverse:#fff;
   --accent:#149cff;--accent-hover:#37b7ec;--accent-text:#54c8ff;--accent-soft:rgba(20,156,255,.12);
+  --fit-best:var(--chem-chemical);--fit-good:var(--chem-elite);--fit-swap:var(--chem-strong);--selected-player:var(--accent);
   --link-text:#54c8ff;--link-hover:#f5f8ff;
   --scroll-track:#020811;--scroll-thumb:#169eff;--scroll-thumb-hover:#29b8ff;
   --pitch-legacy-start:#082d27;--pitch-legacy-end:#061f1c;
@@ -40,7 +41,7 @@ html[data-theme="light"]{
   --pitch-start:#dceaf1;--pitch-mid:#cddfe8;--pitch-end:#dceaf1;--pitch-share-start:#deebf2;--pitch-share-end:#cfdee7;
   --pitch-stripe:rgba(30,87,111,.065);--pitch-line:rgba(37,91,115,.32);--pitch-line-strong:rgba(31,81,104,.42);--pitch-goal:rgba(38,93,117,.28);--pitch-dot:rgba(25,73,94,.52);--pitch-share-line:rgba(37,91,115,.32);--pitch-share-soft:rgba(37,91,115,.18);--pitch-share-border:#87a8ba;
   --primary-start:#075fa9;--primary-end:#0870bb;
-  --chem-chemical:#b57400;--chem-elite:#078b4b;--chem-strong:#007dc3;--chem-link:#6a4fc4;--chem-weak:#d12f5d;
+  --chem-chemical:#976000;--chem-elite:#087a49;--chem-strong:#0070ad;--chem-link:#6a4fc4;--chem-weak:#d12f5d;
   --warning:#8f5d00;--success:#087a49;--danger:#b82246;
   --captain-text:#876b00;--share-text:#533dab;--role-canon:#087a49;
   --radar-glow:rgba(0,99,147,.16);--radar-cyan:#006393;--radar-grid:#9ab5ca;--radar-spoke:#b9cddb;--radar-fill:rgba(0,114,201,.2);
@@ -58,7 +59,7 @@ html[data-theme="light"] :is(.football-pitch,.formation-pitch-v2,.share-mini-pit
   --bg-surface:#f4f9fc;--bg-surface-raised:#e8f1f6;--bg-input:#f9fcfe;--bg-inset:rgba(215,230,240,.8);
   --text-primary:#17364d;--text-secondary:#335971;--text-muted:#52738a;--text-subtle:#617d90;
   --accent:#0877ad;--accent-text:#155f87;--border-subtle:#9db8c8;--border-strong:#6f96aa;
-  --chem-chemical:#b57400;--chem-elite:#078b4b;--chem-strong:#007dc3;--chem-link:#6a4fc4;--chem-weak:#d12f5d;
+  --chem-chemical:#976000;--chem-elite:#087a49;--chem-strong:#0070ad;--chem-link:#6a4fc4;--chem-weak:#d12f5d;
   --captain-text:#876b00;--role-canon:#087a49;
 }
 /* Team headings use one presentation value. Raw team colors and calculations stay intact. */

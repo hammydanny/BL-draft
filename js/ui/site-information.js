@@ -21,18 +21,19 @@ function siteInformationContent(type){
         <h3>YOUR SQUAD. YOUR EGO.</h3>
         <p>Blue Lock Draft is an unofficial fan-made football drafting and squad-building experience inspired by Blue Lock. Compete in a two-team Auction, create a standalone XI, explore formations and chemistry, and discover the players behind your next signing.</p>
       </div>
-      <div class="about-features"><span>AUCTION DRAFT</span><span>TEAM BUILDER</span><span>PLAYER EVALUATION</span><span>DATABASE &amp; LORE</span></div>
+      <div class="about-features"><span>AUCTION DRAFT</span><span>TEAM BUILDER</span><span>PLAYER INTELLIGENCE</span><span>CHEMISTRY DATABASE</span></div>
       <div class="credit-grid">
         <a class="credit-card" href="https://github.com/hammydanny" target="_blank" rel="noopener noreferrer"><span>DEVELOPED BY</span><strong>HAMMYDANNY</strong><small>VIEW GITHUB PROFILE ↗</small></a>
         <a class="credit-card" href="https://github.com/syaafibwn" target="_blank" rel="noopener noreferrer"><span>WITH SUPPORT FROM</span><strong>SYAAFIBWN</strong><small>VIEW GITHUB PROFILE ↗</small></a>
       </div>
       <div class="info-release"><span>CURRENT RELEASE <b>${APP_VERSION_LABEL}</b></span><span>DATA THROUGH <b>CH. ${APP_SUPPORTED_CHAPTER}</b></span></div>
+      <section class="info-section"><h3>RATINGS &amp; REFERENCE DATA</h3><p>OVR, attributes, S–G grades and chemistry scores are fan-made gameplay ratings, not official Blue Lock statistics. Position badges show project-compatible roles; dossiers list demonstrated canon roles separately where recorded. Chemistry interprets existing relationships and shared team history. Profiles are a partial reference through the supported chapter, and quotes appear only with verified manga/anime source records.</p></section>
       <section class="info-section"><h3>BUILT BY FANS</h3><p>A non-commercial, unofficial project. It is not affiliated with, endorsed by, or sponsored by the creators, publishers, licensors or official Blue Lock entities. Blue Lock names, characters, imagery and related intellectual property belong to their respective rights holders. Original website code and project design are separate from those rights.</p>
-        <div class="info-links"><a href="privacy/">PRIVACY NOTICE →</a><a href="legal/">LEGAL NOTICE →</a><a href="changelog/">RELEASE HISTORY →</a></div>
+        <div class="info-links"><a href="privacy/">PRIVACY NOTICE →</a><a href="legal/">LEGAL NOTICE →</a><a href="changelog/">RELEASE HISTORY →</a><a href="legal/#credits">FONT CREDITS &amp; LICENCES →</a></div>
       </section>`;
     return `
       <p class="guide-intro">Choose your route to the ultimate XI. Auction is a local two-player contest; Team Builder is your own squad lab. Your progress stays in this browser.</p>
-      <nav class="guide-jump" aria-label="How to Play sections"><a href="#guide-auction">AUCTION</a><a href="#guide-builder">TEAM BUILDER</a><a href="#guide-extras">QUICK DRAFT &amp; RATINGS</a></nav>
+      <nav class="guide-jump" aria-label="How to Play sections"><a href="#guide-auction">AUCTION</a><a href="#guide-builder">TEAM BUILDER</a><a href="#guide-database">DATABASE</a><a href="#guide-extras">QUICK DRAFT &amp; RATINGS</a></nav>
       <section id="guide-auction" class="guide-section"><div class="guide-heading"><span>01 // COMPETE</span><h3>AUCTION DRAFT</h3></div>
         <ol class="guide-steps">
           <li><h4>CONFIGURE YOUR TEAMS</h4><p>Choose names, colors, budgets, bid interval and roster size.</p></li>
@@ -48,14 +49,15 @@ function siteInformationContent(type){
           <li><h4>SELECT YOUR PLAYERS</h4><p>Build a separate squad from the full player pool.</p></li>
           <li><h4>ARRANGE THE PITCH</h4><p>Pick a formation, then drag players into slots or onto Reserves.</p></li>
           <li><h4>REVIEW PLAYER OVR</h4><p>Check individual attributes and the OVR adjusted for each occupied position.</p></li>
-          <li><h4>BUILD CHEMISTRY</h4><p>Inspect pitch links and the chemistry panel to find connected combinations.</p></li>
+          <li><h4>BUILD CHEMISTRY &amp; PICK A CAPTAIN</h4><p>Inspect pitch links for connected combinations. Select a deployed player and use Set Captain; the badge and Captain assignment are retained in your shared formation.</p></li>
           <li><h4>TRY AUTO BEST</h4><p>Optionally let Auto Best check all ten formations for a strong lineup from your selected squad.</p></li>
           <li><h4>SHARE YOUR XI</h4><p>The shared report preserves your chosen formation. Partial squads use only deployed players.</p></li>
         </ol>
       </section>
+      <section id="guide-database" class="guide-section"><div class="guide-heading"><span>03 // SCOUT</span><h3>PLAYER INTELLIGENCE</h3></div><p>Search the Character Database, filter gameplay roles, OVR grade, category and recorded affiliation/history, then sort by appearance or attributes. Compare up to three players and open dossiers for profiles, playstyle, positional evidence and chemistry.</p><p>Primary and secondary badges are project gameplay roles. Demonstrated canon positions appear separately where recorded. OVR and radar attributes use the shared S–G grade scale: S 90–100, A 80–89, B 70–79, C 60–69, D 50–59, E 40–49, F 30–39, G 0–29.</p><p>In Chemistry, select Player A and Player B to evaluate any pair. Registered pair relationships and team-history baselines are clearly labelled.</p></section>
       <section id="guide-extras" class="guide-section guide-extras">
         <div class="guide-note"><h3>QUICK DRAFT</h3><p>Set up a 5v5, 11v11 or 15v15 game and randomly deal two squads from the selected pool, skipping bidding. Full Setup also offers Random Draft.</p></div>
-        <div class="guide-note"><h3>CHEMISTRY LINKS</h3><p>Link colors show the strength of a registered relationship. The database explains shared history and combinations; player placement also matters when evaluating your XI.</p></div>
+        <div class="guide-note"><h3>CHEMISTRY LINKS</h3><p>Chemical 95–100 (gold), Elite 90–94 (green), Strong 82–89 (cyan), Link 70–81 (purple), Weak 0–69 (red). Scores interpret recorded relationships and compatibility. Tactical adjacency and player placement determine which links contribute to your XI.</p></div>
         <div class="guide-note"><h3>PLAYER RATINGS</h3><p>Numbers and S–G grades are fan-made gameplay values, not official Blue Lock ratings. The six-axis radar shows field attributes; GK is a separate specialist metric.</p></div>
         <div class="guide-note"><h3>LOCAL SAVES</h3><p>Return through Resume Auction to continue a valid session. Team Builder saves separately. Clearing this site's browser data removes those saves.</p></div>
       </section>`;
