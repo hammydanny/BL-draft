@@ -3,6 +3,41 @@
 let loreDatabaseCache=null;
 const characterCompareIds=new Set();
 let characterDirectoryReturn=null,loreControlsInitialized=false;
+const dossierNavigation={observer:null,frame:0,cancelScroll:null};
+function stopDossierNavigation(){
+    dossierNavigation.observer?.disconnect();dossierNavigation.observer=null;
+    dossierNavigation.cancelScroll?.();
+}
+function setDossierSectionActive(id){
+    document.querySelectorAll(".character-profile-jump a").forEach(link=>{
+        if(link.hash==="#"+id)link.setAttribute("aria-current","location");else link.removeAttribute("aria-current");
+    });
+}
+function trackDossierSections(grid){
+    if(typeof IntersectionObserver!=="function")return;
+    const sections=[...grid.querySelectorAll(".character-profile-page>[id]")];if(!sections.length)return;
+    const visible=new Map(),offset=parseFloat(getComputedStyle(sections[0]).scrollMarginTop)||72;
+    dossierNavigation.observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>visible.set(entry.target,entry.isIntersecting));
+        const section=[...visible].filter(([,shown])=>shown).map(([node])=>node).sort((a,b)=>Math.abs(a.getBoundingClientRect().top-offset)-Math.abs(b.getBoundingClientRect().top-offset))[0];
+        if(section)setDossierSectionActive(section.id);
+    },{rootMargin:`-${offset}px 0px 0px 0px`,threshold:[0,1]});
+    sections.forEach(section=>dossierNavigation.observer.observe(section));
+}
+function scrollDossierSection(link){
+    const section=document.getElementById(link.hash.slice(1));if(!section)return;
+    dossierNavigation.cancelScroll?.();setDossierSectionActive(section.id);
+    const heading=section.querySelector("h3");heading?.setAttribute("tabindex","-1");heading?.focus({preventScroll:true});
+    if(window.matchMedia("(prefers-reduced-motion: reduce)").matches){section.scrollIntoView({behavior:"instant",block:"start"});return;}
+    const start=window.scrollY,margin=parseFloat(getComputedStyle(section).scrollMarginTop)||0;
+    const end=Math.max(0,Math.min(section.getBoundingClientRect().top+start-margin,document.documentElement.scrollHeight-window.innerHeight));
+    const began=performance.now();
+    const cancel=()=>{cancelAnimationFrame(dossierNavigation.frame);dossierNavigation.frame=0;for(const type of ["wheel","touchstart","keydown"])window.removeEventListener(type,cancel);dossierNavigation.cancelScroll=null;};
+    dossierNavigation.cancelScroll=cancel;
+    for(const type of ["wheel","touchstart","keydown"])window.addEventListener(type,cancel,{passive:true});
+    const step=now=>{const progress=Math.min(1,(now-began)/300),eased=1-Math.pow(1-progress,3);window.scrollTo({top:start+(end-start)*eased,behavior:"instant"});if(progress<1)dossierNavigation.frame=requestAnimationFrame(step);else cancel();};
+    dossierNavigation.frame=requestAnimationFrame(step);
+}
 function normalizeLoreSearch(value){return String(value||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
 function matchesLoreSearch(text,query){return query.split(/\s+/).filter(Boolean).every(word=>text.includes(word));}
 function characterLoreDescription(player){return playerRecord(player.id)?.profile?.overview||`${player.name} is listed in the project as a ${primaryPosition(player)}. No additional profile is recorded.`;}
@@ -57,18 +92,18 @@ function characterLoreProfileMarkup(player){
     const links=getCharacterChemistry(player).pairLinks.slice().sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title));
     const rows=PLAYER_RADAR_AXES.map(axis=>`<div class="character-profile-stat"><span>${axis.label}</span><small>${axis.name.toUpperCase()}</small><strong>${playerStats(player)[axis.key]}</strong><b class="evaluation-grade">${playerStatGrade(playerStats(player)[axis.key])}</b></div>`).join("");
     const positions=`<div class="character-position-analysis"><div><span class="reference-classification">GAMEPLAY INTERPRETATION</span><h4>PROJECT POSITIONS</h4><dl><dt>Primary</dt><dd>${primaryPosition(player)}</dd><dt>Secondary</dt><dd>${playerPositions(player).filter(position=>position!==primaryPosition(player)).join(" / ")||"None listed"}</dd></dl><p>These roles determine compatibility in Blue Lock Draft. They are separate from demonstrated story positions.</p></div><div><span class="reference-classification">CANON ROLE REFERENCE</span><h4>DEMONSTRATED POSITIONS</h4>${canon.length?`<ul>${canon.map(role=>`<li><b>${role.position}</b> ${esc(role.context)}</li>`).join("")}</ul><p>Based on the existing character profile. This is a partial role record, not a complete career list.</p>`:`<p>No specific demonstrated position is recorded in this dossier yet. Gameplay badges are not used as canon evidence.</p>`}</div></div>`;
-    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind">PLAYSTYLE</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No separately documented weapon entries yet. The player profile describes the playstyle currently recorded.</p>`;
+    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind">PLAYSTYLE</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
     const pairCards=links.map(link=>`<article class="character-profile-chemistry-card ${chemistryTier(link.score)}"><div class="character-profile-chemistry-top"><div class="character-profile-chemistry-names">${link.playerIds.filter(id=>id!==player.id).map(characterPersonLink).join(" × ")}</div><div class="character-profile-score ${chemistryTier(link.score)}"><small>${chemistryTierLabel(link.score)}</small><strong>${link.score}</strong><span>/ 100</span></div></div><span class="character-profile-chemistry-label">${esc(link.label)}</span><p>${esc(link.description)}</p></article>`).join("");
     const teamCards=history.map(context=>`<article class="character-profile-team-card"><div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CONTEXT</small><strong>${context.score}</strong><span>${chemistryTierLabel(context.score)}</span></div></div><p>${esc(context.description)}</p><div class="character-profile-context-members">${context.playerIds.map(characterPersonLink).join("")}</div></article>`).join("");
     return `<div class="character-profile-page"><div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER // DOSSIER ${String(player.id).padStart(2,"0")}</span></div>
-      <section class="character-profile-hero" aria-label="Player identity"><div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div><div class="character-profile-overview"><span class="character-profile-kicker">FIELD INTELLIGENCE // MANGA APPEARANCE CH. ${player.debutChapter}</span><h2>${esc(player.name)}</h2><div class="character-profile-positions">${positionBadges(player)}</div><div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div><p class="character-profile-rating-note">PROJECT RATING // FAN-MADE GAMEPLAY VALUES</p><div class="character-profile-description"><h3>PLAYER PROFILE</h3><p>${esc(characterLoreDescription(player))}</p></div><div class="character-profile-categories">${record.categories.map(category=>`<span>${esc(category.label)}</span>`).join("")}</div></div></section>
-      <nav class="character-profile-jump" aria-label="Dossier sections"><a href="#dossier-attributes">ATTRIBUTES</a><a href="#dossier-positions">POSITIONS</a><a href="#dossier-weapons">PLAYSTYLE</a><a href="#dossier-chemistry">CHEMISTRY</a><a href="#dossier-history">HISTORY</a></nav>
+      <section class="character-profile-hero" aria-label="Player identity"><div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div><div class="character-profile-overview"><span class="character-profile-kicker">FIELD INTELLIGENCE // MANGA APPEARANCE CH. ${player.debutChapter}</span><h2>${esc(player.name)}</h2>${playerNationalityMarkup(player)}<div class="character-profile-positions">${positionBadges(player)}</div><div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div><p class="character-profile-rating-note">PROJECT RATING // FAN-MADE GAMEPLAY VALUES</p><div class="character-profile-description"><h3>PLAYER PROFILE</h3><p>${esc(characterLoreDescription(player))}</p></div><div class="character-profile-categories">${record.categories.map(category=>`<span>${esc(category.label)}</span>`).join("")}</div></div></section>
+      <nav class="character-profile-jump" aria-label="Dossier sections"><a href="#dossier-attributes" aria-current="location">ATTRIBUTES</a><a href="#dossier-positions">POSITIONS</a><a href="#dossier-weapons">PLAYSTYLE</a><a href="#dossier-chemistry">CHEMISTRY</a><a href="#dossier-history">HISTORY</a>${quotes.length?'<a href="#dossier-quote">EGO STATEMENT</a>':""}</nav>
       <div id="dossier-attributes">${dossierSection("01 // PROJECT RATINGS","CORE ATTRIBUTES",`<div class="character-attribute-layout">${playerStatsRadar(player,"lore")}<div class="character-profile-stat-grid">${rows}<p class="character-attribute-note">S 90–100 · A 80–89 · B 70–79 · C 60–69 · D 50–59 · E 40–49 · F 30–39 · G 0–29. GK remains a separate specialist metric.</p></div></div>`)}</div>
       <div id="dossier-positions">${dossierSection("02 // POSITIONAL ANALYSIS","ROLES &amp; EVIDENCE",positions)}</div>
       <div id="dossier-weapons">${dossierSection("03 // WEAPON / PLAYSTYLE","FOOTBALL WEAPONS",weaponCards)}</div>
       <div id="dossier-chemistry">${dossierSection("04 // CHEMICAL REACTIONS","PAIR CHEMISTRY",`<p class="character-section-note">${links.length} registered relationships, from strongest links to rivalry and weak links. Scores use the project's existing chemistry model.</p><div class="character-profile-chemistry-grid">${pairCards||'<p class="lore-empty">No special pair relationship is registered. Shared-history or unproven links still apply in the game.</p>'}</div>`)}</div>
       <div id="dossier-history">${dossierSection("05 // CAREER / AFFILIATION","TEAM HISTORY",`<p class="character-section-note">Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation.</p><div class="character-profile-team-grid">${teamCards||'<p class="lore-empty">No team history is recorded for this player yet.</p>'}</div>`)}</div>
-      ${quotes.length?dossierSection("06 // VERIFIED DIALOGUE","CANON QUOTE",quotes.map(quote=>`<figure class="character-quote"><blockquote>${esc(quote.text)}</blockquote></figure>`).join("")):""}</div>`;
+      ${quotes.length?`<div id="dossier-quote">${dossierSection("06 // VERIFIED DIALOGUE","EGO STATEMENT",quotes.map(quote=>`<figure class="character-quote"><blockquote>${esc(quote.text)}</blockquote><figcaption>— ${esc(player.name)} <span>${quote.sourceType==="manga"?`MANGA // CH. ${quote.chapter}`:`ANIME // EP. ${quote.episode}`}</span></figcaption></figure>`).join(""))}</div>`:""}</div>`;
 }
 function renderLoreCards(grid,records,cardMarkup,emptyMessage){
     if(!records.length){grid.innerHTML=`<p class="lore-empty">${emptyMessage}</p>`;return;}
@@ -88,6 +123,7 @@ function toggleCharacterComparison(id){
     renderCharacterComparison();if(status)status.textContent=`${characterCompareIds.size} players selected for comparison.`;
 }
 function renderCharacterLore(){
+    stopDossierNavigation();
     initializeLoreControls();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.remove("character-lore-profile-grid");
     const screen=document.getElementById("character-lore-screen");screen?.classList.remove("character-lore-detail-view");
     const title=screen?.querySelector(".page-context h1");if(title)title.textContent="CHARACTERS";
@@ -96,7 +132,7 @@ function renderCharacterLore(){
     const filtered=filteredCharacterLore();renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS. TRY RESET FILTERS.");prioritizeVisiblePortraits(grid);syncCharacterCompareButtons();
     const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${players.length} PLAYERS`;
 }
-function renderCharacterProfile(player){const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);prioritizeVisiblePortraits(grid);}
+function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
 function syncDatabaseMetadata(title,description){
     document.title=`${title} — Blue Lock Draft`;
     for(const selector of ['meta[name="description"]','meta[property="og:description"]'])document.querySelector(selector)?.setAttribute("content",description);
@@ -135,16 +171,16 @@ function renderChemistryPairEvaluation(){
 }
 function renderChemistryLore(){initializeLoreControls();const grid=document.getElementById("chemistryLoreGrid");if(!grid)return;renderChemistryPairEvaluation();const entries=filteredChemistryLore();renderLoreCards(grid,entries,chemistryLoreCard,"NO REGISTERED ENTRIES MATCH YOUR FILTERS. EXACT PAIR EVALUATION STILL USES THE GAME MODEL.");const count=document.getElementById("chemistryLoreCount");if(count)count.textContent=`${entries.length} / ${loreDatabase().chemistry.length} REGISTERED ENTRIES`;}
 function resetLoreFilters(kind){const defaults=kind==="character"?{Search:"",Position:"ALL",Grade:"ALL",Affiliation:"ALL",Category:"ALL",Sort:"chronological"}:{Search:"",PlayerA:"ALL",PlayerB:"ALL",Context:"ALL",Type:"ALL",Tier:"ALL",Sort:"score-desc"};for(const [control,value] of Object.entries(defaults)){const input=document.getElementById(kind+"Lore"+control);if(input)input.value=value;}if(kind==="character")renderCharacterLore();else renderChemistryLore();}
-function openLoreMenu(options={}){setVisibleScreen(document.getElementById("lore-menu-screen"),options);const counts=document.getElementById("databaseHubCounts");if(counts)counts.innerHTML=`<span>${players.length} PLAYER DOSSIERS</span><span>${CHEMISTRY_REFERENCE_PAIRS.length} PAIR RELATIONSHIPS</span><span>${CHEMISTRY_REFERENCE_CONTEXTS.length} TEAM CONTEXTS</span>`;syncDatabaseMetadata("Database / Player Intelligence","Explore character dossiers, compare project ratings, and inspect recorded chemistry and team history.");}
+function openLoreMenu(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("lore-menu-screen"),options);const counts=document.getElementById("databaseHubCounts");if(counts)counts.innerHTML=`<span>${players.length} PLAYER DOSSIERS</span><span>${CHEMISTRY_REFERENCE_PAIRS.length} PAIR RELATIONSHIPS</span><span>${CHEMISTRY_REFERENCE_CONTEXTS.length} TEAM CONTEXTS</span>`;syncDatabaseMetadata("Database / Player Intelligence","Explore character dossiers, compare project ratings, and inspect recorded chemistry and team history.");}
 function openCharacterLore(options={}){const id=new URL(window.location.href).searchParams.get("character");if(id&&playerById(Number(id))){openCharacterProfileById(id,{...options,skipHistory:true});return;}if(id){updateRoute("lore",{databaseView:"characters",replace:true});return;}setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();restoreCharacterDirectory();syncDatabaseMetadata("Character Database","Search, filter and compare Blue Lock players. Browse fan-made OVR, S–G grades, positions and detailed dossiers.");}
-function openChemistryLore(options={}){setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();syncDatabaseMetadata("Chemistry Database","Explore player chemistry, relationship tiers and team histories. Check any two players using the existing game model.");}
+function openChemistryLore(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();syncDatabaseMetadata("Chemistry Database","Explore player chemistry, relationship tiers and team histories. Check any two players using the existing game model.");}
 function bindLoreUI(){
     const navigate=event=>{const person=event.target.closest("[data-character-id]");if(!person||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();openCharacterProfileById(person.dataset.characterId);};
     document.getElementById("character-lore-screen")?.addEventListener("click",event=>{
         if(event.target.closest("[data-character-back]")){event.preventDefault();returnToCharacterDirectory();return;}
         const compare=event.target.closest("[data-compare-player]");if(compare){const withinPanel=!!compare.closest(".character-comparison");toggleCharacterComparison(compare.dataset.comparePlayer);if(withinPanel){const next=document.querySelector(".character-comparison [data-compare-clear]")||document.getElementById("characterLoreSearch");next?.focus({preventScroll:true});}return;}
         if(event.target.closest("[data-compare-clear]")){characterCompareIds.clear();renderCharacterComparison();const status=document.getElementById("characterLoreCompareStatus");if(status)status.textContent="Comparison cleared.";document.getElementById("characterLoreSearch")?.focus();return;}
-        const jump=event.target.closest('.character-profile-jump a');if(jump){event.preventDefault();document.getElementById(jump.hash.slice(1))?.scrollIntoView({behavior:"instant",block:"start"});return;}navigate(event);
+        const jump=event.target.closest('.character-profile-jump a');if(jump){event.preventDefault();scrollDossierSection(jump);return;}navigate(event);
     });
     document.getElementById("chemistry-lore-screen")?.addEventListener("click",navigate);
     document.getElementById("characterLoreCompareView")?.addEventListener("click",()=>{const panel=document.getElementById("characterLoreComparison");panel?.scrollIntoView({behavior:"instant",block:"start"});const title=document.getElementById("characterCompareTitle");title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});});

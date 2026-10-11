@@ -216,10 +216,10 @@ to{top:100%}}
 .penalty-box{position:absolute;left:30%;width:40%;height:16%;border:1px solid var(--pitch-line-strong)}
 .penalty-box.top{top:3%;border-top:0}
 .penalty-box.bottom{bottom:3%;border-bottom:0}
-.formation-slot{position:absolute;width:94px;transform:translate(-50%,-50%);padding:24px 0 0;color:white;background:transparent;border:0;text-align:center}
-.formation-slot img{display:block;width:62px;height:62px;margin:auto;object-fit:cover;border:2px solid var(--team);border-radius:50%;box-shadow:0 0 18px var(--team-glow)}
-.formation-slot strong{display:block;overflow:hidden;margin-top:3px;padding:3px 5px;background:rgba(1,7,13,.88);font:800 12px "Barlow Condensed";text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
-.slot-position{display:inline-block;margin-bottom:3px;border:1px solid transparent;padding:2px 5px;color:var(--team-heading,var(--team));background:var(--bg-surface);font-size:12px;font-weight:700}
+.formation-slot{position:absolute;width:94px;transform:translate(-50%,-50%);padding:20px 0 0;color:white;background:transparent;border:0;text-align:center}
+.formation-slot img{display:block;width:46px;height:46px;margin:auto;object-fit:cover;border:2px solid var(--team);border-radius:50%;box-shadow:0 0 18px var(--team-glow)}
+.formation-slot strong{display:block;overflow:hidden;margin-top:2px;padding:1px 4px;background:rgba(1,7,13,.88);font:800 12px "Barlow Condensed";text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.slot-position{display:inline-block;margin-bottom:2px;border:1px solid transparent;padding:1px 5px;color:var(--team-heading,var(--team));background:var(--bg-surface);font-size:12px;font-weight:700;line-height:1}
 .empty-slot{display:grid;width:55px;height:55px;margin:auto;place-items:center;color:var(--team-heading,var(--team));background:rgba(0,0,0,.35);border:1px dashed var(--team);border-radius:50%;font-size:25px}
 .formation-slot.selected img{transform:scale(1.1);box-shadow:0 0 0 4px var(--team-soft),0 0 28px var(--team)}
 .bench-panel{padding:13px;background:linear-gradient(145deg,var(--bg-panel-start),var(--bg-panel-end));border:1px solid var(--team-soft)}
@@ -326,7 +326,7 @@ to{opacity:1;transform:none;filter:none}}
 .game-mode-card.active span,.game-mode-card.active strong{color:var(--blue)}
 .mode-note{margin-top:7px;color:var(--text-muted)}
 @media(max-width:700px){.game-mode-grid{grid-template-columns:repeat(2,1fr)}}
-/* FORMATION BUILDER */ .formation-v2-shell{--pitch-height:clamp(790px,78vh,810px);max-width:var(--site-width);margin:12px auto 0}
+/* FORMATION BUILDER */ .formation-v2-shell{--pitch-height:clamp(650px,69vh,740px);max-width:var(--site-width);margin:12px auto 0}
 .formation-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .formation-actions button{padding:9px 12px;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-strong);font-size:12px;font-weight:800;letter-spacing:1.3px}
 .formation-actions button:hover{color:var(--text-primary);border-color:var(--blue)}
@@ -362,7 +362,7 @@ to{opacity:1;transform:none;filter:none}}
 .formation-actions button{flex:1}
 .formation-control-panel .formation-picker{display:grid;grid-template-columns:repeat(3,1fr)}
 .formation-pitch-v2{min-height:var(--pitch-height)}
-.formation-slot img{width:44px;height:44px}
+.formation-slot img{width:40px;height:40px}
 .formation-slot strong{max-width:64px;font-size:12px}
 .bench-player b{display:none}}
 /* GLOBAL CONTROLS + SHARE SCREEN */ .results-actions-top{max-width:900px;margin:12px auto 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -452,9 +452,8 @@ to{opacity:1;transform:none;filter:none}}
 .formation-menu-group button:hover,.formation-menu-group button.active{color:var(--text-primary);border-color:var(--blue);background:rgba(20,156,255,.17)}
 .formation-menu-group button.active{box-shadow:inset 0 -2px var(--blue)}
 /* Larger player markers and text on desktop. */ @media (min-width:761px){.formation-slot{width:94px}
-  .formation-slot img{width:52px;height:52px;border-width:2px}
-  .formation-slot strong{max-width:94px;margin-top:3px;padding:2px 4px;font-size:13px;line-height:1}
-  .slot-position{margin-bottom:3px;padding:1px 6px;font-size:12px;line-height:1}
+  .formation-slot img{width:46px;height:46px;border-width:2px}
+  .formation-slot strong{max-width:94px;font-size:13px;line-height:1}
   .empty-slot{width:68px;height:68px;font-size:30px}
   .position-badges.compact{gap:3px;margin-top:4px}
   .position-badges.compact i{min-width:27px;padding:3px 5px;font-size:12px}
@@ -468,7 +467,7 @@ to{opacity:1;transform:none;filter:none}}
 @media(max-width:700px){.formation-menu{width:100%;min-width:0}
 .formation-menu-popover{left:0;right:auto;width:min(100%,340px)}
 .formation-menu-group button{min-width:67px}
-.formation-slot img{width:52px;height:52px}
+.formation-slot img{width:44px;height:44px}
 .formation-slot strong{max-width:72px;font-size:12px}
 .slot-position{font-size:12px}}
 /* RATINGS */ .effective-ovr{position:absolute;right:7px;top:24px;z-index:5;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--bg-surface);border:2px solid var(--blue);box-shadow:0 0 12px rgba(20,156,255,.35);color:var(--text-primary);font:900 12px "Barlow Condensed";font-style:normal}
@@ -521,6 +520,8 @@ to{opacity:1;transform:none;filter:none}}
 .formation-layout.bench-hidden:not(.database-hidden) .player-info-panel{display:block}
 .formation-layout.bench-hidden .bench-panel{display:none}
 .player-info-panel{min-width:0}
+.player-nationality{display:flex;align-items:center;gap:7px;margin:4px 0;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.player-nationality img{display:block;flex:0 0 24px;width:24px;height:16px;object-fit:cover;border:1px solid var(--border-strong);border-radius:1px}
 .formation-player-token{position:relative}
 .pitch-player-portrait{position:relative;width:max-content;margin:auto}
 .formation-player-token .effective-ovr{position:absolute;right:-8px;top:auto;bottom:0;display:grid;place-items:center;min-width:28px;height:24px;padding:0 4px;border:1px solid var(--team);border-radius:3px;background:#030b13;color:#fff;font:900 16px/1 "Barlow Condensed";pointer-events:none}
@@ -854,7 +855,7 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .player-captain-control button:disabled{opacity:.35;cursor:not-allowed}
 .player-captain-control.active{border-color:var(--captain-text);box-shadow:inset 3px 0 0 var(--captain-text)}
 .player-captain-control.active button{background:#ffe269;color:#151000;border-color:#ffe269}
-.captain-badge{position:absolute;z-index:8;left:calc(50% - 22px);top:4px;transform:translate(-35%,-35%);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#101000;background:#ffe269;border:2px solid #fff3a8;box-shadow:0 0 12px rgba(255,226,105,.5);font:900 12px "Barlow Condensed";pointer-events:none}
+.captain-badge{position:absolute;z-index:8;left:calc(50% - 22px);top:4px;transform:translateX(-35%);display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#101000;background:#ffe269;border:2px solid #fff3a8;box-shadow:0 0 12px rgba(255,226,105,.5);font:900 12px "Barlow Condensed";pointer-events:none}
 /* Captain status is shown by the close badge only; no slot-border treatment. */ /* When a roster contains fewer than eleven players, the unused parts of the 11-a-side shape become quiet optional positions rather than fake empty starters. They remain clickable/draggable so the user can relocate a deployed player. */ .formation-slot.partial-inactive:not(.occupied){opacity:.24;border-style:dashed;filter:saturate(.45)}
 .formation-slot.partial-inactive:not(.occupied) .empty-slot{font-size:25px;color:var(--text-muted)}
 .formation-slot.partial-inactive:not(.occupied):hover, .formation-slot.partial-inactive.pointer-drop-target{opacity:1;filter:none}
@@ -1135,10 +1136,10 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
 .setup-box-wide .pool-player-info strong{display:block!important;overflow:hidden!important;margin-top:2px!important;color:var(--text-primary)!important;text-overflow:ellipsis!important;white-space:nowrap!important;text-transform:uppercase!important}
 .setup-box-wide .pool-player-check{right:7px!important;top:7px!important;width:25px!important;height:25px!important}
 /* Reserve the fit row inside every slot, including when its label is hidden.
-   Fixed name height keeps neighboring rows clear without moving slot coordinates. */ .formation-player-token{width:100%;max-width:94px}
+   Compact, fixed-height names preserve clearance without moving coordinates. */ .formation-player-token{width:100%;max-width:94px}
 .formation-player-token img{display:block;margin-inline:auto}
-.formation-player-token strong{display:-webkit-box;width:100%;max-width:100%;height:30px;min-height:30px;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;line-height:1;overflow-wrap:anywhere}
-@media(max-width:760px){.formation-v2-shell{--pitch-height:820px}.formation-player-token{max-width:78px}.formation-player-token>strong{max-width:58px;margin-inline:auto}.slot-target-label{padding-inline:4px;letter-spacing:.35px;text-align:center}.slot-position{padding:1px 5px;line-height:1}}
+.formation-player-token strong{display:block;width:100%;max-width:100%;height:18px;min-height:18px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:14px}
+@media(max-width:760px){.formation-v2-shell{--pitch-height:clamp(690px,82vh,740px)}.formation-player-token{max-width:78px}.formation-player-token>strong{max-width:58px;margin-inline:auto}.slot-target-label{padding-inline:4px;letter-spacing:.35px;text-align:center}}
 /* RESTORE PLAYER-POOL EXPERIENCE */ .category-section{padding:9px 10px!important}
 .category-section .preset-label{margin-bottom:5px!important;font-size:12px!important}
 .pool-category-grid{display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:4px!important}

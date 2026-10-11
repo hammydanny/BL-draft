@@ -112,7 +112,7 @@ check('Data modules initialize in classic shared scope',()=>{
     for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/formations.js','js/storage.js']){
         vm.runInContext(read(file),sandbox,{filename:file});
     }
-    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
+    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
 });
 check('Unique player IDs, required records, numeric stats and image paths',()=>{
     assert(data?.players.length>0,'No players loaded');
@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9');
+    assert.equal(data.APP_VERSION,'0.6.9.1');
     assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
     assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
     assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
@@ -826,12 +826,12 @@ check('Homepage Scouting Desk reuses database helpers and valid saved-phase navi
     `);
 });
 
-// v0.6.9 integrity baseline: latest-main a05c482e08f85aabb4206fc56feae2a496860b22.
+// v0.6.9.1 integrity baseline: latest-main 2fb9dfdd09330f3fb91f061466e6feeaa743b33f.
 const {validateReferenceData,formationFingerprint}=require('../scripts/data-validation.js');
 function referenceValidationInput(){return {
     players:data.players,contexts:data.CHEMISTRY_CONTEXTS,pairs:data.CHEMISTRY_SPECIAL_PAIRS,
     metadata:data.PLAYER_PROFILE_METADATA,categories:data.PLAYER_POOL_CATEGORIES,categoryIds:data.PLAYER_POOL_CATEGORY_IDS,
-    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,
+    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,countries:data.PLAYER_COUNTRIES,
     formations:data.FORMATIONS,expectedFormationFingerprint:'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e',
     assetExists(source){try{const url=new URL(source,baseURI);return url.href.startsWith(baseURI)&&fs.existsSync(path.join(root,decodeURIComponent(url.pathname.slice(new URL(baseURI).pathname.length))));}catch{return false;}}
 };}
@@ -840,10 +840,12 @@ check('Player/reference integrity, chemistry ID adapters, verified quotes and im
     assert.equal(formationFingerprint(data.FORMATIONS),'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e');
     const app=appContext();app.run(`
         assert.equal(PLAYER_RECORDS.size,players.length);
-        for(const player of players){const record=playerRecord(player.id);assert.equal(record.player,player);assert(record.profile?.overview);assert.equal(verifiedPlayerQuotes(player.id).length,0);}
+        for(const player of players){const record=playerRecord(player.id);assert.equal(record.player,player);assert(record.profile?.overview);assert.equal(record.quote,verifiedPlayerQuotes(player.id)[0]||null);assert.equal(record.nationality,player.nationality||null);}
         for(const pair of CHEMISTRY_REFERENCE_PAIRS){assert.equal(pair.score,playerChemistry(...pair.playerIds.map(playerById)));}
-        const missing={playerId:1,text:'Validation fixture only',sourceType:'manga',chapterOrEpisode:'1',sourceReference:'Integrity test',verification:'DRAFT'};
-        assert(!isVerifiedCanonQuote(missing));assert(!isVerifiedCanonQuote({...missing,verification:'VERIFIED',sourceReference:''}));
+        const missing={playerId:1,text:'Validation fixture only',sourceType:'manga',chapter:1,sourceReference:'https://example.test/source',sourceNote:'Integrity fixture',verified:false};
+        assert(!isVerifiedCanonQuote(missing));assert(!isVerifiedCanonQuote({...missing,verified:true,sourceReference:''}));
+        for(const value of [null,{}, {...missing,verified:'true'}, {...missing,verified:true,text:''}, {...missing,verified:true,chapter:0}])assert(!isVerifiedCanonQuote(value));
+        for(const player of players){const markup=characterLoreProfileMarkup(player);assert.equal(markup.includes('class="character-quote"'),!!playerRecord(player.id).quote);}
     `);
 });
 check('Data validation rejects malformed players, reversed pairs, missing labels, bad IDs, quotes and coordinates',()=>{
@@ -857,7 +859,17 @@ check('Data validation rejects malformed players, reversed pairs, missing labels
     reject({pairs:[[first[0],first[0],50,'LABEL','Reason']]},'Unknown/self');
     reject({pairs:[[first[0],first[1],50,'','']]},'label/reason');
     reject({referencePairs:[{id:'bad',playerIds:[1,999999]}]},'Bad reference IDs');
-    reject({quotes:[{playerId:1,text:'Validation fixture only',sourceType:'manga',chapterOrEpisode:'1',sourceReference:'Integrity test',verification:'UNVERIFIED'}]},'quote');
+    const quote={playerId:1,text:'Validation fixture only',verified:true,sourceType:'manga',chapter:1,sourceReference:'https://example.test/source',sourceNote:'Integrity fixture'};
+    for(const change of [{verified:false},{verified:'true'},{text:''},{chapter:0},{chapter:-1},{sourceType:'fan-fiction'},{sourceReference:''},{sourceNote:''}])reject({quotes:[{...quote,...change}]},'quote');
+    reject({quotes:[quote,{...quote,playerId:2}]},'Duplicate quote');
+    assert.deepEqual(validateReferenceData({...baseline,quotes:[null]}),[],'Missing quote is valid');
+    const changePlayer=change=>data.players.map((player,index)=>index?player:{...player,...change});
+    const weapon=data.players[0].weapons[0];
+    for(const weapons of [[null],[{}],[{...weapon,description:'TBD'}],[weapon,{...weapon,id:'another-id'}],[{...weapon,source:{type:'manga',url:'not-a-url',note:'Source',chapter:-1}}]])reject({players:changePlayer({weapons})},'weapon');
+    reject({players:changePlayer({nationality:{code:'JPN',name:'Japan'}})},'nationality');
+    reject({players:changePlayer({nationality:{...data.players[0].nationality,code:'ZZ'}})},'nationality');
+    reject({countries:{...data.PLAYER_COUNTRIES,JP:{...data.PLAYER_COUNTRIES.JP,flag:'images/flags/missing.svg'}}},'flag asset');
+    assert.deepEqual(validateReferenceData({...baseline,players:changePlayer({nationality:null,weapons:[]})}),[],'Unknown nationality and no weapons are valid');
     const formations=JSON.parse(JSON.stringify(data.FORMATIONS));formations['4-3-3'][0].x=51;reject({formations},'coordinates changed');
     reject({metadata:{999999:{overview:'Unknown',classification:'CANON'}}},'Unknown/malformed profile');
     reject({metadata:{1:{overview:'Role test',classification:'CANON',canonPositions:[{position:'INVALID'}]}}},'canon role');

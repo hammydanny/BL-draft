@@ -98,6 +98,8 @@
 .character-profile-jump{display:flex;flex-wrap:wrap;gap:6px}
 .character-profile-jump a{min-height:36px;padding:10px;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:900;letter-spacing:.5px;text-decoration:none}
 .character-profile-jump a:hover{color:var(--accent-text);border-color:var(--accent)}
+.character-profile-jump a[aria-current="location"]{color:var(--accent-text);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);text-decoration:underline;text-underline-offset:4px}
+.character-profile-jump a:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
 .character-profile-page>[id]{scroll-margin-top:calc(var(--header-height) + 18px)}
 .character-attribute-layout{display:grid;grid-template-columns:minmax(250px,35%) minmax(0,1fr);gap:20px;align-items:center}
 .character-attribute-layout .player-stats-radar{max-width:310px}
@@ -114,6 +116,8 @@
 .character-section-note{margin:0 0 12px;max-width:85ch}
 .character-quote{margin:0;padding:15px;background:var(--bg-surface-raised);border-left:3px solid var(--accent)}
 .character-quote blockquote{margin:0;color:var(--text-primary);font-size:18px;line-height:1.6}
+.character-quote figcaption{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;color:var(--text-secondary);font-size:12px;font-weight:800}
+.character-quote figcaption span{color:var(--text-muted)}
 /* Relationship tiers retain text labels as well as distinct colors. */
 .chemistry-tier-guide{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .chemistry-tier-guide>span{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--relationship-color);font-size:12px;font-weight:900}

@@ -509,18 +509,46 @@ const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CAT
 ]));
 
 
-// Quotes are deliberately empty until a character's actual dialogue is verified.
-// Future records: {playerId,text,sourceType,chapterOrEpisode,sourceReference,verification}.
-const PLAYER_QUOTES=Object.freeze([]);
+// Local flags describe confirmed nationality or national-team representation.
+// GB is the ISO parent country; England's football representation uses GB-ENG.
+const PLAYER_COUNTRIES=Object.freeze({
+    JP:{name:"Japan",label:"Japan",flag:"images/flags/jp.svg"},
+    DE:{name:"Germany",label:"Germany",flag:"images/flags/de.svg"},
+    FR:{name:"France",label:"France",flag:"images/flags/fr.svg"},
+    ES:{name:"Spain",label:"Spain",flag:"images/flags/es.svg"},
+    BR:{name:"Brazil",label:"Brazil",flag:"images/flags/br.svg"},
+    AR:{name:"Argentina",label:"Argentina",flag:"images/flags/ar.svg"},
+    IT:{name:"Italy",label:"Italy",flag:"images/flags/it.svg"},
+    NG:{name:"Nigeria",label:"Nigeria",flag:"images/flags/ng.svg"},
+    GB:{name:"United Kingdom",label:"England",representation:"England",flag:"images/flags/gb-eng.svg"}
+});
+function playerNationalityMarkup(player){
+    const nationality=player?.nationality,country=PLAYER_COUNTRIES[nationality?.code];
+    if(!country||nationality.name!==country.name)return "";
+    const label=country.label,src=new URL(country.flag,document.baseURI);src.searchParams.set("v",APP_VERSION);
+    return `<div class="player-nationality" title="${esc(label)}"><img src="${src.href}" alt="" width="24" height="16" decoding="async"><span>${esc(label)}</span></div>`;
+}
+
+// Exact, short English subtitle excerpts, checked independently of Wiki quotes.
+// Timestamped transcript references retain the translation and speaker context.
+const PLAYER_QUOTES=Object.freeze([
+    {playerId:1,text:"I am a striker!",verified:true,sourceType:"anime",episode:1,timestamp:"13:04",sourceReference:"https://subs.yakuaru.com/books/blue-lock/page/e1-dream",sourceNote:"Crunchyroll English subtitles, Isagi at 13:04; corroborated by the independently archived episode-1 subtitle track.",corroboration:"https://gist.github.com/wraith4081/b8d99fb3c8d633678dbbd008ce55a8ee"},
+    {playerId:6,text:"I'm gonna be a soccer superhero.",verified:true,sourceType:"anime",episode:4,timestamp:"05:53",sourceReference:"https://subs.yakuaru.com/books/blue-lock/page/e4-premonition-and-intuition",sourceNote:"Crunchyroll English subtitle transcript, Kunigami's answer to Isagi about why he plays soccer."},
+    {playerId:10,text:"Mine is getting in behind.",verified:true,sourceType:"anime",episode:4,timestamp:"00:20",sourceReference:"https://subs.yakuaru.com/books/blue-lock/page/e4-premonition-and-intuition",sourceNote:"Crunchyroll English subtitle transcript, Naruhaya identifies his own weapon during Team Z's discussion."},
+    {playerId:11,text:"I'm an all-rounder.",verified:true,sourceType:"anime",episode:4,timestamp:"00:25",sourceReference:"https://subs.yakuaru.com/books/blue-lock/page/e4-premonition-and-intuition",sourceNote:"Crunchyroll English subtitle transcript, Iemon's own answer during Team Z's weapon discussion."},
+    {playerId:21,text:"It's too much hassle.",verified:true,sourceType:"anime",episode:7,timestamp:"20:25",sourceReference:"https://subs.yakuaru.com/books/blue-lock/page/e7-rush",sourceNote:"Exact short excerpt from Nagi's subtitle line after Reo reminds him why they came to eat."}
+]);
 function isVerifiedCanonQuote(quote){
-    return !!quote&&quote.verification==="VERIFIED"&&!!playerById(quote.playerId)&&
+    return !!quote&&quote.verified===true&&!!playerById(quote.playerId)&&
         typeof quote.text==="string"&&!!quote.text.trim()&&
         ["manga","anime"].includes(quote.sourceType)&&
-        typeof quote.chapterOrEpisode==="string"&&!!quote.chapterOrEpisode.trim()&&
-        typeof quote.sourceReference==="string"&&!!quote.sourceReference.trim();
+        ["chapter","episode"].every(field=>quote[field]===undefined||(Number.isInteger(quote[field])&&quote[field]>0))&&
+        Number.isInteger(quote[quote.sourceType==="manga"?"chapter":"episode"])&&quote[quote.sourceType==="manga"?"chapter":"episode"]>0&&
+        typeof quote.sourceReference==="string"&&/^https:\/\/\S+$/.test(quote.sourceReference)&&
+        typeof quote.sourceNote==="string"&&!!quote.sourceNote.trim();
 }
 function verifiedPlayerQuotes(playerId){
-    return PLAYER_QUOTES.filter(quote=>quote.playerId===playerId&&isVerifiedCanonQuote(quote));
+    return PLAYER_QUOTES.filter(quote=>quote?.playerId===playerId&&isVerifiedCanonQuote(quote));
 }
 const REFERENCE_PLAYER_BY_NAME=new Map(players.map(player=>[player.name,player]));
 // This adapter resolves existing chemistry names once without changing the gameplay model.
@@ -536,6 +564,8 @@ const CHEMISTRY_REFERENCE_PAIRS=CHEMISTRY_SPECIAL_PAIRS.map(([a,b,score,label,de
 }));
 const PLAYER_RECORDS=new Map(players.map(player=>[player.id,{
     player,
+    nationality:player.nationality||null,
+    quote:verifiedPlayerQuotes(player.id)[0]||null,
     profile:PLAYER_PROFILE_METADATA[player.id]||null,
     categories:Object.entries(PLAYER_POOL_CATEGORIES).filter(([key])=>PLAYER_POOL_CATEGORY_IDS[key].has(player.id)).map(([key,data])=>({key,label:data.label})),
     affiliations:CHEMISTRY_REFERENCE_CONTEXTS.filter(context=>context.playerIds.includes(player.id))

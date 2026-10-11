@@ -83,10 +83,12 @@ Header Quick Draft opens a compact name/color/size setup, validates the saved po
 ## Later release requirements
 
 - **V0.6.8:** delivered the Homepage/discovery, shared theme polish and project-information release.
-- **V0.6.9:** delivered player intelligence, ID-based reference adapters, comparison, exact chemistry evaluation and integrity validation. Optional short player quotes must be real
+- **V0.6.9:** delivered player intelligence, ID-based reference adapters, comparison, exact chemistry evaluation and integrity validation.
+- **V0.6.9.1:** expands reference data and dossier navigation. Optional short player quotes must be real
   canon lines, independently verified, not simply the Wiki featured quote, invented
-  dialogue, AI paraphrases or another player's line. Store source/chapter internally;
-  show **only the quote**, without name, chapter or source label. Omit unverifiable quotes.
+  dialogue, AI paraphrases or another player's line. Keep verification references
+  internally and display the character name and compact chapter/episode label.
+  Omit unverifiable quotes.
 - **V0.6.9.5:** dedicated mobile website overhaul, including deeper gameplay layouts
   and a possible settings bottom sheet. Current mobile navigation is the foundation.
 - **Later release hardening:** continue image credits/rights review. The v0.6.8 Legal/Privacy notices describe current behavior; they do not establish rights clearance or legal compliance.
@@ -163,18 +165,61 @@ Auction/Standalone schema constants, storage keys and normalizers are retained.
 No save writes or migration occur in the Database. Ratings are project values;
 gameplay positions and demonstrated canon roles are separate classifications.
 
-`PLAYER_QUOTES` is empty until actual dialogue has been independently verified.
-A future entry needs player ID, exact text, manga/anime source, chapter/episode,
-source reference and `VERIFIED` status. Unverified, draft, missing-source and
-unknown-player quotes fail validation and are never shown. The UI shows only
-the quote; verification metadata remains internal.
+`PLAYER_QUOTES` holds only independently checked short dialogue. An entry needs
+player ID, exact text, `verified: true`, manga/anime source type, a positive numeric
+chapter/episode, an HTTPS source reference and a verification note. Unverified,
+empty, missing-source and unknown-player quotes fail validation and are never
+shown. The dossier uses a semantic blockquote with character attribution and a
+compact chapter/episode label; URLs and verification notes remain internal.
 
 `node scripts/preflight.js` uses `scripts/data-validation.js` to reject invalid
 players, images, positions, categories, profiles, chemistry references, duplicate
 or reversed pairs, malformed explanations, unverified quotes and changed formation
 coordinates. The formation fingerprint is pinned to latest-main commit
-`a05c482e08f85aabb4206fc56feae2a496860b22`. This release's pitch sizing is CSS only.
+`2fb9dfdd09330f3fb91f061466e6feeaa743b33f` for V0.6.9.1; its geometry is identical to
+the V0.6.9 baseline. Pitch sizing remains CSS only.
 
 Directory cards reuse DOM nodes and decoded images. Search is debounced; sort
 orders and relationship indexes are cached. Compare accepts up to three players,
 uses the same six-axis radar and grade helper, and stays in page memory.
+
+## V0.6.9.1 character intelligence
+
+All 79 player records were audited. Weapons keep the existing `id`, `name`,
+`description`, `battleSimType` and `battleSimDescription` structure. Source
+metadata records type, URL and a note; omit chapter numbers unless independently
+confirmed. Empty weapon arrays are valid. Preserve Isagi's existing seven entries
+and leave all Battle Sim fields as the existing safe placeholders.
+
+`nationality` is either null or a single object with ISO country code, country
+name, evidence basis and source metadata. National-team representation is valid
+evidence; clubs, names and appearance are not. England uses ISO parent code `GB`,
+name `United Kingdom` and explicit representation `England`. `PLAYER_COUNTRIES`
+maps that representation to the St George flag and visible England label.
+Unknown records have no nationality row. `playerNationalityMarkup()` renders the
+same accessible country text and 24 x 16 flag between name and positions in the
+dossier and both builders' selected-player profiles, never on pitch tokens.
+
+The nine required local SVGs come from MIT-licensed `lipis/flag-icons`; retain
+`images/flags/LICENSE-flag-icons.txt` and the accompanying source README. Flag
+requests use the central asset version, browser caching and the existing
+image/font service worker. No flag dependency or third-party hotlink is needed.
+
+Dossier section anchors use a 300ms animation with one computed header-safe
+destination and no history writes. Reduced-motion users jump immediately.
+Wheel, touch and keyboard input cancel an active animation. One
+IntersectionObserver marks the visible section using `aria-current` and an
+underline; profile replacement and leaving the dossier disconnect it.
+
+The builder pitch uses `clamp(650px,69vh,740px)` on desktop and
+`clamp(690px,82vh,740px)` on narrow screens. Tighter internal slot spacing and
+single-line ellipsis names retain the original coordinates. Full names remain
+available through title text and the selected profile. The Captain badge stays
+within the portrait's vertical band, clear of the position label. Formation
+feedback, chemistry geometry, selection and dragging keep their existing logic.
+
+Validation accepts absent optional reference data, but rejects duplicate or empty
+weapons, invalid source metadata, unsupported country codes, missing local flags,
+unverified or malformed quotes and duplicated quote text. See
+[the player audit](docs/player-audit-v0.6.9.1.md) for factual coverage and
+[the release report](docs/release-v0.6.9.1.md) for validation and the file manifest.

@@ -7,6 +7,9 @@ function validateReferenceData(data){
     const errors=[],requireField=(valid,message)=>{if(!valid)errors.push(message);};
     const text=value=>typeof value==='string'&&!!value.trim();
     const score=value=>Number.isFinite(value)&&value>=0&&value<=100;
+    const positiveInteger=value=>Number.isInteger(value)&&value>0;
+    const sourceValid=source=>!!source&&['official-profile','canon-reference','anime-subtitles','project-reference','manga','anime'].includes(source.type)&&text(source.note)&&typeof source.url==='string'&&/^https:\/\/\S+$/.test(source.url)&&(source.chapter===undefined||positiveInteger(source.chapter));
+    for(const [code,country] of Object.entries(data.countries||{}))requireField(/^[A-Z]{2}$/.test(code)&&text(country.name)&&text(country.label)&&/^images\/flags\/[a-z-]+\.svg$/.test(country.flag)&&data.assetExists(country.flag),`Invalid country/flag asset: ${code}`);
     const ids=new Set(),names=new Set();
     for(const player of data.players){
         requireField(Number.isInteger(player.id)&&player.id>0&&!ids.has(player.id),`Player ID invalid or duplicated: ${player.id}`);ids.add(player.id);
@@ -17,8 +20,21 @@ function validateReferenceData(data){
         requireField(Array.isArray(player.positions)&&player.positions.length>0&&player.positions.every(position=>POSITIONS.has(position))&&new Set(player.positions).size===player.positions.length&&player.positions.includes(player.primaryPosition),`${player.name}: invalid/duplicate secondary positions`);
         for(const stat of ['ovr','spd','sho','off','pas','dri','def','gk'])requireField(score(player.stats?.[stat]),`${player.name}: invalid ${stat}`);
         requireField(Number.isInteger(player.debutChapter)&&player.debutChapter>=1&&Number.isInteger(player.appearanceOrder),`${player.name}: invalid appearance metadata`);
-        const weapons=new Set();
-        for(const weapon of player.weapons||[]){requireField(text(weapon.id)&&!weapons.has(weapon.id)&&text(weapon.name)&&text(weapon.description),`${player.name}: malformed/duplicate weapon`);weapons.add(weapon.id);}
+        const weapons=new Set(),weaponNames=new Set(),weaponDescriptions=new Set();
+        requireField(player.weapons===undefined||Array.isArray(player.weapons),`${player.name}: weapons must be an array`);
+        for(const weapon of Array.isArray(player.weapons)?player.weapons:[]){
+            const id=String(weapon?.id||'').trim().toLowerCase(),name=String(weapon?.name||'').normalize('NFC').trim().toLowerCase(),description=String(weapon?.description||'').trim();
+            requireField(!!weapon&&text(weapon.id)&&!weapons.has(id)&&text(weapon.name)&&!weaponNames.has(name)&&description.length>=20&&description.split(/\s+/).length>=4&&!/^(?:tbd|placeholder|coming soon)/i.test(description)&&!weaponDescriptions.has(description.toLowerCase()),`${player.name}: malformed/duplicate weapon`);
+            weapons.add(id);weaponNames.add(name);weaponDescriptions.add(description.toLowerCase());
+            if(weapon?.source!==undefined)requireField(sourceValid(weapon.source),`${player.name}: invalid weapon source`);
+            if(weapon?.battleSimType!==undefined)requireField(weapon.battleSimType==='TBD'&&weapon.battleSimDescription==='Placeholder: Battle Sim effect to be defined.',`${player.name}: Battle Sim must remain a placeholder`);
+        }
+        const nationality=player.nationality;
+        if(nationality!==null&&nationality!==undefined){
+            const country=data.countries?.[nationality.code];
+            requireField(/^[A-Z]{2}$/.test(nationality.code)&&!!country&&nationality.name===country.name&&text(nationality.name)&&['nationality','national-team-representation'].includes(nationality.basis)&&sourceValid(nationality.source),`${player.name}: invalid nationality`);
+            requireField(nationality.representation===country?.representation,`${player.name}: invalid country representation`);
+        }
     }
     const canonicalNames=new Set(data.players.map(player=>player.name)),pairs=new Set(),contexts=new Set();
     for(const context of data.contexts){
@@ -46,8 +62,14 @@ function validateReferenceData(data){
         }
     }
     for(const entry of [...data.referencePairs,...data.referenceContexts])requireField(text(entry.id)&&entry.playerIds.length>1&&entry.playerIds.every(id=>Number.isInteger(id)&&ids.has(id))&&new Set(entry.playerIds).size===entry.playerIds.length,`Bad reference IDs: ${entry.id}`);
+    const quotedText=new Map();
     for(const quote of data.quotes){
-        requireField(ids.has(quote.playerId)&&text(quote.text)&&quote.verification==='VERIFIED'&&['manga','anime'].includes(quote.sourceType)&&text(quote.chapterOrEpisode)&&text(quote.sourceReference),`Unverified/malformed quote: ${quote.playerId}`);
+        if(quote===null)continue;
+        const normalized=String(quote?.text||'').normalize('NFC').replace(/[‘’]/g,"'").trim().replace(/\s+/g,' ').toLowerCase();
+        requireField(!!quote&&ids.has(quote.playerId)&&text(quote.text)&&quote.text.trim().split(/\s+/).length<=25&&typeof quote.verified==='boolean'&&quote.verified===true&&['manga','anime'].includes(quote.sourceType)&&positiveInteger(quote[quote.sourceType==='manga'?'chapter':'episode'])&&/^https:\/\/\S+$/.test(quote.sourceReference)&&text(quote.sourceNote),`Unverified/malformed quote: ${quote?.playerId}`);
+        for(const field of ['chapter','episode'])if(quote?.[field]!==undefined)requireField(positiveInteger(quote[field]),`Invalid quote ${field}: ${quote.playerId}`);
+        if(quote?.timestamp!==undefined)requireField(/^\d{2}:\d{2}$/.test(quote.timestamp),`Invalid quote timestamp: ${quote.playerId}`);
+        requireField(!quotedText.has(normalized),`Duplicate quote across player records: ${quote?.playerId}`);quotedText.set(normalized,quote?.playerId);
     }
     for(const [name,slots] of Object.entries(data.formations)){
         requireField(slots.length===11&&slots.filter(slot=>slot.label==='GK').length===1,`${name}: invalid formation slot count`);
