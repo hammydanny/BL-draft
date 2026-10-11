@@ -143,6 +143,7 @@ function characterLoreCard(record){
 }
 function characterLoreProfileMarkup(player){
     const ratings=playerStats(player),chemistry=getCharacterChemistry(player);
+    const weapons=Array.isArray(player.weapons)?player.weapons:[];
     const pairLinks=chemistry.pairLinks.slice().sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title));
     const teamLinks=chemistry.teamLinks.slice().sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
     const partnerMarkup=name=>{
@@ -167,8 +168,16 @@ function characterLoreProfileMarkup(player){
         <div class="character-profile-stat-grid">${statRows.map(([short,label,value])=>`<div class="character-profile-stat"><span>${short}</span><small>${label}</small><strong>${value}</strong><b class="evaluation-grade">${playerStatGrade(value)}</b></div>`).join("")}</div>
         ${playerStatsRadar(player,"lore")}
       </section>
+      <section class="character-profile-section character-profile-weapons-section">
+        <div class="character-profile-section-heading"><span>02 // WEAPON DATABASE</span><h3>PLAYER WEAPONS</h3><small>${weapons.length} REGISTERED WEAPONS</small></div>
+        ${weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card">
+          <div class="character-profile-weapon-heading"><h4>${esc(weapon.name||"Unnamed Weapon")}</h4><span class="character-profile-weapon-kind">FOOTBALL WEAPON</span></div>
+          <p class="character-profile-weapon-description">${esc(weapon.description||"No description recorded.")}</p>
+          <div class="character-profile-weapon-battle"><span>BATTLE SIM // ${esc(weapon.battleSimType||"TYPE TBD")}</span><p>${esc(weapon.battleSimDescription||"Placeholder: Battle Sim effect to be defined.")}</p></div>
+        </article>`).join("")}</div>`:`<div class="character-profile-weapons-empty">NO WEAPONS REGISTERED FOR THIS PLAYER YET.</div>`}
+      </section>
       <section class="character-profile-section">
-        <div class="character-profile-section-heading"><span>02 // RELATIONSHIP DATABASE</span><h3>PAIR CHEMISTRY</h3><small>${pairLinks.length} REGISTERED LINKS</small></div>
+        <div class="character-profile-section-heading"><span>03 // RELATIONSHIP DATABASE</span><h3>PAIR CHEMISTRY</h3><small>${pairLinks.length} REGISTERED LINKS</small></div>
         <div class="character-profile-chemistry-grid">${pairLinks.length?pairLinks.map(link=>`<article class="character-profile-chemistry-card">
           <div class="character-profile-chemistry-top"><div class="character-profile-chemistry-names">${link.characters.filter(name=>name!==player.name).map(partnerMarkup).join(" × ")}</div>
           <div class="character-profile-score ${chemistryTier(link.score)}"><small>CHEMISTRY</small><strong>${link.score}</strong><span>/ 100</span></div></div>
@@ -176,7 +185,7 @@ function characterLoreProfileMarkup(player){
         </article>`).join(""):`<div class="lore-empty">NO PAIR CHEMISTRY RECORDED FOR THIS CHARACTER.</div>`}</div>
       </section>
       <section class="character-profile-section">
-        <div class="character-profile-section-heading"><span>03 // SHARED HISTORY & TACTICS</span><h3>TEAM CHEMISTRY & CONTEXTS</h3><small>${teamLinks.length} REGISTERED CONTEXTS</small></div>
+        <div class="character-profile-section-heading"><span>04 // SHARED HISTORY & TACTICS</span><h3>TEAM CHEMISTRY & CONTEXTS</h3><small>${teamLinks.length} REGISTERED CONTEXTS</small></div>
         <div class="character-profile-team-grid">${teamLinks.length?teamLinks.map(context=>`<article class="character-profile-team-card">
           <div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CHEMISTRY</small><strong>${context.score}</strong><span>/ 100</span></div></div>
           <p>${esc(context.description||"No additional description is recorded for this context.")}</p>

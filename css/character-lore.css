@@ -59,3 +59,16 @@
 @media(max-width:760px){.character-lore-grid{grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px}.character-lore-card-name{font-size:15px;padding:9px}.character-profile-hero{grid-template-columns:minmax(110px,34%) minmax(0,1fr);gap:14px;padding:12px}.character-profile-portrait img{aspect-ratio:3/4}.character-profile-overview>h2{font-size:clamp(28px,7vw,40px)}.character-profile-ovr{gap:6px;padding:7px 8px}.character-profile-ovr>strong{font-size:30px}.character-profile-description p{font-size:12px;line-height:1.5}.character-profile-section{padding:11px}.character-profile-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.character-profile-chemistry-grid,.character-profile-team-grid{grid-template-columns:1fr}}
 @media(max-width:430px){.character-profile-hero{grid-template-columns:minmax(0,1fr);gap:12px}.character-profile-portrait{max-width:220px}.character-profile-portrait img{aspect-ratio:4/5}}
 @media(prefers-reduced-motion:reduce){.character-lore-card,.character-lore-image{transition:none}}
+
+/* Character weapon records; Battle Sim effects are intentionally placeholders for now. */
+.character-profile-weapons-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.character-profile-weapon-card{min-width:0;padding:13px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.character-profile-weapon-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.character-profile-weapon-heading h4{margin:0;color:var(--text-primary);font:900 italic 21px/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.character-profile-weapon-kind{flex:0 0 auto;padding:4px 6px;color:var(--accent-text);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:900;letter-spacing:.45px}
+.character-profile-weapon-description{margin:10px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55}
+.character-profile-weapon-battle{margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle)}
+.character-profile-weapon-battle>span{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:.8px}
+.character-profile-weapon-battle p{margin:5px 0 0;color:var(--text-muted);font-size:12px;line-height:1.55}
+.character-profile-weapons-empty{padding:18px;color:var(--text-muted);background:var(--bg-surface-raised);border:1px dashed var(--border-strong);font-size:12px;font-weight:900;letter-spacing:.9px;text-align:center}
+@media(max-width:760px){.character-profile-weapons-grid{grid-template-columns:minmax(0,1fr)}}
