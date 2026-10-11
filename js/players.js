@@ -2,7 +2,19 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 const players = [
-    { id: 1, name: "Yoichi Isagi", debutChapter: 1, appearanceOrder: 1, image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"] , stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 } },
+    {
+        id: 1, name: "Yoichi Isagi", debutChapter: 1, appearanceOrder: 1, image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"],
+        stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 },
+        weapons: [
+            { id: "spatial-metavision", name: "Spatial Metavision", description: "Continuously scans the field and combines peripheral vision with prediction to read the evolving attack.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "awareness", name: "Awareness", description: "Notices shifts in player positions, open lanes, danger and passing options before they become obvious.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "adaptability", name: "Adaptability", description: "Learns from opponents and adjusts his decisions mid-match to find a better route to goal.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "off-the-ball-movements", name: "Off-the-Ball Movements", description: "Times sharp runs into blind spots and open space to arrive where defenders lose track of him.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "direct-shot", name: "Direct Shot", description: "Strikes first-time without trapping the ball, turning a well-placed pass into a quick, accurate finish.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "two-gun-volley", name: "Two-Gun Volley", description: "Adapts his body in midair to threaten a volley from alternate striking angles, making his finish harder to read.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." },
+            { id: "reverse-back-heel-shot", name: "Reverse Back Heel Shot", description: "Uses an unexpected reverse back-heel contact to redirect the ball toward goal when a conventional strike is unavailable.", battleSimType: "TBD", battleSimDescription: "Placeholder: Battle Sim effect to be defined." }
+        ]
+    },
     { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearanceOrder: 2, image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 } },
     { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrder: 3, image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 } },
     { id: 4, name: "Meguru Bachira", debutChapter: 1, appearanceOrder: 4, image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 } },
@@ -84,6 +96,8 @@ const players = [
 ];
 
 players.forEach(player=>{
+    // Keep a stable weapons array on every character for the future Battle Sim.
+    if(!Array.isArray(player.weapons)) player.weapons=[];
     if(player?.image) player.image=new URL(player.image,document.baseURI).href;
 });
 
