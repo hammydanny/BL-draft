@@ -8,7 +8,44 @@ function getMostExpensiveSigning(n){
 }
 function naturalSquadOVR(team){
     if(!team.players.length)return 0;
-    return Math.round(team.players.reduce((sum,p)=>sum+playerOverall(p),0)/team.players.length);
+    // Results rate the strongest available XI rather than letting deep reserves
+    // drag down the headline squad strength. The same balance-aware OVR model
+    // used by the Team Builder keeps one weak starter from disappearing in a mean.
+    const ratings=[...team.players].sort((a,b)=>playerOverall(b)-playerOverall(a)).slice(0,11).map(playerOverall);
+    return lineupOVRProfile(ratings).value;
+}
+function rosterChemistrySnapshot(team){
+    const links=[];
+    for(let i=0;i<team.players.length;i++)for(let j=i+1;j<team.players.length;j++){
+        const a=team.players[i],b=team.players[j],relation=chemistryRelation(a,b);
+        links.push({a,b,score:relation.score,label:relation.label,reason:relation.reason,known:!!(relation.contexts.length||CHEMISTRY_SPECIAL[chemistryKey(a,b)])});
+    }
+    links.sort((x,y)=>y.score-x.score||x.a.name.localeCompare(y.a.name)||x.b.name.localeCompare(y.b.name));
+    const known=links.filter(link=>link.known).map(link=>link.score);
+    return {overall:chemistryNetworkScore(links.map(link=>link.score),known,links.length),links,source:"ROSTER NETWORK"};
+}
+function resultChemistrySnapshot(team,n){
+    const assignment=formationAssignments?.[n]||{};
+    const deployed=Object.values(assignment).filter(Boolean).length;
+    if(deployed>=2){
+        const formation=formationByTeam[n]||"4-3-3";
+        const active=activeFormationSlotIndices(n);
+        const chemistry=formationChemistryForAssignment(n,assignment,formation,active);
+        const links=[...chemistry.links].sort((x,y)=>y.value-x.value).map(link=>({
+            a:link.a.p,b:link.b.p,score:link.value,label:link.relation.label,reason:link.relation.reason,known:true
+        }));
+        return {overall:chemistry.overall,links,source:`${formation} ACTIVE LINKS`};
+    }
+    return rosterChemistrySnapshot(team);
+}
+function resultChemistryLinksMarkup(team,n){
+    const snap=resultChemistrySnapshot(team,n);
+    const meaningful=snap.links.filter(link=>link.score>=70||link.known);
+    const shown=(meaningful.length?meaningful:snap.links).slice(0,6);
+    return `<section class="results-chemistry-panel">
+      <div class="results-chemistry-head"><div><span>CHEMISTRY LINKS</span><strong>${esc(snap.source)}</strong></div><b class="${snap.overall?chemistryTier(snap.overall):""}">${snap.overall||"--"}</b></div>
+      <div class="results-chemistry-links">${shown.length?shown.map(link=>`<div class="result-chem-link ${chemistryTier(link.score)}" title="${esc(link.reason||link.label)}"><span>${esc(link.a.name)}</span><i>×</i><span>${esc(link.b.name)}</span><b>${link.score}</b><small>${esc(link.label)}</small></div>`).join(""):`<div class="results-chemistry-empty">NO ACTIVE CHEMISTRY LINKS YET</div>`}</div>
+    </section>`;
 }
 function getMvpSigning(n){
     const history=getTeamHistory(n);if(!history.length)return null;
@@ -33,20 +70,20 @@ function resultMetricLeader(a,b,higher=true){
 }
 function createResultsComparison(){
     const o1=naturalSquadOVR(team1),o2=naturalSquadOVR(team2);
-    const c1=strongestRosterChemistry(team1),c2=strongestRosterChemistry(team2);
+    const c1=resultChemistrySnapshot(team1,1),c2=resultChemistrySnapshot(team2,2);
     const spent1=startingBudget-team1.budget,spent2=startingBudget-team2.budget;
     return `<section class="results-comparison">
       <div class="comparison-head"><span>HEAD-TO-HEAD // DRAFT INTELLIGENCE</span><strong>POST-AUCTION COMPARISON</strong></div>
       <div class="comparison-grid">
         <div><span>SQUAD OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${o2}</b></div>
         <div><span>CAPITAL REMAINING</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${team1.budget.toLocaleString()}</b><em>${esc(resultMetricLeader(team1.budget,team2.budget))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${team2.budget.toLocaleString()}</b></div>
-        <div><span>BEST CHEMISTRY</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${c1?.score||"--"}</b><em>${esc(resultMetricLeader(c1?.score||0,c2?.score||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${c2?.score||"--"}</b></div>
+        <div><span>CHEMISTRY OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${c1.overall||"--"}</b><em>${esc(resultMetricLeader(c1.overall||0,c2.overall||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${c2.overall||"--"}</b></div>
         <div><span>CAPITAL SPENT</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${spent1.toLocaleString()}</b><em>${spent1===spent2?"EVEN SPEND":"DRAFT PROFILE"}</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${spent2.toLocaleString()}</b></div>
       </div>
     </section>`;
 }
 function createFinalTeamCard(team,n){
-    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chem=strongestRosterChemistry(team);
+    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chemistry=resultChemistrySnapshot(team,n),chem=chemistry.links[0]||null;
     const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
@@ -63,6 +100,7 @@ function createFinalTeamCard(team,n){
         <div><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
         <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
       </div>
+      ${resultChemistryLinksMarkup(team,n)}
       <div class="final-roster">${roster}</div>
     </article>`;
 }
@@ -120,6 +158,11 @@ function shareFormationSnapshot(n){
       shape
     };
 }
+function shareChemistrySvg(snap){
+    const links=snap?.chemistry?.links||[];
+    if(!links.length)return "";
+    return `<svg class="share-chemistry-lines chemistry-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${links.map(link=>`<line x1="${link.a.slot.x}" y1="${link.a.slot.y}" x2="${link.b.slot.x}" y2="${link.b.slot.y}" class="chem-link ${chemistryTier(link.value)}"></line>`).join("")}</svg>`;
+}
 function createShareTeam(team,n){
     const spent=startingBudget-team.budget,snap=shareFormationSnapshot(n);
     const captain=team.players.find(p=>p.id===snap.captainId)||null;
@@ -135,6 +178,7 @@ function createShareTeam(team,n){
       </div>
       <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
         <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
+        ${shareChemistrySvg(snap)}
         ${snap.shape.map((slot,i)=>{
           const player=team.players.find(p=>p.id===snap.assignment[i]);
           if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
@@ -205,6 +249,7 @@ function createStandaloneShareTeam(){
       <div class="squad-report-layout">
         <div class="share-mini-pitch ${snap.deployedCount===0?"empty-share-pitch":""}">
           <div class="share-pitch-half"></div><div class="share-pitch-circle"></div>
+          ${shareChemistrySvg(snap)}
           ${snap.shape.map((slot,i)=>{
             const player=team.players.find(p=>p.id===snap.assignment[i]);
             if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;

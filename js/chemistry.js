@@ -195,6 +195,40 @@ function playerChemistry(a,b){return chemistryRelation(a,b).score;}
 function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":"weak";}
 function chemistryTierLabel(v){return v>=95?"CHEMICAL":v>=90?"ELITE":v>=82?"STRONG":v>=70?"LINK":"WEAK";}
 
+// Team chemistry is a network score, not a simple average. Weak tactical links
+// matter more because one broken connection can interrupt an entire passing
+// route, while elite links give a smaller upside bonus. Familiarity away from
+// direct tactical neighbours can help, but it cannot hide a fragile formation.
+function chemistryNetworkScore(linkValues,knownPairScores=[],possibleLinks=null){
+    const values=(Array.isArray(linkValues)?linkValues:[]).map(Number).filter(Number.isFinite);
+    if(!values.length)return 0;
+    const known=(Array.isArray(knownPairScores)?knownPairScores:[]).map(Number).filter(Number.isFinite);
+    const linkWeight=value=>value<70?1.28:value<82?1.08:value>=95?1.04:1;
+    const weightTotal=values.reduce((sum,value)=>sum+linkWeight(value),0);
+    const weightedAverage=values.reduce((sum,value)=>sum+value*linkWeight(value),0)/weightTotal;
+    const ordered=[...values].sort((a,b)=>a-b);
+    const lowerCount=Math.max(1,Math.ceil(ordered.length/3));
+    const lowerBand=ordered.slice(0,lowerCount).reduce((a,b)=>a+b,0)/lowerCount;
+    const strongRatio=values.filter(value=>value>=82).length/values.length;
+    const eliteRatio=values.filter(value=>value>=90).length/values.length;
+    const weakRatio=values.filter(value=>value<70).length/values.length;
+    const networkScale=Math.min(1,values.length/6);
+    const familiarityAverage=known.length?known.reduce((a,b)=>a+b,0)/known.length:0;
+    const familiarityAdjustment=familiarityAverage
+        ?Math.max(-2.5,Math.min(3,(familiarityAverage-weightedAverage)*.18))
+        :0;
+    const possible=Number.isFinite(Number(possibleLinks))&&Number(possibleLinks)>0?Number(possibleLinks):values.length;
+    const coverage=Math.max(0,Math.min(1,values.length/possible));
+    const coverageAdjustment=-(1-coverage)*4;
+    const raw=
+        weightedAverage*.80+
+        lowerBand*.20+
+        (strongRatio*2.2+eliteRatio*1.2-weakRatio*4)*networkScale+
+        familiarityAdjustment+
+        coverageAdjustment;
+    return Math.max(0,Math.min(100,Math.round(raw)));
+}
+
 // Explicit tactical adjacency. Position-to-position links never change merely
 // because the XI is incomplete. Slot numbers match FORMATIONS below.
 const FORMATION_CHEMISTRY_EDGES = {
@@ -290,14 +324,7 @@ function formationChemistryForAssignment(teamNumber,ass,formation=formationByTea
         if(relation.contexts.length||CHEMISTRY_SPECIAL[key])knownPairs.push(relation.score);
     }
 
-    const tacticalWeight=l=>l.value<70?1.18:l.value>=95?1.08:1;
-    const weightTotal=links.reduce((n,l)=>n+tacticalWeight(l),0);
-    const tacticalAverage=weightTotal?links.reduce((n,l)=>n+l.value*tacticalWeight(l),0)/weightTotal:0;
-    const familiarityAverage=knownPairs.length?knownPairs.reduce((a,b)=>a+b,0)/knownPairs.length:0;
-    let overall=0;
-    if(tacticalAverage&&familiarityAverage)overall=Math.round(tacticalAverage*.86+familiarityAverage*.14);
-    else overall=Math.round(tacticalAverage||familiarityAverage||0);
-    overall=Math.max(0,Math.min(100,overall));
+    const overall=chemistryNetworkScore(links.map(link=>link.value),knownPairs,eligibleEdges.length);
 
     const sorted=[...links].sort((x,y)=>y.value-x.value);
     const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
@@ -409,4 +436,3 @@ function chemistryHud(teamNumber,team){
       </div>
     </div>`;
 }
-

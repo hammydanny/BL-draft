@@ -78,3 +78,38 @@
   .player-stats-heading{flex-wrap:wrap;gap:3px}
   .player-stats-gk>span{font-size:12px}
 }
+
+
+/* v0.6.9.2 // results chemistry network + clearer Team Builder position markers */
+.results-chemistry-panel{margin:10px 0 12px;padding:10px;border:1px solid var(--border-subtle);background:linear-gradient(135deg,color-mix(in srgb,var(--team, var(--accent)) 7%,var(--bg-surface)),var(--bg-surface))}
+.results-chemistry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.results-chemistry-head>div span,.results-chemistry-head>div strong{display:block}
+.results-chemistry-head span{color:var(--accent-text);font:900 11px/1 "Rajdhani",sans-serif;letter-spacing:1.1px}
+.results-chemistry-head strong{margin-top:3px;color:var(--text-secondary);font:700 11px/1.1 "Rajdhani",sans-serif;letter-spacing:.7px}
+.results-chemistry-head>b{display:grid;place-items:center;min-width:42px;height:34px;padding:0 8px;border:1px solid currentColor;background:var(--bg-surface-raised);font:900 24px/1 "Barlow Condensed",sans-serif}
+.results-chemistry-head>b.chemical,.result-chem-link.chemical>b{color:var(--chem-chemical)}
+.results-chemistry-head>b.elite,.result-chem-link.elite>b{color:var(--chem-elite)}
+.results-chemistry-head>b.strong,.result-chem-link.strong>b{color:var(--chem-strong)}
+.results-chemistry-head>b.link,.result-chem-link.link>b{color:var(--chem-link)}
+.results-chemistry-head>b.weak,.result-chem-link.weak>b{color:var(--chem-weak)}
+.results-chemistry-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.result-chem-link{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto;align-items:center;gap:5px;min-width:0;padding:7px 8px 17px;border:1px solid var(--border-subtle);background:var(--bg-surface-raised);overflow:hidden}
+.result-chem-link:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--chem-weak)}
+.result-chem-link.chemical:before{background:var(--chem-chemical)}.result-chem-link.elite:before{background:var(--chem-elite)}.result-chem-link.strong:before{background:var(--chem-strong)}.result-chem-link.link:before{background:var(--chem-link)}
+.result-chem-link>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary);font:800 12px/1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.result-chem-link>i{color:var(--text-muted);font-style:normal;font-weight:900}.result-chem-link>b{font:900 18px/1 "Barlow Condensed",sans-serif}
+.result-chem-link>small{position:absolute;left:8px;right:8px;bottom:4px;overflow:hidden;color:var(--text-muted);font:700 9px/1 "Rajdhani",sans-serif;letter-spacing:.45px;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.results-chemistry-empty{grid-column:1/-1;padding:10px;border:1px dashed var(--border-subtle);color:var(--text-muted);font:800 11px/1 "Rajdhani",sans-serif;letter-spacing:.8px;text-align:center}
+.share-mini-pitch{isolation:isolate}
+.share-chemistry-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none!important;overflow:visible}
+.share-chemistry-lines .chem-link{pointer-events:none!important;animation:none;opacity:.8}
+.share-chemistry-lines .chem-link.chemical{stroke-width:3.1}.share-chemistry-lines .chem-link.elite{stroke-width:2.7}.share-chemistry-lines .chem-link.strong{stroke-width:2.35}.share-chemistry-lines .chem-link.link{stroke-width:1.9}.share-chemistry-lines .chem-link.weak{stroke-width:1.25;opacity:.4}
+.share-pitch-player,.share-pitch-empty{z-index:2}
+
+/* Position tags are deliberately enlarged only within safe bounds. The widest
+   five-at-the-back shapes still keep enough horizontal clearance on mobile. */
+.formation-pitch-v2 .slot-position{line-height:1!important;white-space:nowrap}
+@media(min-width:1081px){.formation-pitch-v2 .slot-position{min-width:34px;padding:4px 8px!important;font-size:14px!important;letter-spacing:.35px}}
+@media(min-width:761px) and (max-width:1080px){.formation-pitch-v2 .slot-position{min-width:31px;padding:3px 7px!important;font-size:13px!important}}
+@media(max-width:760px){.formation-pitch-v2 .slot-position{min-width:28px;max-width:50px;padding:3px 5px!important;font-size:12.5px!important}}
+@media(max-width:760px){.results-chemistry-links{grid-template-columns:1fr}.result-chem-link{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto}}

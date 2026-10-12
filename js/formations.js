@@ -107,13 +107,27 @@ function activeFormationSlotIndices(n){
     priority.forEach(i=>{if(!active.includes(i)&&active.length<limit)active.push(i);});
     return new Set(active.slice(0,limit));
 }
+function lineupOVRProfile(ratings){
+    const values=(Array.isArray(ratings)?ratings:[]).map(Number).filter(Number.isFinite);
+    if(!values.length)return {value:0,raw:0,mean:0,median:0,lowerBand:0};
+    const ordered=[...values].sort((a,b)=>a-b);
+    const mean=ordered.reduce((a,b)=>a+b,0)/ordered.length;
+    const mid=Math.floor(ordered.length/2);
+    const median=ordered.length%2?ordered[mid]:(ordered[mid-1]+ordered[mid])/2;
+    const lowerCount=Math.max(1,Math.ceil(ordered.length/3));
+    const lowerBand=ordered.slice(0,lowerCount).reduce((a,b)=>a+b,0)/lowerCount;
+    // A balanced XI should rate slightly above a top-heavy XI with the same mean.
+    // Small/partial squads stay on the ordinary mean so the display remains intuitive.
+    const raw=ordered.length<4?mean:mean*.84+median*.06+lowerBand*.10;
+    return {value:Math.max(1,Math.min(100,Math.round(raw))),raw,mean,median,lowerBand};
+}
 function formationTeamOVRForAssignment(n,assignment,formationName=formationByTeam[n]||"4-3-3"){
     const team=teamByNumber(n),shape=FORMATIONS[formationName]||FORMATIONS["4-3-3"];
     const ratings=Object.entries(assignment||{}).map(([slot,id])=>{
         const player=team.players.find(p=>p.id===id),pos=shape[Number(slot)]?.label;
         return player&&pos?effectiveOVR(player,pos):null;
     }).filter(Number.isFinite);
-    return ratings.length?Math.round(ratings.reduce((a,b)=>a+b,0)/ratings.length):0;
+    return ratings.length?lineupOVRProfile(ratings).value:0;
 }
 function formationTeamOVR(n){
     return formationTeamOVRForAssignment(n,formationAssignments[n]||{},formationByTeam[n]||"4-3-3");
@@ -213,29 +227,26 @@ function memoizeAutoBestValue(cache,key,value){
     return value;
 }
 function cachedAutoBestChemistry(search,formation,assignment,deployed){
-    let linkCount=0,weightTotal=0,weightedTotal=0,chemistryFloor=100,weakLinks=0,eliteLinks=0;
+    const linkValues=[];
+    let chemistryFloor=100,weakLinks=0,eliteLinks=0;
     for(const [a,b] of formation.edges){
         const pair=search.pairsById.get(assignment[a])?.get(assignment[b]);
         if(!pair)continue;
-        linkCount++;
-        weightTotal+=pair.weight;
-        weightedTotal+=pair.value*pair.weight;
+        linkValues.push(pair.value);
         chemistryFloor=Math.min(chemistryFloor,pair.value);
         if(pair.value<70)weakLinks++;
         if(pair.value>=90)eliteLinks++;
     }
-    let knownTotal=0,knownCount=0;
+    const knownValues=[];
     for(let i=0;i<deployed.length;i++)for(let j=i+1;j<deployed.length;j++){
         const pair=search.pairsById.get(deployed[i].player.id)?.get(deployed[j].player.id);
-        if(pair?.known){knownTotal+=pair.value;knownCount++;}
+        if(pair?.known)knownValues.push(pair.value);
     }
-    const tacticalAverage=weightTotal?weightedTotal/weightTotal:0;
-    const familiarityAverage=knownCount?knownTotal/knownCount:0;
-    const overall=tacticalAverage&&familiarityAverage
-        ?Math.round(tacticalAverage*.86+familiarityAverage*.14)
-        :Math.round(tacticalAverage||familiarityAverage||0);
-    return {hasLinks:linkCount>0,chemistry:linkCount?Math.max(0,Math.min(100,overall)):0,
-        chemistryFloor:linkCount?chemistryFloor:0,weakLinks,eliteLinks};
+    const occupied=new Set(Object.keys(assignment||{}).filter(slot=>assignment[slot]!=null).map(Number));
+    const possibleLinks=formation.edges.filter(([a,b])=>occupied.has(a)&&occupied.has(b)).length;
+    const overall=chemistryNetworkScore(linkValues,knownValues,possibleLinks);
+    return {hasLinks:linkValues.length>0,chemistry:overall,
+        chemistryFloor:linkValues.length?chemistryFloor:0,weakLinks,eliteLinks};
 }
 function formationAssignmentScore(n,assignment,formationName=formationByTeam[n]||"4-3-3",search=null){
     if(search){
@@ -388,8 +399,9 @@ function formationLineupMetrics(n,formationName,assignment,search=null){
     }
 
     const ratings=deployed.map(x=>x.effective);
-    const teamOvrRaw=ratings.reduce((a,b)=>a+b,0)/ratings.length;
-    const teamOvr=Math.round(teamOvrRaw);
+    const ovrProfile=lineupOVRProfile(ratings);
+    const teamOvrRaw=ovrProfile.raw;
+    const teamOvr=ovrProfile.value;
     const sortedRatings=[...ratings].sort((a,b)=>a-b);
     const floorCount=Math.min(3,sortedRatings.length);
     const lineupFloor=sortedRatings.slice(0,floorCount).reduce((a,b)=>a+b,0)/floorCount;
@@ -885,8 +897,7 @@ function updateFormationPointerTarget(d){
     d.target=target;
     if(target){
         target.classList.add("pointer-drop-target");
-        if(target.matches(".formation-slot")){
-            const occupied=getFormationPlayer(formationTeamNumber,Number(target.dataset.slotIndex));
+        if(target.matches(".formation-slot")){            const occupied=getFormationPlayer(formationTeamNumber,Number(target.dataset.slotIndex));
             const action=occupied&&occupied.id!==d.id?"swap":formationSlotFit(d.player,target.dataset.slotLabel)||"valid";
             target.classList.toggle("pointer-swap-target",action==="swap");
             setFormationSlotHint(target,target.dataset.fit||"",action);

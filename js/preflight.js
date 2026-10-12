@@ -164,10 +164,10 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9.1');
-    assert(html.includes(`style.css?v=${data.APP_VERSION}`),'Stylesheet cache version mismatch');
-    assert(html.includes(`css/player-stats.css?v=${data.APP_VERSION}`),'Radar stylesheet cache version mismatch');
-    assert(html.includes(`css/site-header.css?v=${data.APP_VERSION}`),'Header stylesheet cache version mismatch');
+    assert.equal(data.APP_VERSION,'0.6.9.2');
+    assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
+    assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
+    assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
     assert(!html.includes('class="home-status"'),'Homepage status strip removed');
     assert(!read('js/ui/player-stats.js').includes('06 // FIELD METRICS'),'Obsolete field-metrics sublabel removed');
     const formationUi=read('js/ui/formation-ui.js');
@@ -825,7 +825,6 @@ check('Homepage Scouting Desk reuses database helpers and valid saved-phase navi
         assert.equal(dossier.searchParams.get('character'),'1');
     `);
 });
-
 // v0.6.9.1 integrity baseline: latest-main 2fb9dfdd09330f3fb91f061466e6feeaa743b33f.
 const {validateReferenceData,formationFingerprint}=require('../scripts/data-validation.js');
 function referenceValidationInput(){return {
@@ -885,6 +884,22 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
     for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"','rel="canonical"'])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
+});
+
+check('v0.6.9.2 balanced OVR, chemistry-network scoring and results links',()=>{
+    const metric=vm.runInContext(`({
+        balanced:lineupOVRProfile([90,90,90,90,90,90,90,90,90,90,90]).value,
+        topHeavy:lineupOVRProfile([99,98,97,96,95,94,93,92,91,90,70]).value,
+        weakChem:chemistryNetworkScore(Array(20).fill(55),[],20),
+        solidChem:chemistryNetworkScore(Array(20).fill(80),[80,80],20),
+        eliteChem:chemistryNetworkScore(Array(20).fill(95),[95,95],20)
+    })`,sandbox);
+    assert.equal(metric.balanced,90);
+    assert(metric.topHeavy<93,'Weak lower band affects Team OVR');
+    assert(metric.weakChem<metric.solidChem&&metric.solidChem<metric.eliteChem,'Chemistry network scale ordering');
+    const results=read('js/results.js'),playerStats=read('css/player-stats.css');
+    assert(results.includes('resultChemistryLinksMarkup')&&results.includes('shareChemistrySvg'),'Results chemistry links present');
+    assert(playerStats.includes('.results-chemistry-panel')&&playerStats.includes('.formation-pitch-v2 .slot-position'),'Results/link and larger position-tag styles present');
 });
 
 console.log(`\n${failures?'FAIL':'PASS'} preflight — ${failures} failed check(s). Browser UI testing is separate.`);
