@@ -2,7 +2,7 @@
 :root{
   color-scheme:dark;
   --bg-page:#03070e;--bg-surface:#07111c;--bg-surface-raised:#0b1826;--bg-input:#040d17;
-  --bg-panel-start:#091b2b;--bg-panel-end:#020910;--bg-inset:rgba(1,7,13,.58);
+  --bg-panel-start:#091b2b;--bg-panel-end:#020910;--bg-inset:#05111b;
   --bg-hover:#0b2233;--bg-overlay:rgba(0,4,10,.88);--bg-page-glow:#0d3154;--bg-symbol:#0d3154;--bg-symbol-opacity:.22;--bg-page-top:#040b14;--bg-page-bottom:#010308;
   --border-subtle:#254456;--border-strong:#3c657c;--border-line:rgba(112,172,208,.22);
   --text-primary:#f5f8ff;--text-secondary:#adc8da;--text-muted:#819caf;--text-subtle:#718ca3;--text-inverse:#fff;
@@ -18,7 +18,7 @@
   --warning:#ffbd55;--success:#39f59b;--danger:#ff5573;
   --captain-text:#ffe269;--share-text:#d6c9ff;--role-canon:#8affc4;
   --radar-glow:rgba(54,199,255,.55);--radar-cyan:#68e2ff;--radar-grid:#275269;--radar-spoke:#214154;--radar-fill:rgba(32,183,255,.24);
-  --header-bg:rgba(3,10,18,.98);--shadow-soft:0 8px 24px rgba(0,0,0,.2);--shadow-strong:0 18px 48px rgba(0,0,0,.4);
+  --header-bg:#030a12;--shadow-soft:0 8px 24px rgba(0,0,0,.2);--shadow-strong:0 18px 48px rgba(0,0,0,.4);
   --site-width:1540px;--content-width:1180px;--header-height:72px;--header-height-mobile:88px;--logo-size:40px;
   --shell-gutter:20px;--utility-size:40px;--context-gap:18px;
   --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;
@@ -30,7 +30,7 @@
 html[data-theme="light"]{
   color-scheme:light;
   --bg-page:#edf2f7;--bg-surface:#fbfdff;--bg-surface-raised:#f2f7fc;--bg-input:#fff;
-  --bg-panel-start:#fff;--bg-panel-end:#eef5fb;--bg-inset:rgba(218,231,242,.54);
+  --bg-panel-start:#fff;--bg-panel-end:#eef5fb;--bg-inset:#e1ebf3;
   --bg-hover:#e4eff9;--bg-overlay:rgba(218,230,241,.9);--bg-page-glow:#d2e5f6;--bg-symbol:#7faed0;--bg-symbol-opacity:.30;--bg-page-top:#f1f6fb;--bg-page-bottom:#e9f0f7;
   --border-subtle:#b3c8d9;--border-strong:#6b8ca6;--border-line:rgba(59,102,136,.24);
   --text-primary:#122c46;--text-secondary:#2d506c;--text-muted:#47667f;--text-subtle:#526e84;
@@ -45,7 +45,7 @@ html[data-theme="light"]{
   --warning:#8f5d00;--success:#087a49;--danger:#b82246;
   --captain-text:#876b00;--share-text:#533dab;--role-canon:#087a49;
   --radar-glow:rgba(0,99,147,.16);--radar-cyan:#006393;--radar-grid:#9ab5ca;--radar-spoke:#b9cddb;--radar-fill:rgba(0,114,201,.2);
-  --header-bg:rgba(246,250,254,.98);--shadow-soft:0 6px 22px rgba(35,70,105,.08);--shadow-strong:0 16px 44px rgba(35,70,105,.15);
+  --header-bg:#f6fafe;--shadow-soft:0 6px 22px rgba(35,70,105,.08);--shadow-strong:0 16px 44px rgba(35,70,105,.15);
 }
 /* Tactical surfaces keep their own readable ink in either theme. */
 .football-pitch,.formation-pitch-v2,.share-mini-pitch,.formation-pointer-preview{

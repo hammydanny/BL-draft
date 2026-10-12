@@ -8,3 +8,14 @@
 @font-face{font-family:"Rajdhani";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/rajdhani-latin-600-normal.woff2") format("woff2")}
 @font-face{font-family:"Rajdhani";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/rajdhani-latin-700-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/barlow-condensed-latin-800-italic.woff2") format("woff2")}
+
+/* CJK-only UI subset: matching face weights preserve Latin font selection. Noto Sans JP, SIL OFL 1.1. */
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Rajdhani";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:800;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:900;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}
+@font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:800 900;font-display:swap;src:url("../fonts/noto-sans-jp-ui.woff2?v=0.6.9.3") format("woff2");unicode-range:U+3000-30FF,U+3400-9FFF,U+FF00-FFEF}

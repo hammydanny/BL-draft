@@ -8,7 +8,7 @@ function validateReferenceData(data){
     const text=value=>typeof value==='string'&&!!value.trim();
     const score=value=>Number.isFinite(value)&&value>=0&&value<=100;
     const positiveInteger=value=>Number.isInteger(value)&&value>0;
-    const sourceValid=source=>!!source&&['official-profile','canon-reference','anime-subtitles','project-reference','manga','anime'].includes(source.type)&&text(source.note)&&typeof source.url==='string'&&/^https:\/\/\S+$/.test(source.url)&&(source.chapter===undefined||positiveInteger(source.chapter));
+    const sourceValid=source=>!!source&&['official-profile','canon-reference','anime-subtitles','project-reference','manga','anime'].includes(source.type)&&text(source.note)&&typeof source.url==='string'&&/^https:\/\/\S+$/.test(source.url)&&['chapter','episode'].every(field=>source[field]===undefined||positiveInteger(source[field]))&&(source.timestamp===undefined||/^\d{2}:\d{2}$/.test(source.timestamp));
     for(const [code,country] of Object.entries(data.countries||{}))requireField(/^[A-Z]{2}$/.test(code)&&text(country.name)&&text(country.label)&&/^images\/flags\/[a-z-]+\.svg$/.test(country.flag)&&data.assetExists(country.flag),`Invalid country/flag asset: ${code}`);
     const ids=new Set(),names=new Set();
     for(const player of data.players){
@@ -26,6 +26,8 @@ function validateReferenceData(data){
             const id=String(weapon?.id||'').trim().toLowerCase(),name=String(weapon?.name||'').normalize('NFC').trim().toLowerCase(),description=String(weapon?.description||'').trim();
             requireField(!!weapon&&text(weapon.id)&&!weapons.has(id)&&text(weapon.name)&&!weaponNames.has(name)&&description.length>=20&&description.split(/\s+/).length>=4&&!/^(?:tbd|placeholder|coming soon)/i.test(description)&&!weaponDescriptions.has(description.toLowerCase()),`${player.name}: malformed/duplicate weapon`);
             weapons.add(id);weaponNames.add(name);weaponDescriptions.add(description.toLowerCase());
+            requireField(['physical','technical','mental'].includes(weapon?.category),`${player.name}: invalid/missing weapon category`);
+            requireField(!/\bflow(?:\s+state)?\b/i.test(String(weapon?.name||'')),`${player.name}: Flow is not a weapon`);
             if(weapon?.source!==undefined)requireField(sourceValid(weapon.source),`${player.name}: invalid weapon source`);
             if(weapon?.battleSimType!==undefined)requireField(weapon.battleSimType==='TBD'&&weapon.battleSimDescription==='Placeholder: Battle Sim effect to be defined.',`${player.name}: Battle Sim must remain a placeholder`);
         }
@@ -62,6 +64,15 @@ function validateReferenceData(data){
         }
     }
     for(const entry of [...data.referencePairs,...data.referenceContexts])requireField(text(entry.id)&&entry.playerIds.length>1&&entry.playerIds.every(id=>Number.isInteger(id)&&ids.has(id))&&new Set(entry.playerIds).size===entry.playerIds.length,`Bad reference IDs: ${entry.id}`);
+    for(const [id,aliases] of Object.entries(data.aliases||{})){
+        requireField(ids.has(Number(id))&&Array.isArray(aliases)&&aliases.length>0,`Invalid/empty alias player record: ${id}`);
+        const seen=new Set();
+        for(const alias of Array.isArray(aliases)?aliases:[]){
+            const name=String(alias?.name||'').normalize('NFC').trim().toLowerCase();
+            requireField(text(alias?.name)&&alias.name===alias.name.trim()&&!seen.has(name)&&alias.verified===true&&sourceValid(alias.source),`Invalid/unverified/duplicate alias: ${id}`);
+            seen.add(name);
+        }
+    }
     const quotedText=new Map();
     for(const quote of data.quotes){
         if(quote===null)continue;

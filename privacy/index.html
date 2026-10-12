@@ -11,27 +11,29 @@
     <meta property="og:site_name" content="Blue Lock Draft">
     <meta property="og:title" content="Blue Lock Draft — Privacy Notice">
     <meta property="og:description" content="How Blue Lock Draft stores local saves and preferences, handles cached files, and lets you control browser data.">
-    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.9.2">
-    <script src="js/site-preferences.js?v=0.6.9.2"></script>
-    <link rel="stylesheet" href="css/fonts.css?v=0.6.9.2">
-    <link rel="stylesheet" href="css/site-theme.css?v=0.6.9.2">
-    <link rel="stylesheet" href="style.css?v=0.6.9.2">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.9.2">
-    <link rel="stylesheet" href="css/site-information.css?v=0.6.9.2">
-    <link rel="stylesheet" href="css/legal.css?v=0.6.9.2">
-    <script defer src="js/version.js?v=0.6.9.2"></script>
-    <script defer src="js/audio.js?v=0.6.9.2"></script>
-    <script defer src="js/ui/site-information.js?v=0.6.9.2"></script>
-    <script defer src="js/ui/site-directory.js?v=0.6.9.2"></script>
-    <script defer src="js/site-runtime.js?v=0.6.9.2"></script>
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.9.3">
+    <script src="js/site-preferences.js?v=0.6.9.3"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.6.9.3">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.9.3">
+    <link rel="stylesheet" href="style.css?v=0.6.9.3">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.9.3">
+    <link rel="stylesheet" href="css/site-information.css?v=0.6.9.3">
+    <link rel="stylesheet" href="css/legal.css?v=0.6.9.3">
+    <script defer src="js/version.js?v=0.6.9.3"></script>
+    <script defer src="js/i18n/messages.js?v=0.6.9.3"></script>
+    <script defer src="js/localization.js?v=0.6.9.3"></script>
+    <script defer src="js/audio.js?v=0.6.9.3"></script>
+    <script defer src="js/ui/site-information.js?v=0.6.9.3"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.9.3"></script>
+    <script defer src="js/site-runtime.js?v=0.6.9.3"></script>
 </head>
 <body data-site-page="privacy">
     <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
     <div class="background-tech" aria-hidden="true"></div>
     <header class="site-header" role="banner">
         <div class="site-header-inner">
-            <button class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
-                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.9.2" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+            <button data-i18n-ignore class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.9.3" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
                 <span>BLUE LOCK <em>DRAFT</em></span>
             </button>
             <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
@@ -67,7 +69,8 @@
                 <div class="site-settings-heading"><h2 id="siteSettingsTitle">SETTINGS</h2><button type="button" data-settings-close aria-label="Close settings">×</button></div>
                 <fieldset><legend>SOUND EFFECTS</legend><div class="preference-options"><label><input type="radio" name="siteSound" value="on">ON</label><label><input type="radio" name="siteSound" value="off">OFF</label></div></fieldset>
                 <fieldset><legend>THEME</legend><div class="preference-options"><label><input type="radio" name="siteTheme" value="dark">DARK</label><label><input type="radio" name="siteTheme" value="light">LIGHT</label><label><input type="radio" name="siteTheme" value="system">SYSTEM</label></div></fieldset>
-                <p>Choose your display and sound. System follows your device appearance.</p><p class="settings-preservation">Reset restores Dark mode and SFX on. Your saved games stay intact.</p>
+                <fieldset class="language-setting"><legend>LANGUAGE</legend><label class="visually-hidden" for="siteLanguage">Website language</label><select id="siteLanguage" name="siteLanguage"><option value="en" lang="en" data-i18n-ignore>English</option><option value="ms" lang="ms" data-i18n-ignore>Bahasa Melayu</option><option value="ja" lang="ja" data-i18n-ignore>日本語</option></select></fieldset>
+                <p>Choose your display, sound and language. System follows your device appearance.</p><p class="settings-preservation">Reset restores Dark mode, SFX on and English. Your saved games stay intact.</p>
                 <button class="settings-reset" type="button" data-preferences-reset>RESET PREFERENCES</button>
             </section>
         </div>

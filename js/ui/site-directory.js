@@ -93,6 +93,7 @@ function initSiteDirectory(){
         const preferences=SitePreferences.get();
         settings.querySelectorAll('[name="siteSound"]').forEach(input=>input.checked=(input.value==="on")===preferences.sfxEnabled);
         settings.querySelectorAll('[name="siteTheme"]').forEach(input=>input.checked=input.value===preferences.theme);
+        const language=settings.querySelector('[name="siteLanguage"]');if(language)language.value=preferences.language;
     }
     settingsToggle.addEventListener("click",()=>{
         closeDirectory();
@@ -106,6 +107,7 @@ function initSiteDirectory(){
         const input=event.target;
         if(input.name==="siteSound")SitePreferences.set({sfxEnabled:input.value==="on"});
         if(input.name==="siteTheme")SitePreferences.set({theme:input.value});
+        if(input.name==="siteLanguage")SitePreferences.set({language:input.value});
     });
     settings.querySelector("[data-preferences-reset]").addEventListener("click",()=>SitePreferences.reset());
     window.addEventListener("bld:preferences",refreshSettings);
@@ -161,7 +163,7 @@ function initSiteDirectory(){
             controls[next]?.focus();
         }
         if(event.key==="Tab"&&!settings.hidden){
-            const controls=[...settings.querySelectorAll("button,input")];const first=controls[0],last=controls.at(-1);
+            const controls=[...settings.querySelectorAll("button,input,select")];const first=controls[0],last=controls.at(-1);
             if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
             else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
         }

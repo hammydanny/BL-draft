@@ -47,7 +47,7 @@ check('Conflict detection accepts documentation separators and rejects merge hea
     for(const character of ['<','>','|'])assert(marker.test(character.repeat(7)+' HEAD'),'Merge or diff3 header');
 });
 check('Information routes, shared shell, metadata and nested local assets',()=>{
-    const pages=['privacy/index.html','legal/index.html','changelog/index.html'];
+    const pages=['privacy/index.html','legal/index.html','changelog/index.html','404.html'];
     const version=/const APP_VERSION="([^"]+)"/.exec(read('js/version.js'))[1];
     const home=read('index.html');
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
@@ -63,7 +63,7 @@ check('Information routes, shared shell, metadata and nested local assets',()=>{
             assert(fs.existsSync(path.join(root,source)),`${page}: missing ${source}`);
         }
         for(const deployment of ['https://example.test/','https://example.test/BL-draft/']){
-            const pageUrl=new URL(page,deployment),base=new URL('../',pageUrl);
+            const pageUrl=new URL(page,deployment),base=new URL(page==='404.html'?'./':'../',pageUrl);
             assert.equal(base.href,deployment,`${page}: base path`);
             for(const [,destination] of content.matchAll(/data-directory-href="([^"]+)"/g)){
                 const url=new URL(destination.replace(/&amp;/g,'&'),base);
@@ -95,7 +95,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     }
     assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
     assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
-    const expected=['js/site-preferences.js','js/version.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
+    const expected=['js/site-preferences.js','js/version.js','js/i18n/messages.js','js/localization.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
         'js/player-reference.js','js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/site-information.js','js/ui/homepage.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
         'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/app.js'];
@@ -112,7 +112,7 @@ check('Data modules initialize in classic shared scope',()=>{
     for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/formations.js','js/storage.js']){
         vm.runInContext(read(file),sandbox,{filename:file});
     }
-    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
+    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_ALIASES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
 });
 check('Unique player IDs, required records, numeric stats and image paths',()=>{
     assert(data?.players.length>0,'No players loaded');
@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9.2');
+    assert.equal(data.APP_VERSION,'0.6.9.3');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -336,7 +336,7 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
@@ -379,7 +379,7 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
@@ -403,7 +403,7 @@ check('Foundation shell, early theme, global utilities and theme assets',()=>{
 });
 check('Preferences import legacy audio, follow System, preserve saves and reset only preferences',()=>{
     const saved=new Map([['blAuctionSound','off'],['blAuctionSaveV2','auction sentinel'],['blStandaloneBuilderV1','builder sentinel']]);
-    const root={dataset:{},style:{}},favicon={};let listener;
+    const root={dataset:{},style:{},classList:{add(){},remove(){}}},favicon={};let listener;
     const media={matches:false,addEventListener(type,fn){listener=fn;}};
     const window={matchMedia:()=>media,addEventListener(){},dispatchEvent(){}};
     const document={baseURI,currentScript:{src:baseURI+'js/site-preferences.js?v=0.6.8.3'},documentElement:root,getElementById:()=>favicon,querySelectorAll:()=>[]};
@@ -415,7 +415,8 @@ check('Preferences import legacy audio, follow System, preserve saves and reset 
     media.matches=false;listener();assert.equal(root.dataset.theme,'dark');
     preferences.set({theme:'light',sfxEnabled:true});assert.equal(saved.get('blAuctionSound'),'on');assert.equal(JSON.parse(saved.get(preferences.key)).theme,'light');
     media.matches=false;listener();assert.equal(root.dataset.theme,'light','Explicit choice must beat OS');
-    preferences.reset();assert.equal(root.dataset.theme,'dark');assert.equal(preferences.get().sfxEnabled,true);
+    preferences.set({language:'ja'});assert.equal(root.lang,'ja');assert.equal(preferences.get().theme,'light');assert.equal(preferences.get().sfxEnabled,true);
+    preferences.reset();assert.equal(root.lang,'en');assert.equal(root.dataset.theme,'dark');assert.equal(preferences.get().sfxEnabled,true);
     assert.equal(saved.get('blAuctionSaveV2'),'auction sentinel');assert.equal(saved.get('blStandaloneBuilderV1'),'builder sentinel');
     localStorage.getItem=()=>{throw Error('Storage blocked');};localStorage.setItem=()=>{throw Error('Storage blocked');};preferences.set({theme:'light'});assert.equal(root.dataset.theme,'light');
 });
@@ -506,11 +507,11 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
     for(const page of walk(root).filter(file=>file.endsWith('.html'))){
         const content=fs.readFileSync(page,'utf8');
         const relative=path.relative(root,page);
-        if(!['legal/index.html','privacy/index.html','changelog/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
-    assert.equal((read('css/fonts.css').match(/@font-face/g)||[]).length,9,'Retain self-hosted font faces');
+    assert.equal((read('css/fonts.css').match(/@font-face/g)||[]).length,18,'Nine Latin faces plus nine matching-weight CJK faces sharing one subset asset');
     assert(!read('css/site-header.css').includes('@font-face'),'No duplicate font definitions');
 });
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
@@ -830,7 +831,7 @@ const {validateReferenceData,formationFingerprint}=require('../scripts/data-vali
 function referenceValidationInput(){return {
     players:data.players,contexts:data.CHEMISTRY_CONTEXTS,pairs:data.CHEMISTRY_SPECIAL_PAIRS,
     metadata:data.PLAYER_PROFILE_METADATA,categories:data.PLAYER_POOL_CATEGORIES,categoryIds:data.PLAYER_POOL_CATEGORY_IDS,
-    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,countries:data.PLAYER_COUNTRIES,
+    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,aliases:data.PLAYER_ALIASES,countries:data.PLAYER_COUNTRIES,
     formations:data.FORMATIONS,expectedFormationFingerprint:'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e',
     assetExists(source){try{const url=new URL(source,baseURI);return url.href.startsWith(baseURI)&&fs.existsSync(path.join(root,decodeURIComponent(url.pathname.slice(new URL(baseURI).pathname.length))));}catch{return false;}}
 };}
@@ -865,6 +866,11 @@ check('Data validation rejects malformed players, reversed pairs, missing labels
     const changePlayer=change=>data.players.map((player,index)=>index?player:{...player,...change});
     const weapon=data.players[0].weapons[0];
     for(const weapons of [[null],[{}],[{...weapon,description:'TBD'}],[weapon,{...weapon,id:'another-id'}],[{...weapon,source:{type:'manga',url:'not-a-url',note:'Source',chapter:-1}}]])reject({players:changePlayer({weapons})},'weapon');
+    for(const category of [undefined,null,'flow','physical,mental',['physical','mental']])reject({players:changePlayer({weapons:[{...weapon,category}]})},'weapon category');
+    reject({players:changePlayer({weapons:[{...weapon,name:'Flow State'}]})},'Flow');
+    const alias={name:'Integrity fixture',verified:true,source:{type:'anime-subtitles',url:'https://example.test/source',episode:1,note:'Integrity fixture'}};
+    for(const aliases of [{999999:[alias]},{1:[]},{1:[null]},{1:[{...alias,verified:false}]},{1:[alias,alias]},{1:[{...alias,source:{...alias.source,episode:0}}]}])reject({aliases},'alias');
+    assert.deepEqual(validateReferenceData({...baseline,aliases:{}}),[],'No alias is valid');
     reject({players:changePlayer({nationality:{code:'JPN',name:'Japan'}})},'nationality');
     reject({players:changePlayer({nationality:{...data.players[0].nationality,code:'ZZ'}})},'nationality');
     reject({countries:{...data.PLAYER_COUNTRIES,JP:{...data.PLAYER_COUNTRIES.JP,flag:'images/flags/missing.svg'}}},'flag asset');
@@ -882,10 +888,21 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
     assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accessible compare controls');
     assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
-    for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"','rel="canonical"'])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
+    for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
 });
 
+check('v0.6.9.3 local languages, canon references and 404 contract',()=>{
+    const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);
+    const messages=window.BLD_MESSAGES;assert(Object.keys(messages).length>1000);
+    for(const [key,value] of Object.entries(messages))assert(key&&typeof value.ms==='string'&&value.ms.trim()&&typeof value.ja==='string'&&value.ja.trim(),'Complete language entry: '+key);
+    for(const profile of Object.values(data.PLAYER_PROFILE_METADATA))assert(messages[profile.overview],'Translated profile');
+    for(const player of data.players)for(const weapon of player.weapons||[])assert(messages[weapon.description],'Translated weapon '+weapon.name);
+    assert(data.PLAYER_QUOTES.length>=25,'Meaningful expanded verified quote collection');
+    const notFound=read('404.html');assert(notFound.includes('noindex')&&notFound.includes('data-site-page="404"'));
+    assert(!notFound.includes('js/app.js')&&!notFound.includes('location.replace(')&&!notFound.includes('location.href='),'404 stays a real error document');
+    for(const link of ['./','auction/setup/','team-builder/','lore/?view=characters'])assert(notFound.includes('href="'+link+'"'),'404 recovery '+link);
+});
 check('v0.6.9.2 balanced OVR, chemistry-network scoring and results links',()=>{
     const metric=vm.runInContext(`({
         balanced:lineupOVRProfile([90,90,90,90,90,90,90,90,90,90,90]).value,

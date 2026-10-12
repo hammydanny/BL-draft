@@ -44,6 +44,33 @@ function renderHomepageDiscovery(){
     document.getElementById("homeFormationCount").textContent=Object.keys(FORMATIONS).length;
     const markers=document.getElementById("homeTacticalMarkers");
     markers.innerHTML=FORMATIONS["4-3-3"].map((slot,index)=>`<g transform="translate(${46+slot.x*3.08} ${20+slot.y*2.35})"><circle r="${index===9?14:11}" class="${index===9?"is-striker":""}"/><text text-anchor="middle" dominant-baseline="central">${esc(slot.label)}</text></g>`).join("");
+    initHomepagePreview();
+}
+
+function initHomepagePreview(){
+    const carousel=document.querySelector(".home-preview");if(!carousel||carousel.dataset.ready)return;
+    carousel.dataset.ready="true";
+    const portrait=player=>`<img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="64" height="80" loading="lazy" decoding="async">`;
+    const isagi=playerById(1),kurona=playerById(26),relation=chemistryRelation(isagi,kurona);
+    document.getElementById("homePreviewAuction").innerHTML=`${portrait(isagi)}<div><strong data-i18n-ignore>${esc(isagi.name)}</strong><span>CURRENT TARGET</span><b>OVR ${playerOverall(isagi)} <small>${playerStatGrade(playerOverall(isagi))}</small></b></div><div class="preview-bid"><span>OPENING BID</span><strong>$50</strong><small>LIVE BIDDING</small></div>`;
+    document.getElementById("homePreviewDatabase").innerHTML=[isagi,playerById(49),playerById(23)].map(player=>`<div>${portrait(player)}<strong data-i18n-ignore>${esc(player.name)}</strong><small>OVR ${playerOverall(player)} · ${playerStatGrade(playerOverall(player))}</small></div>`).join("");
+    document.getElementById("homePreviewChemistry").innerHTML=`<div class="preview-connection">${portrait(isagi)}<span aria-hidden="true">↔</span>${portrait(kurona)}</div><strong>${relation.score}<small>/ 100</small></strong><b>${chemistryTierLabel(relation.score)}</b><p data-i18n-ignore>${esc(isagi.name)} × ${esc(kurona.name)}</p>`;
+    document.getElementById("homePreviewReport").innerHTML=FORMATIONS["4-3-3"].map(slot=>`<i data-i18n-ignore style="left:${slot.x}%;top:${slot.y}%">${slot.label}</i>`).join("");
+    const slides=[...carousel.querySelectorAll("[data-preview-slide]")],indicators=[...carousel.querySelectorAll("[data-preview-index]")];let current=0,start=null;
+    function show(index){
+        current=(index+slides.length)%slides.length;
+        slides.forEach((slide,i)=>{slide.hidden=i!==current;});
+        indicators.forEach((button,i)=>{if(i===current)button.setAttribute("aria-current","true");else button.removeAttribute("aria-current");});
+        document.getElementById("homePreviewStatus").textContent=`${current+1} / ${slides.length}`;
+        prioritizeVisiblePortraits(slides[current]);
+    }
+    carousel.addEventListener("click",event=>{const step=event.target.closest("[data-preview-step]"),index=event.target.closest("[data-preview-index]");if(step)show(current+Number(step.dataset.previewStep));else if(index)show(Number(index.dataset.previewIndex));});
+    carousel.addEventListener("keydown",event=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;event.preventDefault();show(event.key==="Home"?0:event.key==="End"?slides.length-1:current+(event.key==="ArrowRight"?1:-1));});
+    carousel.addEventListener("touchstart",event=>{const touch=event.touches[0];start=touch?{x:touch.clientX,y:touch.clientY}:null;},{passive:true});
+    carousel.addEventListener("touchend",event=>{const touch=event.changedTouches[0];if(start&&touch){const dx=touch.clientX-start.x,dy=touch.clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)show(current+(dx<0?1:-1));}start=null;},{passive:true});
+    carousel.addEventListener("touchcancel",()=>start=null,{passive:true});
+    // Manual-only navigation avoids autoplay timers and never writes game state.
+    show(0);
 }
 const homepageChemistryPlayers={a:1,b:26};
 function homepagePlayerMatches(query){

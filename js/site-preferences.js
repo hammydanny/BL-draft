@@ -5,11 +5,11 @@
     const root=document.documentElement;
     const system=window.matchMedia("(prefers-color-scheme: light)");
     const assetVersion=new URL(document.currentScript.src,document.baseURI).searchParams.get("v");
-    const themes=["dark","light","system"];
+    const themes=["dark","light","system"],languages=["en","ms","ja"];
     function read(key){try{return localStorage.getItem(key);}catch{return null;}}
     function write(key,value){try{localStorage.setItem(key,value);}catch{/* Preferences still work for this page. */}}
     function stored(){try{const value=JSON.parse(read(key));return value&&typeof value==="object"&&!Array.isArray(value)?value:{};}catch{return {};}}
-    function normalize(value){return {...value,theme:themes.includes(value.theme)?value.theme:"dark",sfxEnabled:typeof value.sfxEnabled==="boolean"?value.sfxEnabled:read(soundKey)!=="off"};}
+    function normalize(value){return {...value,theme:themes.includes(value.theme)?value.theme:"dark",language:languages.includes(value.language)?value.language:"en",sfxEnabled:typeof value.sfxEnabled==="boolean"?value.sfxEnabled:read(soundKey)!=="off"};}
     let preferences=normalize(stored());
     // An older build may have changed sound since this model was last written.
     const legacySound=read(soundKey);
@@ -38,13 +38,16 @@
         root.dataset.theme=resolvedTheme();
         root.dataset.themePreference=preferences.theme;
         root.style.colorScheme=resolvedTheme();
+        root.lang=preferences.language;
         syncAssets();
     }
     function notify(){window.dispatchEvent(new CustomEvent("bld:preferences",{detail:{...preferences}}));}
     function save(){write(key,JSON.stringify(preferences));write(soundKey,preferences.sfxEnabled?"on":"off");}
     function set(patch){preferences=normalize({...preferences,...patch});save();apply();notify();return {...preferences};}
-    function reset(){preferences={theme:"dark",sfxEnabled:true};save();apply();notify();}
+    function reset(){preferences={theme:"dark",language:"en",sfxEnabled:true};save();apply();notify();}
     window.SitePreferences=Object.freeze({get:()=>({...preferences}),set,reset,syncAssets,resolvedTheme,key,soundKey});
+    if(preferences.language!=="en")root.classList.add("i18n-loading");
+    window.addEventListener("load",()=>root.classList.remove("i18n-loading"),{once:true});
     apply();
     syncFavicon();
     window.addEventListener("DOMContentLoaded",syncAssets,{once:true});
