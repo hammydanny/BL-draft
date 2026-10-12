@@ -844,7 +844,7 @@ check('Player/reference integrity, chemistry ID adapters, verified quotes and im
         const missing={playerId:1,text:'Validation fixture only',sourceType:'manga',chapter:1,sourceReference:'https://example.test/source',sourceNote:'Integrity fixture',verified:false};
         assert(!isVerifiedCanonQuote(missing));assert(!isVerifiedCanonQuote({...missing,verified:true,sourceReference:''}));
         for(const value of [null,{}, {...missing,verified:'true'}, {...missing,verified:true,text:''}, {...missing,verified:true,chapter:0}])assert(!isVerifiedCanonQuote(value));
-        for(const player of players){const markup=characterLoreProfileMarkup(player);assert.equal(markup.includes('class="character-quote"'),!!playerRecord(player.id).quote);}
+        for(const player of players){const markup=characterLoreProfileMarkup(player);assert.equal(markup.includes('class="character-profile-quote"'),!!playerRecord(player.id).quote);assert(!markup.includes('EGO STATEMENT')&&!markup.includes('<figcaption>'),'Quotes stay inside Player Profile without attribution/source UI');}
     `);
 });
 check('Data validation rejects malformed players, reversed pairs, missing labels, bad IDs, quotes and coordinates',()=>{

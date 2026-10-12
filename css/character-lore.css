@@ -114,10 +114,8 @@
 .character-position-analysis p:last-child{margin-bottom:0}
 .character-position-analysis ul{padding-left:20px}
 .character-section-note{margin:0 0 12px;max-width:85ch}
-.character-quote{margin:0;padding:15px;background:var(--bg-surface-raised);border-left:3px solid var(--accent)}
-.character-quote blockquote{margin:0;color:var(--text-primary);font-size:18px;line-height:1.6}
-.character-quote figcaption{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;color:var(--text-secondary);font-size:12px;font-weight:800}
-.character-quote figcaption span{color:var(--text-muted)}
+.character-profile-quote{margin-top:12px;padding-left:10px;border-left:2px solid var(--border-strong)}
+.character-profile-quote blockquote{margin:0;color:var(--text-secondary);font-size:14px;font-style:italic;line-height:1.55}
 /* Relationship tiers retain text labels as well as distinct colors. */
 .chemistry-tier-guide{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .chemistry-tier-guide>span{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--relationship-color);font-size:12px;font-weight:900}
