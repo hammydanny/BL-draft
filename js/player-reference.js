@@ -150,6 +150,67 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "16:53",
         "note": "Naruhaya explicitly calls Isagi a genius of adaptability after their Second Selection match."
       }
+    },
+    {
+      "name": "Mr. Average",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja",
+        "episode": 26,
+        "timestamp": "18:51",
+        "note": "Karasu directly addresses Isagi during the Third Selection match. Official English Crunchyroll subtitle transcript; direct canon usage."
+      }
+    }
+  ],
+  "2": [
+    {
+      "name": "Jewel of Japanese Soccer",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e1-dream",
+        "episode": 1,
+        "timestamp": "02:01",
+        "note": "The interviewer explicitly says people call Kira the jewel of Japanese soccer."
+      }
+    }
+  ],
+  "3": [
+    {
+      "name": "World’s Greatest Striker",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e1-dream",
+        "episode": 1,
+        "timestamp": "10:52",
+        "note": "Ego explicitly identifies Noa with this title before quoting his football philosophy."
+      }
+    }
+  ],
+  "4": [
+    {
+      "name": "Blunt Bangs",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
+        "episode": 13,
+        "timestamp": "02:53",
+        "note": "Aryu tells Tokimitsu to mark Bachira using this nickname; repeated by Barou and Team V."
+      }
+    },
+    {
+      "name": "Bob Cut",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
+        "timestamp": "20:46",
+        "note": "Rin addresses Bachira after choosing him. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 13
+      }
     }
   ],
   "6": [
@@ -186,18 +247,29 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "07:04",
         "note": "Isagi explicitly refers to Chigiri as the selfish princess; the nickname is also used directly in dialogue."
       }
-    }
-  ],
-  "4": [
+    },
     {
-      "name": "Blunt Bangs",
+      "name": "Little Miss Redhead",
       "verified": true,
       "source": {
         "type": "anime-subtitles",
-        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
-        "episode": 13,
-        "timestamp": "02:53",
-        "note": "Aryu tells Tokimitsu to mark Bachira using this nickname; repeated by Barou and Team V."
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e10-just-the-way-it-is",
+        "timestamp": "14:57",
+        "note": "Zantetsu directly addresses Chigiri. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 10
+      }
+    }
+  ],
+  "14": [
+    {
+      "name": "Li’l Genius",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/36-flowers",
+        "episode": 36,
+        "timestamp": "06:59",
+        "note": "Aiku directly addresses Sae as Li’l Genius; later dialogue repeats the reference."
       }
     }
   ],
@@ -246,6 +318,16 @@ const PLAYER_ALIASES=Object.freeze({
         "episode": 9,
         "timestamp": "05:17",
         "note": "Nagi directly uses the repeated nickname for Zantetsu; Reo uses it later in the same episode."
+      }
+    },
+    {
+      "name": "Stupid Specs",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e9-awakening",
+        "note": "Chigiri addresses Zantetsu in their speed contest; wording cross-checked against the episode transcript. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 9
       }
     }
   ],
@@ -296,6 +378,17 @@ const PLAYER_ALIASES=Object.freeze({
         "episode": 28,
         "timestamp": "12:45",
         "note": "Yukimiya explicitly tells Nagi he can call him Yukki."
+      }
+    },
+    {
+      "name": "Mr. Four-Eyes",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/28-chameleon",
+        "episode": 28,
+        "timestamp": "12:14",
+        "note": "Nagi directly addresses Yukimiya after taking the goal; repeated at 12:38. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
     }
   ],
@@ -374,19 +467,6 @@ const PLAYER_ALIASES=Object.freeze({
       }
     }
   ],
-  "70": [
-    {
-      "name": "Aomori's Messi",
-      "verified": true,
-      "source": {
-        "type": "anime-subtitles",
-        "url": "https://subs.yakuaru.com/books/blue-lock/page/e14-the-geniuses-and-the-average-joes",
-        "episode": 14,
-        "timestamp": "07:46",
-        "note": "Naruhaya names Nishioka by this nickname while describing the team they lost to."
-      }
-    }
-  ],
   "50": [
     {
       "name": "The Magician",
@@ -423,6 +503,18 @@ const PLAYER_ALIASES=Object.freeze({
       }
     }
   ],
+  "54": [
+    {
+      "name": "Doctor",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Chapter_179",
+        "chapter": 179,
+        "note": "Chris explicitly calls Agi the doctor while introducing his analysis role; chapter-specific dialogue context, not an editorial profile epithet."
+      }
+    }
+  ],
   "55": [
     {
       "name": "Victory Wayfarer",
@@ -445,18 +537,6 @@ const PLAYER_ALIASES=Object.freeze({
       }
     }
   ],
-  "54": [
-    {
-      "name": "Doctor",
-      "verified": true,
-      "source": {
-        "type": "canon-reference",
-        "url": "https://bluelock.fandom.com/wiki/Chapter_179",
-        "chapter": 179,
-        "note": "Chris explicitly calls Agi the doctor while introducing his analysis role; chapter-specific dialogue context, not an editorial profile epithet."
-      }
-    }
-  ],
   "56": [
     {
       "name": "Ace Eater",
@@ -469,82 +549,268 @@ const PLAYER_ALIASES=Object.freeze({
       }
     }
   ],
-  "2": [
+  "70": [
     {
-      "name": "Jewel of Japanese Soccer",
+      "name": "Aomori's Messi",
       "verified": true,
       "source": {
         "type": "anime-subtitles",
-        "url": "https://subs.yakuaru.com/books/blue-lock/page/e1-dream",
-        "episode": 1,
-        "timestamp": "02:01",
-        "note": "The interviewer explicitly says people call Kira the jewel of Japanese soccer."
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e14-the-geniuses-and-the-average-joes",
+        "episode": 14,
+        "timestamp": "07:46",
+        "note": "Naruhaya names Nishioka by this nickname while describing the team they lost to."
       }
     }
   ],
-  "3": [
+  "5": [
     {
-      "name": "World’s Greatest Striker",
+      "name": "Igaguri",
       "verified": true,
       "source": {
         "type": "anime-subtitles",
-        "url": "https://subs.yakuaru.com/books/blue-lock/page/e1-dream",
-        "episode": 1,
-        "timestamp": "10:52",
-        "note": "Ego explicitly identifies Noa with this title before quoting his football philosophy."
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e2-monster",
+        "timestamp": "04:23",
+        "note": "Kira directly names Igarashi by this nickname. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 2
       }
     }
   ],
-  "14": [
+  "23": [
     {
-      "name": "Li’l Genius",
+      "name": "Rin-chan",
       "verified": true,
       "source": {
         "type": "anime-subtitles",
-        "url": "https://subs.yakuaru.com/books/blue-lock/page/36-flowers",
-        "episode": 36,
-        "timestamp": "06:59",
-        "note": "Aiku directly addresses Sae as Li’l Genius; later dialogue repeats the reference."
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
+        "timestamp": "03:11",
+        "note": "Bachira addresses Rin by this nickname. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 13
+      }
+    },
+    {
+      "name": "Rin-Rin",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/28-chameleon",
+        "timestamp": "13:24",
+        "note": "Shido addresses Rin, who explicitly repeats and rejects the nickname at 13:29. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 28
+      }
+    },
+    {
+      "name": "Bottom Eyelash Jerk",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja",
+        "timestamp": "19:56",
+        "note": "Shido directly addresses Rin; normalized title capitalization. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 26
+      }
+    }
+  ],
+  "21": [
+    {
+      "name": "Hassle Monster",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "timestamp": "23:38",
+        "note": "Reo addresses Nagi while describing their relationship. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 31
+      }
+    },
+    {
+      "name": "Super Controller",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "timestamp": "06:02",
+        "note": "Nio addresses Nagi during his press. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 31
+      }
+    }
+  ],
+  "20": [
+    {
+      "name": "Chameleon",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/28-chameleon",
+        "timestamp": "17:45",
+        "note": "Reo explicitly names his new play style and established identity. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 28
+      }
+    }
+  ],
+  "31": [
+    {
+      "name": "Devil Boy",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/34-the-subs-take-to-the-stage",
+        "timestamp": "05:15",
+        "note": "Sae directly addresses Shido. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 34
+      }
+    },
+    {
+      "name": "Devil",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/33-night-snow",
+        "timestamp": "11:35",
+        "note": "Aiku refers to Shido as the remaining reason his team can win. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 33
+      }
+    },
+    {
+      "name": "Antenna-Head",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/28-chameleon",
+        "episode": 28,
+        "timestamp": "13:23",
+        "note": "Rin directly addresses Shido before the counterattack. Title capitalization is normalized. Official English Crunchyroll subtitle transcript; direct canon usage."
+      }
+    }
+  ],
+  "46": [
+    {
+      "name": "Mannequin Muscleman",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "timestamp": "07:52",
+        "note": "Aryu addresses Cho before the pass to Kitsunezato. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 31
+      }
+    }
+  ],
+  "27": [
+    {
+      "name": "Little Boy Light Blue",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/34-the-subs-take-to-the-stage",
+        "timestamp": "18:08",
+        "note": "Darai directly addresses Hiori. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 34
+      }
+    },
+    {
+      "name": "Hiorin",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/37-not-alone",
+        "timestamp": "19:55",
+        "note": "Bachira praises Hiori by this nickname. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 37
+      }
+    }
+  ],
+  "41": [
+    {
+      "name": "Dobermann",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "timestamp": "06:22",
+        "note": "Nio explicitly tells Nagi to call him Dobermann. Official English Crunchyroll transcript; direct canon usage.",
+        "episode": 31
+      }
+    }
+  ],
+  "9": [
+    {
+      "name": "Shark Teeth",
+      "verified": true,
+      "source": {
+        "type": "anime-film-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/0-blue-lock-the-movie-episode-nagi",
+        "timestamp": "51:38",
+        "note": "Reo directly addresses Raichi. Official English Crunchyroll transcript; direct canon usage.",
+        "film": "Blue Lock the Movie: Episode Nagi"
+      }
+    }
+  ],
+  "8": [
+    {
+      "name": "Topknot",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/35-what-you-taught-us",
+        "episode": 35,
+        "timestamp": "06:36",
+        "note": "Shido directly addresses Gagamaru after his rushing header. Official English Crunchyroll subtitle transcript; direct canon usage."
+      }
+    },
+    {
+      "name": "Mr. Super Reaction",
+      "verified": true,
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "episode": 31,
+        "timestamp": "12:48",
+        "note": "Aryu directly addresses Gagamaru while praising his save. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
     }
   ]
-});
+}
+);
 function verifiedPlayerAliases(playerId){return (PLAYER_ALIASES[Number(playerId)]||[]).filter(alias=>alias?.verified===true&&typeof alias.name==="string"&&alias.name.trim()&&alias.source?.url&&alias.source?.note);}
 function playerAliasesMarkup(player){const aliases=verifiedPlayerAliases(player.id);return aliases.length?`<p class="player-aliases" data-i18n-ignore>${aliases.map(alias=>esc(alias.name)).join(" · ")}</p>`:"";}
 
 // Short exact canon dialogue. Original wording and internal source context are retained.
 const PLAYER_QUOTES=Object.freeze([
-    {"playerId":3,"text":"it feels better to pull off a hat trick and lose 3-4.","verified":true,"sourceType":"anime","episode":1,"timestamp":"10:46","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e1-dream","sourceNote":"Exact second subtitle line of the Noa quotation. Ego begins quoting at 10:43 and explicitly attributes these words to Noel Noa at 10:52; this is reported canon dialogue, not Ego’s own claim."},
-    {"playerId":1,"text":"Become the one who chooses, not the one waiting to be chosen.","verified":true,"sourceType":"anime","episode":19,"timestamp":"03:55","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Isagi, at 03:55. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":4,"text":"I'm going to be the monster!","verified":true,"sourceType":"anime","episode":22,"timestamp":"20:21","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e22-voice","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Bachira/I, at 20:21. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":5,"text":"I'm what people call a \"useful monk.\"","verified":true,"sourceType":"anime","episode":28,"timestamp":"08:47","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/28-chameleon","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker IGARASHI, at 08:47. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":6,"text":"I'm gonna be a soccer superhero.","verified":true,"sourceType":"anime","episode":4,"timestamp":"05:53","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e4-premonition-and-intuition","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Kunigami, at 05:53. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":7,"text":"I'm going to run until this leg of mine no longer works.","verified":true,"sourceType":"anime","episode":7,"timestamp":"17:01","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e7-rush","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Chigiri, at 17:01. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":8,"text":"I can't use my hands, so here's a dashing-out header!","verified":true,"sourceType":"anime","episode":35,"timestamp":"06:37","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/35-what-you-taught-us","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker GAGAMARU, at 06:37. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":9,"text":"Keep attacking until you're dead! Go all-out, morons!","verified":true,"sourceType":"anime","episode":10,"timestamp":"07:32","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e10-just-the-way-it-is","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Raichi, at 07:32. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":10,"text":"There are some dreams that don't come true.","verified":true,"sourceType":"anime","episode":15,"timestamp":"18:33","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e15-devour","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Naruhaya/I, at 18:33. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":12,"text":"In the end, I was the only one playing soccer seriously.","verified":true,"sourceType":"anime","episode":10,"timestamp":"13:07","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e10-just-the-way-it-is","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Kuon/I, at 13:07. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":14,"text":"A striker's value lies only in their ability to score goals.","verified":true,"sourceType":"anime","episode":31,"timestamp":"12:03","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker SAE, at 12:03. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":15,"text":"I found a way to dominate the field as the villain.","verified":true,"sourceType":"anime","episode":18,"timestamp":"16:58","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e18-the-stage-for-the-lead","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Barou, at 16:58. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":16,"text":"You may manage to stop me, but you can't stop my ideas.","verified":true,"sourceType":"anime","episode":5,"timestamp":"02:07","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e5-to-be-reborn","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Niko, at 02:07. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":20,"text":"I wanted a treasure that would be mine and mine alone...","verified":true,"sourceType":"anime","episode":8,"timestamp":"04:34","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e8-the-formula-for-goals","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Reo/I, at 04:34. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":21,"text":"If my talents were at your level, I would've quit soccer by now.","verified":true,"sourceType":"anime","episode":9,"timestamp":"16:29","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e9-awakening","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Nagi, at 16:29. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":22,"text":"I'll slice open a path to the goal again.","verified":true,"sourceType":"anime","episode":9,"timestamp":"11:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e9-awakening","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Zantetsu, at 11:14. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":23,"text":"To me, soccer is a fight to the death.","verified":true,"sourceType":"anime","episode":13,"timestamp":"06:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Rin, at 06:04. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":24,"text":"I will score glam goals and win the game for us.","verified":true,"sourceType":"anime","episode":20,"timestamp":"00:30","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e20-super-link-up-play","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Aryu, at 00:30. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":25,"text":"Without a goal, I feel insecure.","verified":true,"sourceType":"anime","episode":13,"timestamp":"09:11","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Tokimitsu, at 09:11. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":27,"text":"If yer thinkin' then movin', you'll always be too late.","verified":true,"sourceType":"anime","episode":27,"timestamp":"12:40","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/27-the-world-you-feel","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker HIORI, at 12:40. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":28,"text":"Target your opponent's weakness, not his strength.","verified":true,"sourceType":"anime","episode":26,"timestamp":"09:59","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker KARASU, at 09:59. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":29,"text":"Try to outrun me, Mr. Genius's Little Bro.","verified":true,"sourceType":"anime","episode":26,"timestamp":"14:40","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker OTOYA, at 14:40. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":30,"text":"Soccer is fundamentally played one-on-one.","verified":true,"sourceType":"anime","episode":28,"timestamp":"10:24","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/28-chameleon","sourceNote":"Exact Crunchyroll English subtitle line in episode 28, spoken by Yukimiya at 10:24 as he explains his one-on-one football philosophy."},
-    {"playerId":31,"text":"Every single cell in my body exists to score goals!","verified":true,"sourceType":"anime","episode":35,"timestamp":"04:39","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/35-what-you-taught-us","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker SHIDOU/I, at 04:39. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":34,"text":"You've just got tunnel vision from a lack of experience.","verified":true,"sourceType":"anime","episode":24,"timestamp":"04:19","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Luna, at 04:19. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":38,"text":"But I'm fast.","verified":true,"sourceType":"anime","episode":24,"timestamp":"03:36","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Loki, at 03:36. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":40,"text":"I'm never gonna play soccer for someone else again.","verified":true,"sourceType":"anime","episode":36,"timestamp":"04:51","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/36-flowers","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker AIKU/I, at 04:51. Dialogue and speaker context checked; no retranslation."},
-    {"playerId":49,"text":"俺はカイザー。不可能を啓示する存在だ。","verified":true,"sourceType":"manga","chapter":156,"sourceReference":"https://www.hellominju.com/2025/08/BlueLock156.html","sourceNote":"Exact original Japanese dialogue in the chapter-156 transcription, explicitly labelled Kaiser; retained in the original language rather than inventing an English translation."}
+    {"playerId":3,"text":"it feels better to pull off a hat trick and lose 3-4.","verified":true,"sourceType":"anime","episode":1,"timestamp":"10:46","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e1-dream","sourceNote":"Exact second subtitle line of the Noa quotation. Ego begins quoting at 10:43 and explicitly attributes these words to Noel Noa at 10:52; this is reported canon dialogue, not Ego’s own claim.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":1,"text":"Become the one who chooses, not the one waiting to be chosen.","verified":true,"sourceType":"anime","episode":19,"timestamp":"03:55","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Isagi, at 03:55. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":4,"text":"I'm going to be the monster!","verified":true,"sourceType":"anime","episode":22,"timestamp":"20:21","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e22-voice","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Bachira/I, at 20:21. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":5,"text":"I'm what people call a \"useful monk.\"","verified":true,"sourceType":"anime","episode":28,"timestamp":"08:47","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/28-chameleon","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker IGARASHI, at 08:47. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":6,"text":"I'm gonna be a soccer superhero.","verified":true,"sourceType":"anime","episode":4,"timestamp":"05:53","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e4-premonition-and-intuition","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Kunigami, at 05:53. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":7,"text":"I'm going to run until this leg of mine no longer works.","verified":true,"sourceType":"anime","episode":7,"timestamp":"17:01","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e7-rush","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Chigiri, at 17:01. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":8,"text":"I can't use my hands, so here's a dashing-out header!","verified":true,"sourceType":"anime","episode":35,"timestamp":"06:37","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/35-what-you-taught-us","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker GAGAMARU, at 06:37. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":9,"text":"Keep attacking until you're dead! Go all-out, morons!","verified":true,"sourceType":"anime","episode":10,"timestamp":"07:32","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e10-just-the-way-it-is","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Raichi, at 07:32. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":10,"text":"There are some dreams that don't come true.","verified":true,"sourceType":"anime","episode":15,"timestamp":"18:33","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e15-devour","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Naruhaya/I, at 18:33. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":12,"text":"In the end, I was the only one playing soccer seriously.","verified":true,"sourceType":"anime","episode":10,"timestamp":"13:07","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e10-just-the-way-it-is","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Kuon/I, at 13:07. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":14,"text":"A striker's value lies only in their ability to score goals.","verified":true,"sourceType":"anime","episode":31,"timestamp":"12:03","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker SAE, at 12:03. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":15,"text":"I found a way to dominate the field as the villain.","verified":true,"sourceType":"anime","episode":18,"timestamp":"16:58","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e18-the-stage-for-the-lead","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Barou, at 16:58. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":16,"text":"You may manage to stop me, but you can't stop my ideas.","verified":true,"sourceType":"anime","episode":5,"timestamp":"02:07","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e5-to-be-reborn","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Niko, at 02:07. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":20,"text":"I wanted a treasure that would be mine and mine alone...","verified":true,"sourceType":"anime","episode":8,"timestamp":"04:34","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e8-the-formula-for-goals","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Reo/I, at 04:34. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":21,"text":"If my talents were at your level, I would've quit soccer by now.","verified":true,"sourceType":"anime","episode":9,"timestamp":"16:29","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e9-awakening","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Nagi, at 16:29. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":22,"text":"I'll slice open a path to the goal again.","verified":true,"sourceType":"anime","episode":9,"timestamp":"11:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e9-awakening","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Zantetsu, at 11:14. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":23,"text":"To me, soccer is a fight to the death.","verified":true,"sourceType":"anime","episode":13,"timestamp":"06:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Rin, at 06:04. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":24,"text":"I will score glam goals and win the game for us.","verified":true,"sourceType":"anime","episode":20,"timestamp":"00:30","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e20-super-link-up-play","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Aryu, at 00:30. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":25,"text":"Without a goal, I feel insecure.","verified":true,"sourceType":"anime","episode":13,"timestamp":"09:11","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Tokimitsu, at 09:11. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":27,"text":"If yer thinkin' then movin', you'll always be too late.","verified":true,"sourceType":"anime","episode":27,"timestamp":"12:40","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/27-the-world-you-feel","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker HIORI, at 12:40. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":28,"text":"Target your opponent's weakness, not his strength.","verified":true,"sourceType":"anime","episode":26,"timestamp":"09:59","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker KARASU, at 09:59. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":29,"text":"Try to outrun me, Mr. Genius's Little Bro.","verified":true,"sourceType":"anime","episode":26,"timestamp":"14:40","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker OTOYA, at 14:40. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":30,"text":"Soccer is fundamentally played one-on-one.","verified":true,"sourceType":"anime","episode":28,"timestamp":"10:24","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/28-chameleon","sourceNote":"Exact Crunchyroll English subtitle line in episode 28, spoken by Yukimiya at 10:24 as he explains his one-on-one football philosophy.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":31,"text":"Every single cell in my body exists to score goals!","verified":true,"sourceType":"anime","episode":35,"timestamp":"04:39","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/35-what-you-taught-us","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker SHIDOU/I, at 04:39. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":34,"text":"You've just got tunnel vision from a lack of experience.","verified":true,"sourceType":"anime","episode":24,"timestamp":"04:19","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Luna, at 04:19. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":38,"text":"But I'm fast.","verified":true,"sourceType":"anime","episode":24,"timestamp":"03:36","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Loki, at 03:36. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":40,"text":"I'm never gonna play soccer for someone else again.","verified":true,"sourceType":"anime","episode":36,"timestamp":"04:51","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/36-flowers","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker AIKU/I, at 04:51. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
+    {"playerId":49,"text":"Get down on your damn knees, Blue Lock.","verified":true,"sourceType":"anime","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/38-last-attack","sourceNote":"Exact official English subtitle wording in the final Kaiser scene of episode 38; previously verified transcript and cross-checked against the English anime quote record. No translation or paraphrase.","language":"en","originalLanguage":"ja","localization":"official-English-anime","episode":38,"timestamp":"23:44"},
+    {"playerId":2,"text":"Even so, how can you know anything about me in just two minutes?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":2,"timestamp":"05:18","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e2-monster","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
+    {"playerId":11,"text":"At long last, I can take my first steps as a striker...","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":19,"timestamp":"24:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
+    {"playerId":41,"text":"Super Controller, I ain't giving you any freedom.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":31,"timestamp":"06:02","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
+    {"playerId":48,"text":"I'm not handing my spot over to some newbies called Blue Lock or whatever it is.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":37,"timestamp":"14:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/37-not-alone","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."}
 ]);
 function isVerifiedCanonQuote(quote){
-    return !!quote&&quote.verified===true&&!!playerById(quote.playerId)&&
+    return !!quote&&quote.verified===true&&quote.language==="en"&&quote.localization==="official-English-"+quote.sourceType&&!!playerById(quote.playerId)&&
         typeof quote.text==="string"&&!!quote.text.trim()&&
         ["manga","anime"].includes(quote.sourceType)&&
         ["chapter","episode"].every(field=>quote[field]===undefined||(Number.isInteger(quote[field])&&quote[field]>0))&&

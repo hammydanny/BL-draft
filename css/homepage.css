@@ -12,10 +12,10 @@
 .home-hero-description{max-width:450px;margin:0;color:var(--text-secondary);font-size:15px;line-height:1.4}
 .home-hero-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .home-button{display:inline-flex;align-items:center;justify-content:space-between;gap:22px;min-height:46px;padding:11px 18px;border:1px solid var(--border-strong);border-radius:3px;background:var(--bg-surface-raised);color:var(--text-secondary);font:800 13px/1 "Rajdhani",sans-serif;letter-spacing:.9px;cursor:pointer;text-decoration:none;transition:background-color var(--motion-fast),border-color var(--motion-fast),transform var(--motion-fast)}
-.home-button--primary{background:linear-gradient(110deg,var(--primary-start),var(--primary-end)),var(--bg-surface);border-color:var(--primary-end);color:var(--text-inverse);box-shadow:var(--shadow-soft)}
+.home-button--primary{background-color:var(--primary-end);background-image:linear-gradient(110deg,var(--primary-start),var(--primary-end));transition:border-color var(--motion-fast),transform var(--motion-fast),box-shadow var(--motion-fast);border-color:var(--primary-end);color:var(--text-inverse);box-shadow:var(--shadow-soft)}
 .home-button b{font-size:19px;line-height:1}
 .home-button:hover{border-color:var(--accent);background:var(--bg-hover);transform:translateY(-2px)}
-.home-button--primary:hover{background:var(--primary-end);color:var(--text-inverse)}
+.home-button--primary:hover{background-color:var(--primary-end);background-image:none;color:var(--text-inverse)}
 .home-introduction{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin-top:6px;color:var(--text-muted);font-size:12px}
 .home-text-button,.home-section-link{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:0;border:0;background:transparent;color:var(--link-text);font:800 12px "Rajdhani",sans-serif;letter-spacing:.8px;text-decoration:none;cursor:pointer}
 .home-text-button:hover,.home-section-link:hover{color:var(--text-primary)}
@@ -36,7 +36,7 @@
 .home-section-heading>div>span{color:var(--text-muted);font-size:12px;display:block;line-height:1.2}
 .home-section-heading h2{margin:3px 0 0;font:800 italic 28px/1 "Barlow Condensed",sans-serif;letter-spacing:.3px}
 .home-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.home-mode{display:flex;flex-direction:column;align-items:flex-start;position:relative;min-width:0;min-height:176px;padding:16px;text-align:left;color:var(--text-primary);background:linear-gradient(140deg,var(--bg-panel-start),var(--bg-surface)),var(--bg-surface);border:1px solid var(--border-subtle);border-radius:3px;box-shadow:var(--shadow-soft);transition:border-color var(--motion-fast),transform var(--motion-fast),background-color var(--motion-fast)}
+.home-mode{display:flex;flex-direction:column;align-items:flex-start;position:relative;min-width:0;min-height:176px;padding:16px;text-align:left;color:var(--text-primary);background:linear-gradient(140deg,var(--bg-panel-start),var(--bg-surface)),var(--bg-surface);border:1px solid var(--border-subtle);border-radius:3px;box-shadow:var(--shadow-soft);transition:border-color var(--motion-fast),transform var(--motion-fast)}
 .home-mode:hover{border-color:var(--accent);transform:translateY(-3px);background:var(--bg-hover)}
 .home-mode-top{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;color:var(--accent-text)}
 .home-mode-top svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
@@ -70,7 +70,7 @@
 .scout-field input::placeholder{color:var(--text-muted);opacity:1}
 .scout-result-status{display:block;min-height:22px;margin:8px 0 4px;color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:.5px}
 .scout-player-results{display:grid;grid-template-columns:1fr 1fr;gap:6px;min-height:224px}
-.scout-player{display:flex;align-items:center;gap:9px;min-width:0;min-height:68px;padding:6px;background:var(--bg-surface);color:var(--text-primary);text-decoration:none;border:1px solid var(--border-subtle);border-radius:var(--panel-radius);transition:background var(--motion-fast),border-color var(--motion-fast)}
+.scout-player{display:flex;align-items:center;gap:9px;min-width:0;min-height:68px;padding:6px;background:var(--bg-surface);color:var(--text-primary);text-decoration:none;border:1px solid var(--border-subtle);border-radius:var(--panel-radius);transition:background-color var(--motion-fast),border-color var(--motion-fast)}
 .scout-player:hover{border-color:var(--accent);background:var(--bg-hover)}
 .scout-player>img{flex:0 0 48px;width:48px;height:54px;object-fit:cover;object-position:center top;border:1px solid var(--border-subtle);background:var(--bg-inset)}
 .scout-player>span{min-width:0;flex:1}

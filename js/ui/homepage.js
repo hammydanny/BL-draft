@@ -65,9 +65,9 @@ function initHomepagePreview(){
         prioritizeVisiblePortraits(slides[current]);
     }
     carousel.addEventListener("click",event=>{const step=event.target.closest("[data-preview-step]"),index=event.target.closest("[data-preview-index]");if(step)show(current+Number(step.dataset.previewStep));else if(index)show(Number(index.dataset.previewIndex));});
-    carousel.addEventListener("keydown",event=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;event.preventDefault();show(event.key==="Home"?0:event.key==="End"?slides.length-1:current+(event.key==="ArrowRight"?1:-1));});
+    carousel.addEventListener("keydown",event=>{if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;event.preventDefault();show(event.key==="Home"?0:event.key==="End"?slides.length-1:current+(event.key==="ArrowRight"?1:-1)*(document.documentElement.dir==="rtl"?-1:1));});
     carousel.addEventListener("touchstart",event=>{const touch=event.touches[0];start=touch?{x:touch.clientX,y:touch.clientY}:null;},{passive:true});
-    carousel.addEventListener("touchend",event=>{const touch=event.changedTouches[0];if(start&&touch){const dx=touch.clientX-start.x,dy=touch.clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)show(current+(dx<0?1:-1));}start=null;},{passive:true});
+    carousel.addEventListener("touchend",event=>{const touch=event.changedTouches[0];if(start&&touch){const dx=touch.clientX-start.x,dy=touch.clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)show(current+(dx<0?1:-1)*(document.documentElement.dir==="rtl"?-1:1));}start=null;},{passive:true});
     carousel.addEventListener("touchcancel",()=>start=null,{passive:true});
     // Manual-only navigation avoids autoplay timers and never writes game state.
     show(0);

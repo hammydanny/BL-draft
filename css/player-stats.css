@@ -108,8 +108,9 @@
 
 /* Position tags are deliberately enlarged only within safe bounds. The widest
    five-at-the-back shapes still keep enough horizontal clearance on mobile. */
+.formation-pitch-v2{--slot-position-height:16px}
 .formation-pitch-v2 .slot-position{line-height:1!important;white-space:nowrap}
-@media(min-width:1081px){.formation-pitch-v2 .slot-position{min-width:34px;padding:4px 8px!important;font-size:14px!important;letter-spacing:.35px}}
-@media(min-width:761px) and (max-width:1080px){.formation-pitch-v2 .slot-position{min-width:31px;padding:3px 7px!important;font-size:13px!important}}
-@media(max-width:760px){.formation-pitch-v2 .slot-position{min-width:28px;max-width:50px;padding:3px 5px!important;font-size:12.5px!important}}
+@media(min-width:1081px){.formation-pitch-v2 .slot-position{min-width:34px;padding:0 8px!important;font-size:14px!important;letter-spacing:.35px}}
+@media(min-width:761px) and (max-width:1080px){.formation-pitch-v2{--slot-position-height:15px}.formation-pitch-v2 .slot-position{min-width:31px;padding:0 7px!important;font-size:13px!important}}
+@media(max-width:760px){.formation-pitch-v2{--slot-position-height:14.5px}.formation-pitch-v2 .slot-position{min-width:28px;max-width:50px;padding:0 5px!important;font-size:12.5px!important}}
 @media(max-width:760px){.results-chemistry-links{grid-template-columns:1fr}.result-chem-link{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto}}

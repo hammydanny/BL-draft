@@ -8,7 +8,7 @@ function validateReferenceData(data){
     const text=value=>typeof value==='string'&&!!value.trim();
     const score=value=>Number.isFinite(value)&&value>=0&&value<=100;
     const positiveInteger=value=>Number.isInteger(value)&&value>0;
-    const sourceValid=source=>!!source&&['official-profile','canon-reference','anime-subtitles','project-reference','manga','anime'].includes(source.type)&&text(source.note)&&typeof source.url==='string'&&/^https:\/\/\S+$/.test(source.url)&&['chapter','episode'].every(field=>source[field]===undefined||positiveInteger(source[field]))&&(source.timestamp===undefined||/^\d{2}:\d{2}$/.test(source.timestamp));
+    const sourceValid=source=>!!source&&['official-profile','canon-reference','anime-subtitles','anime-film-subtitles','project-reference','manga','anime'].includes(source.type)&&text(source.note)&&typeof source.url==='string'&&/^https:\/\/\S+$/.test(source.url)&&['chapter','episode'].every(field=>source[field]===undefined||positiveInteger(source[field]))&&(source.timestamp===undefined||/^\d{2}:\d{2}$/.test(source.timestamp))&&(source.type!=='anime-film-subtitles'||(text(source.film)&&source.episode===undefined));
     for(const [code,country] of Object.entries(data.countries||{}))requireField(/^[A-Z]{2}$/.test(code)&&text(country.name)&&text(country.label)&&/^images\/flags\/[a-z-]+\.svg$/.test(country.flag)&&data.assetExists(country.flag),`Invalid country/flag asset: ${code}`);
     const ids=new Set(),names=new Set();
     for(const player of data.players){
@@ -77,7 +77,7 @@ function validateReferenceData(data){
     for(const quote of data.quotes){
         if(quote===null)continue;
         const normalized=String(quote?.text||'').normalize('NFC').replace(/[‘’]/g,"'").trim().replace(/\s+/g,' ').toLowerCase();
-        requireField(!!quote&&ids.has(quote.playerId)&&text(quote.text)&&quote.text.trim().split(/\s+/).length<=25&&typeof quote.verified==='boolean'&&quote.verified===true&&['manga','anime'].includes(quote.sourceType)&&positiveInteger(quote[quote.sourceType==='manga'?'chapter':'episode'])&&/^https:\/\/\S+$/.test(quote.sourceReference)&&text(quote.sourceNote),`Unverified/malformed quote: ${quote?.playerId}`);
+        requireField(!!quote&&ids.has(quote.playerId)&&text(quote.text)&&quote.text.trim().split(/\s+/).length<=25&&typeof quote.verified==='boolean'&&quote.verified===true&&quote.language==='en'&&quote.localization==='official-English-'+quote.sourceType&&!/[\u0400-\u052F\u0600-\u06FF\uAC00-\uD7AF\u3040-\u30FF\u3400-\u9FFF]/.test(quote.text)&&['manga','anime'].includes(quote.sourceType)&&positiveInteger(quote[quote.sourceType==='manga'?'chapter':'episode'])&&/^https:\/\/\S+$/.test(quote.sourceReference)&&text(quote.sourceNote),`Unverified/malformed quote: ${quote?.playerId}`);
         for(const field of ['chapter','episode'])if(quote?.[field]!==undefined)requireField(positiveInteger(quote[field]),`Invalid quote ${field}: ${quote.playerId}`);
         if(quote?.timestamp!==undefined)requireField(/^\d{2}:\d{2}$/.test(quote.timestamp),`Invalid quote timestamp: ${quote.playerId}`);
         requireField(!quotedText.has(normalized),`Duplicate quote across player records: ${quote?.playerId}`);quotedText.set(normalized,quote?.playerId);

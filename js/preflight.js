@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9.3');
+    assert.equal(data.APP_VERSION,'0.6.9.4');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -511,7 +511,7 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
-    assert.equal((read('css/fonts.css').match(/@font-face/g)||[]).length,18,'Nine Latin faces plus nine matching-weight CJK faces sharing one subset asset');
+    assert.equal((read('css/fonts.css').match(/@font-face/g)||[]).length,54,'Nine Latin faces and matching-weight Japanese, Chinese, Korean, Arabic and extended UI faces');
     assert(!read('css/site-header.css').includes('@font-face'),'No duplicate font definitions');
 });
 check('CSS loader is unique and obsolete global Back code is absent',()=>{
@@ -892,10 +892,11 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
 });
 
-check('v0.6.9.3 local languages, canon references and 404 contract',()=>{
+check('v0.6.9.4 local languages, English canon references and 404 contract',()=>{
     const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);
     const messages=window.BLD_MESSAGES;assert(Object.keys(messages).length>1000);
-    for(const [key,value] of Object.entries(messages))assert(key&&typeof value.ms==='string'&&value.ms.trim()&&typeof value.ja==='string'&&value.ja.trim(),'Complete language entry: '+key);
+    for(const [key,value] of Object.entries(messages))for(const language of ['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'])assert(key&&typeof value[language]==='string'&&value[language].trim()&&!/[XＸХ]1\d\d|إكس\s*1\d\d|ZXQ|⁇|\[object Object\]/.test(value[language]),'Complete language entry: '+language+' '+key);
+    for(const template of window.BLD_MESSAGE_TEMPLATES)for(const language of ['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'])assert(typeof template[language]==='string'&&template[language].trim(),'Localized dynamic format '+language);
     for(const profile of Object.values(data.PLAYER_PROFILE_METADATA))assert(messages[profile.overview],'Translated profile');
     for(const player of data.players)for(const weapon of player.weapons||[])assert(messages[weapon.description],'Translated weapon '+weapon.name);
     assert(data.PLAYER_QUOTES.length>=25,'Meaningful expanded verified quote collection');

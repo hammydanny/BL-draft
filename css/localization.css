@@ -1,0 +1,26 @@
+/* Locale layout: semantic text flows; tactical geometry retains its orientation. */
+.page-context-tools,.auction-context-actions,.auction-history-controls,.formation-actions,.formation-control-panel,.home-section-heading,.home-resume-facts,.share-toolbar>div{flex-wrap:wrap;min-width:0}
+.page-context h1,.page-context-code,.page-context-status,.home-section-heading,.home-mode-title,.home-mode-description,.site-settings p,.information-heading,.character-profile-overview p{overflow-wrap:anywhere;min-width:0}
+.home-art-heading,.home-art-footer,.results-chemistry-head{flex-wrap:wrap}
+.context-control,.home-button,.formation-actions button,.share-toolbar button,.settings-reset{height:auto;white-space:normal;line-height:1.25}
+.site-utilities .sound-toggle{white-space:normal;line-height:1.1}
+.context-control{padding-block:7px;min-height:40px}
+.preference-options label{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.3}
+.page-context-team{max-width:100%;overflow-wrap:anywhere}.players-remaining{flex-wrap:wrap}
+.site-breadcrumb{min-width:0;max-width:100%;overflow:hidden}.site-breadcrumb>[aria-current]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.directory-options button{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+:root .site-directory.directory-width-probe{position:fixed;left:-20000px;top:0;display:flex;width:max-content;height:auto;max-height:none;overflow:visible;padding:0;gap:4px;border:0}
+:root .directory-width-probe .directory-item{width:max-content;min-width:0;white-space:nowrap;padding-inline:12px;flex-shrink:0}
+.directory-width-probe .directory-options{display:none}
+.player-stats-title,.player-stats-gk>span{min-width:0;overflow-wrap:anywhere}
+.character-profile-quote,.player-aliases,.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.budget,.current-bid,.effective-ovr,.captain-badge,.report-position,.quick-bid-buttons button,.quick-bids button,input[type=number]{direction:ltr;unicode-bidi:isolate}
+.football-pitch,.share-mini-pitch,.results-mini-pitch,.home-art svg,#homePreviewReport,.formation-slot,.formation-player-token,.report-player-portrait{direction:ltr}
+.character-profile-overview h2,.player-card-name,.team-header h3,.share-team-head h3,.formation-player-token>strong,.bid-holder strong,.page-context-team{unicode-bidi:plaintext}
+:lang(ar) .page-context,:lang(ar) .site-directory,:lang(ar) .site-settings,:lang(ar) .character-profile-content,:lang(ar) .home-shell,:lang(ar) .site-footer{ text-align:start }
+:lang(ar) h1,:lang(ar) h2,:lang(ar) h3,:lang(ar) button,:lang(ar) label,:lang(ar) summary,:lang(ar) .page-context-code,:lang(ar) .page-context-status{letter-spacing:0}
+:lang(ar) .page-context h1,:lang(ar) .home-mode-title,:lang(ar) .character-profile-overview h2{font-style:normal;line-height:1.25}
+:lang(ar) .directory-options button{text-align:start}
+:lang(ar) .site-header-brand{direction:ltr}:lang(ar) .directory-options{left:auto;right:0}:lang(ar) .site-settings{right:auto;left:0}
+:lang(ar) .primary-button>b,:lang(ar) .home-button>b,:lang(ar) .home-preview-controls button[data-preview-step]{transform:scaleX(-1)}
+:lang(zh-CN),:lang(ja){line-break:strict}:lang(ko){word-break:keep-all;overflow-wrap:anywhere}
+@media(max-width:760px){.page-context-tools{justify-content:center}.home-art-heading,.home-art-footer{gap:5px 10px}.home-button{gap:12px}.pool-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.formation-team-tabs button{white-space:normal;min-height:40px;line-height:1.25}}
