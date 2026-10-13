@@ -5,7 +5,7 @@
     const texts=new WeakMap(),attributes=new WeakMap();
     const folded=new Map(Object.entries(messages).map(([key,value])=>[key.toLocaleLowerCase('en'),value]));
     const ignore='script,style,code,pre,[data-i18n-ignore],.character-profile-quote,.position-badges,.slot-position,.report-position,.captain-badge,.report-captain,.player-stats-axis,.character-profile-stat>span,[name="siteLanguage"] option,[data-app-version],[data-supported-chapter]';
-    const nameAreas='.site-header-brand,.home-hero h1,.character-profile-overview h2,.character-lore-card-name,.character-profile-person-link,.character-profile-team-card h4,.player-info-name h2,.player-card-name,.formation-player-token>strong,.team-header h3,.final-team-top h3,.share-team-head h3,.share-versus>span,.turn-indicator>strong,.sold-panel h2,#homeResumeTeam1,#homeResumeTeam2';
+    const nameAreas='.site-header-brand,.home-hero h1,.share-card-top h2,.character-profile-overview h2,.character-lore-card-name,.character-profile-person-link,.character-profile-team-card h4,.player-info-name h2,.player-card-name,.formation-player-token>strong,.team-header h3,.final-team-top h3,.share-team-head h3,.share-versus>span,.turn-indicator>strong,.sold-panel h2,#homeResumeTeam1,#homeResumeTeam2';
     let language=window.SitePreferences?.get().language||'en',proper=new Set(),observer;
     function names(){
         proper=new Set(['Blue Lock','Blue Lock Draft','OVR','GK','SPD','SHO','DEF','PAS','DRI','TBD']);
@@ -64,10 +64,14 @@
         if(parent.matches('option')&&parent.value.startsWith('context-'))return;
         if(parent.matches('.formation-team-tabs button'))return; // Direct custom team-name text only.
         const source=original(node),output=headingText(node)??text(source);
+        // Mark text owners without moving DOM nodes or reversing the page grids.
+        // Known source text stays marked when switching back to English.
+        if(output!==source||parent.hasAttribute('data-i18n-text'))parent.setAttribute('data-i18n-text','');
         texts.set(node,{source,output});if(node.nodeValue!==output)node.nodeValue=output;
     }
     function translateAttributes(element){
         if(element.closest(ignore)&&!element.matches('[aria-label]'))return;
+        if(element.matches('input:not([type]),input[type=text],input[type=search],textarea')&&!element.hasAttribute('dir'))element.setAttribute('dir','auto');
         let record=attributes.get(element);if(!record){record={};attributes.set(element,record);}
         for(const name of ['aria-label','aria-description','aria-roledescription','aria-valuetext','title','placeholder','alt']){
             if(!element.hasAttribute(name)||(name==='alt'&&element.matches('[data-player-image],[data-theme-logo]')))continue;

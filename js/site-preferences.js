@@ -40,7 +40,9 @@
         root.dataset.themePreference=preferences.theme;
         root.style.colorScheme=resolvedTheme();
         root.lang=preferences.language;
-        root.dir=locales.find(locale=>locale.code===preferences.language).dir;
+        // Page geometry stays stable; localized text components own their reading direction.
+        root.dir="ltr";
+        root.dataset.textDirection=locales.find(locale=>locale.code===preferences.language).dir;
         syncAssets();
     }
     function notify(){window.dispatchEvent(new CustomEvent("bld:preferences",{detail:{...preferences}}));}

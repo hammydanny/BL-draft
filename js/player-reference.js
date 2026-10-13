@@ -161,6 +161,16 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "18:51",
         "note": "Karasu directly addresses Isagi during the Third Selection match. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
+    },
+    {
+      "name": "Game Master",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 207,
+        "url": "https://www.hellominju.com/2025/02/BlueLock207.html",
+        "note": "Kaiser describes Isagi as a game master pretending to be a clown (ゲームマスター). Checked the chapter-207 dialogue and the speaker/subject context; this is a direct canon epithet, not a description invented for the site."
+      }
     }
   ],
   "2": [
@@ -257,6 +267,16 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "14:57",
         "note": "Zantetsu directly addresses Chigiri. Official English Crunchyroll transcript; direct canon usage.",
         "episode": 10
+      }
+    },
+    {
+      "name": "Red Panther",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 193,
+        "url": "https://www.hellominju.com/2025/03/BlueLock193.html",
+        "note": "Isagi's internal narration explicitly identifies Chigiri as 赤豹 with レッドパンサー furigana. The chapter-193 manga panel was visually checked; the title is printed over Chigiri's run and panther aura."
       }
     }
   ],
@@ -535,6 +555,15 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://www.hellominju.com/2025/08/BlueLock155.html",
         "note": "The same introduction explicitly names Crown Messenger (王冠配達士 / クラウン・メッセンジャー)."
       }
+    },
+    {
+      "name": "Royal Messenger",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://comics.inkr.com/title/4919-blue-lock-26",
+        "note": "The official Kodansha USA Volume 26 description on its licensed English distributor explicitly calls Snuffy Royal Messenger. Publisher credits and copyright checked. Preserve Crown Messenger and Victory Wayfarer as their existing verified variants."
+      }
     }
   ],
   "56": [
@@ -546,6 +575,16 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://kmanga.kodansha.com/title/10008/episode/318983",
         "chapter": 210,
         "note": "The publisher’s official chapter-210 title is ACE EATER, introducing Lorenzo; the same title is explicitly attached to him in the chapter’s recognition dialogue."
+      }
+    },
+    {
+      "name": "Zombie",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 214,
+        "url": "https://www.hellominju.com/2025/02/BlueLock214.html",
+        "note": "Isagi directly addresses Lorenzo as ゾンビ野郎, referencing Lorenzo's established zombie movement. Checked chapter-214 dialogue and the speaker/subject context. This is the short alias, not a quotation or a claimed official English speech-bubble transcription."
       }
     }
   ],
@@ -680,6 +719,16 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "13:23",
         "note": "Rin directly addresses Shido before the counterattack. Title capitalization is normalized. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
+    },
+    {
+      "name": "Pink Devil",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 253,
+        "url": "https://www.hellominju.com/2024/11/BlueLock253.html",
+        "note": "The match commentator explicitly identifies Shido as ピンクの悪魔 when announcing his diving-header goal. Checked chapter-253 narration and goal/speaker context; not a fandom nickname."
+      }
     }
   ],
   "46": [
@@ -768,6 +817,51 @@ const PLAYER_ALIASES=Object.freeze({
         "note": "Aryu directly addresses Gagamaru while praising his save. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
     }
+  ],
+  "49": [
+    {
+      "name": "Emperor",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 221,
+        "url": "https://www.hellominju.com/2025/01/BlueLock221.html",
+        "note": "Aiku directly addresses Kaiser as 皇帝ちゃん after the bicycle goal. Chapter-221 speaker/subject context was checked; Kodansha's official Full Color Selection 3 publisher description also identifies Kaiser as the emperor of the pitch."
+      }
+    },
+    {
+      "name": "Superstar",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 266,
+        "url": "https://www.hellominju.com/2024/11/BlueLock266.html",
+        "note": "Isagi calls Kaiser 超英雄 with スーパースター reading after his Magnus goal. This is an actual internal-monologue title, not merely the chapter title; checked chapter-266 dialogue context. Kodansha's official Full Color Selection contents independently identifies chapter 266 as Super Star."
+      }
+    }
+  ],
+  "57": [
+    {
+      "name": "Contrarian",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 246,
+        "url": "https://www.hellominju.com/2024/12/BlueLock246.html",
+        "note": "Charles explicitly calls himself 天邪鬼 while resisting Loki's instructions; Loki repeats the characterization in chapter 252. Checked chapter-246 dialogue and the illustrated Charles/Loki conversation. English alias describes the canon self-designation; no dialogue is retranslated or displayed as a quote."
+      }
+    }
+  ],
+  "16": [
+    {
+      "name": "The Watchtower",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://us.oricon-group.com/news/2163/",
+        "note": "ORICON NEWS character guide explicitly reports Ego calling Niko the greatest watchtower of Blue Lock while assigning the center-back role. Speaker, player, and U-20 selection context checked; this is attributed canon usage, not the Wiki alias field or an editorial role descriptor."
+      }
+    }
   ]
 }
 );
@@ -803,17 +897,690 @@ const PLAYER_QUOTES=Object.freeze([
     {"playerId":34,"text":"You've just got tunnel vision from a lack of experience.","verified":true,"sourceType":"anime","episode":24,"timestamp":"04:19","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Luna, at 04:19. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
     {"playerId":38,"text":"But I'm fast.","verified":true,"sourceType":"anime","episode":24,"timestamp":"03:36","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e24-the-time-has-come","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Loki, at 03:36. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
     {"playerId":40,"text":"I'm never gonna play soccer for someone else again.","verified":true,"sourceType":"anime","episode":36,"timestamp":"04:51","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/36-flowers","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker AIKU/I, at 04:51. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
-    {"playerId":49,"text":"Get down on your damn knees, Blue Lock.","verified":true,"sourceType":"anime","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/38-last-attack","sourceNote":"Exact official English subtitle wording in the final Kaiser scene of episode 38; previously verified transcript and cross-checked against the English anime quote record. No translation or paraphrase.","language":"en","originalLanguage":"ja","localization":"official-English-anime","episode":38,"timestamp":"23:44"},
+    {"playerId":49,"text":"MY NAME’S KAISER... AND I DO THE IMPOSSIBLE.","verified":true,"sourceType":"manga","chapter":156,"sourceReference":"https://www.uniqlo.com/my/en/products/E487922-000/00","sourceNote":"Exact English wording and punctuation printed by the official Kodansha-licensed UNIQLO BLUE LOCK UT collection, product 487922. Its English description explicitly attributes the line to Kaiser. Chapter-156 introduction/spoken Japanese context cross-checked against https://www.hellominju.com/2025/08/BlueLock156.html. This earlier identity/football-philosophy line is more representative than the retained episode-38 command. Licensed English wording is preserved verbatim rather than retranslated.","language":"en","originalLanguage":"ja","localization":"official-English-manga","englishEdition":"Kodansha-licensed UNIQLO UT English quotation","previousQuote":{"playerId":49,"text":"Get down on your damn knees, Blue Lock.","verified":true,"sourceType":"anime","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/38-last-attack","sourceNote":"Exact official English subtitle wording in the final Kaiser scene of episode 38; previously verified transcript and cross-checked against the English anime quote record. No translation or paraphrase.","language":"en","originalLanguage":"ja","localization":"official-English-anime","episode":38,"timestamp":"23:44"}},
     {"playerId":2,"text":"Even so, how can you know anything about me in just two minutes?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":2,"timestamp":"05:18","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e2-monster","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
     {"playerId":11,"text":"At long last, I can take my first steps as a striker...","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":19,"timestamp":"24:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
     {"playerId":41,"text":"Super Controller, I ain't giving you any freedom.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":31,"timestamp":"06:02","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
     {"playerId":48,"text":"I'm not handing my spot over to some newbies called Blue Lock or whatever it is.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":37,"timestamp":"14:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/37-not-alone","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."}
 ]);
+
+// Internal follow-up review ledger. Missing verification is recorded honestly;
+// it never authorizes a translated, invented or fan-localized visible quote.
+const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
+  "chapterLimit": 364,
+  "baseCommit": "4af894a7019c2268d1c448a2eb9165364d296aed",
+  "sourceAccess": "Manga dialogue/context research was available through chapter 364; many official English readers and the existing subtitle host were inaccessible. All retained quotes retain their previous verification provenance. This is not a claim of full official-English chapter access.",
+  "players": {
+    "1": {
+      "quoteAction": "retain",
+      "reason": "Autonomy and choosing teammates already expresses Isagi’s adaptive ego.",
+      "mangaCandidates": [
+        208,
+        283,
+        284,
+        294
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "2": {
+      "quoteAction": "retain",
+      "reason": "Retain the challenge to the opening test; later Side-B material needs verified official English.",
+      "mangaCandidates": [
+        306,
+        351
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "3": {
+      "quoteAction": "retain",
+      "reason": "The personal-goals-over-result philosophy remains distinctive; later rationality and rivalry passages need verified English.",
+      "mangaCandidates": [
+        156,
+        159,
+        278
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "4": {
+      "quoteAction": "retain",
+      "reason": "The monster declaration defines Bachira; freedom training was reconsidered.",
+      "mangaCandidates": [
+        160,
+        161
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "5": {
+      "quoteAction": "retain",
+      "reason": "The useful-monk self-description reflects survival and Malicia; the NEL foul-drawing scenes were reconsidered.",
+      "mangaCandidates": [
+        277,
+        280
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "6": {
+      "quoteAction": "retain",
+      "reason": "The superhero declaration remains central to the contrast with the Wild Card persona.",
+      "mangaCandidates": [
+        155,
+        158,
+        163
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "7": {
+      "quoteAction": "retain",
+      "reason": "Running until the leg fails expresses the stakes better than a speed boast.",
+      "mangaCandidates": [
+        176,
+        193
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "8": {
+      "quoteAction": "retain",
+      "reason": "Later reflex and animal-instinct passages are opportunities, but no stronger official-English line was verified.",
+      "mangaCandidates": [
+        217,
+        227,
+        283
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "9": {
+      "quoteAction": "retain",
+      "reason": "The all-out attacking order represents Raichi’s aggression; protractor defense and the Ness/Rin duels were reconsidered.",
+      "mangaCandidates": [
+        224,
+        276,
+        277
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "10": {
+      "quoteAction": "retain",
+      "reason": "The failed-dream realization defines Naruhaya’s role.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "11": {
+      "quoteAction": "retain",
+      "reason": "Retain the striker aspiration; do not fabricate manga-only material for a minor player.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "12": {
+      "quoteAction": "retain",
+      "reason": "The seriousness/betrayal line represents Kuon’s conflict.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "13": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "14": {
+      "quoteAction": "retain",
+      "reason": "The goals-only striker evaluation represents Sae’s philosophy.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "15": {
+      "quoteAction": "retain",
+      "reason": "The villain declaration is defining; rejecting Snuffy’s employment philosophy is a stronger manga opportunity pending English verification.",
+      "mangaCandidates": [
+        215,
+        216,
+        226,
+        228,
+        229
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "16": {
+      "quoteAction": "retain",
+      "reason": "The ideas line represents Niko’s thinking; later metavision scenes were reconsidered.",
+      "mangaCandidates": [
+        218
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "17": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "18": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "19": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "20": {
+      "quoteAction": "retain",
+      "reason": "The treasure statement represents Reo’s original personal ambition; independent development scenes were reconsidered.",
+      "mangaCandidates": [
+        180,
+        190,
+        295,
+        298
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "21": {
+      "quoteAction": "retain",
+      "reason": "The talent-versus-effort statement represents early Nagi; awakened frustration and Side-B motivation are alternatives pending chapter-specific official English.",
+      "mangaCandidates": [
+        190,
+        298,
+        303,
+        351
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "22": {
+      "quoteAction": "retain",
+      "reason": "The direct path-to-goal statement suits Zantetsu’s acceleration; no better official-English line was verified.",
+      "mangaCandidates": [
+        246
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "23": {
+      "quoteAction": "retain",
+      "reason": "The death-match philosophy is defining; destruction and original-ego passages were reconsidered.",
+      "mangaCandidates": [
+        269,
+        270,
+        271,
+        272,
+        273,
+        274
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "24": {
+      "quoteAction": "retain",
+      "reason": "Glamour is the character identity, so the glam-goals line is meaningful despite its scoring language.",
+      "mangaCandidates": [
+        221
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "25": {
+      "quoteAction": "retain",
+      "reason": "Insecurity is the character identity; do not replace it with a generic winning boast.",
+      "mangaCandidates": [
+        246
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "26": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Planet Hotline support dialogue is a possible manga source; no memorable official-English line was verified.",
+      "mangaCandidates": [
+        179,
+        182,
+        211,
+        244
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "27": {
+      "quoteAction": "retain",
+      "reason": "Anticipation already expresses Hiori’s cognition; choosing and producing strikers is a stronger manga opportunity awaiting English verification.",
+      "mangaCandidates": [
+        230,
+        233,
+        237,
+        239
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "28": {
+      "quoteAction": "retain",
+      "reason": "Attacking weakness represents Karasu’s rationality; later controller passages were reconsidered.",
+      "mangaCandidates": [
+        342
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "29": {
+      "quoteAction": "retain",
+      "reason": "The existing line expresses Otoya’s stealth/speed rivalry; later Barcha support dialogue was reconsidered.",
+      "mangaCandidates": [
+        159,
+        161,
+        295
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "30": {
+      "quoteAction": "retain",
+      "reason": "The one-on-one philosophy is already highly representative; faith and world-best aspirations require exact official English.",
+      "mangaCandidates": [
+        195,
+        196,
+        197,
+        204
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "31": {
+      "quoteAction": "retain",
+      "reason": "The cellular scoring declaration is iconic and representative; preserve it.",
+      "mangaCandidates": [
+        253,
+        254
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "32": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "NEL support and left-handed training scenes were checked as opportunities; no representative official-English line was verified.",
+      "mangaCandidates": [
+        249,
+        250,
+        251
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "33": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Borderline choices and the Magnus assist are substantive candidates; no exact official-English dialogue was verified.",
+      "mangaCandidates": [
+        264,
+        265,
+        266
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "34": {
+      "quoteAction": "retain",
+      "reason": "The tunnel-vision criticism represents Luna’s taunting senior-player confidence.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "35": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "36": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "37": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "38": {
+      "quoteAction": "retain",
+      "reason": "But I’m fast is an iconic, weapon-defining exception to short-quote filler; preserve it.",
+      "mangaCandidates": [
+        246,
+        277,
+        278
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "39": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "40": {
+      "quoteAction": "retain",
+      "reason": "Playing for himself represents Aiku’s recovered ego; later defensive role passages were reconsidered.",
+      "mangaCandidates": [
+        221
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "41": {
+      "quoteAction": "retain",
+      "reason": "The no-freedom marking line suits Nio’s duel-oriented role.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "42": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "43": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "44": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "45": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "46": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "47": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "48": {
+      "quoteAction": "retain",
+      "reason": "The refusal to surrender his position represents Sendo’s pride; the Ubers winner was reconsidered.",
+      "mangaCandidates": [
+        245
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "49": {
+      "quoteAction": "replace",
+      "reason": "Replace the episode-38 kneeling command with the licensor’s exact chapter-156 identity/impossible line.",
+      "mangaCandidates": [
+        156,
+        157,
+        243,
+        260,
+        261,
+        266
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "50": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Magic, imagination, family rejection, and the Kaiser partnership are substantive candidates; no official-English wording was independently accessible.",
+      "mangaCandidates": [
+        242,
+        243,
+        294
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "51": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "BM teamwork and Kaiser-support scenes were checked; no distinctive verified English quotation was found.",
+      "mangaCandidates": [
+        157,
+        161
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "52": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Freedom, imagination, and learning from admired players are substantive teaching-scene candidates; no exact official-English line was independently accessible.",
+      "mangaCandidates": [
+        159,
+        160,
+        164
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "53": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Ideal-body development, self-belief and the number-two rivalry are substantive candidates; no official-English dialogue was independently accessible.",
+      "mangaCandidates": [
+        170,
+        173,
+        192,
+        193,
+        201
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "54": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Developing creativity and ending Reo’s dependence are substantive candidates; no official-English dialogue was independently accessible.",
+      "mangaCandidates": [
+        177,
+        178,
+        190,
+        245,
+        298
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "55": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Football as work, being human before being a player, and responsibility are important opportunities; do not insert widely circulated fan translations.",
+      "mangaCandidates": [
+        214,
+        215,
+        216,
+        223,
+        228,
+        229
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "56": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Valuation, the Snuffy rescue and humor are substantive candidates; no exact official-English dialogue was independently accessible.",
+      "mangaCandidates": [
+        211,
+        214,
+        216,
+        218
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "57": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "The contrarian self-description and high-risk passing philosophy are substantive candidates; do not treat a translated alias as a quotation.",
+      "mangaCandidates": [
+        244,
+        246,
+        252,
+        253,
+        256,
+        274
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "58": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "59": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "60": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "61": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "The Spain encounter and emotional conversation are important manga-only opportunities; no exact official-English dialogue was independently accessible.",
+      "mangaCandidates": [
+        307,
+        308,
+        309,
+        351
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "62": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "The Nigeria match and foster-brother history were reconsidered; exact official-English wording is still required.",
+      "mangaCandidates": [
+        313,
+        314,
+        315,
+        316
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "63": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "The money/work philosophy and foster-brother history were reconsidered; exact official-English wording is still required.",
+      "mangaCandidates": [
+        313,
+        314,
+        315,
+        316
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "64": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Suitable destiny and changing others are important manga-only opportunities; no exact official-English line was independently accessible.",
+      "mangaCandidates": [
+        326,
+        330,
+        338,
+        343,
+        344,
+        345
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "65": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "66": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "67": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Anti-ego football and the Japan/England confrontation were reconsidered; exact official-English wording remains required.",
+      "mangaCandidates": [
+        352,
+        353,
+        356,
+        364
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "68": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "69": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "70": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Keep the established Aomori alias; do not invent a quote for off-panel reputation.",
+      "mangaCandidates": [
+        298
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "71": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "72": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Episode Nagi planning and Side-B scenes are possible sources; no verified official-English line was found.",
+      "mangaCandidates": [
+        298,
+        351
+      ],
+      "aliasAction": "retain-verified-only"
+    },
+    "73": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "74": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "75": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "76": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "77": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "78": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
+      "mangaCandidates": [],
+      "aliasAction": "retain-verified-only"
+    },
+    "79": {
+      "quoteAction": "leave-empty-pending-verification",
+      "reason": "Episode Nagi and Side-B dialogue were reconsidered; no verified official-English representative line was found.",
+      "mangaCandidates": [
+        298,
+        351
+      ],
+      "aliasAction": "retain-verified-only"
+    }
+  }
+});
 function isVerifiedCanonQuote(quote){
     return !!quote&&quote.verified===true&&quote.language==="en"&&quote.localization==="official-English-"+quote.sourceType&&!!playerById(quote.playerId)&&
         typeof quote.text==="string"&&!!quote.text.trim()&&
         ["manga","anime"].includes(quote.sourceType)&&
         ["chapter","episode"].every(field=>quote[field]===undefined||(Number.isInteger(quote[field])&&quote[field]>0))&&
+        (quote.sourceType!=="manga"||quote.chapter<=APP_SUPPORTED_CHAPTER)&&
         Number.isInteger(quote[quote.sourceType==="manga"?"chapter":"episode"])&&quote[quote.sourceType==="manga"?"chapter":"episode"]>0&&
         typeof quote.sourceReference==="string"&&/^https:\/\/\S+$/.test(quote.sourceReference)&&
         typeof quote.sourceNote==="string"&&!!quote.sourceNote.trim();

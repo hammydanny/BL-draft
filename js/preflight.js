@@ -892,6 +892,27 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
 });
 
+check('Chapter-364 quote boundary, review coverage and new canon aliases remain searchable',()=>{
+    const app=appContext();app.run(`
+        assert.deepEqual(Object.keys(PLAYER_REFERENCE_CONTENT_REVIEW.players).map(Number).sort((a,b)=>a-b),players.map(p=>p.id).sort((a,b)=>a-b));
+        const fixture={...PLAYER_QUOTES.find(q=>q.playerId===49),chapter:364};
+        assert.equal(fixture.sourceType,'manga');assert(isVerifiedCanonQuote(fixture));
+        assert(!isVerifiedCanonQuote({...fixture,chapter:365}));
+        for(const [id,name] of [[1,'Game Master'],[7,'Red Panther'],[16,'The Watchtower'],[49,'Emperor'],[49,'Superstar'],[31,'Pink Devil'],[55,'Royal Messenger'],[56,'Zombie'],[57,'Contrarian']]){
+            assert(verifiedPlayerAliases(id).some(alias=>alias.name===name));
+            assert(homepagePlayerMatches(name).some(player=>player.id===id));
+            assert(loreDatabase().characters.some(record=>record.player.id===id&&matchesLoreSearch(record.search,normalizeLoreSearch(name))));
+        }
+        const markup=characterLoreProfileMarkup(playerById(49));
+        assert(markup.includes(esc(fixture.text)));assert(!markup.includes('uniqlo.com'));
+        assert(!markup.includes('Licensed English wording')&&!markup.includes('sourceAccess'));
+    `);
+    const baseline=referenceValidationInput(),fixture={...data.PLAYER_QUOTES.find(q=>q.playerId===49),chapter:364};
+    assert.deepEqual(validateReferenceData({...baseline,quotes:[fixture]}),[]);
+    assert(validateReferenceData({...baseline,quotes:[{...fixture,chapter:365}]}).some(error=>error.includes('quote')));
+    const alias=data.PLAYER_ALIASES[49][0];
+    assert(validateReferenceData({...baseline,aliases:{49:[{...alias,source:{...alias.source,chapter:365}}]}}).some(error=>error.includes('alias')));
+});
 check('v0.6.9.4 local languages, English canon references and 404 contract',()=>{
     const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);
     const messages=window.BLD_MESSAGES;assert(Object.keys(messages).length>1000);
