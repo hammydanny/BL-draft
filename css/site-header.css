@@ -67,7 +67,7 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .site-settings .settings-preservation{padding:10px;background:var(--bg-inset);border-left:2px solid var(--accent);font-size:12px;line-height:1.5}
 .settings-reset{width:100%;min-height:40px;padding:8px;color:var(--text-secondary);border:1px solid var(--border-subtle);background:var(--bg-surface-raised);font-size:12px;font-weight:800;letter-spacing:1px}
 /* Compact page identity and game-specific controls. */
-.page-context{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;max-width:var(--site-width);min-height:80px;margin:0 auto 10px;padding:8px 0;background:var(--bg-surface);border-bottom:1px solid var(--border-line)}
+.page-context{display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;max-width:var(--site-width);min-height:80px;margin:0 auto 10px;padding:8px 0;background:transparent;border-bottom:1px solid var(--border-line)}
 .page-context-copy{min-width:0}
 .page-context-code{color:var(--accent-text);font-size:12px;font-weight:800;line-height:1.4;letter-spacing:1px}
 .page-context h1{margin:4px 0 5px;font:800 italic 34px/1 "Barlow Condensed",sans-serif;letter-spacing:-.3px}
