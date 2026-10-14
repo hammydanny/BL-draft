@@ -180,11 +180,22 @@ document.getElementById("clearAllPlayers").addEventListener("click", () => {
 });
 document.getElementById("maxPlayers").addEventListener("input", updatePoolStatus);
 
+function syncTeamConfigColor(input){
+    if(!input)return;
+    const team=input.id==="team1Color"?"1":"2";
+    document.querySelector(`.team-config-${team}`)?.style.setProperty("--team-config-color",input.value);
+    const output=document.getElementById(input.id+"Value");
+    if(output)output.textContent=input.value.toUpperCase();
+}
+function syncTeamConfigColors(){
+    ["team1Color","team2Color"].forEach(id=>syncTeamConfigColor(document.getElementById(id)));
+}
 ["team1Color","team2Color"].forEach(id => {
-    const input = document.getElementById(id);
-    const output = document.getElementById(id+"Value");
-    input.addEventListener("input", () => output.textContent = input.value.toUpperCase());
+    const input=document.getElementById(id);
+    syncTeamConfigColor(input);
+    input.addEventListener("input",()=>syncTeamConfigColor(input));
 });
+window.addEventListener("load",syncTeamConfigColors,{once:true});
 
 ["team1Name","team2Name","team1Color","team2Color","budget","bidIncrement","maxPlayers"].forEach(id=>document.getElementById(id).addEventListener("change",saveSetupPreferences));
 

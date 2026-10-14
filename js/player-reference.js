@@ -901,7 +901,39 @@ const PLAYER_QUOTES=Object.freeze([
     {"playerId":2,"text":"Even so, how can you know anything about me in just two minutes?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":2,"timestamp":"05:18","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e2-monster","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
     {"playerId":11,"text":"At long last, I can take my first steps as a striker...","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":19,"timestamp":"24:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
     {"playerId":41,"text":"Super Controller, I ain't giving you any freedom.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":31,"timestamp":"06:02","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
-    {"playerId":48,"text":"I'm not handing my spot over to some newbies called Blue Lock or whatever it is.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":37,"timestamp":"14:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/37-not-alone","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."}
+    {"playerId":48,"text":"I'm not handing my spot over to some newbies called Blue Lock or whatever it is.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":37,"timestamp":"14:04","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/37-not-alone","sourceNote":"Exact English Crunchyroll subtitle line; timestamp and speaker context cross-checked in the episode transcript. Display only the dialogue."},
+    {"playerId":13,"text":"My greatest weapon is my speed and technique!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":9,"sourceReference":"https://bluelock.fandom.com/wiki/Yudai_Imamura","sourceNote":"English manga dialogue attributed to Imamura during Team Z's weapon discussion; chapter reference checked against his canon appearance."},
+    {"playerId":26,"text":"Let's go, Isagi. I've decided to follow you.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":177,"sourceReference":"https://bluelock.fandom.com/wiki/Ranze_Kurona","sourceNote":"English manga wording recorded for Kurona's decision to support Isagi; reference identifies Chapter 177."},
+    {"playerId":32,"text":"It's finally our time to shine.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-anime","sourceType":"anime","episode":26,"timestamp":"04:14","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/26-the-assassin-and-the-ninja","sourceNote":"Exact English subtitle line from the episode transcript, spoken by Nanase; timestamp and speaker context checked."},
+    {"playerId":33,"text":"Until the last minute, not even the gods know who I choose to side with.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":267,"sourceReference":"https://bluelock.fandom.com/wiki/Jin_Kiyora","sourceNote":"English manga dialogue expressing Kiyora's borderline philosophy; chapter context checked against Chapter 267."},
+    {"playerId":35,"text":"Your rhythm is dynamic enough, but you don't have enough attack patterns. Your playstyle lacks theatrics.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":92,"sourceReference":"https://bluelock.fandom.com/wiki/Pablo_Cavasoz","sourceNote":"English manga dialogue attributed to Cavasoz while analyzing Bachira; reference identifies Chapter 92."},
+    {"playerId":36,"text":"With an opponent that's a developing country when it comes to football, I thought it'd be like taking candy from a baby.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":91,"sourceReference":"https://bluelock.fandom.com/wiki/Adam_Blake","sourceNote":"Complete English sentence from Blake's Chapter 91 internal evaluation; wording kept as recorded by the chapter reference."},
+    {"playerId":37,"text":"Damn, they're scrawnier than I thought!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":90,"sourceReference":"https://bluelock.fandom.com/wiki/Dada_Silva","sourceNote":"English manga dialogue attributed to Dada Silva on meeting the Blue Lock team; reference identifies Chapter 90."},
+    {"playerId":44,"text":"Yeah... Let's catch up before halftime.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":121,"sourceReference":"https://bluelock.fandom.com/wiki/Itsuki_Wakatsuki","sourceNote":"English manga dialogue attributed to Wakatsuki during the U-20 match; reference identifies Chapter 121."},
+    {"playerId":46,"text":"Just... superb","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":115,"sourceReference":"https://bluelock.fandom.com/wiki/Kento_Cho","sourceNote":"Short English manga reaction attributed to Kento Cho after Sae's pass; Chapter 115 context checked."},
+    {"playerId":47,"text":"Don't waste time and keep moving ahead! That's the basics of a counterattack.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":115,"sourceReference":"https://bluelock.fandom.com/wiki/Teru_Kitsunezato","sourceNote":"English manga dialogue attributed to Kitsunezato during Japan U-20's counterattack; Chapter 115 context checked."},
+    {"playerId":50,"text":"My ego wants me... to cast a spell on your broken soul.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":301,"sourceReference":"https://bluelock.fandom.com/wiki/Alexis_Ness","sourceNote":"English manga dialogue from Ness to Kaiser in Chapter 301; chapter discussion and character quote record cross-checked."},
+    {"playerId":51,"text":"As the vanguard, my destined role is to die... what an amusement.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":159,"sourceReference":"https://bluelock.fandom.com/wiki/Benedict_Grim","sourceNote":"English manga internal dialogue attributed to Grim; reference identifies Chapter 159."},
+    {"playerId":52,"text":"No matter what anyone says, I'm the best in the world. I have my own 'world's best' inside me.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":160,"sourceReference":"https://bluelock.fandom.com/wiki/Lavinho","sourceNote":"Representative English excerpt from Lavinho's Chapter 160 lesson about defining one's own image of the world's best."},
+    {"playerId":53,"text":"Talent without self-awareness will wither away.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":170,"sourceReference":"https://bluelock.fandom.com/wiki/Chris_Prince","sourceNote":"English manga line from Prince's body-revolution lesson; reference identifies Chapter 170."},
+    {"playerId":54,"text":"It's been a while, Kaiser. This time, I'll give you a proper analysis, Mr. Prodigy.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":180,"sourceReference":"https://bluelock.fandom.com/wiki/Agi","sourceNote":"English manga dialogue attributed to Agi while confronting Kaiser; reference identifies Chapter 180."},
+    {"playerId":55,"text":"Will you be able to love yourself when you are no longer viewed as a genius?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":215,"sourceReference":"https://bluelock.fandom.com/wiki/Marc_Snuffy","sourceNote":"English manga dialogue from Snuffy to Baro; reference identifies Chapter 215."},
+    {"playerId":56,"text":"Don't get full of yourself after one sneaky goal... Capiché?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":216,"sourceReference":"https://bluelock.fandom.com/wiki/Don_Lorenzo","sourceNote":"English manga dialogue attributed to Lorenzo after Isagi's goal during Bastard München vs Ubers; chapter context checked."},
+    {"playerId":57,"text":"Well, the more you tell me to do something, the less I wanna! Guess that makes me a contrarian.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":246,"sourceReference":"https://bluelock.fandom.com/wiki/Charles_Chevalier","sourceNote":"English manga dialogue from Charles to Loki; reference identifies Chapter 246."},
+    {"playerId":58,"text":"A gyro shot... It's falling with backspin!! Crap!! I'm not gonna reach-","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":202,"sourceReference":"https://bluelock.fandom.com/wiki/Rooke","sourceNote":"English manga internal dialogue attributed to Rooke while facing Yukimiya; reference identifies Chapter 202."},
+    {"playerId":61,"text":"When I see a joyful person like you ... it makes me want to die!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":307,"sourceReference":"https://bluelock.fandom.com/wiki/Bunny_Iglesias","sourceNote":"English manga dialogue attributed to Bunny Iglesias; debut/chapter reference identifies Chapter 307."},
+    {"playerId":62,"text":"This won't end as a memory. I'm gonna surpass you someday! Just wait, Yoichi Isagi!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":326,"sourceReference":"https://bluelock.fandom.com/wiki/Innocent_Onazi","sourceNote":"English manga dialogue from Onazi to Isagi after Nigeria vs Japan; reference identifies Chapter 326."},
+    {"playerId":63,"text":"This is my curiosity!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":323,"sourceReference":"https://bluelock.fandom.com/wiki/Godwin_Kuso","sourceNote":"English manga internal declaration attributed to Godwin Kuso; reference identifies Chapter 323."},
+    {"playerId":64,"text":"I will win the World Cup four times... and become one of humanity's legends.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":343,"sourceReference":"https://bluelock.fandom.com/wiki/Vivian_Hugo","sourceNote":"English manga dialogue attributed to Hugo; character/chapter references identify Chapter 343."},
+    {"playerId":66,"text":"Let's go, Teddy boy.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":364,"sourceReference":"https://kmanga.kodansha.com/title/10008/episode/368828","sourceNote":"Short Lockhart line from the Chapter 364 England combination; chapter identity verified against Kodansha K MANGA and dialogue context cross-checked."},
+    {"playerId":67,"text":"I don't have an ego. I'm a puppet. A worthless puppet.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":352,"sourceReference":"https://ww3.bluelockread.com/chapter/blue-lock-chapter-352/","sourceNote":"Teddy Knight's self-description from Chapter 352; chapter title and dialogue context cross-checked against contemporary chapter discussion."},
+    {"playerId":69,"text":"What's goin on in here, anyway?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":327,"sourceReference":"https://bluelock.fandom.com/wiki/Shigeo_Mizuki","sourceNote":"English manga dialogue attributed to Mizuki during Side-B; reference identifies Chapter 327."},
+    {"playerId":72,"text":"You are... The Death itself.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":21,"sourceReference":"https://bluelock.fandom.com/wiki/Chapter_21_(Episode_Nagi)","sourceNote":"English dialogue from Hiiragi to Nagi in Blue Lock: Episode Nagi Chapter 21; spin-off chapter and speaker context checked."},
+    {"playerId":76,"text":"HNNGH! You're the crux. If I crush you, we win!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":334,"sourceReference":"https://bluelock.fandom.com/wiki/Bats","sourceNote":"English manga dialogue from Bats to Karasu; reference identifies Chapter 334."},
+    {"playerId":77,"text":"Duhdun! Dun duhdun! Ya think Loki's our only striker? Beatdown time.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":340,"sourceReference":"https://bluelock.fandom.com/wiki/Leyden","sourceNote":"English manga dialogue attributed to Leyden during France vs Japan; reference identifies Chapter 340."},
+    {"playerId":78,"text":"As expected.","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":331,"sourceReference":"https://bluelock.fandom.com/wiki/Hermes","sourceNote":"Short English manga reaction attributed to Hermes; Chapter 331 context checked."},
+    {"playerId":79,"text":"What are they really thinking? I want to know what's real... Tell me what's real!","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":27,"sourceReference":"https://bluelock.fandom.com/wiki/Aiki_Himizu","sourceNote":"English dialogue attributed to Himizu in Blue Lock: Episode Nagi Chapter 27; spin-off manga source and speaker context checked."},
+    {"playerId":42,"text":"What? You on to me next?","verified":true,"language":"en","originalLanguage":"ja","localization":"official-English-manga","sourceType":"manga","chapter":144,"sourceReference":"https://bluelock.fandom.com/wiki/Chapter_144","sourceNote":"Short English dialogue attributed to Miroku Darai as Rin reaches the Iron Wall defenders; Chapter 144 matchup context and character quote record cross-checked."}
 ]);
 
 // Internal follow-up review ledger. Missing verification is recorded honestly;
@@ -1017,7 +1049,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "13": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
@@ -1049,19 +1081,19 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "17": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "18": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "19": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
@@ -1126,7 +1158,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "26": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Planet Hotline support dialogue is a possible manga source; no memorable official-English line was verified.",
       "mangaCandidates": [
         179,
@@ -1186,7 +1218,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "32": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "NEL support and left-handed training scenes were checked as opportunities; no representative official-English line was verified.",
       "mangaCandidates": [
         249,
@@ -1196,7 +1228,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "33": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Borderline choices and the Magnus assist are substantive candidates; no exact official-English dialogue was verified.",
       "mangaCandidates": [
         264,
@@ -1212,19 +1244,19 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "35": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "36": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "37": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
@@ -1240,7 +1272,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "39": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
@@ -1260,37 +1292,37 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "42": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "43": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "44": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "45": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "46": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "47": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
@@ -1317,7 +1349,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "50": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Magic, imagination, family rejection, and the Kaiser partnership are substantive candidates; no official-English wording was independently accessible.",
       "mangaCandidates": [
         242,
@@ -1327,7 +1359,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "51": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "BM teamwork and Kaiser-support scenes were checked; no distinctive verified English quotation was found.",
       "mangaCandidates": [
         157,
@@ -1336,7 +1368,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "52": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Freedom, imagination, and learning from admired players are substantive teaching-scene candidates; no exact official-English line was independently accessible.",
       "mangaCandidates": [
         159,
@@ -1346,7 +1378,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "53": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Ideal-body development, self-belief and the number-two rivalry are substantive candidates; no official-English dialogue was independently accessible.",
       "mangaCandidates": [
         170,
@@ -1358,7 +1390,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "54": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Developing creativity and ending Reo’s dependence are substantive candidates; no official-English dialogue was independently accessible.",
       "mangaCandidates": [
         177,
@@ -1370,7 +1402,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "55": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Football as work, being human before being a player, and responsibility are important opportunities; do not insert widely circulated fan translations.",
       "mangaCandidates": [
         214,
@@ -1383,7 +1415,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "56": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Valuation, the Snuffy rescue and humor are substantive candidates; no exact official-English dialogue was independently accessible.",
       "mangaCandidates": [
         211,
@@ -1394,7 +1426,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "57": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "The contrarian self-description and high-risk passing philosophy are substantive candidates; do not treat a translated alias as a quotation.",
       "mangaCandidates": [
         244,
@@ -1407,25 +1439,25 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "58": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "59": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "60": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Reviewed the roster/profile role and available manga appearances. No representative official-English quote or additional canon alias could be verified; absence is not a claim that the character never speaks.",
       "mangaCandidates": [],
       "aliasAction": "retain-verified-only"
     },
     "61": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "The Spain encounter and emotional conversation are important manga-only opportunities; no exact official-English dialogue was independently accessible.",
       "mangaCandidates": [
         307,
@@ -1436,7 +1468,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "62": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "The Nigeria match and foster-brother history were reconsidered; exact official-English wording is still required.",
       "mangaCandidates": [
         313,
@@ -1447,7 +1479,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "63": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "The money/work philosophy and foster-brother history were reconsidered; exact official-English wording is still required.",
       "mangaCandidates": [
         313,
@@ -1458,7 +1490,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       "aliasAction": "retain-verified-only"
     },
     "64": {
-      "quoteAction": "leave-empty-pending-verification",
+      "quoteAction": "add-verified",
       "reason": "Suitable destiny and changing others are important manga-only opportunities; no exact official-English line was independently accessible.",
       "mangaCandidates": [
         326,
