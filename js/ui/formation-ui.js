@@ -119,7 +119,7 @@ function createPlayerInfoSidebar(team){
       <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button>
     </div>
     <div class="player-info-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>
-    <div class="player-info-name"><h2>${esc(player.name)}</h2>${playerAliasesMarkup(player)}${playerNationalityMarkup(player)}${positionBadges(player)}</div>
+    <div class="player-info-name"><h2>${esc(player.name)}</h2>${playerNationalityMarkup(player)}${positionBadges(player)}</div>
     ${captainControl}
     <div class="player-info-section">
       <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>

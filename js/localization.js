@@ -7,14 +7,16 @@
     for(const [key,patch] of Object.entries(overrides))catalog[key]=Object.freeze({...catalog[key],...patch});
     const texts=new WeakMap(),attributes=new WeakMap();
     const folded=new Map(Object.entries(catalog).map(([key,value])=>[key.toLocaleLowerCase('en'),value]));
-    const ignore='script,style,code,pre,[data-i18n-ignore],.character-profile-quote,.position-badges,.slot-position,.report-position,.captain-badge,.report-captain,.player-stats-axis,.character-profile-stat>span,[name="siteLanguage"] option,[data-app-version],[data-supported-chapter]';
+    const ignore='script,style,code,pre,[data-i18n-ignore],.position-badges,.slot-position,.report-position,.captain-badge,.report-captain,.player-stats-axis,.character-profile-stat>span,[name="siteLanguage"] option,[data-app-version],[data-supported-chapter]';
     const nameAreas='.site-header-brand,.home-hero h1,.share-card-top h2,.character-profile-overview h2,.character-lore-card-name,.character-profile-person-link,.character-profile-team-card h4,.player-info-name h2,.player-card-name,.formation-player-token>strong,.team-header h3,.final-team-top h3,.share-team-head h3,.share-versus>span,.turn-indicator>strong,.sold-panel h2,#homeResumeTeam1,#homeResumeTeam2';
     let language=window.SitePreferences?.get().language||'en',proper=new Set(),observer;
+    let nameRegistry=null;
     function names(){
+        const registry=typeof players==='undefined'?null:players;
+        if(nameRegistry===registry&&proper.size)return;
+        nameRegistry=registry;
         proper=new Set(['Blue Lock','Blue Lock Draft','OVR','GK','SPD','SHO','DEF','PAS','DRI','TBD']);
         if(typeof players!=='undefined')players.forEach(player=>proper.add(player.name));
-        if(typeof PLAYER_ALIASES!=='undefined')Object.values(PLAYER_ALIASES).flat().forEach(alias=>proper.add(alias.name));
-        if(typeof CHEMISTRY_CONTEXTS!=='undefined')CHEMISTRY_CONTEXTS.forEach(context=>proper.add(context.name));
     }
     function text(value){
         const source=String(value),key=source.replace(/\s+/g,' ').trim();
@@ -22,6 +24,9 @@
         if(key.startsWith('FORMATION // '))return source.replace('FORMATION // ',text('FORMATION')+' // ');
         const entry=catalog[key]||catalog[key.toUpperCase()]||folded.get(key.toLocaleLowerCase('en'));
         let translated=entry?.[language];
+        if(translated?.trim().toLocaleLowerCase("en")===key.toLocaleLowerCase("en"))translated=undefined;
+        const historyAction=key.match(/^(Undo|Redo) (.+)$/);
+        if(historyAction)translated=(catalog[historyAction[1]+' {action}']?.[language]||historyAction[1]+' {action}').replace('{action}',text(historyAction[2]));
         const isolate=value=>language==='ar'?'\u2068'+value+'\u2069':value;
         if(!translated&&/^(?:.*? attributes\. )?(?:Speed|Defence): \d+ out of 100, grade [SABCDEFG]/.test(key)){
             translated=key.replace(/^(.+?) attributes\. /,(_,name)=>text('{name} attributes.').replace('{name}',isolate(name)))
@@ -33,12 +38,17 @@
         }
         if(!translated){const relation=key.match(/^(.+) and (.+) chemistry (\d+), (.+)$/);if(relation)translated=text('{a} and {b} chemistry {value}, {tier}').replace('{a}',isolate(relation[1])).replace('{b}',isolate(relation[2])).replace('{value}',isolate(relation[3])).replace('{tier}',text(relation[4]));}
         if(!translated){const metric=key.match(/^(Goalkeeper specialist|Goalkeeping): (\d+) out of 100, grade ([SABCDEFG])$/);if(metric)translated=text('{stat}: {value} out of 100, grade {grade}').replace('{stat}',text(metric[1].toUpperCase())).replace('{value}',isolate(metric[2])).replace('{grade}',isolate(metric[3]));}
-        if(!translated){const coded=key.match(/^(\d{2}\s*\/\/\s*)(.+)$/);if(coded){const label=text(coded[2]);if(label!==coded[2])translated=coded[1]+label;}}
+        if(!translated){const coded=key.match(/^(\d{2}\s*\/{1,2}\s*)(.+)$/);if(coded){const label=text(coded[2]);if(label!==coded[2])translated=coded[1]+label;}}
+        if(!translated){const count=key.match(/^(\d+) (SLOTS? LEFT|TOP)$/);if(count)translated=isolate(count[1])+' '+text(count[2]);}
+        if(!translated){const top=key.match(/^TOP (\d+)$/);if(top)translated=text('TOP')+' '+isolate(top[1]);}
+        if(!translated){const interval=key.match(/^(\$[\d,]+) INTERVAL$/);if(interval)translated=isolate(interval[1])+' '+text('INTERVAL');}
+        if(!translated){const chapter=key.match(/^No sustained shared on-field system has been demonstrated in Blue Lock through chapter (\d+)\.$/);if(chapter)translated=text('No sustained shared on-field system has been demonstrated in Blue Lock through chapter {chapter}.').replace('{chapter}',isolate(chapter[1]));}
         if(!translated&&key.startsWith('Blue Lock Draft — '))translated='Blue Lock Draft — '+text(key.slice(18));
         if(!translated&&key.endsWith(' — Blue Lock Draft'))translated=text(key.slice(0,-18))+' — Blue Lock Draft';
         if(!translated&&key.includes(' // ')){
             const parts=key.split(' // '),mapped=parts.map(part=>text(part));if(mapped.some((part,index)=>part!==parts[index]))translated=mapped.join(' // ');
         }
+        if(!translated&&/^[“"].+[”"]$/.test(key)){const inner=key.slice(1,-1),localized=text(inner);if(localized!==inner)translated=key[0]+localized+key.at(-1);}
         if(!translated)return source;
         return (source.match(/^\s*/)?.[0]||'')+translated+(source.match(/\s*$/)?.[0]||'');
     }
@@ -64,7 +74,6 @@
     function translateText(node){
         const parent=node.parentElement;if(!parent||parent.closest(ignore)||parent.closest(nameAreas))return;
         if(parent.closest('.player-nationality'))return; // Country/representation proper names.
-        if(parent.matches('option')&&parent.value.startsWith('context-'))return;
         if(parent.matches('.formation-team-tabs button'))return; // Direct custom team-name text only.
         const source=original(node),output=headingText(node)??text(source);
         // Mark text owners without moving DOM nodes or reversing the page grids.
@@ -91,7 +100,7 @@
         if(root.nodeType===3){translateText(root);return;}
         if(root.nodeType!==1)return;
         translateAttributes(root);
-        root.querySelectorAll('[aria-label],[aria-description],[aria-roledescription],[aria-valuetext],[title],[placeholder],[alt],meta[name="description"],meta[property="og:description"],meta[property="og:title"]').forEach(translateAttributes);
+        root.querySelectorAll('input:not([type]),input[type=text],input[type=search],textarea,[aria-label],[aria-description],[aria-roledescription],[aria-valuetext],[title],[placeholder],[alt],meta[name="description"],meta[property="og:description"],meta[property="og:title"]').forEach(translateAttributes);
         const walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);while(walk.nextNode())translateText(walk.currentNode);
     }
     window.SiteI18n=Object.freeze({text,apply,get language(){return language;},supported:Object.freeze(window.SitePreferences.locales.map(locale=>locale.code))});
@@ -101,7 +110,13 @@
     if(typeof MutationObserver==='function'){
         observer=new MutationObserver(records=>{
             const roots=new Set();for(const record of records){if(record.type==='characterData')roots.add(record.target);else if(record.type==='attributes')roots.add(record.target);else record.addedNodes.forEach(node=>roots.add(node));}
-            names();for(const root of roots){if(root.isConnected)apply(root);}
+            names();for(const root of roots){
+                if(!root.isConnected)continue;
+                // A newly inserted ancestor already includes its descendants.
+                let ancestor=root.parentNode,covered=false;
+                while(ancestor){if(roots.has(ancestor)){covered=true;break;}ancestor=ancestor.parentNode;}
+                if(!covered)apply(root);
+            }
         });
         observer.observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','aria-description','aria-roledescription','aria-valuetext','title','placeholder','alt','content']});
     }

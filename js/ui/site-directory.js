@@ -176,12 +176,13 @@ function initSiteDirectory(){
     // Measure the actual translated navigation, independent of its collapsed state.
     function fitHeader(){
         const root=document.documentElement,inner=header.querySelector('.site-header-inner');
+        if(window.innerWidth<=1200){root.setAttribute('data-header-compact','');return;}
         root.removeAttribute('data-header-compact'); // Measure the expanded layout before the next paint.
         const probe=directory.cloneNode(true);probe.removeAttribute('id');probe.className='site-directory directory-width-probe';probe.inert=true;probe.setAttribute('aria-hidden','true');probe.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));header.append(probe);
         const required=header.querySelector('.site-header-brand').getBoundingClientRect().width+probe.getBoundingClientRect().width+header.querySelector('.site-utilities').getBoundingClientRect().width+150+64;
         probe.remove();root.toggleAttribute('data-header-compact',window.innerWidth<=1200||required>inner.clientWidth);
     }
-    let fitFrame;function scheduleFit(){cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fitHeader);}
+    let fitFrame;function scheduleFit(){if(window.innerWidth<=1200)document.documentElement.setAttribute('data-header-compact','');cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fitHeader);}
     window.addEventListener('resize',scheduleFit);window.addEventListener('bld:language',scheduleFit);document.fonts?.ready.then(scheduleFit);scheduleFit();
     let mobile=isMobileSiteNavigation();
     window.addEventListener("resize",()=>{const next=isMobileSiteNavigation();if(next!==mobile){mobile=next;closeDirectory();closeSettings();}});

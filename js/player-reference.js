@@ -171,6 +171,36 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://www.hellominju.com/2025/02/BlueLock207.html",
         "note": "Kaiser describes Isagi as a game master pretending to be a clown (ゲームマスター). Checked the chapter-207 dialogue and the speaker/subject context; this is a direct canon epithet, not a description invented for the site."
       }
+    },
+    {
+      "name": "Demon King of Blue Lock",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 293,
+        "url": "https://www.hellominju.com/2025/02/BlueLock293.html",
+        "note": "Checked chapter-293 speaker/subject dialogue context: ブルーロックの魔王. Rin describes the newly evolved Isagi after the decisive NEL goal; chapter panel and dialogue context cross-checked. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
+    },
+    {
+      "name": "The Neo-Egoist",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 293,
+        "url": "https://www.hellominju.com/2025/02/BlueLock293.html",
+        "note": "Checked chapter-293 speaker/subject dialogue context: 新英雄(ネオ・エゴイスト). Rin identifies Isagi by this designation in the same goal sequence; it is not inferred merely from the chapter title. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
+    },
+    {
+      "name": "Logic Demon",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 321,
+        "url": "https://www.hellominju.com/2025/10/BlueLock321.html",
+        "note": "Checked chapter-321 speaker/subject dialogue context: 論理(ロジック)魔王. Rin directly addresses Isagi after his Nigeria-match goal. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
     }
   ],
   "2": [
@@ -184,6 +214,26 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "02:01",
         "note": "The interviewer explicitly says people call Kira the jewel of Japanese soccer."
       }
+    },
+    {
+      "name": "Japan's Hope",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 327,
+        "url": "https://www.hellominju.com/2025/08/BlueLock327.html",
+        "note": "Checked chapter-327 speaker/subject dialogue context: 日本の希望 吉良涼介. Shindo addresses Kira in his introduction; source speech bubble was inspected. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
+    },
+    {
+      "name": "Anti-Blue Lock Extremist",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 327,
+        "url": "https://www.hellominju.com/2025/11/BlueLock327.html",
+        "note": "In the SIDE-B introduction, after Kira explains his desire to refute Blue Lock, Shindo directly characterizes him as 反ブルーロック最右翼. Speaker, subject and rejection-of-Blue-Lock context checked. This is a project English rendering of the canonical designation."
+      }
     }
   ],
   "3": [
@@ -196,6 +246,16 @@ const PLAYER_ALIASES=Object.freeze({
         "episode": 1,
         "timestamp": "10:52",
         "note": "Ego explicitly identifies Noa with this title before quoting his football philosophy."
+      }
+    },
+    {
+      "name": "Cyborg",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 163,
+        "url": "https://www.hellominju.com/2025/08/BlueLock163.html",
+        "note": "Checked chapter-163 speaker/subject dialogue context: サイボーグデータ野郎. Lavinho addresses Noel Noa during their on-field reunion; repeated directly as サイボーグ in chapter 164. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
       }
     }
   ],
@@ -244,6 +304,16 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://www.hellominju.com/2025/08/BlueLock155.html",
         "note": "Ego’s chapter-155 introduction explicitly labels the returning Kunigami Wild Card (ワイルドカード)."
       }
+    },
+    {
+      "name": "Hyena Hero",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 187,
+        "url": "https://www.hellominju.com/2025/03/BlueLock187.html",
+        "note": "Checked chapter-187 speaker/subject dialogue context: ハイエナヒーロー. Isagi directly addresses Kunigami after arguing about the goal. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
     }
   ],
   "7": [
@@ -291,6 +361,15 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "06:59",
         "note": "Aiku directly addresses Sae as Li’l Genius; later dialogue repeats the reference."
       }
+    },
+    {
+      "name": "Japan's Greatest Treasure",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://times.abema.tv/articles/-/10044900",
+        "note": "ABEMA official anime distribution/editorial profile explicitly transcribes the official EGOIST BIBLE epithet field as 日本の至宝 and attributes the profile to that book. Independently cross-checked against broadcaster TV Asahi official account, https://x.com/tv_asahi_shop/status/1711516899727782370, using #日本の至宝 for Sae. English is the project rendering of the official Japanese title, not a newly invented fan alias."
+      }
     }
   ],
   "15": [
@@ -325,6 +404,16 @@ const PLAYER_ALIASES=Object.freeze({
         "episode": 21,
         "timestamp": "12:11",
         "note": "Nagi uses this title for Barou after his predatory change of playing style; Isagi repeats it at 12:30."
+      }
+    },
+    {
+      "name": "Bad Boy",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 204,
+        "url": "https://www.hellominju.com/2025/02/BlueLock204.html",
+        "note": "Checked chapter-204 speaker/subject dialogue context: この悪童、馬狼照英. Noa explicitly identifies Baro with this title while announcing his top bid; Snuffy repeats the direct nickname in chapter 227. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
       }
     }
   ],
@@ -497,6 +586,16 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://www.hellominju.com/2025/08/BlueLock162.html",
         "note": "Isagi explicitly identifies Ness as 魔術師・ネス in the original chapter-162 dialogue, naming the rational magic of his ankle technique."
       }
+    },
+    {
+      "name": "Bastard München's Heart",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 162,
+        "url": "https://www.hellominju.com/2025/08/BlueLock162.html",
+        "note": "Checked chapter-162 speaker/subject dialogue context: バスタード・ミュンヘンの心臓、魔術師・ネス. Isagi identifies Ness by both this title and Magician while analyzing the attack. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
     }
   ],
   "52": [
@@ -563,6 +662,16 @@ const PLAYER_ALIASES=Object.freeze({
         "type": "canon-reference",
         "url": "https://comics.inkr.com/title/4919-blue-lock-26",
         "note": "The official Kodansha USA Volume 26 description on its licensed English distributor explicitly calls Snuffy Royal Messenger. Publisher credits and copyright checked. Preserve Crown Messenger and Victory Wayfarer as their existing verified variants."
+      }
+    },
+    {
+      "name": "The Phoenix",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 229,
+        "url": "https://www.hellominju.com/2025/01/BlueLock229.html",
+        "note": "Checked chapter-229 speaker/subject dialogue context: 不死鳥スナッフィー. Peron calls Snuffy the Phoenix on hearing his decision to continue playing. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
       }
     }
   ],
@@ -646,6 +755,16 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "19:56",
         "note": "Shido directly addresses Rin; normalized title capitalization. Official English Crunchyroll transcript; direct canon usage.",
         "episode": 26
+      }
+    },
+    {
+      "name": "The Beast",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 321,
+        "url": "https://www.hellominju.com/2025/10/BlueLock321.html",
+        "note": "After Rin’s Nigeria goal, Isagi directly addresses Rin as 破壊獣(ビースト). The Beast preserves the canonical katakana reading and actual speaker/subject context, rather than deriving an alias from an aura image."
       }
     }
   ],
@@ -816,6 +935,16 @@ const PLAYER_ALIASES=Object.freeze({
         "timestamp": "12:48",
         "note": "Aryu directly addresses Gagamaru while praising his save. Official English Crunchyroll subtitle transcript; direct canon usage."
       }
+    },
+    {
+      "name": "Japan's Guardian Deity",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 317,
+        "url": "https://www.hellominju.com/2025/09/BlueLock317.html",
+        "note": "Checked chapter-317 speaker/subject dialogue context: 俺が日本の守護神だ. Gagamaru explicitly identifies himself as Japan’s guardian after stopping Nigeria; the original illustrated panel was inspected. English title is a project rendering of the canonical Japanese designation, not an official-English dialogue quotation."
+      }
     }
   ],
   "49": [
@@ -862,14 +991,84 @@ const PLAYER_ALIASES=Object.freeze({
         "note": "ORICON NEWS character guide explicitly reports Ego calling Niko the greatest watchtower of Blue Lock while assigning the center-back role. Speaker, player, and U-20 selection context checked; this is attributed canon usage, not the Wiki alias field or an editorial role descriptor."
       }
     }
+  ],
+  "79": [
+    {
+      "name": "Genius of Lies",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://h-snufkin.com/bluelock-episodenagi-27/",
+        "note": "Episode Nagi chapter 27, FAKE & REAL: inspected the original Japanese panel identifying Himizu as 嘘を見抜く天才 (a genius at seeing through lies). This designates Himizu’s lie-reading ability; it does not mean inventing lies. The established English short alias is retained as a project title rendering.",
+        "chapter": 27,
+        "series": "Blue Lock: Episode Nagi"
+      }
+    },
+    {
+      "name": "Fake Master",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://h-snufkin.com/bluelock-episodenagi-27/",
+        "note": "Episode Nagi chapter 27: Himizu explicitly identifies himself with 偽蹴作達人(フェイク・マスター) after the Chigiri duel; speaker/action context checked. English is the romanized canonical reading, not an invented fan nickname.",
+        "chapter": 27,
+        "series": "Blue Lock: Episode Nagi"
+      }
+    }
+  ],
+  "25": [
+    {
+      "name": "Muscle Bullet",
+      "verified": true,
+      "source": {
+        "type": "canon-reference",
+        "url": "https://us.oricon-group.com/news/2271/",
+        "note": "ORICON NEWS character guide (30 October 2024) identifies Muscle Bullet as Tokimitsu’s nickname in the context of his physicality. Independently cross-checked with chapter-48 Isagi/Tokimitsu duel references: Isagi compares Tokimitsu to a muscle bullet. This is a canon comparison/title, not a fan-made epithet."
+      }
+    }
+  ],
+  "17": [
+    {
+      "name": "Senno's Ace",
+      "verified": true,
+      "source": {
+        "type": "anime",
+        "episode": 1,
+        "url": "https://www.springfieldspringfield.co.uk/view_episode_scripts.php?episode=s01e01&tv-show=blue-lock-2022",
+        "note": "Episode 1, arrival at Blue Lock: Isagi recognizes Okawa as Sennou’s star player, immediately before identifying Ishikari and Nishioka. Speaker, subject and school context checked in the episode transcript. English short alias renders this canon school-ace designation; it is not an invented fan nickname."
+      }
+    }
+  ],
+  "24": [
+    {
+      "name": "Giant of Beauty",
+      "verified": true,
+      "source": {
+        "type": "official-profile",
+        "url": "https://x.com/BLUELOCK_WM/status/1676864312395304964",
+        "note": "Official BLUELOCK_WM character Q&A, July 6, 2023. Question explicitly asks for an epithet. The original image was inspected: Aryu says 美の巨人. English is a project translation of the official Japanese title, not a fan nickname. The frequently circulated God of Glam wording is not independently asserted as a separate alias."
+      }
+    }
+  ],
+  "33": [
+    {
+      "name": "Dance Battle Footballer",
+      "verified": true,
+      "source": {
+        "type": "official-profile",
+        "url": "https://x.com/BLUELOCK_WM/status/1973657698454679911",
+        "note": "Official BLUELOCK_WM character Q&A, October 2, 2025. Question explicitly asks for an epithet. Original publisher image inspected: speech identifies Kiyora as ダンスバトル・フットボーラー. This confirms the character-book designation directly rather than relying on a wiki."
+      }
+    }
   ]
 }
 );
 function verifiedPlayerAliases(playerId){return (PLAYER_ALIASES[Number(playerId)]||[]).filter(alias=>alias?.verified===true&&typeof alias.name==="string"&&alias.name.trim()&&alias.source?.url&&alias.source?.note);}
-function playerAliasesMarkup(player){const aliases=verifiedPlayerAliases(player.id);return aliases.length?`<p class="player-aliases" data-i18n-ignore>${aliases.map(alias=>esc(alias.name)).join(" · ")}</p>`:"";}
+function playerAliasesMarkup(player){const aliases=verifiedPlayerAliases(player.id);return aliases.length?`<p class="player-aliases">${aliases.map(alias=>`<span>${esc(alias.name)}</span>`).join(" · ")}</p>`:"";}
 
 // Short exact canon dialogue. Original wording and internal source context are retained.
 const PLAYER_QUOTES=Object.freeze([
+    {"playerId": 60, "text": "I'm Haneru Shindo, from AAA in the Dutch second division.", "verified": true, "sourceType": "manga", "chapter": 327, "sourceReference": "https://pocket.shonenmagazine.com/title/00617/episode/428361", "sourceNote": "Japanese speech bubble inspected in the chapter-327 introduction panel: オランダリーグ2部 AAA所属「新導ハネル」だ. Speaker/name plate confirms Shindo. Panel cross-check: https://h-snufkin.com/bluelock-episode327/ . English and display locales are project translations of verified Japanese dialogue, not official-English wording.", "language": "en", "originalLanguage": "ja", "originalText": "オランダリーグ2部 AAA所属「新導ハネル」だ", "localization": "project-translation-Japanese-manga"},
     {"playerId":3,"text":"it feels better to pull off a hat trick and lose 3-4.","verified":true,"sourceType":"anime","episode":1,"timestamp":"10:46","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e1-dream","sourceNote":"Exact second subtitle line of the Noa quotation. Ego begins quoting at 10:43 and explicitly attributes these words to Noel Noa at 10:52; this is reported canon dialogue, not Ego’s own claim.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
     {"playerId":1,"text":"Become the one who chooses, not the one waiting to be chosen.","verified":true,"sourceType":"anime","episode":19,"timestamp":"03:55","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e19-dancing-boy","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Isagi, at 03:55. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
     {"playerId":4,"text":"I'm going to be the monster!","verified":true,"sourceType":"anime","episode":22,"timestamp":"20:21","sourceReference":"https://subs.yakuaru.com/books/blue-lock/page/e22-voice","sourceNote":"Exact Crunchyroll English subtitle line in the timestamped episode transcript; speaker Bachira/I, at 20:21. Dialogue and speaker context checked; no retranslation.","language":"en","originalLanguage":"ja","localization":"official-English-anime"},
@@ -1608,7 +1807,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
   }
 });
 function isVerifiedCanonQuote(quote){
-    return !!quote&&quote.verified===true&&quote.language==="en"&&quote.localization==="official-English-"+quote.sourceType&&!!playerById(quote.playerId)&&
+    return !!quote&&quote.verified===true&&quote.language==="en"&&(quote.localization==="official-English-"+quote.sourceType||(quote.localization==="project-translation-Japanese-manga"&&quote.sourceType==="manga"&&quote.originalLanguage==="ja"&&typeof quote.originalText==="string"&&!!quote.originalText.trim()))&&!!playerById(quote.playerId)&&
         typeof quote.text==="string"&&!!quote.text.trim()&&
         ["manga","anime"].includes(quote.sourceType)&&
         ["chapter","episode"].every(field=>quote[field]===undefined||(Number.isInteger(quote[field])&&quote[field]>0))&&

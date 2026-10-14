@@ -212,12 +212,13 @@ function openShareScreen(){
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
 }
 async function copyShareSummary(){
+    const t=value=>window.SiteI18n?.text(value)||value;
     const line=n=>{
         const snap=shareFormationSnapshot(n),captain=teamByNumber(n).players.find(p=>p.id===snap.captainId);
         return `${teamByNumber(n).name} // ${snap.formation} // OVR ${snap.ovr||"--"} // CHEM ${snap.chemistry.overall||"--"} // C ${captain?.name||"—"} // RES ${snap.reserves.length}`;
     };
     const names=t=>t.players.map(p=>p.name).join(", ");
-    const text=`BLUE LOCK DRAFT // FINAL RESULT\n${line(1)}\n${names(team1)}\n\n${line(2)}\n${names(team2)}\n\nDeveloped by hammydanny@Github // With the support of syaafibwn@github`;
+    const text=`BLUE LOCK DRAFT // ${t("FINAL RESULT")}\n${line(1)}\n${names(team1)}\n\n${line(2)}\n${names(team2)}\n\n${t("DEVELOPED BY")} hammydanny@Github // ${t("WITH SUPPORT FROM")} syaafibwn@github`;
     try{await navigator.clipboard.writeText(text);const b=document.getElementById("copyShareSummary");b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
     catch(e){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
 }
@@ -268,6 +269,7 @@ function createStandaloneShareTeam(){
 }
 
 async function copyStandaloneShareSummary(){
+    const t=value=>window.SiteI18n?.text(value)||value;
     const snap=shareFormationSnapshot(0);
     const captain=standaloneBuilderTeam.players.find(p=>p.id===snap.captainId);
     const starters=Object.values(snap.assignment)
@@ -276,12 +278,12 @@ async function copyStandaloneShareSummary(){
       .map(p=>p.name)
       .join(", ");
     const reserves=snap.reserves.map(p=>p.name).join(", ");
-    const text=`BLUE LOCK DRAFT // GLOBAL XI
-FORMATION ${snap.formation} // OVR ${snap.ovr||"--"} // CHEM ${snap.chemistry.overall||"--"} // C ${captain?.name||"—"}
-STARTERS: ${starters||"NONE"}
-RESERVES: ${reserves||"NONE"}
+    const text=`BLUE LOCK DRAFT // ${t("GLOBAL XI")}
+${t("FORMATION")} ${snap.formation} // OVR ${snap.ovr||"--"} // CHEM ${snap.chemistry.overall||"--"} // C ${captain?.name||"—"}
+${t("STARTERS")}: ${starters||t("NONE")}
+${t("RESERVES")}: ${reserves||t("NONE")}
 
-Developed by hammydanny@Github // With the support of syaafibwn@Github`;
+${t("DEVELOPED BY")} hammydanny@Github // ${t("WITH SUPPORT FROM")} syaafibwn@Github`;
     try{
         await navigator.clipboard.writeText(text);
         const b=document.getElementById("copyStandaloneShare");

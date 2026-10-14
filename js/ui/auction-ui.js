@@ -247,9 +247,11 @@ function showOverlay(html){
 }
 
 function hideOverlay(onHidden=null){
+    const epoch=auctionTransitionEpoch;
     clearTimeout(overlayHideTimer);
     gameOverlay.classList.add("overlay-out");
     overlayHideTimer=setTimeout(()=>{
+        if(epoch!==auctionTransitionEpoch)return;
         gameOverlay.classList.add("hidden");
         gameOverlay.classList.remove("overlay-out");
         overlayHideTimer=null;

@@ -38,8 +38,18 @@ function scrollDossierSection(link){
     const step=now=>{const progress=Math.min(1,(now-began)/300),eased=1-Math.pow(1-progress,3);window.scrollTo({top:start+(end-start)*eased,behavior:"instant"});if(progress<1)dossierNavigation.frame=requestAnimationFrame(step);else cancel();};
     dossierNavigation.frame=requestAnimationFrame(step);
 }
-function normalizeLoreSearch(value){return String(value||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[‘’]/g,"'").toLowerCase();}
+function normalizeLoreSearch(value){return String(value||"").normalize("NFKD").replace(/[\u0300-\u036f\u0640\u064b-\u065f\u0670\u2066-\u2069]/g,"").replace(/[‘’]/g,"'").toLowerCase();}
 function matchesLoreSearch(text,query){return query.split(/\s+/).filter(Boolean).every(word=>text.includes(word));}
+// Keep canonical search terms while indexing the translated terms users can see.
+function localizedLoreSearch(record,values){
+    const language=window.SiteI18n?.language||"en";
+    if(language==="en")return record.search;
+    if(!record.localizedSearch)record.localizedSearch=new Map();
+    if(!record.localizedSearch.has(language))record.localizedSearch.set(language,normalizeLoreSearch([record.search,...values.map(value=>window.SiteI18n.text(value))].join(" ")));
+    return record.localizedSearch.get(language);
+}
+function characterSearchText(record){return localizedLoreSearch(record,[...record.aliases.map(alias=>alias.name),...record.player.weapons.map(weapon=>weapon.name),...record.categories.map(category=>category.label),...record.affiliations.map(context=>context.name),characterLoreDescription(record.player)]);}
+
 function characterLoreDescription(player){return playerRecord(player.id)?.profile?.overview||`${player.name} is listed in the project as a ${primaryPosition(player)}. No additional profile is recorded.`;}
 function loreDatabase(){
     if(loreDatabaseCache)return loreDatabaseCache;
@@ -78,7 +88,7 @@ function sortedCharacterRecords(sort){
 }
 function filteredCharacterLore(){
     const query=normalizeLoreSearch(loreControlValue("characterLoreSearch").trim()),position=loreControlValue("characterLorePosition","ALL"),grade=loreControlValue("characterLoreGrade","ALL"),category=loreControlValue("characterLoreCategory","ALL"),affiliation=loreControlValue("characterLoreAffiliation","ALL");
-    return sortedCharacterRecords(loreControlValue("characterLoreSort","chronological")).filter(record=>matchesLoreSearch(record.search,query)&&(position==="ALL"||playerPositions(record.player).some(role=>role===position||positionGroup(role)===position))&&(grade==="ALL"||playerStatGrade(playerOverall(record.player))===grade)&&(category==="ALL"||record.categories.some(item=>item.key===category))&&(affiliation==="ALL"||record.affiliations.some(context=>context.id===affiliation)));
+    return sortedCharacterRecords(loreControlValue("characterLoreSort","chronological")).filter(record=>matchesLoreSearch(characterSearchText(record),query)&&(position==="ALL"||playerPositions(record.player).some(role=>role===position||positionGroup(role)===position))&&(grade==="ALL"||playerStatGrade(playerOverall(record.player))===grade)&&(category==="ALL"||record.categories.some(item=>item.key===category))&&(affiliation==="ALL"||record.affiliations.some(context=>context.id===affiliation)));
 }
 function characterDossierHref(id){const url=canonicalRouteUrl("lore",{databaseView:"characters"});url.searchParams.set("character",String(id));return url.href;}
 function characterLoreCard(record){
@@ -92,7 +102,7 @@ function characterLoreProfileMarkup(player){
     const links=getCharacterChemistry(player).pairLinks.slice().sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title));
     const rows=PLAYER_RADAR_AXES.map(axis=>`<div class="character-profile-stat"><span>${axis.label}</span><small>${axis.name.toUpperCase()}</small><strong>${playerStats(player)[axis.key]}</strong><b class="evaluation-grade">${playerStatGrade(playerStats(player)[axis.key])}</b></div>`).join("");
     const positions=`<div class="character-position-analysis"><div><span class="reference-classification">GAMEPLAY INTERPRETATION</span><h4>PROJECT POSITIONS</h4><dl><dt>Primary</dt><dd>${primaryPosition(player)}</dd><dt>Secondary</dt><dd>${playerPositions(player).filter(position=>position!==primaryPosition(player)).join(" / ")||"None listed"}</dd></dl><p>These roles determine compatibility in Blue Lock Draft. They are separate from demonstrated story positions.</p></div><div><span class="reference-classification">CANON ROLE REFERENCE</span><h4>DEMONSTRATED POSITIONS</h4>${canon.length?`<ul>${canon.map(role=>`<li><b>${role.position}</b> ${esc(role.context)}</li>`).join("")}</ul><p>Based on the existing character profile. This is a partial role record, not a complete career list.</p>`:`<p>No specific demonstrated position is recorded in this dossier yet. Gameplay badges are not used as canon evidence.</p>`}</div></div>`;
-    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4 data-i18n-ignore>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
+    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
     const pairCards=links.map(link=>`<article class="character-profile-chemistry-card ${chemistryTier(link.score)}"><div class="character-profile-chemistry-top"><div class="character-profile-chemistry-names">${link.playerIds.filter(id=>id!==player.id).map(characterPersonLink).join(" × ")}</div><div class="character-profile-score ${chemistryTier(link.score)}"><small>${chemistryTierLabel(link.score)}</small><strong>${link.score}</strong><span>/ 100</span></div></div><span class="character-profile-chemistry-label">${esc(link.label)}</span><p>${esc(link.description)}</p></article>`).join("");
     const teamCards=history.map(context=>`<article class="character-profile-team-card"><div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CONTEXT</small><strong>${context.score}</strong><span>${chemistryTierLabel(context.score)}</span></div></div><p>${esc(context.description)}</p><div class="character-profile-context-members">${context.playerIds.map(characterPersonLink).join("")}</div></article>`).join("");
     return `<div class="character-profile-page"><div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER // DOSSIER ${String(player.id).padStart(2,"0")}</span></div>
@@ -156,7 +166,7 @@ function returnToCharacterDirectory(){updateRoute("lore",{databaseView:"characte
 function filteredChemistryLore(){
     const query=normalizeLoreSearch(loreControlValue("chemistryLoreSearch").trim()),type=loreControlValue("chemistryLoreType","ALL"),tier=loreControlValue("chemistryLoreTier","ALL"),a=loreControlValue("chemistryLorePlayerA","ALL"),b=loreControlValue("chemistryLorePlayerB","ALL"),context=loreControlValue("chemistryLoreContext","ALL"),sort=loreControlValue("chemistryLoreSort","score-desc"),database=loreDatabase();
     if(!database.chemistrySorts.has(sort))database.chemistrySorts.set(sort,database.chemistry.slice().sort((x,y)=>{if(sort==="name-asc")return x.title.localeCompare(y.title);if(sort==="name-desc")return y.title.localeCompare(x.title);return (sort==="score-asc"?1:-1)*(x.score-y.score)||x.title.localeCompare(y.title);}));
-    return database.chemistrySorts.get(sort).filter(entry=>matchesLoreSearch(entry.search,query)&&(type==="ALL"||entry.type===type)&&(tier==="ALL"||chemistryTier(entry.score)===tier)&&(a==="ALL"||entry.playerIds.includes(Number(a)))&&(b==="ALL"||entry.playerIds.includes(Number(b)))&&(context==="ALL"||entry.contextIds.includes(context)));
+    return database.chemistrySorts.get(sort).filter(entry=>matchesLoreSearch(localizedLoreSearch(entry,[entry.title,entry.label||"",entry.description||""]),query)&&(type==="ALL"||entry.type===type)&&(tier==="ALL"||chemistryTier(entry.score)===tier)&&(a==="ALL"||entry.playerIds.includes(Number(a)))&&(b==="ALL"||entry.playerIds.includes(Number(b)))&&(context==="ALL"||entry.contextIds.includes(context)));
 }
 function chemistryLoreCard(entry){
     if(entry.html)return entry.html;const pair=entry.type==="pair",tier=chemistryTier(entry.score);

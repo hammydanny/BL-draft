@@ -13,7 +13,7 @@
 :root .directory-width-probe .directory-item{width:max-content;min-width:0;white-space:nowrap;padding-inline:12px;flex-shrink:0}
 .directory-width-probe .directory-options{display:none}
 .player-stats-title,.player-stats-gk>span{min-width:0;overflow-wrap:anywhere}
-.character-profile-quote,.player-aliases,.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.budget,.current-bid,.effective-ovr,.captain-badge,.report-position,.quick-bid-buttons button,.quick-bids button,input[type=number]{direction:ltr;unicode-bidi:isolate}
+.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.budget,.current-bid,.effective-ovr,.captain-badge,.report-position,.quick-bid-buttons button,.quick-bids button,input[type=number]{direction:ltr;unicode-bidi:isolate}
 .football-pitch,.share-mini-pitch,.results-mini-pitch,.home-art svg,#homePreviewReport,.formation-slot,.formation-player-token,.report-player-portrait{direction:ltr}
 .character-profile-overview h2,.player-card-name,.team-header h3,.share-team-head h3,.formation-player-token>strong,.bid-holder strong,.page-context-team{unicode-bidi:plaintext}
 :lang(ar) .page-context,:lang(ar) .site-directory,:lang(ar) .site-settings,:lang(ar) .character-profile-content,:lang(ar) .home-shell,:lang(ar) .site-footer{ text-align:start }
@@ -28,7 +28,7 @@
 /* Text direction belongs to content, not the shell, pitch or squad placement. */
 :lang(ar) :is([data-i18n-text],p,label,legend,h1,h2,h3,h4,summary,select){direction:rtl;unicode-bidi:plaintext}
 :lang(ar) :is(input[type=text],input:not([type])){unicode-bidi:plaintext;text-align:start}
-:lang(ar) :is(.character-profile-quote,.player-aliases,.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.current-bid,.quick-bids button,.quick-bid-buttons button,.team-header h3,.sold-panel h2,.formation-player-token>strong,.share-team-head h3,.site-header-brand){direction:ltr;unicode-bidi:isolate}
+:lang(ar) :is(.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.current-bid,.quick-bids button,.quick-bid-buttons button,.team-header h3,.sold-panel h2,.formation-player-token>strong,.share-team-head h3,.site-header-brand){direction:ltr;unicode-bidi:isolate}
 /* One button surface includes the whole translated label and its icon. */
 .primary-button,.home-button,.context-control,.formation-actions button,.share-toolbar button,.pass-button,.pool-actions button,.lore-actions button,.database-tabs button,.formation-team-tabs button,.formation-picker button,.formation-menu summary,.quick-draft-actions button{min-width:0;max-width:100%;min-height:44px;height:auto;white-space:normal;overflow-wrap:anywhere;line-height:1.3;gap:8px}
 .primary-button>span,.home-button>span{min-width:0;flex:1}
@@ -79,3 +79,8 @@
 .share-versus>span,.share-team-head>div,.share-v14-bottom>*{min-width:0;overflow-wrap:anywhere}
 
 :lang(ar) .home-hero h1,:lang(ar) .share-card-top h2,:lang(ar) .footer-brand strong{direction:ltr;unicode-bidi:isolate}
+
+:lang(ar) .character-profile-quote,:lang(ar) .player-aliases{direction:rtl;unicode-bidi:plaintext}
+/* Latin proper names retain their own font metrics under the Arabic locale. */
+:lang(ar) .setup-box-wide .pool-player-info strong{font-family:"Barlow Condensed",sans-serif!important;line-height:1.3!important;margin-top:2px!important;direction:ltr;unicode-bidi:isolate}
+:lang(ar) .settings-grid label{direction:rtl;justify-content:flex-start}

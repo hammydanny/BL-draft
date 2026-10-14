@@ -75,3 +75,6 @@ input:focus-visible,select:focus-visible{outline-offset:1px}
 /* V0.6.8.3 // scale the site shell with larger desktop resolutions. */
 @media(min-width:1600px){:root{--site-width:1760px;--content-width:1480px;--shell-gutter:28px}}
 @media(min-width:2200px){:root{--site-width:2100px;--content-width:1700px;--shell-gutter:36px;--utility-size:44px;--logo-size:44px}}
+
+/* Light symbol pigment fades into the pale page, independently of dark tokens. */
+:root[data-theme="light"] .background-tech:before{background-color:transparent;background-image:linear-gradient(180deg,#78a9cb 0%,#91b7d2 35%,#c2d6e5 70%,#e9f0f7 100%);opacity:.3}

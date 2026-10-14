@@ -75,7 +75,7 @@ function initHomepagePreview(){
 const homepageChemistryPlayers={a:1,b:26};
 function homepagePlayerMatches(query){
     const text=normalizeLoreSearch(query.trim());
-    return players.filter(player=>!text||normalizeLoreSearch([player.name,...verifiedPlayerAliases(player.id).map(alias=>alias.name)].join(" ")).includes(text))
+    return players.filter(player=>!text||normalizeLoreSearch([player.name,...verifiedPlayerAliases(player.id).flatMap(alias=>[alias.name,window.SiteI18n?.text(alias.name)||alias.name])].join(" ")).includes(text))
         .sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id);
 }
 function renderHomepagePlayerLookup(){

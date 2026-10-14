@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9.4');
+    assert.equal(data.APP_VERSION,'0.6.9.5');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -939,6 +939,52 @@ check('v0.6.9.2 balanced OVR, chemistry-network scoring and results links',()=>{
     const results=read('js/results.js'),playerStats=read('css/player-stats.css');
     assert(results.includes('resultChemistryLinksMarkup')&&results.includes('shareChemistrySvg'),'Results chemistry links present');
     assert(playerStats.includes('.results-chemistry-panel')&&playerStats.includes('.formation-pitch-v2 .slot-position'),'Results/link and larger position-tag styles present');
+});
+
+check('v0.6.9.5 deterministic target queue and exact-full free-award Undo',()=>{
+    const app=appContext();app.run(`
+        resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:2,selectedPlayers:players.slice(0,8)});
+        startingTeam=1;currentPlayer=remainingPlayers.shift();auctionNumber=1;displayOpeningBid();
+        document.getElementById('openingBid').value='50';placeOpeningBid();passBid();
+        const firstId=currentPlayer.id,nextId=remainingPlayers[0].id;
+        const sold=JSON.stringify(auctionSnapshot());
+        advanceToNextAuction();assert.equal(currentPlayer.id,nextId);
+        undoAuctionAction();assert.equal(JSON.stringify(auctionSnapshot()),sold);
+        advanceToNextAuction();assert.equal(currentPlayer.id,nextId);
+        undoAuctionAction();undoAuctionAction();assert.equal(currentPlayer.id,firstId);
+        const queue=JSON.stringify(remainingPlayers.map(p=>p.id));
+        advanceToNextAuction();assert.equal(currentPlayer.id,firstId);
+        assert.equal(JSON.stringify(remainingPlayers.map(p=>p.id)),queue);
+        for(const capacity of [1,2,5,15,39]){
+            resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:capacity,selectedPlayers:players});
+            team1.players=players.slice(0,capacity);team2.players=players.slice(capacity,2*capacity-1);
+            currentPlayer=players[2*capacity-1];remainingPlayers=players.slice(2*capacity);auctionNumber=2*capacity;
+            uiState={screen:'auction',phase:'forced',turn:2};const target=currentPlayer.id;
+            awardPlayerFree(2,true);const full=JSON.stringify(auctionSnapshot());
+            for(let repeat=0;repeat<3;repeat++){
+                undoAuctionAction();assert.equal(currentPlayer.id,target);assert.equal(team2.players.length,capacity-1);
+                assert.equal(uiState.phase,'forced');assert(overlayContent.innerHTML.includes('resumeAssignedPlayer'));
+                redoAuctionAction();assert.equal(JSON.stringify(auctionSnapshot()),full);
+            }
+            const before=JSON.stringify(auctionSnapshot());awardPlayerFree(2,true);assert.equal(JSON.stringify(auctionSnapshot()),before);
+        }
+        assert(!validateBid(NaN,team1,0));assert(!validateBid(Infinity,team1,0));
+    `);
+});
+check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{
+    const window={},context=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),context);
+    const messages=window.BLD_MESSAGES;
+    for(const quote of data.PLAYER_QUOTES)assert(messages[quote.text],'Quote display translation '+quote.playerId);
+    for(const aliases of Object.values(data.PLAYER_ALIASES))for(const alias of aliases)assert(messages[alias.name],'Alias display translation '+alias.name);
+    for(const player of data.players)for(const weapon of player.weapons)assert(messages[weapon.name]&&messages[weapon.description],'Weapon display translation '+player.id);
+    const app=appContext();app.run(`
+        const shindo=verifiedPlayerQuotes(60)[0];assert(shindo&&shindo.chapter===327);
+        assert.equal(shindo.localization,'project-translation-Japanese-manga');assert(shindo.originalText.includes('新導ハネル'));
+        assert(!isVerifiedCanonQuote({...shindo,originalText:''}));assert(!isVerifiedCanonQuote({...shindo,chapter:365}));
+        assert.equal(normalizeLoreSearch('التكيّف'),normalizeLoreSearch('التكيف'));
+        selectedFormationPlayerId=1;formationTeamNumber=0;standaloneBuilderTeam.players=[playerById(1)];
+        const info=createPlayerInfoSidebar(standaloneBuilderTeam);assert(info.includes('player-info-name')&&info.includes('Yoichi Isagi'));assert(!info.includes('player-aliases'));
+    `);
 });
 
 console.log(`\n${failures?'FAIL':'PASS'} preflight — ${failures} failed check(s). Browser UI testing is separate.`);

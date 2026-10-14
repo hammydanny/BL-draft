@@ -5,7 +5,7 @@ body{font-size:16px;line-height:1.4;display:flow-root;isolation:isolate;margin:0
 .app-initializing body,.i18n-loading body{opacity:0}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(#000,transparent 90%)}
 .background-tech{position:fixed;z-index:-1;inset:0;pointer-events:none;overflow:hidden}
-.background-tech:before{content:"";position:absolute;width:min(115vmin,4000px);height:min(115vmin,4000px);left:50%;top:50%;transform:translate(-50%,-50%);background-color:var(--bg-symbol,var(--bg-page-glow));opacity:var(--bg-symbol-opacity,.22);-webkit-mask-image:url("images/background-symbol.svg?v=0.6.9.4");mask-image:url("images/background-symbol.svg?v=0.6.9.4");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
+.background-tech:before{content:"";position:absolute;width:min(115vmin,4000px);height:min(115vmin,4000px);left:50%;top:50%;transform:translate(-50%,-50%);background-color:var(--bg-symbol,var(--bg-page-glow));opacity:var(--bg-symbol-opacity,.22);-webkit-mask-image:url("images/background-symbol.svg?v=0.6.9.5");mask-image:url("images/background-symbol.svg?v=0.6.9.5");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
 h1,h2,h3,.current-bid,.sold-word,.winning-price,.budget-amount{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase}
 p{color:var(--muted);line-height:1.5}
 .system-tag,.panel-code,.team-code,.overlay-kicker{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--blue)}
@@ -191,7 +191,7 @@ to{top:100%}}
 .setup-box-wide .team-config{display:inline-grid;width:calc(50% - 7px);vertical-align:top}
 .setup-box-wide .team-config-2{margin-left:10px}
 .setup-box-wide .settings-grid{grid-template-columns:repeat(3,1fr)}
-.setup-box-wide #maxPlayers{max-width:calc(33.333% - 7px)}
+.setup-box-wide #maxPlayers{max-width:none}
 .preset-section{margin-top:13px;padding:12px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
 .preset-label{margin-bottom:7px;color:var(--text-muted);font-size:12px;font-weight:700;letter-spacing:1px}
 .preset-buttons{flex-wrap:wrap}
@@ -1282,3 +1282,29 @@ html[data-theme="light"] .formation-slot[data-target-action]{outline-width:3px;o
 html[data-theme="light"] .formation-slot[data-target-action="good"]{outline-width:2px;background:color-mix(in srgb,var(--target-color) 13%,transparent);box-shadow:0 0 0 5px color-mix(in srgb,var(--target-color) 12%,transparent),0 0 15px color-mix(in srgb,var(--target-color) 32%,transparent)}
 html[data-theme="light"] .formation-slot[data-target-action="swap"] .pitch-player-portrait>img{box-shadow:0 0 0 2px #fbfdff,0 0 18px color-mix(in srgb,var(--fit-swap) 50%,transparent)}
 html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pitch-player-portrait:before{border-color:var(--selected-player);box-shadow:0 0 0 3px color-mix(in srgb,var(--selected-player) 18%,transparent),0 0 20px color-mix(in srgb,var(--selected-player) 34%,transparent)}
+
+/* v0.6.9.5: setup fields occupy one shared desktop row. */
+.settings-grid>div{min-width:0;display:flex;flex-direction:column}
+.settings-grid label{flex:1;min-height:2.6em;display:flex;align-items:center;line-height:1.3}
+.settings-grid input{width:100%;margin-top:4px}
+.pool-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:8px!important}
+.pool-category-grid label{min-width:0;display:flex!important;height:auto}
+.pool-category-grid label span{flex:1;height:auto;min-height:48px!important;overflow-wrap:anywhere;line-height:1.3!important}
+@media(max-width:600px){.pool-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+/* Decorative rails occupy their own tracks; content cannot cross them. */
+.game-overlay{display:grid;grid-template-rows:minmax(8px,1fr) auto minmax(8px,1fr);place-items:center;gap:18px;padding:clamp(12px,3vh,25px) 25px;overflow:auto}
+.game-overlay:before,.game-overlay:after{position:static;inset:auto;width:100%;height:1px;pointer-events:none}
+.game-overlay:before{grid-row:1}.game-overlay:after{grid-row:3}
+.overlay-content{grid-row:2;position:relative;min-width:0;max-height:none;padding:8px 0 16px}
+.overlay-content h2{font-size:clamp(26px,5vw,48px);overflow-wrap:anywhere}
+.forced-destination{padding:14px 18px;margin:18px auto 0}
+.coin-stage{perspective:700px;width:100px;height:100px;margin:15px auto 20px}
+.coin{position:relative;width:100%;height:100%;margin:0;background:none;border:0;box-shadow:none;transform-style:preserve-3d;transform:rotateY(var(--coin-end));animation:teamCoinFlip 2s cubic-bezier(.16,.58,.3,1) both}
+.coin-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;border:3px solid var(--team);background:radial-gradient(circle at 35% 30%,var(--team-soft),var(--team));color:var(--team-on);box-shadow:0 0 35px var(--team-glow);backface-visibility:hidden;-webkit-backface-visibility:hidden;font:900 38px "Barlow Condensed"}
+.coin-back{transform:rotateY(180deg)}
+@keyframes teamCoinFlip{from{transform:rotateY(0) scale(.8)}70%{transform:rotateY(calc(var(--coin-end) - 210deg)) scale(1.08)}to{transform:rotateY(var(--coin-end)) scale(1)}}
+@media(prefers-reduced-motion:reduce){.coin{animation:none;transform:rotateY(var(--coin-end))}}
+
+.forced-destination strong{overflow-wrap:anywhere}
+/* Reserve cards need room for translated drag hints beside the portrait. */
+@media(max-width:900px){.bench-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr))}.bench-player img{flex-shrink:0}.bench-player>b{min-width:0;overflow-wrap:anywhere}}
