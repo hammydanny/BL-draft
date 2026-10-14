@@ -1,0 +1,86 @@
+/* Locale layout: semantic text flows; tactical geometry retains its orientation. */
+.page-context-tools,.auction-context-actions,.auction-history-controls,.formation-actions,.formation-control-panel,.home-section-heading,.home-resume-facts,.share-toolbar>div{flex-wrap:wrap;min-width:0}
+.page-context h1,.page-context-code,.page-context-status,.home-section-heading,.home-mode-title,.home-mode-description,.site-settings p,.information-heading,.character-profile-overview p{overflow-wrap:anywhere;min-width:0}
+.home-art-heading,.home-art-footer,.results-chemistry-head{flex-wrap:wrap}
+.context-control,.home-button,.formation-actions button,.share-toolbar button,.settings-reset{height:auto;white-space:normal;line-height:1.25}
+.site-utilities .sound-toggle{white-space:normal;line-height:1.1}
+.context-control{padding-block:7px;min-height:40px}
+.preference-options label{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.3}
+.page-context-team{max-width:100%;overflow-wrap:anywhere}.players-remaining{flex-wrap:wrap}
+.site-breadcrumb{min-width:0;max-width:100%;overflow:hidden}.site-breadcrumb>[aria-current]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.directory-options button{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+:root .site-directory.directory-width-probe{position:fixed;left:-20000px;top:0;display:flex;width:max-content;height:auto;max-height:none;overflow:visible;padding:0;gap:4px;border:0}
+:root .directory-width-probe .directory-item{width:max-content;min-width:0;white-space:nowrap;padding-inline:12px;flex-shrink:0}
+.directory-width-probe .directory-options{display:none}
+.player-stats-title,.player-stats-gk>span{min-width:0;overflow-wrap:anywhere}
+.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.budget,.current-bid,.effective-ovr,.captain-badge,.report-position,.quick-bid-buttons button,.quick-bids button,input[type=number]{direction:ltr;unicode-bidi:isolate}
+.football-pitch,.share-mini-pitch,.results-mini-pitch,.home-art svg,#homePreviewReport,.formation-slot,.formation-player-token,.report-player-portrait{direction:ltr}
+.character-profile-overview h2,.player-card-name,.team-header h3,.share-team-head h3,.formation-player-token>strong,.bid-holder strong,.page-context-team{unicode-bidi:plaintext}
+:lang(ar) .page-context,:lang(ar) .site-directory,:lang(ar) .site-settings,:lang(ar) .character-profile-content,:lang(ar) .home-shell,:lang(ar) .site-footer{ text-align:start }
+:lang(ar) h1,:lang(ar) h2,:lang(ar) h3,:lang(ar) button,:lang(ar) label,:lang(ar) summary,:lang(ar) .page-context-code,:lang(ar) .page-context-status{letter-spacing:0}
+:lang(ar) .page-context h1,:lang(ar) .home-mode-title,:lang(ar) .character-profile-overview h2{font-style:normal;line-height:1.25}
+:lang(ar) .directory-options button{text-align:start}
+:lang(ar) .site-header-brand{direction:ltr}
+:lang(ar) .primary-button>b,:lang(ar) .home-button>b,:lang(ar) .home-preview-controls button[data-preview-step]{transform:scaleX(-1)}
+:lang(zh-CN),:lang(ja){line-break:strict}:lang(ko){word-break:keep-all;overflow-wrap:anywhere}
+@media(max-width:760px){.page-context-tools{justify-content:center}.home-art-heading,.home-art-footer{gap:5px 10px}.home-button{gap:12px}.pool-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.formation-team-tabs button{white-space:normal;min-height:40px;line-height:1.25}}
+
+/* Text direction belongs to content, not the shell, pitch or squad placement. */
+:lang(ar) :is([data-i18n-text],p,label,legend,h1,h2,h3,h4,summary,select){direction:rtl;unicode-bidi:plaintext}
+:lang(ar) :is(input[type=text],input:not([type])){unicode-bidi:plaintext;text-align:start}
+:lang(ar) :is(.position-badges,.slot-position,.player-stats-axis,.player-stats-radar,.player-stats-overall,.player-stats-grade,.evaluation-grade,.player-stats-gk strong,.current-bid,.quick-bids button,.quick-bid-buttons button,.team-header h3,.sold-panel h2,.formation-player-token>strong,.share-team-head h3,.site-header-brand){direction:ltr;unicode-bidi:isolate}
+/* One button surface includes the whole translated label and its icon. */
+.primary-button,.home-button,.context-control,.formation-actions button,.share-toolbar button,.pass-button,.pool-actions button,.lore-actions button,.database-tabs button,.formation-team-tabs button,.formation-picker button,.formation-menu summary,.quick-draft-actions button{min-width:0;max-width:100%;min-height:44px;height:auto;white-space:normal;overflow-wrap:anywhere;line-height:1.3;gap:8px}
+.primary-button>span,.home-button>span{min-width:0;flex:1}
+.primary-button>b,.home-button>b{flex:0 0 auto}
+.site-directory .directory-item{line-height:1.3}
+.directory-options{max-width:calc(100vw - 32px)}
+.site-settings{max-width:calc(100vw - 24px)}
+.site-settings-heading h2{min-width:0;overflow-wrap:anywhere;line-height:1.2}
+.site-settings-heading button,.preference-options input{flex:0 0 auto}
+.site-footer :is(a,button),.footer-brand strong{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.page-context-tools{flex-shrink:1}
+.page-context h1,.information-heading h1,.quick-draft-heading h2{line-height:1.15}
+.team-config-fields,.team-header>div,.turn-indicator>span,.bid-holder,.lore-toolbar>*,.database-toolbar>*,.formation-control-panel>*{min-width:0}
+.team-header>div{flex:1}.roster-count{flex:0 0 auto;direction:ltr}
+.team-economy-grid{grid-template-columns:minmax(0,1fr) minmax(0,.65fr)}
+.team-economy-grid span,.strategy-warning,.strategy-clear{overflow-wrap:anywhere;line-height:1.35}
+.bid-pressure-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bid-pressure-row span{min-width:0;overflow-wrap:anywhere;line-height:1.35}
+.turn-indicator{padding-inline-end:34px}
+.turn-indicator strong{min-width:0;overflow-wrap:anywhere;line-height:1.2}
+.turn-indicator .turn-pulse{direction:ltr}
+/* Assignment is normal document flow; scale/letter-spacing bursts used to paint
+   over neighboring labels when ASSIGNED expanded in another language. */
+.sold-panel{display:flex;flex-direction:column;align-items:stretch;gap:8px;min-width:0}
+.sold-panel .sold-word{margin:0;font-size:clamp(32px,4vw,56px);line-height:1.15;overflow-wrap:anywhere;animation:soldStatusIn .35s ease-out both}
+.sold-panel :is(.sold-stamp,.sold-to,h2){min-width:0;margin:0;overflow-wrap:anywhere;line-height:1.3}
+.sold-panel .winning-price{line-height:1.15}
+.sold-panel .primary-button{margin-top:4px}
+.forced-destination{min-width:0;max-width:100%;overflow-wrap:anywhere;line-height:1.4}
+.forced-destination strong{line-height:1.2;overflow-wrap:anywhere;unicode-bidi:plaintext}
+.overlay-content{max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto}
+.overlay-content :is(h2,p,.overlay-kicker,.overlay-eyebrow){overflow-wrap:anywhere;line-height:1.3}
+@keyframes soldStatusIn{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.sold-panel .sold-word{animation:none}}
+@media(max-width:760px){
+ .preference-options{align-items:stretch}.preference-options label{flex-wrap:wrap}
+ .formation-picker{display:flex;flex-wrap:wrap}.formation-picker button{flex:1 1 70px}
+ .pool-actions button{padding-inline:6px}
+ .character-profile-content,.character-profile-hero>*,.chemistry-summary>*{min-width:0}
+ .turn-indicator{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px}
+ .turn-indicator strong{flex:1 1 160px}
+ .overlay-content{padding:20px 16px}
+}
+/* A translated report stamp must share the row without covering the title. */
+.share-card-top{flex-wrap:wrap;gap:12px}
+.share-card-top>div{min-width:0;flex:1 1 190px}
+.share-card-top>strong{max-width:100%;overflow-wrap:anywhere;font-size:clamp(24px,5vw,42px);line-height:1.15}
+.share-versus>span,.share-team-head>div,.share-v14-bottom>*{min-width:0;overflow-wrap:anywhere}
+
+:lang(ar) .home-hero h1,:lang(ar) .share-card-top h2,:lang(ar) .footer-brand strong{direction:ltr;unicode-bidi:isolate}
+
+:lang(ar) .character-profile-quote,:lang(ar) .player-aliases{direction:rtl;unicode-bidi:plaintext}
+/* Latin proper names retain their own font metrics under the Arabic locale. */
+:lang(ar) .setup-box-wide .pool-player-info strong{font-family:"Barlow Condensed",sans-serif!important;line-height:1.3!important;margin-top:2px!important;direction:ltr;unicode-bidi:isolate}
+:lang(ar) .settings-grid label{direction:rtl;justify-content:flex-start}

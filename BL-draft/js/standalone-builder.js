@@ -1,0 +1,258 @@
+// BLUE LOCK DRAFT // STANDALONE TEAM BUILDER
+// One global squad, completely separate from auction Team 1 / Team 2.
+
+let standaloneBuilderLoaded=false;
+
+function standaloneBuilderSyncTeam(){
+    standaloneBuilderTeam.players=players.filter(p=>standaloneBuilderPlayerIds.has(p.id));
+    standaloneBuilderTeam.budget=0;
+    standaloneBuilderTeam.name="GLOBAL XI";
+    standaloneBuilderTeam.color="#19a7ff";
+    if(!formationByTeam[0])formationByTeam[0]="4-3-3";
+    if(!formationAssignments[0])formationAssignments[0]={};
+    if(!Object.prototype.hasOwnProperty.call(formationCaptainByTeam,0))formationCaptainByTeam[0]=null;
+    sanitizeFormationAssignments(0);
+}
+function loadStandaloneBuilderState(){
+    if(standaloneBuilderLoaded)return;
+    standaloneBuilderLoaded=true;
+    try{
+        const saved=normalizeStandaloneSave(JSON.parse(localStorage.getItem(STANDALONE_SAVE_KEY)||"null"));
+        if(saved){
+            standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id)));
+            formationByTeam[0]=FORMATIONS[saved.formation]?saved.formation:"4-3-3";
+            formationAssignments[0]=saved.assignment&&typeof saved.assignment==="object"?saved.assignment:{};
+            formationCaptainByTeam[0]=saved.captainId||null;
+            standaloneBuilderRole=saved.role||"ALL";
+            standaloneBuilderSort=saved.sort||"id";
+            standalonePoolHidden=!!saved.poolHidden;
+        }
+    }catch(e){}
+    standaloneBuilderSyncTeam();
+}
+function saveStandaloneBuilderState(){
+    try{
+        localStorage.setItem(STANDALONE_SAVE_KEY,JSON.stringify({
+            schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
+            playerIds:[...standaloneBuilderPlayerIds],
+            formation:formationByTeam[0]||"4-3-3",
+            assignment:formationAssignments[0]||{},
+            captainId:formationCaptainByTeam[0]||null,
+            role:standaloneBuilderRole,
+            sort:standaloneBuilderSort,
+            poolHidden:standalonePoolHidden
+        }));
+    }catch(e){}
+}
+function openStandaloneBuilder(){
+    if(!historyOnlyNavigation()&&appRelativePath()!==routePath("standaloneTeamBuilder")){updateRoute("standaloneTeamBuilder");return;}
+    loadStandaloneBuilderState();
+    uiState={screen:"standalone-builder",phase:"builder",turn:null};
+    formationTeamNumber=0;
+    selectedFormationPlayerId=null;
+    benchCollapsed=false;
+    standaloneBuilderSyncTeam();
+    setVisibleScreen(formationScreen);
+    formationScreen.classList.add("standalone-builder-mode");
+    renderFormationBuilder({preserveScroll:false});
+    window.scrollTo({top:0,behavior:"instant"});
+}
+function leaveStandaloneBuilder(options={}){
+    saveStandaloneBuilderState();
+    if(!options.skipHistory&&!historyOnlyNavigation()&&appRelativePath()!==routePath("menu")){updateRoute("menu");return;}
+
+    formationScreen.classList.remove("standalone-builder-mode");
+
+    setVisibleScreen(menuScreen,options);
+    refreshMainMenu();
+}
+function compareStandalonePlayers(a,b){
+    if(standaloneBuilderSort==="name")return a.name.localeCompare(b.name)||comparePlayerAppearance(a,b);
+    if(standaloneBuilderSort==="id")return comparePlayerAppearance(a,b);
+    return playerOverall(b)-playerOverall(a)||comparePlayerAppearance(a,b);
+}
+function refreshStandaloneReserveOrder(){
+    const list=formationContent.querySelector(".bench-list");
+    if(!list||formationTeamNumber!==0)return;
+    [...list.querySelectorAll("[data-player-id]")]
+        .sort((a,b)=>compareStandalonePlayers(playerById(Number(a.dataset.playerId)),playerById(Number(b.dataset.playerId))))
+        .forEach(card=>list.appendChild(card));
+}
+function standaloneBuilderPoolPlayers(){
+    const query=standaloneBuilderQuery.trim().toLowerCase();
+    let list=players.filter(player=>{
+        const role=standaloneBuilderRole;
+        const roleOk=role==="ALL"||positionGroup(primaryPosition(player))===role;
+        const textOk=!query||player.name.toLowerCase().includes(query)||playerPositions(player).some(x=>x.toLowerCase().includes(query));
+        return roleOk&&textOk;
+    });
+    list.sort(compareStandalonePlayers);
+    return list;
+}
+async function autoBestStandaloneTeam(){
+    standaloneBuilderSyncTeam();
+
+    if(!standaloneBuilderTeam.players.length){
+        showSiteError(
+            "Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.",
+            "SELECT A ROSTER"
+        );
+        return;
+    }
+
+    const autoButton=document.querySelector(".formation-auto");
+
+    if(autoButton){
+        autoButton.disabled=true;
+    }
+
+    const loader=showAutoBestLoader("GLOBAL XI");
+
+    try{
+        // Let the browser actually paint the loading screen first.
+        await waitForAutoBestPaint();
+
+        const best=applyBestFormationAndAssignment(0);
+
+        if(!best){
+            showSiteError(
+                "No valid lineup could be generated from this roster.",
+                "AUTO BEST TEAM"
+            );
+            return;
+        }
+
+        selectedFormationPlayerId=null;
+        playSfx("confirm");
+        saveStandaloneBuilderState();
+
+        // Place the calculated players before removing the loader.
+        renderFormationBuilder();
+    }catch(error){
+        console.error("Standalone Auto Best failed:",error);
+        showSiteError(
+            "The tactical calculation could not be completed.",
+            "AUTO BEST TEAM"
+        );
+    }finally{
+        if(autoButton){
+            autoButton.disabled=false;
+        }
+
+        hideAutoBestLoader(loader);
+    }
+}
+function toggleStandalonePoolVisibility(){
+    standalonePoolHidden=!standalonePoolHidden;
+    saveStandaloneBuilderState();
+    const panel=formationContent.querySelector(".standalone-pool-panel");
+    const reveal=panel?.querySelector(".standalone-pool-reveal");
+    const button=panel?.querySelector("[data-standalone-pool-toggle]");
+    if(!panel||!reveal||!button)return;
+    if(standalonePoolHidden&&reveal.contains(document.activeElement))button.focus();
+    panel.classList.toggle("standalone-pool-collapsed",standalonePoolHidden);
+    reveal.inert=standalonePoolHidden;
+    reveal.setAttribute("aria-hidden",String(standalonePoolHidden));
+    button.setAttribute("aria-expanded",String(!standalonePoolHidden));
+    button.textContent=standalonePoolHidden?"SHOW PLAYER POOL":"HIDE PLAYER POOL";
+    if(!standalonePoolHidden)prioritizeVisiblePortraits(reveal);
+}
+
+function standalonePoolCard(player){
+    const selected=standaloneBuilderPlayerIds.has(player.id);
+    return `<button type="button" class="standalone-pool-player ${selected?"selected":""}" data-standalone-player="${player.id}" aria-pressed="${selected}">
+      <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="38" height="42">
+      <span><strong>${esc(player.name)}</strong><small>${primaryPosition(player)} // OVR ${playerOverall(player)}</small></span>
+      <b>${selected?"✓":"+"}</b>
+    </button>`;
+}
+function standalonePoolMarkup(){
+    return `<section class="standalone-pool-panel ${standalonePoolHidden?"standalone-pool-collapsed":""}">
+      <div class="standalone-pool-head">
+        <div><span>GLOBAL PLAYER POOL</span><strong>${standaloneBuilderPlayerIds.size} SELECTED</strong></div>
+        <div class="standalone-pool-head-actions">
+          <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle aria-expanded="${!standalonePoolHidden}" aria-controls="standalonePoolBody">${standalonePoolHidden?"SHOW":"HIDE"} PLAYER POOL</button>
+        </div>
+      </div>
+      <div class="standalone-pool-reveal" aria-hidden="${standalonePoolHidden}" ${standalonePoolHidden?"inert":""}><div id="standalonePoolBody" class="standalone-pool-body">
+      <p class="standalone-pool-note">SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</p>
+      <div class="standalone-pool-toolbar">
+        <input id="standalonePoolSearch" type="search" value="${esc(standaloneBuilderQuery)}" placeholder="SEARCH PLAYERS..." autocomplete="off">
+        <select id="standalonePoolRole">
+          <option value="ALL" ${standaloneBuilderRole==="ALL"?"selected":""}>ALL ROLES</option>
+          <option value="ATTACK" ${standaloneBuilderRole==="ATTACK"?"selected":""}>ATTACK</option>
+          <option value="MIDFIELD" ${standaloneBuilderRole==="MIDFIELD"?"selected":""}>MIDFIELD</option>
+          <option value="DEFENCE" ${standaloneBuilderRole==="DEFENCE"?"selected":""}>DEFENCE</option>
+          <option value="GK" ${standaloneBuilderRole==="GK"?"selected":""}>GK</option>
+        </select>
+        <select id="standalonePoolSort">
+          <option value="ovr" ${standaloneBuilderSort==="ovr"?"selected":""}>OVR ↓</option>
+          <option value="name" ${standaloneBuilderSort==="name"?"selected":""}>NAME A-Z</option>
+          <option value="id" ${standaloneBuilderSort==="id"?"selected":""}>MANGA APPEARANCE</option>
+        </select>
+        <button type="button" data-standalone-action="top15">TOP 15</button>
+        <button type="button" data-standalone-action="all">ALL</button>
+        <button type="button" data-standalone-action="clear">CLEAR</button>
+      </div>
+      <div id="standalonePoolGrid" class="standalone-pool-grid">${standaloneBuilderPoolPlayers().map(standalonePoolCard).join("")}</div>
+      </div></div>
+    </section>`;
+}
+function refreshStandalonePoolGrid(){
+    const grid=document.getElementById("standalonePoolGrid");
+    if(grid)grid.innerHTML=standaloneBuilderPoolPlayers().map(standalonePoolCard).join("");
+    prioritizeVisiblePortraits(grid);
+    const head=document.querySelector(".standalone-pool-head strong");
+    if(head)head.textContent=`${standaloneBuilderPlayerIds.size} SELECTED`;
+    bindStandalonePoolCards();
+}
+function bindStandalonePoolCards(){
+    document.querySelectorAll("[data-standalone-player]").forEach(button=>{
+        button.onclick=()=>{
+            const id=Number(button.dataset.standalonePlayer);
+            if(standaloneBuilderPlayerIds.has(id))standaloneBuilderPlayerIds.delete(id);
+            else standaloneBuilderPlayerIds.add(id);
+            standaloneBuilderSyncTeam();
+            saveStandaloneBuilderState();
+            renderFormationBuilder();
+        };
+    });
+}
+function syncStandalonePoolSelection(){
+    const grid=document.getElementById("standalonePoolGrid");
+    grid?.querySelectorAll("[data-standalone-player]").forEach(button=>{
+        const selected=standaloneBuilderPlayerIds.has(Number(button.dataset.standalonePlayer));
+        button.classList.toggle("selected",selected);button.setAttribute("aria-pressed",String(selected));
+        button.querySelector("b").textContent=selected?"✓":"+";
+    });
+    const heading=formationContent.querySelector(".standalone-pool-head strong");
+    if(heading)heading.textContent=`${standaloneBuilderPlayerIds.size} SELECTED`;
+}
+function bindStandaloneBuilderPoolUI(){
+    if(formationTeamNumber!==0)return;
+    document.querySelectorAll("[data-standalone-pool-toggle]").forEach(button=>{button.onclick=toggleStandalonePoolVisibility;});
+    const search=document.getElementById("standalonePoolSearch");
+    const role=document.getElementById("standalonePoolRole");
+    const sort=document.getElementById("standalonePoolSort");
+    if(search)search.oninput=()=>{standaloneBuilderQuery=search.value;refreshStandalonePoolGrid();};
+    if(role)role.onchange=()=>{standaloneBuilderRole=role.value;refreshStandalonePoolGrid();saveStandaloneBuilderState();};
+    if(sort)sort.onchange=()=>{standaloneBuilderSort=sort.value;refreshStandalonePoolGrid();refreshStandaloneReserveOrder();saveStandaloneBuilderState();};
+    document.querySelectorAll("[data-standalone-action]").forEach(button=>{
+        button.onclick=()=>{
+            const action=button.dataset.standaloneAction;
+            if(action==="top15"){
+                standaloneBuilderPlayerIds=new Set([...players].sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id).slice(0,15).map(p=>p.id));
+            }else if(action==="all"){
+                standaloneBuilderPlayerIds=new Set(players.map(p=>p.id));
+            }else{
+                standaloneBuilderPlayerIds.clear();
+            }
+            standaloneBuilderSyncTeam();
+            saveStandaloneBuilderState();
+            renderFormationBuilder();
+        };
+    });
+    bindStandalonePoolCards();
+}
+
+document.getElementById("menuStandaloneBuilder")?.addEventListener("click",openStandaloneBuilder);

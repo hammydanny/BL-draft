@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="../">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blue Lock Draft release history: website improvements, stabilization and earlier game milestones.">
+    <title>Blue Lock Draft — Change Log</title>
+    <link rel="canonical" href="changelog/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Blue Lock Draft">
+    <meta property="og:title" content="Blue Lock Draft — Change Log">
+    <meta property="og:description" content="Blue Lock Draft release history: website improvements, stabilization and earlier game milestones.">
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.9.5">
+    <script src="js/site-preferences.js?v=0.6.9.5"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.9.5">
+    <link rel="stylesheet" href="style.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-information.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/legal.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/localization.css?v=0.6.9.5">
+    <script defer src="js/version.js?v=0.6.9.5"></script>
+    <script defer src="js/i18n/messages.js?v=0.6.9.5"></script>
+    <script defer src="js/localization.js?v=0.6.9.5"></script>
+    <script defer src="js/audio.js?v=0.6.9.5"></script>
+    <script defer src="js/ui/site-information.js?v=0.6.9.5"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.9.5"></script>
+    <script defer src="js/site-runtime.js?v=0.6.9.5"></script>
+</head>
+<body data-site-page="changelog">
+    <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
+    <div class="background-tech" aria-hidden="true"></div>
+    <header class="site-header" role="banner">
+        <div class="site-header-inner">
+            <button data-i18n-ignore class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.9.5" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+                <span>BLUE LOCK <em>DRAFT</em></span>
+            </button>
+            <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
+                <button class="directory-item" type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home">HOME</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="play" aria-expanded="false">AUCTION <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="new-auction" data-directory-href="auction/setup/">AUCTION DRAFT</button>
+                        <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT <small>SKIP BIDDING</small></button>
+                        <button type="button" data-directory-action="resume" hidden>RESUME AUCTION</button>
+                    </div>
+                </details>
+                <button class="directory-item" type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder">TEAM BUILDER</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="database" aria-expanded="false">DATABASE <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="characters" data-directory-href="lore/?view=characters">CHARACTERS</button>
+                        <button type="button" data-directory-action="chemistry" data-directory-href="lore/?view=chemistry">CHEMISTRY</button>
+                        <button type="button" data-directory-action="lore" data-directory-href="lore/">LORE HUB</button>
+                    </div>
+                </details>
+                <button class="directory-item directory-help" type="button" data-how-to-play>HOW TO PLAY</button>
+                <button class="directory-item" type="button" data-about>ABOUT</button>
+            </nav>
+            <nav id="siteBreadcrumb" class="site-breadcrumb" aria-label="Current location"></nav>
+            <div class="site-utilities">
+                <button id="soundToggle" class="site-utility sound-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects"><span class="sound-icon" aria-hidden="true">◖))</span><strong>SFX ON</strong></button>
+                <button id="siteSettingsToggle" class="site-utility settings-toggle" type="button" aria-label="Open site settings" aria-controls="siteSettings" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9.5 3-.7 2.2-2 .9-2.2-.5-2 3.5 1.5 1.7v2.4L2.6 15l2 3.5 2.2-.5 2 .9.7 2.1h5l.7-2.1 2-.9 2.2.5 2-3.5-1.5-1.8v-2.4l1.5-1.7-2-3.5-2.2.5-2-.9-.7-2.2Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
+            </div>
+            <button id="directoryMenuToggle" class="directory-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="siteDirectory" aria-expanded="false"><span aria-hidden="true">≡</span></button>
+            <button class="directory-backdrop" type="button" aria-label="Close navigation" hidden></button>
+            <section id="siteSettings" class="site-settings" role="dialog" aria-labelledby="siteSettingsTitle" hidden>
+                <div class="site-settings-heading"><h2 id="siteSettingsTitle">SETTINGS</h2><button type="button" data-settings-close aria-label="Close settings">×</button></div>
+                <fieldset><legend>SOUND EFFECTS</legend><div class="preference-options"><label><input type="radio" name="siteSound" value="on">ON</label><label><input type="radio" name="siteSound" value="off">OFF</label></div></fieldset>
+                <fieldset><legend>THEME</legend><div class="preference-options"><label><input type="radio" name="siteTheme" value="dark">DARK</label><label><input type="radio" name="siteTheme" value="light">LIGHT</label><label><input type="radio" name="siteTheme" value="system">SYSTEM</label></div></fieldset>
+                <fieldset class="language-setting"><legend>LANGUAGE</legend><label class="visually-hidden" for="siteLanguage">Website language</label><select id="siteLanguage" name="siteLanguage"><option value="en" lang="en" data-i18n-ignore>English</option><option value="ms" lang="ms" data-i18n-ignore>Bahasa Melayu</option><option value="ja" lang="ja" data-i18n-ignore>日本語</option></select></fieldset>
+                <p>Choose your display, sound and language. System follows your device appearance.</p><p class="settings-preservation">Reset restores Dark mode, SFX on and English. Your saved games stay intact.</p>
+                <button class="settings-reset" type="button" data-preferences-reset>RESET PREFERENCES</button>
+            </section>
+        </div>
+    </header>
+    <main id="siteMain" class="legal-page" tabindex="-1">
+        <header class="page-context"><div class="page-context-copy"><div class="page-context-code">BL // PROJECT INFORMATION</div><h1>CHANGE <span>LOG</span></h1><div class="page-context-status">RELEASE HISTORY // PROGRAM EVOLUTION</div></div><div class="page-context-tools"><a class="context-control" href="./">← HOME</a></div></header>
+        <div class="information-layout">
+            <nav class="information-index" aria-label="Changelog releases"><span>RELEASE HISTORY</span><a href="changelog/#release-current">CURRENT RELEASE</a><a href="changelog/#release-0693">V0.6.9.3</a><a href="changelog/#release-0692">V0.6.9.2</a><a href="changelog/#release-0691">V0.6.9.1</a><a href="changelog/#release-069">V0.6.9</a><a href="changelog/#release-0683">V0.6.8.3</a><a href="changelog/#release-0682">V0.6.8.2</a><a href="changelog/#release-0681">V0.6.8.1</a><a href="changelog/#release-0674">V0.6.7.4</a><a href="changelog/#release-067">V0.6.7.x</a><a href="changelog/#release-06">V0.6</a><a href="changelog/#release-05">V0.5</a></nav>
+            <article class="legal-document changelog-document">
+                <header class="legal-document-header"><span class="legal-document-kicker">THE PROGRAM EVOLVES</span><h2>Release notes, without the noise.</h2><p>Website and game milestones from the project's documented history.</p></header>
+                <div class="legal-document-body release-timeline">
+                    <section id="release-current" class="release-entry"><div class="release-heading"><h3 data-app-version></h3><span class="release-tag">Pre-mobile polish, auction stability and localized player lore</span></div><p><time datetime="2026-10-14">14 October 2026</time></p><ul><li>Eight player ratings and attributes lowered while preserving their strongest areas.</li><li>Light-theme symbol gradient, two-color coin flip, aligned setup fields and safer assignment spacing.</li><li>Undo restores the same player queue and cancels obsolete animation callbacks, including automatic final signings.</li><li>Translated dialogue, weapons, aliases and auction states; Arabic text retains familiar component positions.</li><li>Source-checked alias additions and Haneru Shindo dialogue; aliases hidden in Team Builder cards.</li></ul></section>
+                    <section id="release-0694" class="release-entry"><div class="release-heading"><h3>V0.6.9.4 ALPHA</h3><span class="release-tag">Canon dialogue, languages and player portrait polish</span></div><p><time datetime="2026-10-12">12 October 2026</time></p><ul><li>Eleven interface languages with native labels and Arabic right-to-left navigation.</li><li>Larger formation portraits, stable button surfaces and responsive translated headers.</li><li>Verified English canon quotes remain unchanged in every interface language.</li></ul></section>
+                    <section id="release-0693" class="release-entry"><div class="release-heading"><h3>V0.6.9.3 ALPHA</h3><span class="release-tag">Language, references &amp; visual polish</span></div><p><time datetime="2026-10-12">12 October 2026</time></p><ul><li>Local English, Bahasa Melayu and Japanese settings; verified aliases and expanded quotes; categorized football weapons.</li><li>Custom 404, manual feature carousel, opaque theme surfaces and slightly larger formation portraits.</li><li>Gameplay, v0.6.9.2 scoring, saved-data compatibility and exact shared formations are preserved.</li></ul></section>
+                    <section id="release-0692" class="release-entry"><div class="release-heading"><h3>V0.6.9.2 ALPHA</h3><span class="release-tag">TEAM BUILDER / RESULTS QUALITY</span></div><p><time datetime="2026-10-12">12 October 2026</time></p><ul><li>Added chemistry-link breakdowns to final Results cards and chemistry lines to shared team formation reports.</li><li>Reworked Team OVR so the displayed rating rewards a balanced XI instead of relying on a plain arithmetic mean.</li><li>Reworked Chemistry OVR into a network score that weighs weak tactical links, lower-band consistency, known familiarity and link coverage.</li><li>Kept Auto Best evaluation aligned with the same Team OVR and Chemistry OVR formulas used by the visible UI.</li><li>Enlarged Team Builder position markers with responsive limits so compact formations remain readable without label overlap.</li><li>Moved verified character dialogue into the Player Profile as a quiet quote-only detail, removing the standalone Ego Statement section and visible attribution/source metadata.</li></ul></section>
+                    <section id="release-0691" class="release-entry"><div class="release-heading"><h3>V0.6.9.1 ALPHA</h3><span class="release-tag">CHARACTER INTELLIGENCE / DOSSIER UX</span></div><p><time datetime="2026-10-11">11 October 2026</time></p><ul><li>Player-by-player football-weapon audit with concise descriptions and internal source records, preserving existing Isagi entries.</li><li>Short, verified anime dialogue where independently checked; missing quotes remain hidden.</li><li>Confirmed nationality or country representation and local flags in dossiers and both Team Builder profiles.</li><li>Added Marc Snuffy's Malta nationality and local Malta flag support after the main 0.6.9.1 release work.</li><li>Quick dossier section scrolling, reduced-motion support and active section navigation.</li><li>More compact responsive tactical pitches with refined player-marker spacing and unchanged formation coordinates.</li><li>Stronger weapon, nationality, flag and quote validation; gameplay and saved squads remain compatible.</li></ul></section>
+                    <section id="release-069" class="release-entry"><div class="release-heading"><h3>V0.6.9 ALPHA</h3><span class="release-tag">DATABASE / CONTENT / DATA INTEGRITY</span></div><p><time datetime="2026-10-11">11 October 2026</time></p><ul><li>Player intelligence Database: role, grade, category and history filters, attribute sorting, compact cards and three-player comparison.</li><li>Richer dossiers with positional evidence, existing weapons, recorded team history and verified-only quote architecture.</li><li>Chemistry player-pair evaluation, tier/context filters, ID-based references and structural validation.</li><li>Presentation-only tactical pitch spacing fix across all formations; clearer Light Mode reference views.</li><li>Privacy/legal review, font licence credits, methodology guidance, accessibility, performance and SEO foundations.</li></ul></section>
+                    <section id="release-0683" class="release-entry"><div class="release-heading"><h3>V0.6.8.3 ALPHA</h3><span class="release-tag">RESPONSIVE TACTICAL POLISH</span></div><p>A focused display-scaling and Team Builder readability pass.</p><ul><li>Removed the redundant fan-project strip above the footer on the Homepage.</li><li>Large desktop shells and the shared header now scale more naturally with higher-resolution monitors.</li><li>Team Builder pitches are slightly taller to separate player names, position labels and fit markers.</li><li>Light Mode uses a more visible background emblem, clearer chemistry-link colors and stronger, distinct SWAP / BEST FIT / GOOD FIT states.</li><li>Clicked pitch players now receive a clearer dedicated selection ring without interfering with drag-target feedback.</li></ul></section>
+                    <section id="release-0682" class="release-entry"><div class="release-heading"><h3>V0.6.8.2 ALPHA</h3><span class="release-tag">UX &amp; RELIABILITY</span></div><p>A practical Scouting Desk, reliable portraits and clearer tactical feedback.</p><ul><li>Search real players and check any chemistry pair directly from the Homepage.</li><li>Central portrait loading prioritizes visible cards, handles rapid selection safely and bounds retries.</li><li>Team Builder preserves selection scroll and distinguishes blue SWAP targets from gold BEST FIT and green GOOD FIT targets.</li><li>Larger Results portraits and readable position / Captain badges retain the compact two-team report.</li><li>Light Mode uses coherent tactical surfaces, chemistry colors and player controls.</li></ul></section>
+                    <section id="release-0681" class="release-entry"><div class="release-heading"><h3>V0.6.8.1 ALPHA</h3><span class="release-tag">WEBSITE POLISH</span></div><p>A focused v0.6.8.1 polish pass on the Homepage, Team Builder, Auction flow and Light Mode.</p><ul><li>Removed the Homepage system-status strip and cleaned up the header SFX control.</li><li>Moved Captain controls above Core Attributes and removed the redundant field-metrics sublabel.</li><li>Auction player advances preserve the current scroll position instead of jumping to the top.</li><li>Light Mode now has coherent tactical pitches, calmer scrollbars, cleaner chemistry/link colors and fewer dark-theme leftovers.</li><li>Retains the v0.6.8 Homepage discovery, information pages, footer and website-experience overhaul.</li></ul></section>
+                    <section id="release-0674" class="release-entry"><div class="release-heading"><h3>V0.6.7.4 ALPHA</h3><span class="release-tag">STABILIZATION</span></div><p>Resolved conflicting document imports and stabilized the website foundation.</p><ul><li>Removed merge artifacts and duplicate assets; repaired favicon placement.</li><li>Centered Auction navigation and preserved dedicated character links on reload.</li><li>Moved Auction player OVR into Attribute Analysis and enlarged its portrait within the existing panel.</li><li>Fixed clipping and overlaps in compact share reports.</li></ul></section>
+                    <section id="release-067" class="release-entry"><div class="release-heading"><h3>V0.6.7.x</h3><span class="release-tag">WEBSITE FOUNDATION</span></div><p>Established the multi-page website shell around the existing game.</p><ul><li>Shared navigation, contextual headers, browser-history routing and page-transition guards.</li><li>Dark / Light / System preferences, Settings, global SFX and Quick Draft access.</li><li>Readable player evaluations, consistent local fonts and bounded portrait loading.</li></ul></section>
+                    <section id="release-06" class="release-entry"><div class="release-heading"><h3>V0.6</h3><span class="release-tag">PLAYER EVALUATION</span></div><p>The v0.6 series developed the player-stat presentation, lineup optimization and maintenance foundation.</p><ul><li>Six-axis field-attribute radar, numerical values and supplementary letter grades, with GK shown separately.</li><li>Auto Best evaluates all ten formations; shared reports preserve the chosen lineup.</li><li>Later v0.6 updates documented an expanded player database, image-loading improvements and save compatibility work.</li></ul></section>
+                    <section id="release-05" class="release-entry"><div class="release-heading"><h3>V0.5 ALPHA</h3><span class="release-tag">EARLY SQUAD EXPERIENCE</span></div><p>The recorded V0.5 snapshot already included Auction drafting, player-pool selection, formation building, chemistry and a standalone Team Builder.</p><p class="release-history-note">Older milestones are summarized from repository snapshots and existing notes. Exact release dates and undocumented changes are intentionally omitted.</p></section>
+                </div>
+            </article>
+        </div>
+    </main>
+    <div id="infoModal" class="info-modal hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="info-card">
+            <button id="infoModalClose" class="info-close" type="button" aria-label="Close">×</button>
+            <div class="panel-code" id="infoModalCode">BL // DATABASE</div>
+            <h2 id="infoModalTitle">HOW TO PLAY</h2>
+            <div id="infoModalBody" class="info-body"></div>
+            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO PAGE</span><b>→</b></button>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><strong>BLUE LOCK DRAFT</strong><span>UNOFFICIAL FAN PROJECT</span><p>Non-commercial and fan-made. Not affiliated with, endorsed by, or sponsored by official Blue Lock entities. Blue Lock names, characters and imagery belong to their respective rights holders.</p></div>
+            <nav class="footer-links" aria-label="Project information"><strong>PROJECT</strong><button type="button" data-about>ABOUT / CREDITS</button><button type="button" data-how-to-play>HOW TO PLAY</button><a href="changelog/">CHANGELOG</a></nav>
+            <nav class="footer-links" aria-label="Legal information"><strong>INFORMATION</strong><a href="privacy/" class="footer-privacy-link">PRIVACY NOTICE</a><a href="legal/" class="footer-legal-link">LEGAL NOTICE</a></nav>
+            <div class="footer-developers"><strong>DEVELOPMENT</strong><span>DEVELOPED BY</span><a class="footer-profile-link" href="https://github.com/hammydanny" target="_blank" rel="noopener noreferrer">HAMMYDANNY ↗</a><span>WITH SUPPORT FROM</span><a class="footer-profile-link" href="https://github.com/syaafibwn" target="_blank" rel="noopener noreferrer">SYAAFIBWN ↗</a></div>
+        </div>
+        <div class="footer-system"><span data-app-version></span><span>DATA THROUGH CH. <b data-supported-chapter></b></span><span>YOUR SQUAD. YOUR EGO.</span></div>
+    </footer>
+</body>
+</html>

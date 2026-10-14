@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" class="app-initializing">
+<head>
+    <meta charset="UTF-8">
+    <base href="../">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Lock Draft — Team Builder</title>
+    <link rel="canonical" href="team-builder/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Blue Lock Draft">
+    <meta property="og:title" content="Blue Lock Draft — Team Builder">
+    <meta property="og:description" content="Blue Lock Draft — Team Builder — an unofficial Blue Lock fan project for player drafting, squad building and chemistry.">
+    <meta name="description" content="Blue Lock Draft — Team Builder — an unofficial Blue Lock fan project for player drafting, squad building and chemistry.">
+
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.9.5">
+    <script src="js/site-preferences.js?v=0.6.9.5"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.9.5">
+    <link rel="stylesheet" href="style.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/player-stats.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/character-lore.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/homepage.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/site-information.css?v=0.6.9.5">
+    <link rel="stylesheet" href="css/localization.css?v=0.6.9.5">
+    <script defer src="js/version.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/i18n/messages.js?v=0.6.9.5"></script>
+    <script defer src="js/localization.js?v=0.6.9.5"></script>
+    <script defer src="js/player-images.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/players.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/state.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/player-stats.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/audio.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/fx.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/chemistry.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/player-reference.js?v=0.6.9.5"></script>
+    <script defer src="js/lore.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/formations.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/storage.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/results.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/auction.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/auction-ui.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/router.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/site-information.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/homepage.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/menu.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/setup.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/standalone-builder.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/formation-ui.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/ui/quick-draft.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/site-runtime.js?v=0.6.9.5" fetchpriority="high"></script>
+    <script defer src="js/app.js?v=0.6.9.5" fetchpriority="high"></script>
+    <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+    <link rel="preload" href="fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+    <link rel="preload" href="fonts/barlow-condensed-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+    <link rel="preload" href="fonts/rajdhani-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+    <link rel="preload" href="fonts/rajdhani-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
+    <link rel="preload" href="fonts/rajdhani-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body>
+    <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
+    <div class="background-tech" aria-hidden="true"></div>
+
+
+    <header class="site-header" role="banner">
+        <div class="site-header-inner">
+            <button data-i18n-ignore class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header.webp?v=0.6.9.5" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+                <span>BLUE LOCK <em>DRAFT</em></span>
+            </button>
+            <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
+                <button class="directory-item" type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home">HOME</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="play" aria-expanded="false">AUCTION <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="new-auction" data-directory-href="auction/setup/">AUCTION DRAFT</button>
+                        <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT <small>SKIP BIDDING</small></button>
+                        <button type="button" data-directory-action="resume" hidden>RESUME AUCTION</button>
+                    </div>
+                </details>
+                <button class="directory-item" type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder">TEAM BUILDER</button>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="database" aria-expanded="false">DATABASE <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="characters" data-directory-href="lore/?view=characters">CHARACTERS</button>
+                        <button type="button" data-directory-action="chemistry" data-directory-href="lore/?view=chemistry">CHEMISTRY</button>
+                        <button type="button" data-directory-action="lore" data-directory-href="lore/">LORE HUB</button>
+                    </div>
+                </details>
+                <button class="directory-item directory-help" type="button" data-how-to-play>HOW TO PLAY</button>
+                <button class="directory-item" type="button" data-about>ABOUT</button>
+            </nav>
+            <nav id="siteBreadcrumb" class="site-breadcrumb" aria-label="Current location"></nav>
+            <div class="site-utilities">
+                <button id="soundToggle" class="site-utility sound-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects"><span class="sound-icon" aria-hidden="true">◖))</span><strong>SFX ON</strong></button>
+                <button id="siteSettingsToggle" class="site-utility settings-toggle" type="button" aria-label="Open site settings" aria-controls="siteSettings" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m9.5 3-.7 2.2-2 .9-2.2-.5-2 3.5 1.5 1.7v2.4L2.6 15l2 3.5 2.2-.5 2 .9.7 2.1h5l.7-2.1 2-.9 2.2.5 2-3.5-1.5-1.8v-2.4l1.5-1.7-2-3.5-2.2.5-2-.9-.7-2.2Z"/><circle cx="12" cy="12" r="3.2"/></svg></button>
+            </div>
+            <button id="directoryMenuToggle" class="directory-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="siteDirectory" aria-expanded="false"><span aria-hidden="true">≡</span></button>
+            <button class="directory-backdrop" type="button" aria-label="Close navigation" hidden></button>
+            <section id="siteSettings" class="site-settings" role="dialog" aria-labelledby="siteSettingsTitle" hidden>
+                <div class="site-settings-heading"><h2 id="siteSettingsTitle">SETTINGS</h2><button type="button" data-settings-close aria-label="Close settings">×</button></div>
+                <fieldset><legend>SOUND EFFECTS</legend><div class="preference-options"><label><input type="radio" name="siteSound" value="on">ON</label><label><input type="radio" name="siteSound" value="off">OFF</label></div></fieldset>
+                <fieldset><legend>THEME</legend><div class="preference-options"><label><input type="radio" name="siteTheme" value="dark">DARK</label><label><input type="radio" name="siteTheme" value="light">LIGHT</label><label><input type="radio" name="siteTheme" value="system">SYSTEM</label></div></fieldset>
+                <fieldset class="language-setting"><legend>LANGUAGE</legend><label class="visually-hidden" for="siteLanguage">Website language</label><select id="siteLanguage" name="siteLanguage"><option value="en" lang="en" data-i18n-ignore>English</option><option value="ms" lang="ms" data-i18n-ignore>Bahasa Melayu</option><option value="ja" lang="ja" data-i18n-ignore>日本語</option></select></fieldset>
+                <p>Choose your display, sound and language. System follows your device appearance.</p><p class="settings-preservation">Reset restores Dark mode, SFX on and English. Your saved games stay intact.</p>
+                <button class="settings-reset" type="button" data-preferences-reset>RESET PREFERENCES</button>
+            </section>
+        </div>
+    </header>
+
+<main id="siteMain" tabindex="-1">
+<section id="menu-screen" class="menu-screen hidden" aria-labelledby="homeTitle">
+        <div class="home-shell">
+            <section class="home-hero">
+                <div class="home-hero-copy">
+                    <div class="home-kicker"><i aria-hidden="true"></i> BL // STRIKER SELECTION PROGRAM</div>
+                    <h1 id="homeTitle">BLUE LOCK <span>DRAFT</span></h1>
+                    <p class="home-hero-tagline">BUILD THE ULTIMATE EGOIST XI.</p>
+                    <p class="home-hero-description">A fan-made football draft. Win the bidding war, build your XI and find your chemical reaction.</p>
+                    <div class="home-hero-actions">
+                        <button id="menuNewAuction" class="home-button home-button--primary" type="button"><span>START AUCTION</span><b aria-hidden="true">→</b></button>
+                        <button class="home-button" type="button" data-home-quick><span>QUICK DRAFT</span><b aria-hidden="true">↗</b></button>
+                    </div>
+                    <div class="home-introduction"><span>FIRST TIME IN BLUE LOCK?</span><button id="menuHowToPlay" type="button" class="home-text-button">READ THE FIELD MANUAL →</button></div>
+                </div>
+                <section class="home-art home-preview" aria-label="Website feature previews" aria-roledescription="carousel" tabindex="0">
+                    <div class="home-art-heading"><span>TACTICAL PREVIEW</span><span id="homePreviewStatus" aria-live="polite">1 / 5</span></div>
+                    <div class="home-preview-stage">
+                        <section class="home-preview-slide" data-preview-slide="0" aria-label="Auction Draft preview" aria-roledescription="slide"><div class="home-preview-title"><span>01 // COMPETE</span><h2>AUCTION DRAFT</h2><p>Win the bidding war. Every signing is your call.</p></div><div id="homePreviewAuction" class="preview-auction"></div></section>
+                        <section class="home-preview-slide" data-preview-slide="1" aria-label="Team Builder preview" aria-roledescription="slide" hidden><div class="home-preview-title"><span>02 // CREATE</span><h2>TEAM BUILDER</h2></div><svg viewBox="0 0 400 285" role="img" aria-label="Eleven football positions on a tactical pitch">
+                        <g class="home-pitch-guide"><path d="M0 48H400M0 94H400M0 142H400M0 190H400M0 238H400M60 0V285M130 0V285M200 0V285M270 0V285M340 0V285"/></g>
+                        <g class="home-pitch-lines"><rect x="26" y="12" width="348" height="260" rx="2"/><path d="M26 142H374M120 12V62H280V12M156 12V31H244V12M120 272V222H280V272M156 272V253H244V272"/><circle cx="200" cy="142" r="31"/><circle cx="200" cy="142" r="2"/></g>
+                        <g id="homeTacticalMarkers"></g>
+                    </svg><div class="home-art-footer"><span>YOUR VISION. ELEVEN POSITIONS.</span><b><span id="homeFormationCount"></span> FORMATIONS</b></div></section>
+                        <section class="home-preview-slide" data-preview-slide="2" aria-label="Player Database preview" aria-roledescription="slide" hidden><div class="home-preview-title"><span>03 // DISCOVER</span><h2>PLAYER DATABASE</h2><p>Compare ratings. Discover each player's weapons.</p></div><div id="homePreviewDatabase" class="preview-database"></div></section>
+                        <section class="home-preview-slide" data-preview-slide="3" aria-label="Chemistry preview" aria-roledescription="slide" hidden><div class="home-preview-title"><span>04 // CONNECT</span><h2>CHEMISTRY</h2><p>Find the chemical reaction that connects your XI.</p></div><div id="homePreviewChemistry" class="preview-chemistry"></div></section>
+                        <section class="home-preview-slide" data-preview-slide="4" aria-label="Results and Sharing preview" aria-roledescription="slide" hidden><div class="home-preview-title"><span>05 // SHARE</span><h2>RESULTS / SHARING</h2><p>Keep your exact formation. Share your squad.</p></div><div class="preview-report"><span>FORMATION REPORT</span><strong>4-3-3</strong><div id="homePreviewReport"></div><small>STARTERS · RESERVES · CAPTAIN · CHEMISTRY</small></div></section>
+                    </div>
+                    <div class="home-preview-controls"><button type="button" data-preview-step="-1" aria-label="Previous feature preview">←</button><div class="home-preview-dots" aria-label="Choose a feature preview"><button type="button" data-preview-index="0" aria-label="Show Auction Draft preview" aria-current="true">1</button><button type="button" data-preview-index="1" aria-label="Show Team Builder preview">2</button><button type="button" data-preview-index="2" aria-label="Show Player Database preview">3</button><button type="button" data-preview-index="3" aria-label="Show Chemistry preview">4</button><button type="button" data-preview-index="4" aria-label="Show Results and Sharing preview">5</button></div><button type="button" data-preview-step="1" aria-label="Next feature preview">→</button></div>
+                </section>
+            </section>
+            <section id="menuResumePanel" class="home-resume hidden" aria-label="Continue your saved Auction">
+                <div><div class="home-resume-code"><span>CONTINUE SESSION</span><strong id="menuResumeMeta"></strong></div>
+                    <div class="home-resume-teams"><div><h3 id="homeResumeTeam1"></h3><small id="homeResumeRoster1"></small></div><b>VS</b><div><h3 id="homeResumeTeam2"></h3><small id="homeResumeRoster2"></small></div></div>
+                    <progress id="homeResumeProgress" value="0" max="30" aria-label="Combined roster progress"></progress><span id="homeResumeProgressLabel" class="home-resume-progress-label"></span>
+                </div>
+                <div class="home-resume-side"><div class="home-resume-facts"><div><span>AUCTION</span><strong id="homeResumeAuction"></strong></div><div><span>PLAYERS REMAIN</span><strong id="homeResumeRemaining"></strong></div></div>
+                    <button id="menuResumeAuction" class="home-button home-button--primary" type="button"><span id="homeResumeAction">RESUME SESSION</span><b aria-hidden="true">→</b></button>
+                </div>
+            </section>
+            <section aria-labelledby="homeModesTitle">
+                <div class="home-section-heading"><div><span>01 // CHOOSE YOUR ROUTE</span><h2 id="homeModesTitle">ENTER THE PROGRAM</h2></div><span class="home-kicker">DRAFT. BUILD. DISCOVER.</span></div>
+                <div class="home-modes">
+                    <button class="home-mode" type="button" data-home-auction>
+                        <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m18 4 10 10-5 5L13 9Zm-3 7L5 21m-2 6h17m-2-6H5v6h13Z"/></svg><span>01 // COMPETE</span></span>
+                        <strong class="home-mode-title">AUCTION DRAFT</strong><span class="home-mode-description">Compete through live bidding and build two rival squads. Every signing is your call.</span><span class="home-mode-action">START AUCTION <b aria-hidden="true">→</b></span>
+                    </button>
+                    <button id="menuStandaloneBuilder" class="home-mode" type="button">
+                        <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="3" width="22" height="26" rx="1"/><path d="M5 16h22M11 3v6h10V3M11 29v-6h10v6"/><circle cx="16" cy="16" r="4"/></svg><span>02 // CREATE</span></span>
+                        <strong class="home-mode-title">TEAM BUILDER</strong><span class="home-mode-description">Create your ideal XI. Experiment with formations, find chemistry and optimize your squad.</span><span class="home-mode-action">BUILD YOUR XI <b aria-hidden="true">→</b></span>
+                    </button>
+                    <button id="menuLore" class="home-mode" type="button">
+                        <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4h22v24H5Zm6 0v24M15 10h8M15 15h8M15 20h5"/></svg><span>03 // DISCOVER</span></span>
+                        <strong class="home-mode-title">DATABASE</strong><span class="home-mode-description">Explore player ratings, positions, chemistry and character dossiers before your next move.</span><span class="home-mode-action">EXPLORE DATABASE <b aria-hidden="true">→</b></span>
+                    </button>
+                </div>
+            </section>
+            <section class="home-scouting" aria-labelledby="homeScoutingTitle">
+                <div class="home-section-heading"><div><span>02 // PLAYER INTELLIGENCE</span><h2 id="homeScoutingTitle">SCOUTING DESK</h2></div><span class="home-kicker">FIND YOUR NEXT SIGNING.</span></div>
+                <div class="scouting-tools">
+                    <section class="scout-tool" aria-labelledby="homeLookupTitle">
+                        <div class="scout-tool-heading"><span>01 // FIND A PLAYER</span><h3 id="homeLookupTitle">QUICK PLAYER LOOKUP</h3></div>
+                        <label class="scout-field" for="homePlayerSearch">SEARCH PLAYER<input id="homePlayerSearch" type="search" placeholder="Search by name…" autocomplete="off" aria-controls="homePlayerResults"></label>
+                        <output id="homePlayerResultStatus" class="scout-result-status" aria-live="polite"></output>
+                        <div id="homePlayerResults" class="scout-player-results"></div>
+                        <a class="home-section-link" href="lore/?view=characters">VIEW ALL PLAYERS →</a>
+                    </section>
+                    <section class="scout-tool" aria-labelledby="homeChemistryTitle">
+                        <div class="scout-tool-heading"><span>02 // CHECK A CONNECTION</span><h3 id="homeChemistryTitle">QUICK CHEMISTRY CHECK</h3></div>
+                        <div class="scout-pair-fields">
+                            <div class="scout-picker" data-scout-picker="a"><label class="scout-field" for="homeChemistryA">PLAYER A<input id="homeChemistryA" type="search" placeholder="Search player…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="homeChemistryOptionsA"></label><div id="homeChemistryOptionsA" class="scout-options" role="listbox" aria-label="Player A choices" hidden></div></div>
+                            <span class="scout-pair-plus" aria-hidden="true">+</span>
+                            <div class="scout-picker" data-scout-picker="b"><label class="scout-field" for="homeChemistryB">PLAYER B<input id="homeChemistryB" type="search" placeholder="Search player…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="homeChemistryOptionsB"></label><div id="homeChemistryOptionsB" class="scout-options" role="listbox" aria-label="Player B choices" hidden></div></div>
+                        </div>
+                        <div id="homeChemistryResult" class="scout-chemistry-result" role="status" aria-live="polite"></div>
+                        <p class="scout-tool-note">Change either player to compare a different pairing.</p>
+                        <a class="home-section-link" href="lore/?view=chemistry">OPEN CHEMISTRY DATABASE →</a>
+                    </section>
+                </div>
+            </section>
+            <div class="home-starter"><p><strong>AN UNOFFICIAL FAN PROJECT.</strong> Built for the love of football and Blue Lock.</p><button id="menuAbout" type="button" class="home-text-button">MEET THE DEVELOPERS ↗</button></div>
+        </div>
+    </section>
+
+    <section id="lore-menu-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // DATABASE</div>
+                <h1>PLAYER <span>INTELLIGENCE</span></h1>
+                <div class="page-context-status">CHARACTERS // CHEMISTRY // FIELD INTELLIGENCE</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
+        
+        <div class="lore-shell">
+            <div class="database-hub-intro"><span class="lore-kicker">BLUE LOCK // DATABASE</span><h2>KNOW YOUR XI.</h2><p>Scout the player pool, compare attributes and read the relationships behind your next signing.</p><div id="databaseHubCounts" class="database-hub-counts"></div></div>
+            <div class="lore-actions">
+                <button id="loreCharacters" class="menu-action lore-action" type="button"><span>CHARACTER DOSSIERS</span><b>SCOUT / FILTER / COMPARE</b></button>
+                <button id="loreChemistry" class="menu-action lore-action" type="button"><span>CHEMISTRY</span><b>PAIR SCORES / HISTORY / TIERS</b></button>
+            </div>
+        </div>
+    </section>
+
+    <section id="character-lore-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // CHARACTER DATABASE</div>
+                <h1>CHARACTERS</h1>
+                <div class="page-context-status">PLAYER PROFILES // STATS // POSITIONS // CHEMISTRY</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
+        <div class="lore-content-shell">
+            
+            <div class="database-intro"><div><span class="lore-kicker">BLUE LOCK // PLAYER INTELLIGENCE SYSTEM</span><p>Scout the full player pool. Filter roles and team history, compare up to three players, then open a dossier.</p></div><details class="database-methodology"><summary>HOW TO READ THE DATA</summary><p>OVR, attributes and S–G grades are fan-made gameplay ratings. Primary and secondary badges show project-compatible roles. Demonstrated canon roles are recorded separately in dossiers. Chemistry interprets recorded relationships; it is not an official Blue Lock statistic.</p></details></div>
+            <div class="lore-toolbar character-lore-toolbar" role="search" aria-label="Character filters">
+                <label class="lore-search">SEARCH<input id="characterLoreSearch" type="search" placeholder="NAME, ROLE OR TEAM HISTORY..." autocomplete="off" aria-controls="characterLoreGrid"></label>
+                <label>POSITION<select id="characterLorePosition"><option value="ALL">All Positions</option><optgroup label="Position Groups"><option value="GK">Goalkeepers</option><option value="DEFENCE">Defenders</option><option value="MIDFIELD">Midfielders</option><option value="ATTACK">Forwards</option></optgroup><optgroup label="Specific Gameplay Roles"><option value="CB">CB</option><option value="LB">LB</option><option value="RB">RB</option><option value="LWB">LWB</option><option value="RWB">RWB</option><option value="DM">DM</option><option value="CM">CM</option><option value="AM">AM</option><option value="LM">LM</option><option value="RM">RM</option><option value="LW">LW</option><option value="RW">RW</option><option value="CF">CF</option><option value="FW">FW</option><option value="DF">DF</option><option value="WB">WB</option></optgroup></select></label>
+                <label>OVR GRADE<select id="characterLoreGrade"><option value="ALL">All Grades</option><option value="S">S</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option></select></label>
+                <label>AFFILIATION / HISTORY<select id="characterLoreAffiliation"><option value="ALL">All Affiliations / History</option></select></label>
+                <label>PLAYER CATEGORY<select id="characterLoreCategory"><option value="ALL">All Player Categories</option></select></label>
+                <label>SORT<select id="characterLoreSort"><option value="chronological">Manga Appearance</option><option value="ovr-desc">OVR High → Low</option><option value="ovr-asc">OVR Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option><option value="position">Position</option><option value="sho">Shooting High → Low</option><option value="spd">Speed High → Low</option><option value="dri">Dribbling High → Low</option><option value="pas">Passing High → Low</option><option value="def">Defence High → Low</option><option value="off">Offence High → Low</option></select></label>
+                <button id="characterLoreReset" type="button">RESET FILTERS</button><button id="characterLoreCompareView" type="button" aria-controls="characterLoreComparison" disabled>VIEW COMPARISON · 0/3</button><output id="characterLoreCount" aria-live="polite" aria-atomic="true"></output>
+            </div>
+            <p id="characterLoreCompareStatus" class="visually-hidden" role="status" aria-live="polite"></p>
+            <section id="characterLoreComparison" class="character-comparison" aria-labelledby="characterCompareTitle" hidden></section>
+            <div id="characterLoreGrid" class="character-lore-grid"></div>
+        </div>
+    </section>
+
+    <section id="chemistry-lore-screen" class="lore-screen hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // CHEMISTRY DATABASE</div>
+                <h1>CHEMISTRY</h1>
+                <div class="page-context-status">CHEMICAL REACTIONS // TEAM HISTORY // PLAYER LINKS</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
+        <div class="lore-content-shell">
+            
+            <div class="database-intro"><div><span class="lore-kicker">RELATIONSHIP INTELLIGENCE</span><p>Browse registered relationships or select two players to see their exact chemistry in the existing game model.</p></div><details class="database-methodology"><summary>PAIR SCORE VS TEAM CONTEXT</summary><p>A team context records shared history and a group baseline. Exact pair evaluation includes special relationships, the teammate floor and repeated history. An unproven pairing is valid and scores 55.</p></details></div>
+            <div class="chemistry-tier-guide" aria-label="Chemistry tier thresholds"><span class="chemical"><i aria-hidden="true"></i>CHEMICAL <b>95–100</b></span><span class="elite"><i aria-hidden="true"></i>ELITE <b>90–94</b></span><span class="strong"><i aria-hidden="true"></i>STRONG <b>82–89</b></span><span class="link"><i aria-hidden="true"></i>LINK <b>70–81</b></span><span class="weak"><i aria-hidden="true"></i>WEAK <b>0–69</b></span></div>
+            <div class="lore-toolbar chemistry-lore-toolbar" role="search" aria-label="Chemistry filters">
+                <label class="lore-search">SEARCH<input id="chemistryLoreSearch" type="search" placeholder="PLAYER, RELATIONSHIP OR REASON..." autocomplete="off" aria-controls="chemistryLoreGrid"></label>
+                <label>PLAYER A<select id="chemistryLorePlayerA"><option value="ALL">Any Player A</option></select></label><label>PLAYER B<select id="chemistryLorePlayerB"><option value="ALL">Any Player B</option></select></label>
+                <label>TYPE<select id="chemistryLoreType"><option value="ALL">All Records</option><option value="pair">Player Links</option><option value="context">Team Contexts</option></select></label>
+                <label>TIER<select id="chemistryLoreTier"><option value="ALL">All Tiers</option><option value="chemical">Chemical</option><option value="elite">Elite</option><option value="strong">Strong</option><option value="link">Link</option><option value="weak">Weak</option></select></label>
+                <label>TEAM CONTEXT<select id="chemistryLoreContext"><option value="ALL">All Team Contexts</option></select></label>
+                <label>SORT<select id="chemistryLoreSort"><option value="score-desc">Chemistry High → Low</option><option value="score-asc">Chemistry Low → High</option><option value="name-asc">Name A → Z</option><option value="name-desc">Name Z → A</option></select></label>
+                <button id="chemistryLoreReset" type="button">RESET FILTERS</button><output id="chemistryLoreCount" aria-live="polite" aria-atomic="true"></output>
+            </div>
+            <section id="chemistryLorePairEvaluation" aria-label="Exact player pair evaluation" aria-live="polite" hidden></section>
+            <div id="chemistryLoreGrid" class="chemistry-lore-grid"></div>
+        </div>
+    </section>
+
+    <section id="setup-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code">BL // STRIKER SELECTION PROGRAM</div>
+                <h1 id="setupHeaderTitle">AUCTION <span>SETUP</span></h1>
+                <div class="page-context-status">DRAFT // BID // BUILD YOUR XI</div>
+            </div>
+            <div class="page-context-tools"></div>
+        </header>
+        
+
+        <div class="setup-box setup-box-wide">
+            <div class="panel-code">SYSTEM_CONFIG // 001</div>
+            <div id="resumeSessionCard" class="resume-session hidden">
+                <div class="resume-session-copy">
+                    <span>LOCAL SESSION DETECTED</span>
+                    <strong id="resumeSessionTitle">UNFINISHED AUCTION</strong>
+                    <small id="resumeSessionMeta"></small>
+                </div>
+                <div class="resume-session-actions">
+                    <button type="button" id="resumeSessionButton">RESUME</button>
+                    <button type="button" id="discardSessionButton">DISCARD</button>
+                </div>
+            </div>
+
+            <div class="setup-section-title">TEAMS</div>
+
+            <div class="team-config team-config-1">
+                <div class="team-config-number">01</div>
+                <div class="team-config-fields">
+                    <label for="team1Name">TEAM 1 NAME</label>
+                    <input type="text" id="team1Name" value="TEAM 1" maxlength="20">
+                    <label for="team1Color">TEAM 1 COLOR</label>
+                    <div class="color-control">
+                        <input type="color" id="team1Color" value="#19a7ff">
+                        <span id="team1ColorValue">#19A7FF</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-config team-config-2">
+                <div class="team-config-number">02</div>
+                <div class="team-config-fields">
+                    <label for="team2Name">TEAM 2 NAME</label>
+                    <input type="text" id="team2Name" value="TEAM 2" maxlength="20">
+                    <label for="team2Color">TEAM 2 COLOR</label>
+                    <div class="color-control">
+                        <input type="color" id="team2Color" value="#ff315d">
+                        <span id="team2ColorValue">#FF315D</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="setup-section-title">GAME MODE</div>
+            <div class="game-mode-grid">
+                <button type="button" class="game-mode-card" data-game-mode="quick">
+                    <span>QUICK</span><strong>5v5</strong><small>$5,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="standard">
+                    <span>STANDARD</span><strong>11v11</strong><small>$11,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card active" data-game-mode="full">
+                    <span>FULL SQUAD</span><strong>15v15</strong><small>$15,000 // $50 INTERVAL</small>
+                </button>
+                <button type="button" class="game-mode-card" data-game-mode="custom">
+                    <span>CUSTOM</span><strong>MANUAL</strong><small>SET YOUR OWN RULES</small>
+                </button>
+            </div>
+            <div class="mode-note">Presets only change budget, bid interval and roster size. Team names, colors and player pool stay yours.</div>
+
+            <div class="setup-section-title">AUCTION SETTINGS</div>
+
+            <div class="settings-grid">
+                <div>
+                    <label for="budget">STARTING BUDGET</label>
+                    <input type="number" id="budget" value="15000" min="50" step="50">
+                </div>
+                <div>
+                    <label for="bidIncrement">BID INTERVAL</label>
+                    <input type="number" id="bidIncrement" value="50" min="1">
+                </div>
+                <div>
+                    <label for="maxPlayers">MAX PLAYERS PER TEAM</label>
+                    <input type="number" id="maxPlayers" value="15" min="1">
+                </div>
+            </div>
+
+            <div class="setup-section-title">PLAYER POOL</div>
+
+            <div class="preset-section category-section">
+                <div class="preset-label">PLAYER CATEGORIES // COMBINE ANY GROUPS</div>
+                <div class="pool-category-grid">
+                    <label><input type="checkbox" data-pool-category="blue-lock-project" checked><span>BLUE LOCK PROJECT<small>ORIGINAL BLUE LOCK PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="original-u20" checked><span>ORIGINAL JAPAN U-20<small>SAE + U-20 MATCH SQUAD</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-five" checked><span>WORLD FIVE<small>SECOND SELECTION WORLD TEAM</small></span></label>
+                    <label><input type="checkbox" data-pool-category="master-strikers" checked><span>MASTER STRIKERS<small>NEL MASTER PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="new-gen-11" checked><span>NEW GENERATION XI<small>KNOWN NG11 THROUGH CH.364</small></span></label>
+                    <label><input type="checkbox" data-pool-category="nel-foreign" checked><span>NEL FOREIGN PLAYERS<small>OVERSEAS NEL CAST</small></span></label>
+                    <label><input type="checkbox" data-pool-category="japan-world-cup" checked><span>JAPAN U-20 WORLD CUP<small>CURRENT JAPAN SELECTION</small></span></label>
+                    <label><input type="checkbox" data-pool-category="world-cup-new" checked><span>U-20 WC NEWCOMERS<small>NEW INTERNATIONAL PLAYERS</small></span></label>
+                    <label><input type="checkbox" data-pool-category="side-b" checked><span>SIDE-B<small>BURATSUTA’S SECOND CHANCE</small></span></label>
+                </div>
+                <div class="preset-note">Check a category to select all its players; uncheck it to remove them. Shared players update overlapping groups to a partial state. Individual cards can be toggled at any time.</div>
+            </div>
+
+            <div class="player-pool-toolbar player-database-toolbar">
+                <div class="player-search-wrap">
+                    <span>⌕</span>
+                    <input type="search" id="playerSearch" placeholder="SEARCH PLAYERS..." autocomplete="off">
+                </div>
+                <div class="pool-filter-grid">
+                    <label>GROUP
+                        <select id="playerGroupFilter">
+                            <option value="all">ALL</option>
+                            <option value="blue-lock-project">BLUE LOCK PROJECT</option>
+                            <option value="original-u20">ORIGINAL JAPAN U-20</option>
+                            <option value="world-five">WORLD FIVE</option>
+                            <option value="master-strikers">MASTER STRIKERS</option>
+                            <option value="new-gen-11">NEW GENERATION XI</option>
+                            <option value="nel-foreign">NEL FOREIGN PLAYERS</option>
+                            <option value="japan-world-cup">JAPAN U-20 WORLD CUP</option>
+                            <option value="world-cup-new">U-20 WC NEW</option>
+                        </select>
+                    </label>
+                    <label>ROLE
+                        <select id="playerPositionFilter">
+                            <option value="ALL">ALL</option>
+                            <option value="ATTACK">ATTACK</option>
+                            <option value="MIDFIELD">MIDFIELD</option>
+                            <option value="DEFENCE">DEFENCE</option>
+                            <option value="GK">GK</option>
+                        </select>
+                    </label>
+                    <label>SORT
+                        <select id="playerSort">
+                            <option value="id">MANGA APPEARANCE</option>
+                            <option value="ovr">OVR ↓</option>
+                            <option value="sho">SHOOTING ↓</option>
+                            <option value="spd">SPEED ↓</option>
+                            <option value="pas">PASSING ↓</option>
+                            <option value="dri">DRIBBLING ↓</option>
+                            <option value="def">DEFENCE ↓</option>
+                            <option value="name">NAME A-Z</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="pool-actions">
+                    <button type="button" id="selectAllPlayers">SELECT ALL</button>
+                    <button type="button" id="invertPlayers">INVERT</button>
+                    <button type="button" id="clearAllPlayers">CLEAR ALL</button>
+                </div>
+            </div>
+
+            <div class="pool-status">
+                <div>
+                    <span>SELECTED</span>
+                    <strong id="selectedPlayerCount">0 / 0</strong>
+                </div>
+                <div id="poolRequirement" class="pool-requirement">SELECT PLAYERS FOR THE AUCTION</div>
+            </div>
+
+            <div id="playerPoolGrid" class="player-pool-grid"></div>
+            <div id="playerPoolEmpty" class="player-pool-empty hidden">NO PLAYERS MATCH YOUR SEARCH.</div>
+
+            <button id="startGame" type="button" class="primary-button">
+                <span>INITIALIZE AUCTION</span><b>→</b>
+            </button>
+            <button id="randomDraftGame" type="button" class="primary-button secondary-action">
+                <span>SKIP AUCTION // RANDOM DRAFT</span><b>→</b>
+            </button>
+        </div>
+    </section>
+
+    <section id="auction-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code" id="auctionHeaderCode">BL // LIVE SELECTION</div>
+                <h1 id="auctionHeaderTitle">AUCTION <span>ROOM</span></h1>
+                <div class="page-context-status" id="auctionHeaderStatus"><i></i> SYSTEM LIVE</div>
+            </div>
+            <div class="page-context-tools"><div id="playersRemaining" class="players-remaining" aria-live="polite"></div><div class="auction-context-actions"></div></div>
+        </header>
+        
+        <div id="auction-content"></div>
+    </section>
+
+    <section id="formation-screen" class="hidden">
+        <header class="page-context">
+            <div class="page-context-copy">
+                <div class="page-context-code" id="formationHeaderCode">BL // SQUAD DEPLOYMENT</div>
+                <h1 id="formationHeaderTitle">FORMATION <span>BUILDER</span></h1>
+                <div class="page-context-status" id="formationHeaderStatus"><i></i> TACTICAL MODE</div>
+            </div>
+            <div class="page-context-tools"><span id="formationTeamContext" class="page-context-team"></span><button id="backToResults" class="context-control" type="button">← RESULTS</button></div>
+        </header>
+        
+        <div id="formation-content"></div>
+    </section>
+
+    </main>
+
+    <div id="game-overlay" class="game-overlay hidden">
+        <div class="overlay-scanline"></div>
+        <div id="overlay-content" class="overlay-content"></div>
+    </div>
+
+
+    <div id="fxLayer" class="fx-layer" aria-hidden="true">
+        <div id="bidFlash" class="bid-flash"></div>
+        <div id="soldBurst" class="sold-burst">SOLD</div>
+    </div>
+
+
+    <div id="infoModal" class="info-modal hidden" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+        <div class="info-card">
+            <button id="infoModalClose" class="info-close" type="button" aria-label="Close">×</button>
+            <div class="panel-code" id="infoModalCode">BL // DATABASE</div>
+            <h2 id="infoModalTitle">HOW TO PLAY</h2>
+            <div id="infoModalBody" class="info-body"></div>
+            <button id="infoModalDone" class="primary-button" type="button"><span>RETURN TO PAGE</span><b>→</b></button>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="confirm-card">
+            <div class="panel-code">SYSTEM // CONFIRM ACTION</div>
+            <div class="confirm-mark">!</div>
+            <h2 id="confirmTitle">CONFIRM</h2>
+            <p id="confirmMessage"></p>
+            <div class="confirm-actions">
+                <button id="confirmCancel" type="button" class="pass-button">CANCEL</button>
+                <button id="confirmAccept" type="button" class="primary-button"><span>CONFIRM</span><b>→</b></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><strong>BLUE LOCK DRAFT</strong><span>UNOFFICIAL FAN PROJECT</span><p>Non-commercial and fan-made. Not affiliated with, endorsed by, or sponsored by official Blue Lock entities. Blue Lock names, characters and imagery belong to their respective rights holders.</p></div>
+            <nav class="footer-links" aria-label="Project information"><strong>PROJECT</strong><button type="button" data-about>ABOUT / CREDITS</button><button type="button" data-how-to-play>HOW TO PLAY</button><a href="changelog/">CHANGELOG</a></nav>
+            <nav class="footer-links" aria-label="Legal information"><strong>INFORMATION</strong><a href="privacy/" class="footer-privacy-link">PRIVACY NOTICE</a><a href="legal/" class="footer-legal-link">LEGAL NOTICE</a></nav>
+            <div class="footer-developers"><strong>DEVELOPMENT</strong><span>DEVELOPED BY</span><a class="footer-profile-link" href="https://github.com/hammydanny" target="_blank" rel="noopener noreferrer">HAMMYDANNY ↗</a><span>WITH SUPPORT FROM</span><a class="footer-profile-link" href="https://github.com/syaafibwn" target="_blank" rel="noopener noreferrer">SYAAFIBWN ↗</a></div>
+        </div>
+        <div class="footer-system"><span data-app-version></span><span>DATA THROUGH CH. <b data-supported-chapter></b></span><span>YOUR SQUAD. YOUR EGO.</span></div>
+    </footer>
+</body>
+</html>

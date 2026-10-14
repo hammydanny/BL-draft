@@ -1,0 +1,158 @@
+/* Character directory + dedicated character dossiers. */
+.character-lore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));align-items:stretch;gap:12px}
+.character-lore-card{position:relative;display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0;margin:0;padding:0;overflow:hidden;text-align:left;color:var(--text-primary);font:inherit;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-subtle);border-radius:var(--panel-radius);clip-path:none;transition:transform var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast)}
+.character-lore-card:before{content:none}
+.character-lore-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:var(--shadow-soft)}
+.character-profile-page button:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+.character-lore-card-link:focus-visible,.character-compare-toggle:focus-visible{outline:2px solid var(--accent-text);outline-offset:-3px}
+.character-lore-card .character-lore-image-wrap{position:relative;display:block;width:100%;height:auto;aspect-ratio:4/5;overflow:hidden;background:var(--bg-inset);border:0;clip-path:none}
+.character-lore-card .character-lore-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .22s ease}
+.character-lore-card:hover .character-lore-image{transform:scale(1.035)}
+.character-lore-card-name{display:block;min-height:48px;padding:10px 10px 4px;color:var(--text-primary);font:900 italic 17px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;overflow-wrap:anywhere}
+.character-lore-grid.character-lore-profile-grid{display:block;width:min(1680px,100%);margin:0 auto}
+/* The shared reference-screen stacking keeps content above the fixed emblem. */
+.character-lore-detail-view .lore-toolbar{display:none}
+.character-lore-detail-view .page-context h1{overflow-wrap:anywhere}
+.character-profile-page{display:grid;gap:18px;min-width:0}
+.character-profile-back-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.character-profile-back-row>span,.character-profile-kicker{color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1.2px}
+.character-profile-back{min-height:38px;padding:8px 12px;color:var(--text-primary);background:var(--bg-surface);border:1px solid var(--border-strong);font:900 12px "Rajdhani",sans-serif;letter-spacing:.8px}
+.character-profile-back:hover{border-color:var(--accent);color:var(--accent-text)}
+.character-profile-hero{display:grid;grid-template-columns:minmax(210px,300px) minmax(0,1fr);gap:24px;padding:18px;background:linear-gradient(135deg,rgba(20,156,255,.07),transparent 48%),linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);border-top:2px solid var(--accent)}
+.character-profile-portrait{min-width:0;overflow:hidden;align-self:start;background:var(--bg-inset);border:1px solid var(--border-strong)}
+.character-profile-portrait img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:center top}
+.character-profile-overview{min-width:0}
+.character-profile-overview>h2{margin:6px 0 10px;color:var(--text-primary);font:900 italic clamp(32px,5vw,54px)/.98 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.character-profile-positions{margin:10px 0}
+.character-profile-ovr{display:flex;align-items:center;gap:10px;width:max-content;max-width:100%;margin:14px 0;padding:9px 12px;background:var(--bg-surface);border:1px solid var(--border-strong)}
+.character-profile-ovr>span{color:var(--text-secondary);font-size:12px;font-weight:900;letter-spacing:1px}
+.character-profile-ovr>strong{color:var(--accent-text);font:900 36px/1 "Barlow Condensed",sans-serif}
+.character-profile-description{margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle)}
+.character-profile-description h3{margin:0 0 7px;color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:1.2px}
+.character-profile-description p,.character-profile-rating-note{margin:0;color:var(--text-secondary);font-size:14px;line-height:1.65}
+.character-profile-rating-note{margin-top:12px;color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:.7px}
+.character-profile-section{min-width:0;padding:16px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
+.character-profile-section-heading{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;margin-bottom:13px;padding-bottom:10px;border-bottom:1px solid var(--border-subtle)}
+.character-profile-section-heading>span{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:1.1px}
+.character-profile-section-heading h3{flex:1 1 100%;margin:0;color:var(--text-primary);font:900 italic 25px/1 "Barlow Condensed",sans-serif}
+.character-profile-section-heading>small{color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:.7px}
+.character-profile-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:center;gap:10px}
+.character-profile-stat{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 7px;min-width:0;padding:9px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.character-profile-stat>span{color:var(--accent-text);font:900 17px/1 "Barlow Condensed",sans-serif}
+.character-profile-stat>small{overflow:hidden;color:var(--text-muted);font-size:12px;font-weight:800;letter-spacing:.3px;text-overflow:ellipsis;white-space:nowrap}
+.character-profile-stat>strong{grid-column:1/3;color:var(--text-primary);font:900 28px/1 "Barlow Condensed",sans-serif}
+.character-profile-stat>.evaluation-grade{grid-column:3;grid-row:1/3;min-width:25px}
+.character-profile-section .player-stats{margin-top:0}
+.character-profile-chemistry-grid,.character-profile-team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.character-profile-chemistry-card,.character-profile-team-card{min-width:0;padding:12px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.character-profile-chemistry-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.character-profile-chemistry-names{display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0;color:var(--text-primary);font-weight:900}
+.character-profile-person-link{padding:0;color:var(--accent-text);background:transparent;border:0;font:inherit;text-align:left;text-decoration:underline;text-decoration-color:rgba(20,156,255,.4);text-underline-offset:3px;cursor:pointer}
+.character-profile-person-link:hover{color:var(--text-primary)}
+.character-profile-score{flex:0 0 auto;min-width:70px;padding:5px 7px;text-align:center;background:var(--bg-surface);border:1px solid var(--border-subtle)}
+.character-profile-score small,.character-profile-score span{display:block;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:.5px}
+.character-profile-score strong{display:inline-block;margin:2px 3px;color:var(--text-primary);font:900 24px/1 "Barlow Condensed",sans-serif}
+.character-profile-score.chemical strong{color:var(--chem-chemical)}.character-profile-score.elite strong{color:var(--chem-elite)}.character-profile-score.strong strong{color:var(--chem-strong)}.character-profile-score.link strong{color:var(--chem-link)}.character-profile-score.weak strong{color:var(--chem-weak)}
+.character-profile-chemistry-label{display:block;margin-top:8px;color:var(--text-secondary);font-size:12px;font-weight:900;letter-spacing:.8px}
+.character-profile-chemistry-card p,.character-profile-team-card p{margin:8px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55}
+.character-profile-team-card h4{margin:0;color:var(--text-primary);font:900 italic 20px/1.1 "Barlow Condensed",sans-serif}
+.character-profile-context-members{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border-subtle)}
+.character-profile-context-members .character-profile-person-link{padding:4px 6px;border:1px solid var(--border-subtle);background:var(--bg-surface);font-size:12px;font-weight:800}
+/* Directory and comparison controls share the reference palette. */
+.database-hub-intro{margin-bottom:20px}
+.database-hub-intro h2{margin:8px 0;color:var(--text-primary);font:900 italic clamp(28px,4vw,42px)/1 "Barlow Condensed",sans-serif}
+.database-hub-intro p{max-width:65ch;color:var(--text-secondary);font-size:16px;line-height:1.6}
+.database-hub-counts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.database-hub-counts span{padding:8px 10px;color:var(--accent-text);border:1px solid var(--border-subtle);background:var(--bg-surface);font-size:12px;font-weight:900;letter-spacing:.7px}
+.character-comparison{scroll-margin-top:calc(var(--header-height) + 18px)}
+.character-lore-card-link{display:flex;flex:1;flex-direction:column;color:inherit;text-decoration:none;min-width:0}
+.character-lore-card .position-badges{min-height:32px;margin:0;padding:4px 10px 9px;justify-content:flex-start;align-content:start}
+.character-card-rating{position:absolute;right:8px;bottom:8px;display:grid;grid-template-columns:auto auto;align-items:center;gap:1px 5px;padding:6px 8px;border:1px solid var(--border-strong);background:var(--bg-surface);box-shadow:var(--shadow-soft)}
+.character-card-rating strong{color:var(--text-primary);font:900 28px/1 "Barlow Condensed",sans-serif}
+.character-card-rating b{color:var(--accent-text);font:900 22px/1 "Barlow Condensed",sans-serif}
+.character-card-rating small{grid-column:1/-1;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
+.character-compare-toggle{min-height:36px;margin:0;padding:8px 10px;color:var(--text-secondary);background:var(--bg-inset);border:0;border-top:1px solid var(--border-subtle);font:900 12px "Rajdhani",sans-serif;letter-spacing:.6px;clip-path:none;box-shadow:none}
+.character-compare-toggle[aria-pressed="true"]{color:var(--accent-text);background:var(--accent-soft);box-shadow:inset 3px 0 var(--accent)}
+.character-comparison{margin-bottom:18px;padding:14px;background:var(--bg-surface);border:1px solid var(--border-strong);border-top:2px solid var(--accent)}
+.character-comparison[hidden],.character-lore-detail-view .database-intro,.character-lore-detail-view .character-comparison{display:none}
+.character-comparison-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.character-comparison-heading h2{margin:5px 0 0;color:var(--text-primary);font:900 italic 25px/1 "Barlow Condensed",sans-serif}
+.character-comparison-heading small{color:var(--text-muted);font:900 12px "Rajdhani",sans-serif}
+.character-comparison button{min-height:36px;padding:8px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);font:900 12px "Rajdhani",sans-serif}
+.character-comparison-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.character-comparison-grid>article{min-width:0;border:1px solid var(--border-subtle);background:var(--bg-surface-raised)}
+.character-comparison-identity{display:flex;align-items:center;gap:9px;padding:10px}
+.character-comparison-identity img{width:48px;height:60px;object-fit:cover;object-position:center top}
+.character-comparison-identity>div{flex:1;min-width:0}
+.character-comparison-identity h3{margin:0 0 5px;font:900 18px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.character-comparison-identity span{color:var(--text-muted);font-size:12px;font-weight:900}
+.character-comparison-identity button{flex:0 0 32px;font-size:22px}
+.database-intro{display:flex;align-items:start;justify-content:space-between;gap:24px;margin-bottom:16px}
+.database-intro p{margin:5px 0 0;max-width:80ch;color:var(--text-secondary);font-size:14px;line-height:1.55}
+.database-methodology{flex:0 1 440px;padding:10px 12px;background:var(--bg-surface);border:1px solid var(--border-subtle)}
+.database-methodology summary{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:.6px;cursor:pointer}
+.database-methodology p{font-size:13px;margin-top:10px}
+.character-profile-categories{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.character-profile-categories span,.reference-classification{padding:5px 7px;color:var(--text-secondary);border:1px solid var(--border-subtle);background:var(--bg-surface);font-size:12px;font-weight:900;letter-spacing:.5px}
+.character-profile-jump{display:flex;flex-wrap:wrap;gap:6px}
+.character-profile-jump a{min-height:36px;padding:10px;color:var(--text-secondary);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:900;letter-spacing:.5px;text-decoration:none}
+.character-profile-jump a:hover{color:var(--accent-text);border-color:var(--accent)}
+.character-profile-jump a[aria-current="location"]{color:var(--accent-text);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);text-decoration:underline;text-underline-offset:4px}
+.character-profile-jump a:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+.character-profile-page>[id]{scroll-margin-top:calc(var(--header-height) + 18px)}
+.character-attribute-layout{display:grid;grid-template-columns:minmax(250px,35%) minmax(0,1fr);gap:20px;align-items:center}
+.character-attribute-layout .player-stats-radar{max-width:310px}
+.character-attribute-note{grid-column:1/-1;margin:4px 0 0;color:var(--text-muted);font-size:13px;line-height:1.6}
+.character-position-analysis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.character-position-analysis>div{min-width:0;padding:12px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.character-position-analysis h4{margin:14px 0 10px;color:var(--text-primary);font:900 italic 20px "Barlow Condensed",sans-serif}
+.character-position-analysis dl{display:grid;grid-template-columns:80px minmax(0,1fr);gap:8px;margin:12px 0}
+.character-position-analysis dt{color:var(--text-muted);font-size:13px}
+.character-position-analysis dd{margin:0;color:var(--accent-text);font-weight:900}
+.character-position-analysis p,.character-position-analysis li,.character-section-note{color:var(--text-secondary);font-size:14px;line-height:1.6}
+.character-position-analysis p:last-child{margin-bottom:0}
+.character-position-analysis ul{padding-left:20px}
+.character-section-note{margin:0 0 12px;max-width:85ch}
+.player-aliases{margin:5px 0 9px;color:var(--text-muted);font-size:13px;line-height:1.5;font-weight:600;overflow-wrap:anywhere}
+.character-profile-quote{margin-top:12px;padding-left:10px;border-left:2px solid var(--border-strong)}
+.character-profile-quote blockquote{margin:0;color:var(--text-secondary);font-size:14px;font-style:italic;line-height:1.55}
+/* Relationship tiers retain text labels as well as distinct colors. */
+.chemistry-tier-guide{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chemistry-tier-guide>span{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--relationship-color);font-size:12px;font-weight:900}
+.chemistry-tier-guide i{width:14px;height:3px;background:currentColor}
+.chemical{--relationship-color:var(--chem-chemical)}.elite{--relationship-color:var(--chem-elite)}.strong{--relationship-color:var(--chem-strong)}.link{--relationship-color:var(--chem-link)}.weak{--relationship-color:var(--chem-weak)}
+.chemistry-lore-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chemistry-lore-card{min-width:0;padding:16px;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-subtle);border-left:3px solid var(--relationship-color)}
+.chemistry-lore-heading{display:flex;justify-content:space-between;gap:12px}
+.chemistry-lore-heading>div:first-child{min-width:0}
+.chemistry-lore-heading h2{margin:6px 0 8px;color:var(--text-primary);font:900 italic 25px/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.chemistry-lore-label{color:var(--text-secondary);font-size:12px;font-weight:900;letter-spacing:.5px}
+.chemistry-lore-score{align-self:start;flex:0 0 80px;padding:8px 6px;text-align:center;background:var(--bg-surface);border:1px solid var(--relationship-color);color:var(--relationship-color)}
+.chemistry-lore-score span,.chemistry-lore-score small{display:block;font-size:12px;font-weight:900;letter-spacing:.4px}
+.chemistry-lore-score small{color:var(--text-muted)}
+.chemistry-lore-score strong{font:900 32px/1.1 "Barlow Condensed",sans-serif}
+.chemistry-lore-description{margin:12px 0;color:var(--text-secondary);font-size:14px;line-height:1.6}
+.chemistry-lore-characters{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px;border-top:1px solid var(--border-subtle)}
+.chemistry-lore-characters a{padding:5px 7px;background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:900;text-decoration:none}
+.chemistry-pair-evaluation{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:18px;padding:16px;background:var(--bg-surface);border:1px solid var(--border-strong);border-left:3px solid var(--relationship-color)}
+.chemistry-pair-evaluation>div:first-child{min-width:0}
+.chemistry-pair-evaluation h2{margin:6px 0 10px;font:900 italic 26px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.chemistry-pair-evaluation p{color:var(--text-secondary);font-size:14px;line-height:1.6}
+@media(max-width:1100px){.character-profile-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.character-comparison-grid{gap:8px}.character-comparison-identity{flex-wrap:wrap}.character-comparison-identity>div{min-width:100px}}
+@media(max-width:760px){.character-compare-toggle{min-height:44px}.lore-actions{grid-template-columns:1fr}.database-intro{flex-direction:column;gap:12px}.database-methodology{flex:auto;width:100%}.character-comparison-grid{grid-template-columns:1fr}.character-attribute-layout,.character-position-analysis,.chemistry-lore-grid{grid-template-columns:1fr}.character-attribute-layout{gap:12px}.chemistry-lore-heading h2{font-size:22px}}
+@media(max-width:760px){.character-lore-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:9px}.character-lore-card-name{font-size:15px;padding:9px}.character-profile-hero{grid-template-columns:minmax(110px,34%) minmax(0,1fr);gap:14px;padding:12px}.character-profile-portrait img{aspect-ratio:4/5}.character-profile-overview>h2{font-size:clamp(28px,7vw,40px)}.character-profile-ovr{gap:6px;padding:7px 8px}.character-profile-ovr>strong{font-size:30px}.character-profile-description p{font-size:12px;line-height:1.5}.character-profile-section{padding:11px}.character-profile-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.character-profile-chemistry-grid,.character-profile-team-grid{grid-template-columns:1fr}}
+@media(max-width:430px){.character-profile-hero{grid-template-columns:minmax(0,1fr);gap:12px}.character-profile-portrait{max-width:220px}.character-profile-portrait img{aspect-ratio:4/5}}
+@media(prefers-reduced-motion:reduce){.character-lore-card,.character-lore-image{transition:none}}
+
+/* Existing character weapon records. Future simulation metadata is not displayed. */
+.character-profile-weapons-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.character-profile-weapon-card{min-width:0;padding:13px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.character-profile-weapon-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.character-profile-weapon-heading h4{margin:0;color:var(--text-primary);font:900 italic 21px/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.character-profile-weapon-kind{flex:0 0 auto;padding:4px 6px;color:var(--accent-text);background:var(--bg-surface);border:1px solid var(--border-subtle);font-size:12px;font-weight:900;letter-spacing:.45px}
+.character-profile-weapon-kind[data-weapon-category="physical"]{border-color:var(--border-strong);color:var(--text-primary)}
+.character-profile-weapon-kind[data-weapon-category="technical"]{border-color:var(--blue);color:var(--accent-text)}
+.character-profile-weapon-kind[data-weapon-category="mental"]{border-color:var(--chem-link);color:var(--chem-link)}
+.character-profile-weapon-description{margin:10px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55}
+.character-profile-weapons-empty{margin:0;padding:18px;color:var(--text-muted);background:var(--bg-surface-raised);border:1px dashed var(--border-strong);font-size:12px;font-weight:900;letter-spacing:.9px;text-align:center}
+@media(max-width:760px){.character-profile-weapons-grid{grid-template-columns:minmax(0,1fr)}}

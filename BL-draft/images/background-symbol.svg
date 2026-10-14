@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 343 343" role="img" aria-label="Five-piece pentagon emblem">
+  <g fill="#fff">
+    <path d="M170 31 101 82 151 149 172 134 193 149 242 81Z"/>
+    <path d="M96 86 27 135 53 218 133 192 126 168 145 151Z"/>
+    <path d="M248 86 318 136 291 218 210 192 218 168 199 151Z"/>
+    <path d="M136 199 56 225 82 307 169 306 169 224 144 223Z"/>
+    <path d="M200 223 211 199 288 225 263 306 175 307 175 223Z"/>
+  </g>
+</svg>
