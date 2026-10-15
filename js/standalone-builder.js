@@ -91,6 +91,7 @@ function standaloneBuilderPoolPlayers(){
     return list;
 }
 async function autoBestStandaloneTeam(){
+    if(document.querySelector("#autoBestLoader"))return;
     standaloneBuilderSyncTeam();
 
     if(!standaloneBuilderTeam.players.length){
@@ -144,6 +145,7 @@ async function autoBestStandaloneTeam(){
     }
 }
 function toggleStandalonePoolVisibility(){
+    if(mobileBuilderMedia.matches){openMobileBuilderPool();return;}
     standalonePoolHidden=!standalonePoolHidden;
     saveStandaloneBuilderState();
     const panel=formationContent.querySelector(".standalone-pool-panel");
@@ -175,18 +177,21 @@ function standalonePoolMarkup(){
           <button type="button" class="standalone-pool-toggle" data-standalone-pool-toggle aria-expanded="${!standalonePoolHidden}" aria-controls="standalonePoolBody">${standalonePoolHidden?"SHOW":"HIDE"} PLAYER POOL</button>
         </div>
       </div>
+      <dialog id="mobileBuilderPoolDialog" class="mobile-builder-pool-dialog" aria-labelledby="mobileBuilderPoolTitle">
+        <header class="mobile-builder-pool-heading"><strong id="mobileBuilderPoolTitle">GLOBAL PLAYER POOL</strong><button type="button" onclick="closeMobileBuilderPool()" aria-label="Close player pool">×</button></header>
+      </dialog>
       <div class="standalone-pool-reveal" aria-hidden="${standalonePoolHidden}" ${standalonePoolHidden?"inert":""}><div id="standalonePoolBody" class="standalone-pool-body">
       <p class="standalone-pool-note">SELECT YOUR ROSTER // PLAYERS OUTSIDE THE XI BECOME RESERVES</p>
       <div class="standalone-pool-toolbar">
-        <input id="standalonePoolSearch" type="search" value="${esc(standaloneBuilderQuery)}" placeholder="SEARCH PLAYERS..." autocomplete="off">
-        <select id="standalonePoolRole">
+        <input id="standalonePoolSearch" type="search" value="${esc(standaloneBuilderQuery)}" placeholder="SEARCH PLAYERS..." aria-label="SEARCH PLAYERS..." autocomplete="off">
+        <select id="standalonePoolRole" aria-label="ALL ROLES">
           <option value="ALL" ${standaloneBuilderRole==="ALL"?"selected":""}>ALL ROLES</option>
           <option value="ATTACK" ${standaloneBuilderRole==="ATTACK"?"selected":""}>ATTACK</option>
           <option value="MIDFIELD" ${standaloneBuilderRole==="MIDFIELD"?"selected":""}>MIDFIELD</option>
           <option value="DEFENCE" ${standaloneBuilderRole==="DEFENCE"?"selected":""}>DEFENCE</option>
           <option value="GK" ${standaloneBuilderRole==="GK"?"selected":""}>GK</option>
         </select>
-        <select id="standalonePoolSort">
+        <select id="standalonePoolSort" aria-label="SORT">
           <option value="ovr" ${standaloneBuilderSort==="ovr"?"selected":""}>OVR ↓</option>
           <option value="name" ${standaloneBuilderSort==="name"?"selected":""}>NAME A-Z</option>
           <option value="id" ${standaloneBuilderSort==="id"?"selected":""}>MANGA APPEARANCE</option>
@@ -215,7 +220,7 @@ function bindStandalonePoolCards(){
             else standaloneBuilderPlayerIds.add(id);
             standaloneBuilderSyncTeam();
             saveStandaloneBuilderState();
-            renderFormationBuilder();
+            renderStandalonePoolChange();
         };
     });
 }
@@ -251,10 +256,20 @@ function bindStandaloneBuilderPoolUI(){
             }
             standaloneBuilderSyncTeam();
             saveStandaloneBuilderState();
-            renderFormationBuilder();
+            renderStandalonePoolChange();
         };
     });
     bindStandalonePoolCards();
 }
 
 document.getElementById("menuStandaloneBuilder")?.addEventListener("click",openStandaloneBuilder);
+
+// Keep the live pool node, focus and its internal scroll stable while the sheet
+// is open. Reconcile the hidden pitch once when it closes.
+let standalonePoolBuilderDirty=false;
+function renderStandalonePoolChange(){
+    if(document.getElementById("mobileBuilderPoolDialog")?.open){
+        standalonePoolBuilderDirty=true;
+        syncStandalonePoolSelection();
+    }else renderFormationBuilder();
+}

@@ -325,9 +325,10 @@ function openStandaloneShareScreen(){
     </div>`;
     screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","Standalone squad report");
     const previousFocus=document.activeElement;
+    const builderViewport=captureFormationViewport();
     document.body.appendChild(screen);
     prioritizeVisiblePortraits(screen);
-    function close(){screen.remove();previousFocus?.focus();}
+    function close(){screen.remove();previousFocus?.focus({preventScroll:true});restoreFormationViewport(builderViewport);}
     screen.addEventListener("keydown",event=>{
         if(event.key==="Escape"){event.preventDefault();close();}
         if(event.key==="Tab"){

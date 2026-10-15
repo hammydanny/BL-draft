@@ -712,6 +712,7 @@ function changeFormation(name){
     renderFormationBuilder();saveGame();
 }
 async function autoBestXI(){
+    if(document.querySelector("#autoBestLoader"))return;
     const n=formationTeamNumber;
     const team=teamByNumber(n);
 
@@ -837,7 +838,7 @@ function applyFormationMoveFx(){
             const benchCard=document.querySelector(`.bench-player[data-player-id="${fx.displacedId}"]`);
             if(benchCard){
                 benchCard.classList.add("bench-arrived");
-                benchCard.scrollIntoView?.({block:"nearest"});
+                if(!mobileBuilderMedia.matches)benchCard.scrollIntoView?.({block:"nearest"});
                 setTimeout(()=>benchCard.classList.remove("bench-arrived"),520);
             }
         }
@@ -949,6 +950,9 @@ function formationDropTargetAt(x,y){
 }
 function beginFormationPointerDrag(event,id){
     if(event.button!==undefined && event.button!==0)return;
+    // Phone/tablet gestures scroll normally. The selected-player drag handle
+    // explicitly opts into the existing pointer engine for intentional touch drags.
+    if(event.pointerType==="touch"&&mobileBuilderMedia.matches&&!event.currentTarget.matches("[data-formation-drag-handle]"))return;
     if(formationPointerDrag)cleanupFormationPointerDrag();
     const player=teamByNumber(formationTeamNumber).players.find(p=>p.id===id);
     if(!player)return;

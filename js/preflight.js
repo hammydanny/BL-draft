@@ -540,7 +540,7 @@ function appContext(initialStorage={},hash='#/'){
         return {id,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty(){},removeProperty(){}},
             classList:{add(...names){names.forEach(n=>classes.add(n));},remove(...names){names.forEach(n=>classes.delete(n));},
                 contains:name=>classes.has(name),toggle(name,force){const add=force??!classes.has(name);if(add)classes.add(name);else classes.delete(name);}},
-            addEventListener(){},setAttribute(){},removeAttribute(){},hasAttribute(){return false;},appendChild(){},insertBefore(){},before(){},remove(){},focus(){},select(){},matches(){return false;},
+            contains(){return false;},addEventListener(){},setAttribute(){},removeAttribute(){},hasAttribute(){return false;},appendChild(){},insertBefore(){},before(){},remove(){},focus(){},select(){},matches(){return false;},
             querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]','[data-mobile-settings]','[data-directory-close]','.mobile-directory-backdrop','.mobile-directory-panel'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
     };
     const element=id=>{if(!elements.has(id))elements.set(id,makeElement(id));return elements.get(id);};
