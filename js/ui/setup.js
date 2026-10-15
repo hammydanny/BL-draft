@@ -165,18 +165,21 @@ document.querySelectorAll("[data-pool-category]").forEach(input=>{
 document.getElementById("startGame").addEventListener("click",startGame);
 document.getElementById("randomDraftGame").addEventListener("click",startRandomDraft);
 const playerSearchInput=document.getElementById("playerSearch");
-if(secretCharactersUnlocked)playerSearchInput.placeholder="SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...";
+playerSearchInput.placeholder=secretCharactersUnlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
 playerSearchInput.addEventListener("input",()=>{
     if(playerSearchInput.value.trim()===SECRET_CHARACTER_CODE){
-        const unlocked=toggleSecretCharactersUnlocked();
+        if(!secretCharactersUnlocked){
+            unlockSecretCharacters();
+            document.getElementById("playerGroupFilter").value="all";
+            document.getElementById("playerPositionFilter").value="ALL";
+            playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
+            recomputeSelectedPlayersFromCategories();
+            saveSetupPreferences();
+        }
+        // The code is a one-way unlock for this page session, never a toggle.
         playerSearchInput.value="";
-        playerSearchInput.placeholder=unlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
-        document.getElementById("playerGroupFilter").value="all";
-        document.getElementById("playerPositionFilter").value="ALL";
-        playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
-        recomputeSelectedPlayersFromCategories();
+        playerSearchInput.placeholder=secretCharactersUnlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
         renderPlayerPool();
-        saveSetupPreferences();
         return;
     }
     renderPlayerPool();

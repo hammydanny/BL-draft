@@ -12,24 +12,20 @@ let auctionRedoStack = [];
 let auctionHistoryRestoring = false;
 const AUCTION_UNDO_LIMIT = 60;
 const SECRET_CHARACTER_CODE = "28032009";
-const SECRET_CHARACTER_UNLOCK_KEY = "bldSecretCharactersUnlockedV1";
 let secretCharactersUnlocked = false;
-try { secretCharactersUnlocked = localStorage.getItem(SECRET_CHARACTER_UNLOCK_KEY) === "true"; } catch {}
-function setSecretCharactersUnlocked(unlocked){
-    secretCharactersUnlocked = Boolean(unlocked);
-    try { localStorage.setItem(SECRET_CHARACTER_UNLOCK_KEY, String(secretCharactersUnlocked)); } catch {}
-    if(!secretCharactersUnlocked){
-        players.filter(player=>player.secretCharacter).forEach(player=>{
-            selectedPlayerIds.delete(player.id);
-            playerPoolManualOverrides[player.id]=false;
-            if(typeof standaloneBuilderPlayerIds!=="undefined")standaloneBuilderPlayerIds.delete(player.id);
-        });
-        if(typeof standaloneBuilderSyncTeam==="function")standaloneBuilderSyncTeam();
-        if(typeof saveStandaloneBuilderState==="function")saveStandaloneBuilderState();
-    }
+// Remove the legacy persisted flag so older versions cannot leave a stale unlock behind.
+try { localStorage.removeItem("bldSecretCharactersUnlockedV1"); } catch {}
+function unlockSecretCharacters(){
+    if(secretCharactersUnlocked)return false;
+    secretCharactersUnlocked=true;
+    // Unlocking grants visibility only; it does not automatically add either
+    // secret character to the auction or reuse old saved selection overrides.
+    players.filter(player=>player.secretCharacter).forEach(player=>{
+        selectedPlayerIds.delete(player.id);
+        playerPoolManualOverrides[player.id]=false;
+    });
+    return true;
 }
-function unlockSecretCharacters(){setSecretCharactersUnlocked(true);}
-function toggleSecretCharactersUnlocked(){setSecretCharactersUnlocked(!secretCharactersUnlocked);return secretCharactersUnlocked;}
 function secretPlayerAvailable(player){return !!player && (!player.secretCharacter || secretCharactersUnlocked);}
 let selectedPlayerIds = new Set(players.filter(player => !player.secretCharacter).map(player => player.id));
 let playerPoolPositionFilter = "ALL";
