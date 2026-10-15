@@ -43,7 +43,6 @@
 html[data-theme="light"] .legal-document-body a:visited{color:var(--link-text)}
 
 /* Changelog archive groups keep long release history compact without hiding detail. */
-.changelog-index .changelog-index-child{padding-left:18px;color:var(--text-muted);font-size:11px}
 .changelog-document .release-timeline{padding-left:0}
 .changelog-document .release-timeline:before{display:none}
 .changelog-document .release-entry{padding-left:30px}
@@ -69,8 +68,7 @@ html[data-theme="light"] .legal-document-body a:visited{color:var(--link-text)}
 .release-series .release-entry:first-child{margin-top:4px}
 .release-series .release-entry:first-child:before{background:var(--bg-surface)}
 @media(max-width:900px){
-  .changelog-index .changelog-index-child{padding-left:10px}
-}
+  }
 @media(max-width:600px){
   .changelog-document .release-entry{padding-left:24px}
   .release-series>summary{min-height:52px;padding:10px 12px}
@@ -78,4 +76,39 @@ html[data-theme="light"] .legal-document-body a:visited{color:var(--link-text)}
   .release-series>summary small{font-size:11px}
   .release-series-content{padding:0 10px 8px}
   .release-series-major>summary{min-height:58px}
+}
+
+/* Changelog sidebar: collapsed release families with nested subversion groups. */
+.changelog-index{display:block}
+.changelog-index>a,.changelog-index summary{box-sizing:border-box}
+.changelog-index-group,.changelog-index-subgroup{margin:0;padding:0;border:0;background:transparent}
+.changelog-index-group>summary,.changelog-index-subgroup>summary{
+  display:flex;align-items:center;width:100%;min-height:44px;padding:7px 10px;
+  cursor:pointer;list-style:none;color:var(--text-secondary);background:transparent;
+  border:0;border-radius:var(--panel-radius);font-size:12px;font-weight:800;letter-spacing:.8px
+}
+.changelog-index-group>summary::-webkit-details-marker,.changelog-index-subgroup>summary::-webkit-details-marker{display:none}
+.changelog-index-group>summary::marker,.changelog-index-subgroup>summary::marker{content:""}
+.changelog-index-group>summary:hover,.changelog-index-group>summary:focus-visible,
+.changelog-index-subgroup>summary:hover,.changelog-index-subgroup>summary:focus-visible{
+  color:var(--text-primary);background:var(--bg-hover);outline:none
+}
+.changelog-index-group>summary:focus-visible,.changelog-index-subgroup>summary:focus-visible{
+  box-shadow:inset 0 0 0 2px var(--accent)
+}
+.changelog-index-group-content,.changelog-index-subgroup-content{display:grid;gap:2px}
+.changelog-index-group-content{padding:0 0 4px 10px}
+.changelog-index-subgroup-content{padding:0 0 3px 12px}
+.changelog-index-subgroup>summary{min-height:40px;padding-block:5px;color:var(--text-muted);font-size:11px}
+.changelog-index .changelog-index-direct,
+.changelog-index-subgroup-content>a{
+  min-height:38px;padding:6px 10px;color:var(--text-muted);font-size:11px
+}
+.changelog-index .changelog-index-direct:hover,.changelog-index-subgroup-content>a:hover{color:var(--text-primary)}
+@media(max-width:900px){
+  .changelog-index{display:block;padding:12px}
+  .changelog-index>span{display:block;width:100%;padding:0 4px 6px}
+  .changelog-index>a{display:flex;width:100%;margin-bottom:2px}
+  .changelog-index-group-content{padding-left:8px}
+  .changelog-index-subgroup-content{padding-left:10px}
 }
