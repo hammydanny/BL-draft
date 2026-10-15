@@ -523,6 +523,7 @@ to{opacity:1;transform:none;filter:none}}
 .player-info-panel{min-width:0}
 .player-nationality{display:flex;align-items:center;gap:7px;margin:4px 0;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
 .player-nationality img{display:block;flex:0 0 24px;width:24px;height:16px;object-fit:cover;border:1px solid var(--border-strong);border-radius:1px}
+.overlay-content .player-nationality{justify-content:center}
 .formation-player-token{position:absolute;inset:0;max-width:none}
 .pitch-player-portrait{position:relative;flex:0 0 var(--portrait-size);width:var(--portrait-size);height:var(--portrait-size);margin:0 auto}
 .formation-player-token .effective-ovr{position:absolute;right:-4px;top:auto;bottom:0;display:grid;place-items:center;min-width:28px;height:24px;padding:0 4px;border:1px solid var(--team);border-radius:3px;background:#030b13;color:#fff;font:900 16px/1 "Barlow Condensed";pointer-events:none}

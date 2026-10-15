@@ -991,6 +991,26 @@ check('Full-team automatic assignment Undo from opening/bidding is held without 
         `);
     }
 });
+check('Auction flags reuse verified nationality and saved secret players require session access',()=>{
+    const app=appContext();app.run(`
+        for(const id of [1,3,80,81]){
+            currentPlayer=playerById(id);
+            assert(createPlayerCard().includes(playerNationalityMarkup(currentPlayer)));
+        }
+        const base={team1:{players:[1]},team2:{players:[2]},remainingPlayerIds:[3],selectedPlayerIds:[1,2,3],currentPlayerId:1,auctionHistory:[]};
+        assert(!auctionSaveNeedsSecretCode(base));
+        for(const id of [80,81]){
+            for(const saved of [{...base,currentPlayerId:id},{...base,remainingPlayerIds:[id]},{...base,selectedPlayerIds:[id]},{...base,team1:{players:[id]}},{...base,auctionHistory:[{playerId:id}]},{...base,auctionUndoStack:[{team2:{playerIds:[id]}}]},{...base,auctionRedoStack:[{currentPlayerId:id}]}]){
+                const before=JSON.stringify(saved);assert(auctionSaveNeedsSecretCode(saved));assert.equal(JSON.stringify(saved),before);
+            }
+        }
+        selectedPlayerIds=new Set(players.map(p=>p.id));
+        document.getElementById('team1Name').value='A';document.getElementById('team2Name').value='B';
+        document.getElementById('budget').value='1000';document.getElementById('bidIncrement').value='50';document.getElementById('maxPlayers').value='2';
+        assert(getValidatedSetup().selectedPlayers.every(p=>!p.secretCharacter));
+        unlockSecretCharacters();assert(!auctionSaveNeedsSecretCode({...base,currentPlayerId:80}));
+    `);
+});
 check('Demonstrated-role audit covers the canon roster without changing gameplay or project characters',()=>{
     const app=appContext();app.run(`
         for(const player of players.filter(p=>!p.secretCharacter)){

@@ -11,7 +11,7 @@ function createPlayerCard(){
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
           <div class="player-card-label">AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
-          <div class="player-card-name">${esc(currentPlayer.name)}</div>${positionBadges(currentPlayer)}
+          <div class="player-card-name">${esc(currentPlayer.name)}</div>${playerNationalityMarkup(currentPlayer)}${positionBadges(currentPlayer)}
           </div></div>
         </div>
       </div>

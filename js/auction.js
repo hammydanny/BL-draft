@@ -22,7 +22,7 @@ function getValidatedSetup(){
     if(!Number.isFinite(setupBidIncrement)||setupBidIncrement<=0) return showSiteError("Bid interval must be greater than $0.","INVALID BID INTERVAL");
     if(!Number.isInteger(setupMaxPlayers)||setupMaxPlayers<=0) return showSiteError("Maximum players must be greater than 0.","INVALID TEAM SIZE");
 
-    const selectedPlayers=players.filter(player => selectedPlayerIds.has(player.id));
+    const selectedPlayers=players.filter(player => secretPlayerAvailable(player)&&selectedPlayerIds.has(player.id));
     const requiredPlayers=setupMaxPlayers*2;
     if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers) return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
@@ -246,6 +246,7 @@ function showForcedAssignment(teamNumber,resuming=false,hold=false){
       <div class="reveal-image"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
       <h2>${esc(currentPlayer.name)}</h2>
+      ${playerNationalityMarkup(currentPlayer)}
       <p><strong style="${teamVars(fullTeam)};color:var(--team-heading,var(--team))">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
       <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div><div class="assignment-controls"><button id="assignmentUndoButton" class="context-control" type="button" ${auctionUndoStack.length?"":"disabled"}>↶ <span>UNDO</span></button>${hold?'<button id="resumeAssignedPlayer" class="primary-button"><span>NEXT PLAYER</span><b>→</b></button>':''}</div>`);
     document.getElementById("assignmentUndoButton").addEventListener("click",undoAuctionAction);
@@ -285,6 +286,7 @@ function showPlayerReveal(){
       <div class="reveal-image"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
+      ${playerNationalityMarkup(currentPlayer)}
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);
     scheduleAuctionTransition(()=>hideOverlay(displayOpeningBid),1500);
 }

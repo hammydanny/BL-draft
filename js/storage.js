@@ -234,9 +234,38 @@ function showResumeCard(saved){
     document.getElementById("resumeSessionMeta").textContent=
       `${saved.team1?.name||"TEAM 1"} ${saved.team1?.players?.length||0}/${saved.maxPlayers}  •  ${saved.team2?.name||"TEAM 2"} ${saved.team2?.players?.length||0}/${saved.maxPlayers}`;
 }
+// A persisted draft must not bypass this tab's secret-code gate. Keep the save
+// intact (including budgets, rosters and undo history) until access is granted.
+function auctionSaveNeedsSecretCode(saved){
+    if(secretCharactersUnlocked)return false;
+    const locked=id=>{const player=playerById(id);return player?.secretCharacter===true;};
+    const contains=(value,teamKey)=>[
+        value.currentPlayerId,...(value.remainingPlayerIds||[]),...(value.selectedPlayerIds||[]),
+        ...(value.team1?.[teamKey]||[]),...(value.team2?.[teamKey]||[]),
+        ...(value.auctionHistory||[]).map(entry=>entry.playerId)
+    ].some(locked);
+    return contains(saved,"players")||[...(saved.auctionUndoStack||[]),...(saved.auctionRedoStack||[])].some(snapshot=>contains(snapshot,"playerIds"));
+}
+function requestSecretAuctionAccess(saved){
+    const message="Enter the secret code to resume this auction.";
+    showConfirm("RESUME AUCTION",message,()=>{
+        if(input.value.trim()!==SECRET_CHARACTER_CODE){requestSecretAuctionAccess(saved);return;}
+        unlockSecretCharacters();
+        restoreGame(saved);
+    });
+    const input=document.createElement("input");
+    input.type="password";input.inputMode="numeric";input.autocomplete="off";
+    input.id="secretAuctionCode";input.setAttribute("aria-label",message);
+    input.addEventListener("keydown",event=>{
+        if(event.key==="Enter"){event.preventDefault();document.getElementById("confirmAccept").click();}
+    });
+    document.getElementById("confirmMessage").append(document.createElement("br"),input);
+    input.focus();
+}
 function restoreGame(saved){
     saved=normalizeAuctionSave(saved);
     if(!saved?.gameActive)return;
+    if(auctionSaveNeedsSecretCode(saved)){requestSecretAuctionAccess(saved);return;}
     startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
     draftMode=saved.draftMode==="random"?"random":"auction";
     auctionNumber=saved.auctionNumber;currentBid=saved.currentBid;currentBidder=saved.currentBidder;
