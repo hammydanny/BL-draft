@@ -127,12 +127,6 @@ function initSiteDirectory(){
     const drawerPanel=drawer.querySelector(".mobile-directory-panel");
     drawerPanel.tabIndex=0;
     drawerPanel.setAttribute("aria-label","Primary directory");
-    drawerPanel.addEventListener("keydown",event=>{
-        if(!["PageDown","PageUp","Home","End"].includes(event.key)||event.target.matches("input,select,textarea"))return;
-        event.preventDefault();
-        const top=event.key==="Home"?0:event.key==="End"?drawerPanel.scrollHeight:drawerPanel.scrollTop+(event.key==="PageDown"?1:-1)*drawerPanel.clientHeight*.75;
-        drawerPanel.scrollTo({top,behavior:"instant"});
-    });
     const context=document.createElement("span");context.id="mobilePageContext";context.className="mobile-page-context";context.textContent="HOME";
     toggle.before(context);toggle.setAttribute("aria-controls","mobileDirectory");
     const settingsBackdrop=document.createElement("button");settingsBackdrop.type="button";settingsBackdrop.className="settings-backdrop";settingsBackdrop.hidden=true;

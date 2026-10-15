@@ -34,7 +34,7 @@ body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0)
 :root[data-header-compact] .directory-menu-toggle span{font-size:28px;line-height:1}
 :root[data-header-compact] .mobile-directory:not(.hidden){display:block;position:fixed;inset:var(--visual-viewport-top,0px) 0 auto;z-index:1100;height:var(--visual-viewport-height,100dvh);isolation:isolate}
 .mobile-directory-backdrop{position:absolute;inset:0;z-index:-1;width:100%;height:100%;padding:0;border:0;background:rgba(0,6,16,.6);backdrop-filter:blur(4px);transform:none;filter:none}
-.mobile-directory-panel{display:flex;flex-direction:column;position:absolute;inset:0 0 0 auto;width:min(420px,calc(100% - 20px));max-width:100%;height:100%;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y pinch-zoom;scroll-padding-block:80px 16px;padding:var(--safe-top) max(16px,var(--safe-right)) var(--safe-bottom) 16px;background:var(--bg-surface);border-left:1px solid var(--border-strong);box-shadow:var(--shadow-strong);animation:mobile-drawer-in var(--motion-enter) ease-out both}
+.mobile-directory-panel{display:flex;flex-direction:column;position:absolute;inset:0 0 0 auto;width:min(420px,calc(100% - 20px));max-width:100%;height:100%;min-height:0;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;padding:var(--safe-top) max(16px,var(--safe-right)) var(--safe-bottom) 16px;background:var(--bg-surface);border-left:1px solid var(--border-strong);box-shadow:var(--shadow-strong);animation:mobile-drawer-in var(--motion-enter) ease-out both}
 @keyframes mobile-drawer-in{from{opacity:0}to{opacity:1}}
 .mobile-directory-heading{display:flex;flex:0 0 auto;position:sticky;top:var(--safe-top);z-index:2;align-items:center;justify-content:space-between;gap:12px;padding-block:16px 12px;border-bottom:1px solid var(--border-line);background:var(--bg-surface)}
 .mobile-directory-heading>div{min-width:0}
@@ -297,4 +297,36 @@ body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0)
 @media screen and (max-width:479px){
   .action-container .bid-panel:has(.quick-bids-wide) .money-input,.action-container .quick-bids-wide{grid-column:1/-1}
   .action-container .bid-panel:has(.quick-bids-wide) .bid-valuation>div:first-child{display:flex;align-items:center;gap:8px}
+}
+
+/* Mobile directory stays fully visible without its own scroll region. */
+@media(max-width:767px){
+    .mobile-directory-heading{position:static;padding-block:10px 8px}
+    .mobile-directory-heading button{flex-basis:40px;width:40px;height:40px}
+    .mobile-directory-links{display:grid;align-content:start;flex:1 1 auto;padding-block:8px}
+    .mobile-primary-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .mobile-primary-links button{min-height:46px;padding:7px 10px;gap:9px}
+    .mobile-primary-links button>span{flex-basis:20px}
+    .mobile-primary-links strong{font-size:15px}
+    .mobile-secondary-links{grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 4px;margin-top:10px;padding-top:8px}
+    .mobile-secondary-links :is(button,a){min-height:38px;padding:6px 5px;font-size:12px}
+    .mobile-settings-entry{min-height:54px;padding:8px 6px}
+    .mobile-settings-entry strong{font-size:14px}
+    .mobile-settings-entry>span{font-size:11px}
+}
+@media(max-height:620px) and (max-width:900px){
+    .mobile-directory-panel{width:min(520px,calc(100% - 12px));padding:max(4px,var(--safe-top)) max(8px,var(--safe-right)) max(4px,var(--safe-bottom)) 8px}
+    .mobile-directory-heading{padding-block:4px}
+    .mobile-directory-heading span{font-size:13px}
+    .mobile-directory-heading h2{margin-top:1px;font-size:15px}
+    .mobile-directory-heading button{flex-basis:36px;width:36px;height:36px}
+    .mobile-directory-links{padding-block:5px}
+    .mobile-primary-links{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+    .mobile-primary-links button{min-height:40px;padding:4px 6px;gap:5px}
+    .mobile-primary-links button>span{display:none}
+    .mobile-primary-links strong{font-size:13px}
+    .mobile-secondary-links{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;margin-top:6px;padding-top:6px}
+    .mobile-secondary-links :is(button,a){justify-content:center;min-height:34px;padding:4px;text-align:center;font-size:11px}
+    .mobile-settings-entry{min-height:42px;padding:5px 4px}
+    .mobile-settings-entry>span{display:none}
 }
