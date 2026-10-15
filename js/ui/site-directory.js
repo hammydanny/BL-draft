@@ -141,7 +141,7 @@ function initSiteDirectory(){
     function closeSettings(restoreFocus=false){
         const wasOpen=!settings.hidden;
         if(wasOpen)setSiteDialogState(settings,false);
-        settingsBackdrop.hidden=true;settingsToggle.setAttribute("aria-expanded","false");
+        settingsBackdrop.hidden=true;settingsToggle.setAttribute("aria-expanded","false");settingsToggle.setAttribute("aria-label","Open site settings");
         if(wasOpen&&restoreFocus)(isMobileSiteNavigation()?toggle:settingsReturnFocus).focus({preventScroll:true});
     }
     function refreshSettings(){
@@ -157,9 +157,9 @@ function initSiteDirectory(){
     function openSettings(){
         closeDirectory();settingsReturnFocus=document.activeElement;refreshSettings();
         setSiteDialogState(settings,true);settingsBackdrop.hidden=false;
-        settingsToggle.setAttribute("aria-expanded","true");settings.querySelector("[data-settings-close]").focus();
+        settingsToggle.setAttribute("aria-expanded","true");settingsToggle.setAttribute("aria-label","Close site settings");settings.querySelector("[data-settings-close]").focus();
     }
-    settingsToggle.addEventListener("click",()=>{if(settings.hidden)openSettings();else closeSettings(true);});
+    settingsToggle.addEventListener("click",event=>{event.stopPropagation();if(settings.hidden)openSettings();else closeSettings(true);});
     drawer.querySelector("[data-mobile-settings]").addEventListener("click",openSettings);
     settings.querySelector("[data-settings-close]").addEventListener("click",()=>closeSettings(true));
     settingsBackdrop.addEventListener("click",()=>closeSettings(true));

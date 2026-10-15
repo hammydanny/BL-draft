@@ -40,6 +40,7 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .sound-toggle.muted .sound-icon:after{top:6px;right:0;width:6px;height:0;border:0;border-top:2px solid currentColor;border-radius:0;transform:rotate(-45deg)}
 .site-utility.muted{color:var(--text-muted)}
 .settings-toggle{width:var(--utility-size);padding:0}
+.settings-toggle[aria-expanded="true"]{position:relative;z-index:6}
 .settings-toggle svg{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
 .site-breadcrumb{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
 .site-breadcrumb button{min-height:32px;padding:4px 0;border:0;background:transparent;color:var(--text-muted);font:inherit}
