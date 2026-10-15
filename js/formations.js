@@ -852,6 +852,8 @@ function clickFormationSlot(slotIndex){
     }else if(current){
         selectedFormationPlayerId=current.id;
         refreshFormationSelection(`.formation-slot[data-slot-index="${slotIndex}"]`);saveGame();
+    }else if(mobileBuilderMedia.matches){
+        openFormationReservePicker(slotIndex);
     }
 }
 function selectFormationPlayerOnly(id){

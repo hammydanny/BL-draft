@@ -74,6 +74,7 @@ function initializeLoreControls(){
     fill("characterLoreCategory",Object.entries(PLAYER_POOL_CATEGORIES).map(([key,category])=>[key,category.label]),"All Player Categories");
     const names=players.filter(player=>!player.secretCharacter).slice().sort((a,b)=>a.name.localeCompare(b.name)).map(player=>[String(player.id),player.name]);
     fill("chemistryLorePlayerA",names,"Any Player A");fill("chemistryLorePlayerB",names,"Any Player B");fill("chemistryLoreContext",contexts,"All Team Contexts");
+    setupMobileLore();
 }
 function sortedCharacterRecords(sort){
     const database=loreDatabase();if(database.characterSorts.has(sort))return database.characterSorts.get(sort);
@@ -100,7 +101,7 @@ function characterLoreCard(record){
     if(record.html)return record.html;const player=record.player,overall=playerOverall(player),positionLabel=player.allPositions?"ALL":primaryPosition(player);
     record.html=`<article class="character-lore-card"><a class="character-lore-card-link" data-character-id="${player.id}" href="${characterDossierHref(player.id)}" aria-label="Open ${esc(player.name)} dossier, ${positionLabel}, overall ${overall}, grade ${playerStatGrade(overall)}"><span class="character-lore-image-wrap"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="180" height="225"><span class="character-card-rating"><strong>${overall}</strong><b>${playerStatGrade(overall)}</b><small>OVR</small></span></span><span class="character-lore-card-name">${esc(player.name)}</span>${positionBadges(player,true)}</a><button class="character-compare-toggle" type="button" data-compare-player="${player.id}" aria-pressed="false" aria-label="Compare ${esc(player.name)}">+ COMPARE</button></article>`;return record.html;
 }
-function characterPersonLink(id){const player=playerById(id);return `<a class="character-profile-person-link" data-character-id="${id}" href="${characterDossierHref(id)}">${esc(player.name)}</a>`;}
+function characterPersonLink(id){const player=playerById(id);if(!secretPlayerAvailable(player))return "";return `<a class="character-profile-person-link" data-character-id="${id}" href="${characterDossierHref(id)}">${esc(player.name)}</a>`;}
 function dossierSection(code,title,content){return `<section class="character-profile-section"><div class="character-profile-section-heading"><span>${code}</span><h3>${title}</h3></div>${content}</section>`;}
 function characterLoreProfileMarkup(player){
     const record=playerRecord(player.id),weapons=player.weapons||[],history=record.affiliations,quotes=verifiedPlayerQuotes(player.id),canon=record.profile?.canonPositions||[];
@@ -116,7 +117,7 @@ function characterLoreProfileMarkup(player){
     const pairCards=links.map(link=>`<article class="character-profile-chemistry-card ${chemistryTier(link.score)}"><div class="character-profile-chemistry-top"><div class="character-profile-chemistry-names">${link.playerIds.filter(id=>id!==player.id).map(characterPersonLink).join(" × ")}</div><div class="character-profile-score ${chemistryTier(link.score)}"><small>${chemistryTierLabel(link.score)}</small><strong>${link.score}</strong><span>/ 100</span></div></div><span class="character-profile-chemistry-label">${esc(link.label)}</span><p>${esc(link.description)}</p></article>`).join("");
     const teamCards=history.map(context=>`<article class="character-profile-team-card"><div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CONTEXT</small><strong>${context.score}</strong><span>${chemistryTierLabel(context.score)}</span></div></div><p>${esc(context.description)}</p><div class="character-profile-context-members">${context.playerIds.map(characterPersonLink).join("")}</div></article>`).join("");
     return `<div class="character-profile-page"><div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER // DOSSIER ${String(player.id).padStart(2,"0")}</span></div>
-      <section class="character-profile-hero" aria-label="Player identity"><div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div><div class="character-profile-overview"><span class="character-profile-kicker">${player.secretCharacter?"SPECIAL DOSSIER // UNLISTED CHARACTER":"FIELD INTELLIGENCE // MANGA APPEARANCE CH. "+player.debutChapter}</span><h2>${esc(player.name)}</h2>${playerAliasesMarkup(player)}${playerNationalityMarkup(player)}<div class="character-profile-positions">${positionBadges(player)}</div><div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div><p class="character-profile-rating-note">PROJECT RATING // FAN-MADE GAMEPLAY VALUES</p><div class="character-profile-description"><h3>PLAYER PROFILE</h3><p>${esc(characterLoreDescription(player))}</p></div>${(player.quote||quotes.length)?`<div class="character-profile-quote">${player.quote?`<blockquote>“${esc(player.quote)}”</blockquote>`:""}${quotes.map(quote=>`<blockquote>“${esc(quote.text)}”</blockquote>`).join("")}</div>`:""}<div class="character-profile-categories">${record.categories.map(category=>`<span>${esc(category.label)}</span>`).join("")}</div></div></section>
+      <section class="character-profile-hero" aria-label="Player identity"><div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div><div class="character-profile-overview"><span class="character-profile-kicker">${player.secretCharacter?"SPECIAL DOSSIER // UNLISTED CHARACTER":"FIELD INTELLIGENCE // MANGA APPEARANCE CH. "+player.debutChapter}</span><h2>${esc(player.name)}</h2>${playerAliasesMarkup(player)}${playerNationalityMarkup(player)}<div class="character-profile-positions">${positionBadges(player)}</div><div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div><p class="character-profile-rating-note">PROJECT RATING // FAN-MADE GAMEPLAY VALUES</p><div class="character-profile-description"><h3>PLAYER PROFILE</h3><p>${esc(characterLoreDescription(player))}</p></div>${(player.quote||quotes.length)?`<div class="character-profile-quote" data-i18n-ignore>${player.quote?`<blockquote>“${esc(player.quote)}”</blockquote>`:""}${quotes.map(quote=>`<blockquote>“${esc(quote.text)}”</blockquote>`).join("")}</div>`:""}<div class="character-profile-categories">${record.categories.map(category=>`<span>${esc(category.label)}</span>`).join("")}</div></div></section>
       <nav class="character-profile-jump" aria-label="Dossier sections"><a href="#dossier-attributes" aria-current="location">ATTRIBUTES</a><a href="#dossier-positions">POSITIONS</a><a href="#dossier-weapons">PLAYSTYLE</a><a href="#dossier-chemistry">CHEMISTRY</a><a href="#dossier-history">HISTORY</a></nav>
       <div id="dossier-attributes">${dossierSection("01 // PROJECT RATINGS","CORE ATTRIBUTES",`<div class="character-attribute-layout">${playerStatsRadar(player,"lore")}<div class="character-profile-stat-grid">${rows}<p class="character-attribute-note">S 90–100 · A 80–89 · B 70–79 · C 60–69 · D 50–59 · E 40–49 · F 30–39 · G 0–29. GK remains a separate specialist metric.</p></div></div>`)}</div>
       <div id="dossier-positions">${dossierSection("02 // POSITIONAL ANALYSIS","ROLES &amp; EVIDENCE",positions)}</div>
@@ -134,10 +135,12 @@ function renderCharacterComparison(){
     const panel=document.getElementById("characterLoreComparison");if(!panel)return;panel.hidden=!characterCompareIds.size;
     const view=document.getElementById("characterLoreCompareView");if(view){view.disabled=!characterCompareIds.size;view.textContent=`VIEW COMPARISON · ${characterCompareIds.size}/3`;}
     panel.innerHTML=characterCompareIds.size?`<div class="character-comparison-heading"><div><span class="lore-kicker">SIDE BY SIDE // PROJECT RATINGS</span><h2 id="characterCompareTitle">COMPARE PLAYERS <small>${characterCompareIds.size} / 3</small></h2></div><button type="button" data-compare-clear>CLEAR COMPARISON</button></div><div class="character-comparison-grid">${[...characterCompareIds].map(playerById).map(player=>`<article><div class="character-comparison-identity"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="48" height="60" decoding="async"><div><h3>${characterPersonLink(player.id)}</h3><span>${playerPositions(player).join(" / ")}</span></div><button type="button" data-compare-player="${player.id}" aria-label="Remove ${esc(player.name)} from comparison">×</button></div>${playerStatsRadar(player,"lore",{overall:playerOverall(player)})}</article>`).join("")}</div>`:"";
-    prioritizeVisiblePortraits(panel);syncCharacterCompareButtons();
+    if(characterCompareIds.size)panel.insertAdjacentHTML("afterbegin",mobileComparisonStats());
+    prioritizeVisiblePortraits(panel);syncCharacterCompareButtons();syncMobileComparisonBar();
+    if(!characterCompareIds.size)document.getElementById("mobileComparisonDialog")?.close();
 }
 function toggleCharacterComparison(id){
-    id=Number(id);if(!playerById(id))return;const status=document.getElementById("characterLoreCompareStatus");
+    id=Number(id);if(!secretPlayerAvailable(playerById(id)))return;const status=document.getElementById("characterLoreCompareStatus");
     if(characterCompareIds.has(id))characterCompareIds.delete(id);else if(characterCompareIds.size<3)characterCompareIds.add(id);else{if(status)status.textContent="Compare up to three players. Remove one to add another.";return;}
     renderCharacterComparison();if(status)status.textContent=`${characterCompareIds.size} players selected for comparison.`;
 }
@@ -151,10 +154,11 @@ function renderCharacterLore(){
     const filtered=filteredCharacterLore();renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS. TRY RESET FILTERS.");prioritizeVisiblePortraits(grid);syncCharacterCompareButtons();
     const query=normalizeLoreSearch(loreControlValue("characterLoreSearch").trim());
     const revealSecrets=query===normalizeLoreSearch(SECRET_CHARACTER_CODE);
+    syncMobileLoreFilters("character");
     const total=revealSecrets?players.filter(player=>player.secretCharacter).length:players.filter(player=>!player.secretCharacter).length;
     const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${total} ${revealSecrets?"SECRET CHARACTERS":"PLAYERS"}`;
 }
-function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
+function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);if(characterDirectoryReturn?.view==="chemistry"){const back=grid.querySelector("[data-character-back]");if(back)back.textContent="← CHEMISTRY";}prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
 function syncDatabaseMetadata(title,description){
     document.title=`${title} — Blue Lock Draft`;
     for(const selector of ['meta[name="description"]','meta[property="og:description"]'])document.querySelector(selector)?.setAttribute("content",description);
@@ -165,7 +169,10 @@ function syncDatabaseMetadata(title,description){
 }
 function openCharacterProfileById(value,options={}){
     const player=playerById(Number(value));if(!player)return;
-    if(!document.getElementById("character-lore-screen")?.classList.contains("character-lore-detail-view"))characterDirectoryReturn={top:window.scrollY,id:player.id};
+    if(!secretPlayerAvailable(player)){updateRoute("lore",{databaseView:"characters",replace:true});return;}
+    if(!options.skipHistory)captureLoreRouteState();
+    const comparisonDialog=document.getElementById("mobileComparisonDialog");if(comparisonDialog?.open){comparisonDialog.dataset.navigating="true";comparisonDialog.close();}
+    if(document.getElementById("character-lore-screen")?.classList.contains("hidden")||!document.getElementById("character-lore-screen")?.classList.contains("character-lore-detail-view"))characterDirectoryReturn={top:window.scrollY,id:player.id,view:databaseViewFromLocation()};
     if(!options.skipHistory){const url=characterDossierHref(player.id);if(window.location.href!==url){if(options.replace)history.replaceState({blDraftRoute:"lore"},"",url);else history.pushState({blDraftRoute:"lore"},"",url);}}
     const screen=document.getElementById("character-lore-screen");screen?.classList.add("character-lore-detail-view");
     const title=screen?.querySelector(".page-context h1");if(title)title.textContent=player.name;
@@ -175,11 +182,11 @@ function openCharacterProfileById(value,options={}){
     if(!options.skipHistory){title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});}
 }
 function restoreCharacterDirectory(){if(!characterDirectoryReturn)return;const previous=characterDirectoryReturn;characterDirectoryReturn=null;requestAnimationFrame(()=>{window.scrollTo({top:previous.top,behavior:"instant"});document.querySelector(`#characterLoreGrid [data-character-id="${previous.id}"]`)?.focus({preventScroll:true});});}
-function returnToCharacterDirectory(){updateRoute("lore",{databaseView:"characters"});restoreCharacterDirectory();}
+function returnToCharacterDirectory(){updateRoute("lore",{databaseView:characterDirectoryReturn?.view||"characters"});restoreCharacterDirectory();}
 function filteredChemistryLore(){
     const query=normalizeLoreSearch(loreControlValue("chemistryLoreSearch").trim()),type=loreControlValue("chemistryLoreType","ALL"),tier=loreControlValue("chemistryLoreTier","ALL"),a=loreControlValue("chemistryLorePlayerA","ALL"),b=loreControlValue("chemistryLorePlayerB","ALL"),context=loreControlValue("chemistryLoreContext","ALL"),sort=loreControlValue("chemistryLoreSort","score-desc"),database=loreDatabase();
     if(!database.chemistrySorts.has(sort))database.chemistrySorts.set(sort,database.chemistry.slice().sort((x,y)=>{if(sort==="name-asc")return x.title.localeCompare(y.title);if(sort==="name-desc")return y.title.localeCompare(x.title);return (sort==="score-asc"?1:-1)*(x.score-y.score)||x.title.localeCompare(y.title);}));
-    return database.chemistrySorts.get(sort).filter(entry=>matchesLoreSearch(localizedLoreSearch(entry,[entry.title,entry.label||"",entry.description||""]),query)&&(type==="ALL"||entry.type===type)&&(tier==="ALL"||chemistryTier(entry.score)===tier)&&(a==="ALL"||entry.playerIds.includes(Number(a)))&&(b==="ALL"||entry.playerIds.includes(Number(b)))&&(context==="ALL"||entry.contextIds.includes(context)));
+    return database.chemistrySorts.get(sort).filter(entry=>entry.playerIds.every(id=>secretPlayerAvailable(playerById(id)))&&matchesLoreSearch(localizedLoreSearch(entry,[entry.title,entry.label||"",entry.description||""]),query)&&(type==="ALL"||entry.type===type)&&(tier==="ALL"||chemistryTier(entry.score)===tier)&&(a==="ALL"||entry.playerIds.includes(Number(a)))&&(b==="ALL"||entry.playerIds.includes(Number(b)))&&(context==="ALL"||entry.contextIds.includes(context)));
 }
 function chemistryLoreCard(entry){
     if(entry.html)return entry.html;const pair=entry.type==="pair",tier=chemistryTier(entry.score);
@@ -191,21 +198,22 @@ function renderChemistryPairEvaluation(){
     if(!a||!b){panel.innerHTML="";return;}if(a.id===b.id){panel.innerHTML='<p class="lore-empty">Choose two different players to evaluate a relationship.</p>';return;}
     const relation=chemistryRelation(a,b);panel.innerHTML=`<div class="chemistry-pair-evaluation ${chemistryTier(relation.score)}"><div><span class="lore-kicker">EXACT PAIR // EXISTING GAME MODEL</span><h2>${characterPersonLink(a.id)} × ${characterPersonLink(b.id)}</h2><span class="chemistry-lore-label">${esc(relation.label)}</span><p>${esc(relation.reason)}</p></div><div class="chemistry-lore-score ${chemistryTier(relation.score)}"><span>${chemistryTierLabel(relation.score)}</span><strong>${relation.score}</strong><small>/ 100</small></div></div>`;
 }
-function renderChemistryLore(){initializeLoreControls();const grid=document.getElementById("chemistryLoreGrid");if(!grid)return;renderChemistryPairEvaluation();const entries=filteredChemistryLore();renderLoreCards(grid,entries,chemistryLoreCard,"NO REGISTERED ENTRIES MATCH YOUR FILTERS. EXACT PAIR EVALUATION STILL USES THE GAME MODEL.");const count=document.getElementById("chemistryLoreCount");if(count)count.textContent=`${entries.length} / ${loreDatabase().chemistry.length} REGISTERED ENTRIES`;}
+function renderChemistryLore(){initializeLoreControls();const grid=document.getElementById("chemistryLoreGrid");if(!grid)return;renderChemistryPairEvaluation();const entries=filteredChemistryLore();renderLoreCards(grid,entries,chemistryLoreCard,"NO REGISTERED ENTRIES MATCH YOUR FILTERS. EXACT PAIR EVALUATION STILL USES THE GAME MODEL.");syncMobileLoreFilters("chemistry");const count=document.getElementById("chemistryLoreCount");if(count)count.textContent=`${entries.length} / ${loreDatabase().chemistry.length} REGISTERED ENTRIES`;}
 function resetLoreFilters(kind){const defaults=kind==="character"?{Search:"",Position:"ALL",Grade:"ALL",Affiliation:"ALL",Category:"ALL",Sort:"chronological"}:{Search:"",PlayerA:"ALL",PlayerB:"ALL",Context:"ALL",Type:"ALL",Tier:"ALL",Sort:"score-desc"};for(const [control,value] of Object.entries(defaults)){const input=document.getElementById(kind+"Lore"+control);if(input)input.value=value;}if(kind==="character")renderCharacterLore();else renderChemistryLore();}
 function openLoreMenu(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("lore-menu-screen"),options);const counts=document.getElementById("databaseHubCounts");if(counts)counts.innerHTML=`<span>${players.filter(player=>!player.secretCharacter).length} PLAYER DOSSIERS</span><span>${CHEMISTRY_REFERENCE_PAIRS.length} PAIR RELATIONSHIPS</span><span>${CHEMISTRY_REFERENCE_CONTEXTS.length} TEAM CONTEXTS</span>`;syncDatabaseMetadata("Database / Player Intelligence","Explore character dossiers, compare project ratings, and inspect recorded chemistry and team history.");}
 function openCharacterLore(options={}){const id=new URL(window.location.href).searchParams.get("character");if(id&&playerById(Number(id))){openCharacterProfileById(id,{...options,skipHistory:true});return;}if(id){updateRoute("lore",{databaseView:"characters",replace:true});return;}setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();restoreCharacterDirectory();syncDatabaseMetadata("Character Database","Search, filter and compare Blue Lock players. Browse fan-made OVR, S–G grades, positions and detailed dossiers.");}
-function openChemistryLore(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();syncDatabaseMetadata("Chemistry Database","Explore player chemistry, relationship tiers and team histories. Check any two players using the existing game model.");}
+function openChemistryLore(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();restoreCharacterDirectory();syncDatabaseMetadata("Chemistry Database","Explore player chemistry, relationship tiers and team histories. Check any two players using the existing game model.");}
 function bindLoreUI(){
     const navigate=event=>{const person=event.target.closest("[data-character-id]");if(!person||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();openCharacterProfileById(person.dataset.characterId);};
     document.getElementById("character-lore-screen")?.addEventListener("click",event=>{
+        if(event.target.closest("[data-open-mobile-comparison]")){openMobileCharacterComparison();return;}
         if(event.target.closest("[data-character-back]")){event.preventDefault();returnToCharacterDirectory();return;}
-        const compare=event.target.closest("[data-compare-player]");if(compare){const withinPanel=!!compare.closest(".character-comparison");toggleCharacterComparison(compare.dataset.comparePlayer);if(withinPanel){const next=document.querySelector(".character-comparison [data-compare-clear]")||document.getElementById("characterLoreSearch");next?.focus({preventScroll:true});}return;}
+        const compare=event.target.closest("[data-compare-player]");if(compare){const withinPanel=!!compare.closest(".character-comparison"),withinBar=!!compare.closest(".mobile-compare-bar");toggleCharacterComparison(compare.dataset.comparePlayer);if(withinPanel){const next=document.querySelector(".character-comparison [data-compare-clear]")||document.getElementById("characterLoreSearch");next?.focus({preventScroll:true});}else if(withinBar){(document.querySelector(".mobile-compare-chips button")||document.getElementById("characterLoreSearch"))?.focus({preventScroll:true});}return;}
         if(event.target.closest("[data-compare-clear]")){characterCompareIds.clear();renderCharacterComparison();const status=document.getElementById("characterLoreCompareStatus");if(status)status.textContent="Comparison cleared.";document.getElementById("characterLoreSearch")?.focus();return;}
         const jump=event.target.closest('.character-profile-jump a');if(jump){event.preventDefault();scrollDossierSection(jump);return;}navigate(event);
     });
     document.getElementById("chemistry-lore-screen")?.addEventListener("click",navigate);
-    document.getElementById("characterLoreCompareView")?.addEventListener("click",()=>{const panel=document.getElementById("characterLoreComparison");panel?.scrollIntoView({behavior:"instant",block:"start"});const title=document.getElementById("characterCompareTitle");title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});});
+    document.getElementById("characterLoreCompareView")?.addEventListener("click",()=>{if(mobileLoreMedia.matches){openMobileCharacterComparison();return;}const panel=document.getElementById("characterLoreComparison");panel?.scrollIntoView({behavior:"instant",block:"start"});const title=document.getElementById("characterCompareTitle");title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});});
     document.getElementById("menuLore")?.addEventListener("click",openLoreMenu);document.getElementById("loreCharacters")?.addEventListener("click",openCharacterLore);document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);
     for(const [kind,render] of [["character",renderCharacterLore],["chemistry",renderChemistryLore]]){
         let pending;document.getElementById(kind+"LoreSearch")?.addEventListener("input",()=>{
@@ -217,4 +225,116 @@ function bindLoreUI(){
         document.getElementById(kind+"LoreReset")?.addEventListener("click",()=>{clearTimeout(pending);resetLoreFilters(kind);});
     }
 }
+// Responsive shells reuse the live controls, cached cards and existing models.
+const mobileLoreMedia=window.matchMedia("(max-width:1024px)");
+const mobileLoreFilters={character:["Position","Grade","Affiliation","Category"],chemistry:["Type","Tier","Context"]};
+const loreControlHomes=new Map();
+let mobileCompareReturn=null,mobileCompareTop=0,mobileCompareObserver=null;
+function loreText(value){return window.SiteI18n?.text(value)||value;}
+function mobileLoreFilterMarkup(kind){
+    const label=kind==="character"?"Character filters":"Chemistry filters";
+    return `<header class="phase4-sheet-heading"><h2 id="${kind}MobileFiltersTitle">${label}</h2><button type="button" data-sheet-close aria-label="CLOSE">×</button></header><div class="phase4-sheet-content mobile-lore-filter-fields"></div><footer class="phase4-sheet-actions"><button type="button" data-filter-reset>RESET FILTERS</button><button type="button" data-sheet-close>APPLY FILTERS</button></footer>`;
+}
+function setupMobileLore(){
+    for(const kind of ["character","chemistry"]){
+        const screen=document.getElementById(kind==="character"?"character-lore-screen":"chemistry-lore-screen"),toolbar=screen?.querySelector(".lore-toolbar");
+        if(!toolbar||toolbar.dataset.mobileReady)continue;
+        toolbar.dataset.mobileReady="true";
+        const filters=document.createElement("button");filters.type="button";filters.id=kind+"MobileFiltersButton";filters.className="mobile-lore-filters-button";
+        filters.setAttribute("aria-controls",kind+"MobileFilters");filters.setAttribute("aria-expanded","false");toolbar.appendChild(filters);
+        const dialog=document.createElement("dialog");dialog.id=kind+"MobileFilters";dialog.className="phase4-sheet mobile-lore-filter-sheet";dialog.setAttribute("aria-labelledby",kind+"MobileFiltersTitle");dialog.innerHTML=mobileLoreFilterMarkup(kind);screen.appendChild(dialog);
+        let returnTop=0;
+        filters.onclick=()=>{returnTop=window.scrollY;dialog.showModal();filters.setAttribute("aria-expanded","true");dialog.querySelector("[data-sheet-close]").focus({preventScroll:true});};
+        dialog.addEventListener("click",event=>{
+            if(event.target.closest("[data-filter-reset]")){
+                for(const name of [...mobileLoreFilters[kind],...(kind==="chemistry"?["PlayerA","PlayerB"]:[])])document.getElementById(kind+"Lore"+name).value="ALL";
+                if(kind==="character")renderCharacterLore();else renderChemistryLore();
+            }else if(event.target===dialog||event.target.closest("[data-sheet-close]"))dialog.close();
+        });
+        dialog.addEventListener("close",()=>{filters.setAttribute("aria-expanded","false");filters.focus({preventScroll:true});window.scrollTo({top:returnTop,behavior:"instant"});});
+        for(const name of mobileLoreFilters[kind]){
+            const label=document.getElementById(kind+"Lore"+name)?.closest("label");if(!label)continue;
+            const marker=document.createComment("responsive filter home");label.before(marker);loreControlHomes.set(label,marker);
+        }
+        const nav=document.createElement("nav");nav.className="mobile-database-tabs";nav.setAttribute("aria-label","DATABASE");
+        nav.innerHTML=`<a data-mobile-database-view="characters" href="${canonicalRouteUrl("lore",{databaseView:"characters"})}" ${kind==="character"?'aria-current="page"':""}>CHARACTERS</a><a data-mobile-database-view="chemistry" href="${canonicalRouteUrl("lore",{databaseView:"chemistry"})}" ${kind==="chemistry"?'aria-current="page"':""}>CHEMISTRY</a>`;
+        toolbar.before(nav);nav.onclick=event=>{const link=event.target.closest("a");if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();updateRoute("lore",{databaseView:link.dataset.mobileDatabaseView});};
+    }
+    const chemistryToolbar=document.querySelector(".chemistry-lore-toolbar");
+    if(chemistryToolbar&&!document.getElementById("mobileChemistryCheck")){
+        const pair=document.createElement("section");pair.id="mobileChemistryCheck";pair.className="mobile-chemistry-check";pair.setAttribute("aria-labelledby","mobileChemistryCheckTitle");pair.innerHTML='<h2 id="mobileChemistryCheckTitle">CHEMISTRY CHECK</h2>';
+        chemistryToolbar.after(pair);
+        for(const id of ["chemistryLorePlayerA","chemistryLorePlayerB"]){const label=document.getElementById(id)?.closest("label");if(!label)continue;const marker=document.createComment("responsive pair home");label.before(marker);loreControlHomes.set(label,marker);}
+    }
+    const characterScreen=document.getElementById("character-lore-screen");
+    if(characterScreen&&!document.getElementById("mobileCompareBar")){
+        const bar=document.createElement("aside");bar.id="mobileCompareBar";bar.className="mobile-compare-bar";bar.setAttribute("aria-label","COMPARE PLAYERS");characterScreen.appendChild(bar);
+        const dialog=document.createElement("dialog");dialog.id="mobileComparisonDialog";dialog.className="phase4-sheet mobile-comparison-dialog";dialog.setAttribute("aria-label","COMPARE PLAYERS");dialog.innerHTML='<header class="phase4-sheet-heading"><h2>COMPARE PLAYERS</h2><button type="button" data-sheet-close aria-label="CLOSE">×</button></header><div class="phase4-sheet-content"></div>';characterScreen.appendChild(dialog);
+        dialog.addEventListener("click",event=>{if(event.target===dialog||event.target.closest("[data-sheet-close]"))dialog.close();});
+        dialog.addEventListener("close",()=>{const panel=document.getElementById("characterLoreComparison");document.getElementById("characterLoreGrid")?.before(panel);if(dialog.dataset.navigating){delete dialog.dataset.navigating;return;}
+            const returnFocus=mobileCompareReturn?.isConnected?mobileCompareReturn:document.querySelector("[data-open-mobile-comparison]")||document.getElementById("characterLoreSearch");returnFocus?.focus({preventScroll:true});window.scrollTo({top:mobileCompareTop,behavior:"instant"});});
+        if(typeof ResizeObserver==="function"){mobileCompareObserver=new ResizeObserver(()=>characterScreen.style.setProperty("--mobile-compare-height",bar.hidden?"0px":bar.getBoundingClientRect().height+"px"));mobileCompareObserver.observe(bar);}
+    }
+    syncMobileLoreLayout();
+}
+function syncMobileLoreLayout(){
+    const mobile=mobileLoreMedia.matches;
+    if(!mobile)document.querySelectorAll(".phase4-sheet[open]").forEach(dialog=>dialog.close());
+    for(const [label,marker] of loreControlHomes){
+        const control=label.querySelector("select"),kind=control.id.startsWith("character")?"character":"chemistry";
+        const pair=/Player[AB]$/.test(control.id);
+        const destination=mobile?(pair?document.getElementById("mobileChemistryCheck"):document.querySelector(`#${kind}MobileFilters .mobile-lore-filter-fields`)):null;
+        if(destination&&label.parentElement!==destination)destination.appendChild(label);
+        else if(!mobile&&marker.parentNode&&label.parentNode!==marker.parentNode)marker.after(label);
+    }
+    syncMobileLoreFilters("character");syncMobileLoreFilters("chemistry");syncMobileComparisonBar();
+}
+function syncMobileLoreFilters(kind){
+    const controls=[...mobileLoreFilters[kind],...(kind==="chemistry"?["PlayerA","PlayerB"]:[])];
+    const active=controls.filter(name=>loreControlValue(kind+"Lore"+name,"ALL")!=="ALL"),button=document.getElementById(kind+"MobileFiltersButton");
+    if(button){button.innerHTML=`<span>FILTERS</span> <b>${active.length}</b>`;button.title=active.map(name=>document.getElementById(kind+"Lore"+name)?.selectedOptions[0]?.textContent||"").join(" · ");}
+}
+function mobileComparisonStats(){
+    const selected=[...characterCompareIds].map(playerById).filter(secretPlayerAvailable);
+    const axes=[{key:"ovr",name:"OVERALL RATING"},...PLAYER_RADAR_AXES,{key:"gk",name:"GOALKEEPING"}];
+    return `<div class="mobile-comparison-stats">${axes.map(axis=>`<section><h3>${axis.name.toUpperCase()}</h3>${selected.map(player=>{const value=axis.key==="ovr"?playerOverall(player):playerStats(player)[axis.key];return `<div><span data-i18n-ignore>${esc(player.name)}</span><strong>${value}</strong><b class="evaluation-grade">${playerStatGrade(value)}</b></div>`;}).join("")}</section>`).join("")}</div>`;
+}
+function syncMobileComparisonBar(){
+    const bar=document.getElementById("mobileCompareBar");if(!bar)return;
+    bar.hidden=!characterCompareIds.size;
+    bar.innerHTML=characterCompareIds.size?`<div><strong><span>COMPARE PLAYERS</span> ${characterCompareIds.size}/3</strong><button type="button" data-open-mobile-comparison>VIEW COMPARISON</button></div><div class="mobile-compare-chips">${[...characterCompareIds].map(playerById).map(player=>`<button type="button" data-compare-player="${player.id}" aria-label="${esc(loreText("REMOVE"))} ${esc(player.name)}"><span data-i18n-ignore>${esc(player.name)}</span> ×</button>`).join("")}</div>`:"";
+}
+function openMobileCharacterComparison(){
+    if(!mobileLoreMedia.matches||!characterCompareIds.size)return;
+    const dialog=document.getElementById("mobileComparisonDialog");mobileCompareReturn=document.activeElement;mobileCompareTop=window.scrollY;
+    dialog.querySelector(".phase4-sheet-content").appendChild(document.getElementById("characterLoreComparison"));dialog.showModal();dialog.querySelector("[data-sheet-close]").focus({preventScroll:true});prioritizeVisiblePortraits(dialog);
+}
+function captureLoreRouteState(){
+    const values={};document.querySelectorAll('.lore-toolbar input,.lore-toolbar select,.mobile-lore-filter-fields select,.mobile-chemistry-check select').forEach(control=>values[control.id]=control.value);
+    const state={values,top:window.scrollY,view:databaseViewFromLocation(),compare:[...characterCompareIds]};
+    history.replaceState({...history.state,bldDatabaseUI:state},"",window.location.href);return state;
+}
+// Native dialogs own inertness and Escape. Keep keyboard traversal inside the
+// active sheet rather than allowing Tab to move into browser chrome.
+document.addEventListener("keydown",event=>{
+    if(event.key!=="Tab")return;
+    const dialog=document.querySelector(".phase4-sheet[open]");if(!dialog)return;
+    const controls=[...dialog.querySelectorAll("button,a[href],input,select,textarea,[tabindex]")].filter(node=>!node.disabled&&node.tabIndex>=0&&node.getClientRects().length&&!node.closest("[hidden],[inert]"));
+    const first=controls[0],last=controls[controls.length-1];if(!first)return;
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
+mobileLoreMedia.addEventListener("change",syncMobileLoreLayout);
+window.addEventListener("popstate",event=>{
+    document.querySelectorAll(".phase4-sheet[open]").forEach(dialog=>dialog.close());
+    const state=event.state?.bldDatabaseUI;if(!state)return;
+    requestAnimationFrame(()=>{
+        for(const [id,value] of Object.entries(state.values||{})){const control=document.getElementById(id);if(control)control.value=value;}
+        characterCompareIds.clear();(state.compare||[]).filter(id=>secretPlayerAvailable(playerById(id))).forEach(id=>characterCompareIds.add(id));renderCharacterComparison();
+        const dossier=new URL(window.location.href).searchParams.has("character");
+        if(!dossier){if(state.view==="chemistry")renderChemistryLore();else renderCharacterLore();}
+        requestAnimationFrame(()=>window.scrollTo({top:state.top,behavior:"instant"}));
+    });
+});
+
 bindLoreUI();

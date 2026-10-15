@@ -333,6 +333,29 @@ function clickFormationPlayerToken(id,slotIndex){
     if(mobileBuilderMedia.matches&&selectedFormationPlayerId&&selectedFormationPlayerId!==id)clickFormationSlot(slotIndex);
     else selectFormationPlayerOnly(id);
 }
+// Empty-slot shortcut: the existing placement function owns every assignment.
+function openFormationReservePicker(slotIndex){
+    if(!mobileBuilderMedia.matches||selectedFormationPlayerId||getFormationPlayer(formationTeamNumber,slotIndex))return;
+    const teamNumber=formationTeamNumber,team=teamByNumber(teamNumber),slot=FORMATIONS[formationByTeam[teamNumber]][slotIndex];
+    if(!slot)return;
+    const used=assignedIds(teamNumber),reserves=team.players.filter(player=>!used.has(player.id)&&secretPlayerAvailable(player));
+    if(teamNumber===0)reserves.sort(compareStandalonePlayers);
+    document.getElementById("formationReservePicker")?.remove();
+    const dialog=document.createElement("dialog"),top=window.scrollY;
+    dialog.id="formationReservePicker";dialog.className="phase4-sheet reserve-picker";
+    dialog.setAttribute("aria-labelledby","reservePickerTitle");
+    dialog.innerHTML=`<header class="phase4-sheet-heading"><h2 id="reservePickerTitle"><span>ADD PLAYER</span> <b data-i18n-ignore>// ${slot.label}</b></h2><button type="button" data-sheet-close aria-label="CLOSE">×</button></header><div class="phase4-sheet-content">${reserves.length?reserves.map(player=>{const fit=formationSlotFit(player,slot.label);return `<button type="button" class="reserve-picker-player ${fit}" data-reserve-pick="${player.id}"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="42" height="48"><span><strong data-i18n-ignore>${esc(player.name)}</strong>${positionBadges(player,true)}<small>OVR <b>${playerOverall(player)}</b></small></span><em>${fit==="best"?"BEST FIT":fit==="good"?"GOOD FIT":"OUT OF POSITION"}</em></button>`;}).join(""):'<p class="lore-empty">NO RESERVES AVAILABLE</p>'}</div>`;
+    dialog.addEventListener("click",event=>{
+        if(event.target===dialog||event.target.closest("[data-sheet-close]")){dialog.close();return;}
+        const button=event.target.closest("[data-reserve-pick]");if(!button||!dialog.open)return;
+        const id=Number(button.dataset.reservePick);
+        if(formationTeamNumber!==teamNumber||getFormationPlayer(teamNumber,slotIndex)||!reserves.some(player=>player.id===id)||assignedIds(teamNumber).has(id))return;
+        dialog.close();movePlayerToSlot(id,slotIndex);
+    });
+    dialog.addEventListener("close",()=>{dialog.remove();requestAnimationFrame(()=>{formationContent.querySelector(`[data-slot-index="${slotIndex}"]`)?.focus({preventScroll:true});window.scrollTo({top,behavior:"instant"});});},{once:true});
+    document.body.appendChild(dialog);dialog.showModal();dialog.querySelector("[data-sheet-close]").focus({preventScroll:true});prioritizeVisiblePortraits(dialog);
+}
+
 function mobileBuilderPlayerMarkup(team){
     const player=team.players.find(p=>p.id===selectedFormationPlayerId);
     if(!player)return `<section class="mobile-builder-player mobile-builder-player-empty"><span>SELECT A PLAYER</span><p>TAP PLAYER, THEN TAP POSITION</p></section>`;
