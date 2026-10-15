@@ -75,7 +75,7 @@ function initHomepagePreview(){
 const homepageChemistryPlayers={a:1,b:26};
 function homepagePlayerMatches(query){
     const text=normalizeLoreSearch(query.trim());
-    return players.filter(player=>!text||normalizeLoreSearch([player.name,...verifiedPlayerAliases(player.id).flatMap(alias=>[alias.name,window.SiteI18n?.text(alias.name)||alias.name])].join(" ")).includes(text))
+    return players.filter(player=>!player.secretCharacter&&(!text||normalizeLoreSearch([player.name,...verifiedPlayerAliases(player.id).flatMap(alias=>[alias.name,window.SiteI18n?.text(alias.name)||alias.name])].join(" ")).includes(text)))
         .sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id);
 }
 function renderHomepagePlayerLookup(){
@@ -83,7 +83,7 @@ function renderHomepagePlayerLookup(){
     const matches=homepagePlayerMatches(input.value),shown=matches.slice(0,6);
     document.getElementById("homePlayerResultStatus").textContent=input.value.trim()
         ?`${matches.length} MATCH${matches.length===1?"":"ES"}${matches.length>6?" // SHOWING FIRST 6":""}`
-        :`TOP RATED // ${shown.length} OF ${players.length} PLAYERS`;
+        :`TOP RATED // ${shown.length} OF ${players.filter(player=>!player.secretCharacter).length} PLAYERS`;
     grid.innerHTML=shown.length?shown.map(player=>`<a class="scout-player" href="${homepageCharacterUrl(player)}">
       <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="48" height="54" loading="lazy" decoding="async">
       <span><strong>${esc(player.name)}</strong><small>${esc(primaryPosition(player))} // OVR ${playerOverall(player)} <b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></small></span><b aria-hidden="true">↗</b>

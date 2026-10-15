@@ -168,12 +168,13 @@ const playerSearchInput=document.getElementById("playerSearch");
 if(secretCharactersUnlocked)playerSearchInput.placeholder="SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...";
 playerSearchInput.addEventListener("input",()=>{
     if(playerSearchInput.value.trim()===SECRET_CHARACTER_CODE){
-        unlockSecretCharacters();
+        const unlocked=toggleSecretCharactersUnlocked();
         playerSearchInput.value="";
-        playerSearchInput.placeholder="SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...";
+        playerSearchInput.placeholder=unlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
         document.getElementById("playerGroupFilter").value="all";
         document.getElementById("playerPositionFilter").value="ALL";
         playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
+        recomputeSelectedPlayersFromCategories();
         renderPlayerPool();
         saveSetupPreferences();
         return;

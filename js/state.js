@@ -15,10 +15,21 @@ const SECRET_CHARACTER_CODE = "28032009";
 const SECRET_CHARACTER_UNLOCK_KEY = "bldSecretCharactersUnlockedV1";
 let secretCharactersUnlocked = false;
 try { secretCharactersUnlocked = localStorage.getItem(SECRET_CHARACTER_UNLOCK_KEY) === "true"; } catch {}
-function unlockSecretCharacters(){
-    secretCharactersUnlocked = true;
-    try { localStorage.setItem(SECRET_CHARACTER_UNLOCK_KEY, "true"); } catch {}
+function setSecretCharactersUnlocked(unlocked){
+    secretCharactersUnlocked = Boolean(unlocked);
+    try { localStorage.setItem(SECRET_CHARACTER_UNLOCK_KEY, String(secretCharactersUnlocked)); } catch {}
+    if(!secretCharactersUnlocked){
+        players.filter(player=>player.secretCharacter).forEach(player=>{
+            selectedPlayerIds.delete(player.id);
+            playerPoolManualOverrides[player.id]=false;
+            if(typeof standaloneBuilderPlayerIds!=="undefined")standaloneBuilderPlayerIds.delete(player.id);
+        });
+        if(typeof standaloneBuilderSyncTeam==="function")standaloneBuilderSyncTeam();
+        if(typeof saveStandaloneBuilderState==="function")saveStandaloneBuilderState();
+    }
 }
+function unlockSecretCharacters(){setSecretCharactersUnlocked(true);}
+function toggleSecretCharactersUnlocked(){setSecretCharactersUnlocked(!secretCharactersUnlocked);return secretCharactersUnlocked;}
 function secretPlayerAvailable(player){return !!player && (!player.secretCharacter || secretCharactersUnlocked);}
 let selectedPlayerIds = new Set(players.filter(player => !player.secretCharacter).map(player => player.id));
 let playerPoolPositionFilter = "ALL";
