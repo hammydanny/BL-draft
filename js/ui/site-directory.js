@@ -95,6 +95,7 @@ function initSiteDirectory(){
     const header=document.querySelector(".site-header"),directory=document.getElementById("siteDirectory");
     const toggle=document.getElementById("directoryMenuToggle"),groups=[...directory.querySelectorAll("details")];
     const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
+    const settingsUtilities=settingsToggle.closest(".site-utilities"),soundToggle=document.getElementById("soundToggle");
     // Keep the desktop directory; mobile shares its actions in a flat touch layout.
     const drawer=document.createElement("div");drawer.id="mobileDirectory";drawer.className="mobile-directory hidden";
     drawer.setAttribute("role","dialog");drawer.setAttribute("aria-modal","true");drawer.setAttribute("aria-labelledby","mobileDirectoryTitle");
@@ -141,6 +142,8 @@ function initSiteDirectory(){
     function closeSettings(restoreFocus=false){
         const wasOpen=!settings.hidden;
         if(wasOpen)setSiteDialogState(settings,false);
+        if(settingsUtilities)settingsUtilities.inert=false;
+        if(soundToggle)soundToggle.inert=false;
         settingsBackdrop.hidden=true;settingsToggle.setAttribute("aria-expanded","false");settingsToggle.setAttribute("aria-label","Open site settings");
         if(wasOpen&&restoreFocus)(isMobileSiteNavigation()?toggle:settingsReturnFocus).focus({preventScroll:true});
     }
@@ -156,7 +159,13 @@ function initSiteDirectory(){
     }
     function openSettings(){
         closeDirectory();settingsReturnFocus=document.activeElement;refreshSettings();
-        setSiteDialogState(settings,true);settingsBackdrop.hidden=false;
+        setSiteDialogState(settings,true);
+        // The dialog controller correctly inerts background branches, but the
+        // settings gear lives inside one of those branches. Re-enable only its
+        // utility row so the same gear can close the panel; keep SFX inert.
+        if(settingsUtilities)settingsUtilities.inert=false;
+        if(soundToggle)soundToggle.inert=true;
+        settingsBackdrop.hidden=false;
         settingsToggle.setAttribute("aria-expanded","true");settingsToggle.setAttribute("aria-label","Close site settings");settings.querySelector("[data-settings-close]").focus();
     }
     settingsToggle.addEventListener("click",event=>{event.stopPropagation();if(settings.hidden)openSettings();else closeSettings(true);});
