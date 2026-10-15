@@ -21,7 +21,7 @@
     function syncAssets(){
         const light=resolvedTheme()==="light";
         const theme=light?"light":"dark";
-        const logoUrl=asset(light?"images/bld-logo-light.svg":"images/bld-logo-header.webp");
+        const logoUrl=asset(light?"images/bld-logo-light.svg":"images/bld-logo-header-hd.webp")+"&header=phase2";
         if(typeof Image==="function"&&!warmedBrandAssets.has(logoUrl)){
             warmedBrandAssets.add(logoUrl);const preload=new Image();preload.fetchPriority="high";preload.src=logoUrl;
         }

@@ -2,6 +2,56 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 let overlayHideTimer=null;
+const mobileAuctionMedia=window.matchMedia("(max-width:1024px)");
+const mobileAuctionExpandedTeams=new Set();
+function defaultMobileAuctionStatsExpanded(){return mobileAuctionMedia.matches&&window.matchMedia("(min-width:768px) and (min-height:501px)").matches;}
+let mobileAuctionStatsExpanded=defaultMobileAuctionStatsExpanded(),mobileAuctionHistoryExpanded=false,mobileAuctionDockObserver=null;
+let lastAuctionTouchAction=0;
+function isMobileAuctionLayout(){return mobileAuctionMedia.matches;}
+function auctionTouchAction(action){
+    return event=>{
+        if(event?.pointerType==="touch"){
+            const now=performance.now();if(lastAuctionTouchAction&&now-lastAuctionTouchAction<320)return;lastAuctionTouchAction=now;
+        }
+        action();
+    };
+}
+function measureMobileAuctionDock(){
+    const action=auctionContent.querySelector(".action-container");
+    const dock=isMobileAuctionLayout()&&action&&["opening","bidding","zero","sold"].includes(uiState.phase);
+    auctionScreen.style.setProperty("--auction-dock-height",dock?`${Math.ceil(action.getBoundingClientRect().height)}px`:"0px");
+}
+function syncMobileAuctionPresentation(){
+    auctionScreen.dataset.auctionPhase=uiState.phase;
+    const action=auctionContent.querySelector(".action-container");
+    if(!action)return;
+    action.setAttribute("role","region");action.setAttribute("aria-label","AUCTION CONTROL");
+    if(isMobileAuctionLayout())action.style.removeProperty("min-height");
+    let notice=auctionContent.querySelector(".mobile-auction-notice");
+    if(!notice){notice=document.createElement("div");notice.className="mobile-auction-notice";auctionContent.querySelector(".current-player")?.after(notice);}
+    const explanation=action.querySelector(".bid-panel>p");
+    if(notice){notice.innerHTML=uiState.phase==="zero"?(explanation?.innerHTML||""):"";notice.hidden=uiState.phase!=="zero";}
+    mobileAuctionDockObserver?.disconnect();
+    if(typeof ResizeObserver==="function"){
+        mobileAuctionDockObserver=new ResizeObserver(measureMobileAuctionDock);mobileAuctionDockObserver.observe(action);
+    }
+    measureMobileAuctionDock();
+}
+auctionContent.addEventListener("click",event=>{
+    const teamButton=event.target.closest("[data-auction-team]");
+    if(teamButton){
+        const number=Number(teamButton.dataset.auctionTeam),expanded=!mobileAuctionExpandedTeams.has(number);
+        if(expanded)mobileAuctionExpandedTeams.add(number);else mobileAuctionExpandedTeams.delete(number);
+        teamButton.setAttribute("aria-expanded",String(expanded));teamButton.closest(".side-team").classList.toggle("is-expanded",expanded);
+        prioritizeVisiblePortraits(teamButton.closest(".side-team"));
+    }
+    const statsButton=event.target.closest("[data-auction-stats]");
+    if(statsButton){mobileAuctionStatsExpanded=!mobileAuctionStatsExpanded;statsButton.setAttribute("aria-expanded",String(mobileAuctionStatsExpanded));statsButton.closest(".auction-attributes").classList.toggle("is-expanded",mobileAuctionStatsExpanded);}
+    const historyButton=event.target.closest("[data-auction-history]");
+    if(historyButton){mobileAuctionHistoryExpanded=!mobileAuctionHistoryExpanded;historyButton.setAttribute("aria-expanded",String(mobileAuctionHistoryExpanded));historyButton.closest(".auction-history-panel").classList.toggle("is-expanded",mobileAuctionHistoryExpanded);prioritizeVisiblePortraits(historyButton.closest(".auction-history-panel"));}
+});
+window.addEventListener("resize",measureMobileAuctionDock);
+mobileAuctionMedia.addEventListener("change",measureMobileAuctionDock);
 
 function createPlayerCard(){
     return `<div class="current-player">
@@ -12,10 +62,11 @@ function createPlayerCard(){
           <div class="auction-player-heading"><div>
           <div class="player-card-label">AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
           <div class="player-card-name">${esc(currentPlayer.name)}</div>${playerNationalityMarkup(currentPlayer)}${positionBadges(currentPlayer)}
+          <div class="mobile-evaluation-score"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b>${playerStatGrade(playerOverall(currentPlayer))}</b></div>
           </div></div>
         </div>
       </div>
-        ${playerStatsRadar(currentPlayer,"auction",{overall:playerOverall(currentPlayer),position:primaryPosition(currentPlayer)})}
+        <div class="auction-attributes ${mobileAuctionStatsExpanded?"is-expanded":""}"><button type="button" class="auction-stats-toggle" data-auction-stats aria-expanded="${mobileAuctionStatsExpanded}" aria-controls="auctionPlayerStats"><span>ATTRIBUTE ANALYSIS</span><b aria-hidden="true">⌄</b></button><div id="auctionPlayerStats" class="auction-stats-body">${playerStatsRadar(currentPlayer,"auction",{overall:playerOverall(currentPlayer),position:primaryPosition(currentPlayer)})}</div></div>
     </div>`;
 }
 
@@ -39,7 +90,10 @@ function createTeamTracker(team,number){
     else if(slotsLeft<=2)warnings.push(`${slotsLeft} SLOT${slotsLeft===1?"":"S"} LEFT`);
     if(lowBudget)warnings.push("LOW CAPITAL");
     if(team.budget===0)warnings.push("NO CAPITAL");
-    return `<aside class="team-tracker side-team team-${number} ${isTurn?"is-turn":""} ${isLeader?"is-leader":""}" style="${teamVars(team)}">
+    const expanded=mobileAuctionExpandedTeams.has(number);
+    return `<aside class="team-tracker side-team team-${number} ${isTurn?"is-turn":""} ${isLeader?"is-leader":""} ${expanded?"is-expanded":""}" style="${teamVars(team)}">
+      <button type="button" class="mobile-team-summary" data-auction-team="${number}" aria-expanded="${expanded}" aria-controls="auctionTeam${number}Details"><strong data-i18n-ignore>${esc(team.name)}</strong><span class="mobile-team-budget">$${team.budget.toLocaleString()}</span><span class="mobile-team-count">${team.players.length}/${maxPlayers} <b aria-hidden="true">⌄</b></span><small>${isTurn?"● ACTIVE TURN":isLeader?"◆ LEADING BID":full?"ROSTER FULL":team.budget===0?"NO CAPITAL":"SQUAD STATUS"}</small>${(isTurn||isLeader)&&(full||team.budget===0)?`<small class="mobile-team-alert">${full?"ROSTER FULL":"NO CAPITAL"}</small>`:""}</button>
+      <div id="auctionTeam${number}Details" class="team-tracker-details">
       <div class="team-accent"></div>
       <div class="team-live-state">${isTurn?"● ACTIVE TURN":isLeader?"◆ LEADING BID":"SQUAD STATUS"}</div>
       <div class="team-header">
@@ -52,7 +106,7 @@ function createTeamTracker(team,number){
       </div>
       <div class="budget-bar"><i style="width:${budgetPct}%"></i></div>
       ${warnings.length?`<div class="strategy-warning">${warnings.join(" // ")}</div>`:"<div class=\"strategy-clear\">BUDGET HEALTHY // SQUAD OPEN</div>"}
-      <div class="mini-roster">${roster}</div>
+      <div class="mini-roster">${roster}</div></div>
     </aside>`;
 }
 
@@ -74,7 +128,7 @@ function displayOpeningBid(){
         <button id="placeOpeningBid" class="primary-button team-action"><span>LOCK OPENING BID</span><b>→</b></button>
       </div>`);
     const input=document.getElementById("openingBid");
-    document.getElementById("placeOpeningBid").addEventListener("click",placeOpeningBid);
+    document.getElementById("placeOpeningBid").addEventListener("click",auctionTouchAction(placeOpeningBid));
     enableEnterKey(input,placeOpeningBid); focusBidInput(input);
 }
 
@@ -86,7 +140,7 @@ function turnIndicator(label,team){
 
 function moneyInput(id,value,min){
     const label={openingBid:"Opening bid",nextBid:"Next bid",controlBid:"Control bid"}[id]||"Bid amount";
-    return `<div class="money-input"><span>$</span><input type="number" id="${id}" aria-label="${label}" value="${value}" min="${min}" step="${bidIncrement}"></div>`;
+    return `<div class="money-input"><span>$</span><input type="number" inputmode="decimal" id="${id}" aria-label="${label}" value="${value}" min="${min}" step="${bidIncrement}"></div>`;
 }
 
 function bidPressureRow(team,minBid){
@@ -95,7 +149,7 @@ function bidPressureRow(team,minBid){
 }
 
 function createQuickBidButtons(id){
-    return `<div class="quick-bids">
+    return `<div class="quick-bids${bidIncrement*10>=1000?" quick-bids-wide":""}">
       <button type="button" onclick="increaseBidInput('${id}',${bidIncrement})">+$${bidIncrement.toLocaleString()}</button>
       <button type="button" onclick="increaseBidInput('${id}',${bidIncrement*5})">+$${(bidIncrement*5).toLocaleString()}</button>
       <button type="button" onclick="increaseBidInput('${id}',${bidIncrement*10})">+$${(bidIncrement*10).toLocaleString()}</button>
@@ -127,8 +181,8 @@ function displayBiddingTurn(teamNumber){
         <button id="passButton" class="pass-button">PASS // WITHDRAW</button></div>
       </div>`);
     const input=document.getElementById("nextBid");
-    document.getElementById("placeBidButton").addEventListener("click",()=>placeBid(teamNumber));
-    document.getElementById("passButton").addEventListener("click",passBid);
+    document.getElementById("placeBidButton").addEventListener("click",auctionTouchAction(()=>placeBid(teamNumber)));
+    document.getElementById("passButton").addEventListener("click",auctionTouchAction(passBid));
     enableEnterKey(input,()=>placeBid(teamNumber)); focusBidInput(input);
 }
 
@@ -161,29 +215,31 @@ function displayZeroBudgetChoice(n){
         <button id="controlPassButton" class="pass-button">PASS // RELEASE</button></div>
       </div>`);
     const input=document.getElementById("controlBid");
-    document.getElementById("buyPlayerButton").addEventListener("click",()=>buyWithControl(n));
-    document.getElementById("controlPassButton").addEventListener("click",()=>passWithControl(n));
+    document.getElementById("buyPlayerButton").addEventListener("click",auctionTouchAction(()=>buyWithControl(n)));
+    document.getElementById("controlPassButton").addEventListener("click",auctionTouchAction(()=>passWithControl(n)));
     enableEnterKey(input,()=>buyWithControl(n)); focusBidInput(input);
 }
 
 function focusBidInput(input){
     if(!input)return;
+    if(isMobileAuctionLayout())return; // Tapping the field opens the keyboard, not every new turn.
     try{input.focus({preventScroll:true});input.setSelectionRange(0,String(input.value).length);}catch(_){try{input.focus({preventScroll:true})}catch(__){}}
 }
 
-function enableEnterKey(input,action){input.addEventListener("keydown",e=>{if(e.key==="Enter")action();});}
+function enableEnterKey(input,action){input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.repeat){e.preventDefault();action();}});}
 
 function createAuctionHistoryPanel(){
-    const latest=[...auctionHistory].reverse().slice(0,6);
+    const latest=[...auctionHistory].reverse();
     const rows=latest.length?latest.map(x=>`
       <div class="history-row" style="--row-team:${accessibleTeamAccent(x.teamColor)}">
         <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(x.player)}" alt="${esc(x.player.name)}" loading="lazy" decoding="async" width="40" height="49">
         <div class="history-player"><strong>${esc(x.player.name)}</strong><span>AUCTION ${String(x.auction).padStart(2,"0")} // <b style="${teamVars({color:x.teamColor})};color:var(--team-heading,var(--team))">${esc(x.teamName)}</b></span></div>
         <div class="history-price">${x.price===0?"FREE":"$"+x.price.toLocaleString()}</div>
       </div>`).join(""):`<div class="history-empty">AWAITING FIRST TRANSFER...</div>`;
-    return `<section class="auction-history-panel">
+    return `<section class="auction-history-panel ${mobileAuctionHistoryExpanded?"is-expanded":""}">
+      <button type="button" class="mobile-history-toggle" data-auction-history aria-expanded="${mobileAuctionHistoryExpanded}" aria-controls="auctionHistoryRows"><span>AUCTION HISTORY</span><strong>${auctionHistory.length}</strong><b aria-hidden="true">⌄</b></button>
       <div class="history-heading"><div><span>TRANSFER DATABASE</span><h3>AUCTION HISTORY</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div>
-      <div class="history-list">${rows}</div>
+      <div id="auctionHistoryRows" class="history-list">${rows}</div>
     </section>`;
 }
 
@@ -211,7 +267,7 @@ function renderAuctionScreen(actionHTML){
     if(samePlayer){
         // Keep the immutable evaluation SVG/image and stabilize the action area
         // while the same player moves through bidding, zero-budget and sold states.
-        action.style.minHeight=action.getBoundingClientRect().height+"px";
+        if(!isMobileAuctionLayout())action.style.minHeight=action.getBoundingClientRect().height+"px";
         action.innerHTML=actionHTML;
         auctionContent.querySelectorAll(".side-team").forEach((node,index)=>{
             node.outerHTML=createTeamTracker(index===0?team1:team2,index+1);
@@ -219,9 +275,11 @@ function renderAuctionScreen(actionHTML){
         const historyPanel=auctionContent.querySelector(".auction-history-panel");
         if(historyPanel)historyPanel.outerHTML=createAuctionHistoryPanel();
         window.scrollTo({top:scroll,behavior:"instant"});
+        syncMobileAuctionPresentation();
         return;
     }
     auctionContent.dataset.playerId=String(currentPlayer.id);
+    mobileAuctionStatsExpanded=defaultMobileAuctionStatsExpanded();
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
     auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
       <div class="auction-command-grid">
@@ -232,6 +290,7 @@ function renderAuctionScreen(actionHTML){
       ${createAuctionHistoryPanel()}
     </div>`;
     window.scrollTo({top:previousPlayerId?scroll:0,behavior:"instant"});
+    syncMobileAuctionPresentation();
 }
 
 function updatePlayersRemaining(){
@@ -239,10 +298,12 @@ function updatePlayersRemaining(){
     playersRemainingDisplay.classList.remove("counter-pop");void playersRemainingDisplay.offsetWidth;playersRemainingDisplay.classList.add("counter-pop");
 }
 
-function showOverlay(html){
+function showOverlay(html,kind="reveal"){
     warmPlayerPortrait(currentPlayer);
     clearTimeout(overlayHideTimer);
     overlayContent.innerHTML=html;
+    gameOverlay.dataset.auctionOverlay=kind;
+    overlayContent.scrollTop=0;
     gameOverlay.classList.remove("hidden","overlay-out");
 }
 

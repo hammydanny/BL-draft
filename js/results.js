@@ -112,6 +112,8 @@ function createFullHistory(){
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
+    auctionScreen.dataset.auctionPhase="complete";
+    auctionScreen.style.setProperty("--auction-dock-height","0px");
     const wasComplete=uiState.phase==="complete";
     uiState={screen:"auction",phase:"complete",turn:null};saveGame();
     if(!wasComplete)playSfx("result");

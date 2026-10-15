@@ -308,7 +308,7 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
         assert.deepEqual(refs.map(src=>src.split('?')[0]),scripts,`${page}: script order`);
         refs.forEach((src,index)=>{
             assert(src.startsWith('js/site-preferences.js?')||tags[index].includes('defer'),`${page}: non-deferred application script`);
-            assert(src.endsWith(`?v=${data.APP_VERSION}`),`${page}: script cache version`);
+            assert.equal(new URL(src,baseURI).searchParams.get('v'),data.APP_VERSION,`${page}: script cache version`);
             assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing ${src}`);
         });
         for(const css of ['css/fonts.css','css/site-theme.css','style.css','css/player-stats.css','css/site-header.css']){
@@ -541,7 +541,7 @@ function appContext(initialStorage={},hash='#/'){
             classList:{add(...names){names.forEach(n=>classes.add(n));},remove(...names){names.forEach(n=>classes.delete(n));},
                 contains:name=>classes.has(name),toggle(name,force){const add=force??!classes.has(name);if(add)classes.add(name);else classes.delete(name);}},
             addEventListener(){},setAttribute(){},removeAttribute(){},hasAttribute(){return false;},appendChild(){},insertBefore(){},before(){},remove(){},focus(){},select(){},matches(){return false;},
-            querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]','[data-mobile-settings]','[data-directory-close]','.mobile-directory-backdrop'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
+            querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]','[data-mobile-settings]','[data-directory-close]','.mobile-directory-backdrop','.mobile-directory-panel'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
     };
     const element=id=>{if(!elements.has(id))elements.set(id,makeElement(id));return elements.get(id);};
     for(const match of html.matchAll(/<[^>]+\bid=["']([^"']+)["'][^>]*>/g)){
@@ -585,6 +585,28 @@ check('Mobile foundation loads on every route without restricting zoom; dialog l
         setSiteDialogState(confirm,false);assert(document.body.classList.contains('dialog-open'));
         setSiteDialogState(info,false);assert(!document.body.classList.contains('dialog-open'));
         assert.equal(localStorage.getItem(SAVE_KEY),'unchanged auction');assert.equal(localStorage.getItem(STANDALONE_SAVE_KEY),'unchanged builder');
+    `);
+});
+check('Phase 2 presentation preserves Auction state, exposes full history and uses original-source HD branding',()=>{
+    const source=fs.readFileSync(path.join(root,'images/bld-logo.png'));
+    assert.equal(source.readUInt32BE(16),1254,'Original high-resolution source retained');
+    const hd=fs.readFileSync(path.join(root,'images/bld-logo-header-hd.webp'));
+    const light=read('images/bld-logo-light.svg');
+    assert(light.includes('viewBox="0 0 512 512"'));
+    const embedded=/data:image\/webp;base64,([^\"]+)/.exec(light)?.[1];
+    assert(embedded&&Buffer.from(embedded,'base64').equals(hd),'Both themes derive from the same legitimate HD image');
+    for(const file of walk(root).filter(file=>file.endsWith('.html')))assert(fs.readFileSync(file,'utf8').includes('images/bld-logo-header-hd.webp?v=0.6.9.6&header=phase2'),'Every entry point uses HD branding');
+    const app=appContext();app.run(`
+        resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:11,selectedPlayers:players.slice(0,30)});
+        currentPlayer=playerById(3);startingTeam=1;auctionNumber=13;currentBid=50;currentBidder=1;
+        auctionHistory=players.slice(0,12).map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:'A',teamColor:team1.color,price:50}));
+        const before=JSON.stringify(auctionSnapshot());
+        const history=createAuctionHistoryPanel();assert.equal((history.match(/class="history-row"/g)||[]).length,12);
+        assert(history.includes('aria-controls="auctionHistoryRows"'));
+        const team=createTeamTracker(team1,1);assert(team.includes('aria-controls="auctionTeam1Details"'));
+        const card=createPlayerCard();assert(card.includes('aria-controls="auctionPlayerStats"'));assert(card.includes(playerNationalityMarkup(currentPlayer)));
+        assert(moneyInput('nextBid',100,100).includes('inputmode="decimal"'));
+        assert.equal(JSON.stringify(auctionSnapshot()),before,'Presentation must not mutate bids, budgets, queue, rosters or history');
     `);
 });
 check('v0.6.3 player expansion, conservative estimates and stable chronology',()=>{

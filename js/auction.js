@@ -203,7 +203,7 @@ function showCoinFlip(){
         <div class="coin-face coin-front" style="${teamVars(team1)}"><span>1</span></div>
         <div class="coin-face coin-back" style="${teamVars(team2)}"><span>2</span></div>
       </div></div>
-      <p>DETERMINING FIRST TEAM</p>`);
+      <p>DETERMINING FIRST TEAM</p>`,"coin");
     // The existing physical flip lasts 2 seconds. Announce its existing result
     // only after the coin has settled; never draw another random winner.
     scheduleAuctionTransition(showCoinResult,2200);
@@ -214,7 +214,7 @@ function showCoinResult(){
     showOverlay(`
       <div class="overlay-kicker">COIN FLIP RESULT</div>
       <h2 class="coin-winner" data-i18n-ignore style="${teamVars(winner)};color:var(--team-heading,var(--team))">${esc(winner.name)}</h2>
-      <p class="coin-first-label">GOES FIRST</p>`);
+      <p class="coin-first-label">GOES FIRST</p>`,"coin-result");
     scheduleAuctionTransition(()=>hideOverlay(startNextAuction),1400);
 }
 
@@ -248,7 +248,7 @@ function showForcedAssignment(teamNumber,resuming=false,hold=false){
       <h2>${esc(currentPlayer.name)}</h2>
       ${playerNationalityMarkup(currentPlayer)}
       <p><strong style="${teamVars(fullTeam)};color:var(--team-heading,var(--team))">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
-      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div><div class="assignment-controls"><button id="assignmentUndoButton" class="context-control" type="button" ${auctionUndoStack.length?"":"disabled"}>↶ <span>UNDO</span></button>${hold?'<button id="resumeAssignedPlayer" class="primary-button"><span>NEXT PLAYER</span><b>→</b></button>':''}</div>`);
+      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div><div class="assignment-controls"><button id="assignmentUndoButton" class="context-control" type="button" ${auctionUndoStack.length?"":"disabled"}>↶ <span>UNDO</span></button>${hold?'<button id="resumeAssignedPlayer" class="primary-button"><span>NEXT PLAYER</span><b>→</b></button>':''}</div>`,"assigned");
     document.getElementById("assignmentUndoButton").addEventListener("click",undoAuctionAction);
     if(hold){document.getElementById("resumeAssignedPlayer").addEventListener("click",advanceToNextAuction);return;}
     const delay=resuming?500:1500;
@@ -287,6 +287,7 @@ function showPlayerReveal(){
       <div class="overlay-eyebrow">PLAYER SELECTED</div>
       <h2>${esc(currentPlayer.name)}</h2>
       ${playerNationalityMarkup(currentPlayer)}
+      <div class="mobile-reveal-evaluation">${positionBadges(currentPlayer)}<strong>OVR ${playerOverall(currentPlayer)} <b>${playerStatGrade(playerOverall(currentPlayer))}</b></strong></div>
       <div class="auction-number">AUCTION // ${String(auctionNumber).padStart(2,"0")}</div>`);
     scheduleAuctionTransition(()=>hideOverlay(displayOpeningBid),1500);
 }

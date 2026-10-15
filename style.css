@@ -994,18 +994,7 @@ html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, .share
   .pool-filter-grid{grid-template-columns:repeat(3,1fr)!important}
   .pool-actions{display:grid!important;grid-template-columns:repeat(3,1fr)!important}
 
-  /* Auction: bidding always comes first;team ledgers follow underneath. */
-  .auction-command-grid{
-    display:flex!important;flex-direction:column!important;gap:8px!important;padding:8px!important
-  }
-  .auction-command-center{order:1!important;width:100%!important;max-width:none!important}
-  .auction-command-grid>.side-team.team-1{order:2!important}
-  .auction-command-grid>.side-team.team-2{order:3!important}
-  .auction-command-grid>.side-team{width:100%!important;max-width:none!important}
-
-  .auction-bid-panel,.opening-bid-panel{padding:11px!important}
-  .quick-bids{grid-template-columns:repeat(3,1fr)!important}
-  .side-team .mini-roster{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:230px!important;overflow:auto!important}
+  /* Auction responsive layout is owned by css/mobile.css (Phase 2). */
 
   #formation-screen{padding:12px 12px 30px!important}
   #formation-content{margin:10px auto!important}
