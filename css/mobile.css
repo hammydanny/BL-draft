@@ -1,0 +1,130 @@
+/* v0.6.9.6 / Phase 1 — shared mobile foundation.
+   Content bands: <360 compact, 360–479 phone, 480–767 wide phone,
+   768–1024 tablet. The header also folds when translated desktop links
+   no longer fit; page-specific gameplay layouts remain in their own files. */
+:root{
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);
+  --shell-left:max(var(--shell-gutter),var(--safe-left));--shell-right:max(var(--shell-gutter),var(--safe-right));
+  --touch-target:44px;
+}
+.mobile-page-context,.mobile-directory{display:none}
+.settings-backdrop{position:fixed;inset:0;z-index:-1;width:100%;height:100%;border:0;padding:0;background:rgba(0,6,16,.45);backdrop-filter:blur(3px);transform:none;filter:none}
+.settings-backdrop[hidden],.mobile-directory[hidden],.mobile-directory .mobile-secondary-links [hidden]{display:none}
+.site-header:has(.site-settings:not([hidden])){z-index:1002}
+.site-settings{z-index:4}
+/* Fixed-body locking also prevents background swipes on touch Safari. The
+   shared dialog controller records/restores the exact document scroll offset. */
+body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0);width:100%;overflow:hidden}
+.info-card,.quick-draft-card,.confirm-card,.site-settings{overscroll-behavior:contain;scrollbar-gutter:stable;scroll-padding-block:20px}
+.confirm-card{max-height:calc(100dvh - 40px);overflow:auto}
+.info-modal,.quick-draft-overlay,.confirm-modal{overscroll-behavior:contain}
+.info-modal :is(h2,h3,h4,p),.confirm-card :is(h2,p){overflow-wrap:anywhere}
+.info-close{position:sticky;float:right;top:0;z-index:2;margin:-12px -4px 0 8px}
+.mobile-directory button,.mobile-directory a{font-family:inherit;cursor:pointer}
+:root[data-header-compact]{--header-height:calc(var(--header-height-mobile) + var(--safe-top));--utility-size:44px}
+:root[data-header-compact] .site-header{padding-top:var(--safe-top)}
+:root[data-header-compact] .site-header-inner{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;grid-template-rows:1fr;gap:12px;width:calc(100% - var(--shell-left) - var(--shell-right));height:var(--header-height-mobile);margin-left:var(--shell-left);margin-right:var(--shell-right)}
+:root[data-header-compact] .site-header-brand{grid-column:1;grid-row:1;justify-content:center;width:44px;height:44px;gap:0}
+:root[data-header-compact] .site-header-brand>span{display:none}
+:root[data-header-compact] .site-header-brand-logo{flex-basis:36px;width:36px;height:36px}
+:root[data-header-compact] :is(.site-directory,.site-utilities,.site-breadcrumb,.directory-backdrop){display:none}
+:root[data-header-compact] .mobile-page-context{display:block;grid-column:2;grid-row:1;min-width:0;max-height:2.8em;overflow:hidden;text-align:center;overflow-wrap:anywhere;color:var(--text-primary);font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.5px}
+:root[data-header-compact] .directory-menu-toggle{display:grid;place-items:center;grid-column:3;grid-row:1;width:44px;height:44px;padding:0;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:3px}
+:root[data-header-compact] .directory-menu-toggle span{font-size:28px;line-height:1}
+:root[data-header-compact] .mobile-directory:not(.hidden){display:block;position:fixed;inset:var(--visual-viewport-top,0px) 0 auto;z-index:1100;height:var(--visual-viewport-height,100dvh);isolation:isolate}
+.mobile-directory-backdrop{position:absolute;inset:0;z-index:-1;width:100%;height:100%;padding:0;border:0;background:rgba(0,6,16,.6);backdrop-filter:blur(4px);transform:none;filter:none}
+.mobile-directory-panel{display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:absolute;inset:0 0 0 auto;width:min(420px,calc(100% - 20px));max-width:100%;padding:var(--safe-top) max(16px,var(--safe-right)) var(--safe-bottom) 16px;background:var(--bg-surface);border-left:1px solid var(--border-strong);box-shadow:var(--shadow-strong);animation:mobile-drawer-in var(--motion-enter) ease-out both}
+@keyframes mobile-drawer-in{from{opacity:0}to{opacity:1}}
+.mobile-directory-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px 12px;border-bottom:1px solid var(--border-line)}
+.mobile-directory-heading>div{min-width:0}
+.mobile-directory-heading span{color:var(--accent-text);font:800 italic 16px "Barlow Condensed",sans-serif;letter-spacing:.5px}
+.mobile-directory-heading h2{margin:4px 0 0;font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.mobile-directory-heading button{flex:0 0 44px;width:44px;height:44px;padding:0;font-size:28px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:3px}
+.mobile-directory-links{min-height:0;overflow:auto;overscroll-behavior:contain;padding-block:12px;scroll-padding-block:8px;scrollbar-width:thin}
+.mobile-primary-links{display:grid;gap:6px}
+.mobile-primary-links button{display:flex;align-items:center;gap:14px;min-width:0;min-height:52px;padding:10px 14px;text-align:start;border:1px solid var(--border-subtle);border-radius:3px;background:var(--bg-surface-raised);color:var(--text-secondary)}
+.mobile-primary-links button>span{flex:0 0 24px;color:var(--text-muted);font-size:13px;letter-spacing:1px}
+.mobile-primary-links strong{min-width:0;font-size:17px;line-height:1.25;overflow-wrap:anywhere}
+.mobile-primary-links [aria-current="page"]{color:var(--accent-text);border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 var(--accent)}
+.mobile-secondary-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-line)}
+.mobile-secondary-links :is(button,a){display:flex;align-items:center;justify-content:flex-start;min-width:0;min-height:44px;padding:9px 8px;text-align:start;color:var(--text-secondary);background:transparent;border:1px solid transparent;border-radius:3px;text-decoration:none;font-size:14px;font-weight:700;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+.mobile-secondary-links [aria-current="page"]{color:var(--accent-text);border-color:var(--accent);background:var(--accent-soft)}
+.mobile-settings-entry{display:grid;grid-template-columns:minmax(0,1fr) 28px;gap:4px 12px;align-items:center;min-height:72px;margin:0;padding:12px 8px;text-align:start;background:transparent;border:0;border-top:1px solid var(--border-strong);color:var(--text-primary)}
+.mobile-settings-entry strong{font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.mobile-settings-entry>span{grid-row:2;color:var(--text-muted);font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.mobile-settings-entry b{grid-column:2;grid-row:1/3;font-size:24px;font-weight:400}
+.mobile-directory :is(button,a):is(:hover,:focus-visible){border-color:var(--accent);color:var(--accent-text);background:var(--bg-hover)}
+.mobile-directory :is(button,a):active{background:var(--accent-soft)}
+:root[data-header-compact] .site-settings{position:fixed;inset:calc(var(--visual-viewport-top,0px) + var(--safe-top) + 8px) max(12px,var(--safe-right)) auto auto;width:min(420px,calc(100% - max(12px,var(--safe-left)) - max(12px,var(--safe-right))));max-width:none;max-height:calc(var(--visual-viewport-height,100dvh) - var(--safe-top) - var(--safe-bottom) - 16px);padding:18px}
+:root[data-header-compact] .site-settings-heading{position:sticky;top:-18px;z-index:1;padding-block:4px 10px;background:var(--bg-surface)}
+:root[data-header-compact] .site-settings-heading button{width:44px;height:44px;flex:0 0 44px}
+:root[data-header-compact] .preference-options label,:root[data-header-compact] .settings-reset{min-height:44px;font-size:14px}
+:root[data-header-compact] .site-settings legend{font-size:13px}
+/* Arabic text reads RTL, while brand / page / menu keep stable positions. */
+:lang(ar) .mobile-page-context,:lang(ar) .mobile-directory :is(strong,h2,a),:lang(ar) .mobile-settings-entry>span{direction:rtl;unicode-bidi:plaintext;letter-spacing:0}
+:lang(ar) .mobile-primary-links strong{flex:1;text-align:right}
+:lang(ar) .mobile-secondary-links :is(button,a){direction:rtl;text-align:right}
+
+@media(max-width:1024px){
+  :root{--shell-gutter:24px}
+  body{min-height:100svh}
+  #setup-screen,#auction-screen,#formation-screen,.lore-screen{min-height:calc(100svh - var(--header-height));padding-inline:var(--shell-left) var(--shell-right)}
+  .menu-screen{padding-inline:var(--shell-left) var(--shell-right)}
+  .legal-page,.not-found-page{width:calc(100% - var(--shell-left) - var(--shell-right))}
+  .site-footer{padding-inline:var(--shell-left) var(--shell-right);padding-bottom:max(16px,var(--safe-bottom))}
+  .page-context{gap:12px}
+  .page-context h1{font-size:clamp(26px,4.5vw,34px);line-height:1.15}
+  .page-context-code,.page-context-status{letter-spacing:.5px}
+  .home-hero h1{font-size:clamp(50px,11vw,76px)}
+  .information-heading h1,.legal-document-header h2{font-size:clamp(28px,5.5vw,42px);overflow-wrap:anywhere}
+  input:not([type=radio],[type=checkbox],[type=color],[type=range]),select,textarea{font-size:16px;scroll-margin-block:calc(var(--header-height) + 16px) 32px}
+  :is(.site-footer,.page-context,.info-modal,.confirm-modal,.quick-draft-overlay,.home-preview-controls,.home-introduction) :is(button,a),.site-settings button{min-height:44px}
+  .home-preview-controls button{min-width:44px}
+  .home-preview-dots{flex-wrap:wrap;justify-content:center}
+  .info-modal,.quick-draft-overlay,.confirm-modal,.game-overlay{inset:var(--visual-viewport-top,0px) 0 auto;height:var(--visual-viewport-height,100dvh);padding:max(12px,var(--safe-top)) max(12px,var(--safe-right)) max(12px,var(--safe-bottom)) max(12px,var(--safe-left));overflow:hidden}
+  .info-card,.quick-draft-card,.confirm-card{max-height:100%;min-height:0;max-width:100%;padding:20px 16px;overflow:auto;scroll-padding-block:16px}
+  .quick-draft-heading,.site-settings-heading{gap:10px}
+  .quick-draft-heading h2,.confirm-card h2,.info-card h2{font-size:clamp(25px,6vw,34px);line-height:1.2;overflow-wrap:anywhere}
+  .quick-draft-card .quick-color input{height:44px}
+  .confirm-actions button{min-height:44px;padding:10px;overflow-wrap:anywhere}
+  .game-overlay{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);gap:8px}
+  .overlay-content{max-width:100%;max-height:calc(var(--visual-viewport-height,100dvh) - max(12px,var(--safe-top)) - max(12px,var(--safe-bottom)) - 32px);overflow:auto;overscroll-behavior:contain}
+  .info-card,.confirm-card,.quick-draft-card{clip-path:none}
+}
+@media(min-width:768px){
+  :root[data-header-compact]{--header-height-mobile:64px}
+  :root[data-header-compact] .site-header-inner{grid-template-columns:220px minmax(0,1fr) 44px;gap:20px}
+  :root[data-header-compact] .site-header-brand{justify-content:flex-start;width:220px;gap:10px}
+  :root[data-header-compact] .site-header-brand>span{display:block;width:auto;font-size:24px}
+  :root[data-header-compact] .mobile-page-context{font-size:16px}
+}
+@media(max-width:767px){:root{--shell-gutter:16px}.page-context-tools{gap:8px}.site-footer{margin-top:24px}}
+@media(max-width:479px){
+  :root{--shell-gutter:12px}
+  .home-section-heading h2,.database-intro h2{font-size:clamp(24px,6.5vw,30px)}
+  .home-section-heading{gap:10px}
+  .footer-inner{gap:20px 14px}
+  .quick-draft-teams{grid-template-columns:minmax(0,1fr)}
+  .home-preview-controls{gap:4px}
+  .home-preview-dots{gap:2px}
+}
+@media(max-width:359px){
+  :root{--shell-gutter:10px}
+  :root[data-header-compact] .site-header-inner{gap:8px}
+  .mobile-directory-panel{width:100%;padding-inline:max(12px,var(--safe-left)) max(12px,var(--safe-right))}
+  .mobile-primary-links button{min-height:48px;padding-inline:12px}
+  .mobile-secondary-links{gap:4px}
+  .home-preview-controls{flex-wrap:wrap;justify-content:center}
+  .home-preview-dots{order:3;flex-basis:100%}
+}
+@media(max-height:500px) and (max-width:1024px){
+  :root[data-header-compact]{--header-height-mobile:52px}
+  .mobile-directory-heading{padding-block:8px}
+  .mobile-directory-heading span{display:none}
+  .mobile-settings-entry{min-height:56px;padding-block:6px}
+  .mobile-directory-links{padding-block:8px}
+  .info-card,.quick-draft-card,.confirm-card{padding-top:14px;padding-bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){.mobile-directory-panel{animation:none}}
+@media print{.mobile-directory,.mobile-page-context,.settings-backdrop{display:none!important}body.dialog-open{position:static;width:auto}}

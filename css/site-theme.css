@@ -19,7 +19,7 @@
   --captain-text:#ffe269;--share-text:#d6c9ff;--role-canon:#8affc4;
   --radar-glow:rgba(54,199,255,.55);--radar-cyan:#68e2ff;--radar-grid:#275269;--radar-spoke:#214154;--radar-fill:rgba(32,183,255,.24);
   --header-bg:#030a12;--shadow-soft:0 8px 24px rgba(0,0,0,.2);--shadow-strong:0 18px 48px rgba(0,0,0,.4);
-  --site-width:1540px;--content-width:1180px;--header-height:72px;--header-height-mobile:88px;--logo-size:40px;
+  --site-width:1540px;--content-width:1180px;--header-height:72px;--header-height-mobile:56px;--logo-size:40px;
   --shell-gutter:20px;--utility-size:40px;--context-gap:18px;
   --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;
   --panel-radius:3px;--motion-fast:140ms;--motion-enter:220ms;

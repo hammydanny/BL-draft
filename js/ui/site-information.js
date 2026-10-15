@@ -1,20 +1,52 @@
 // One information modal for the game pages and the standalone project pages.
 let infoModalReturnFocus=null;
 const siteDialogBackground=new Map();
+const activeSiteDialogs=[];
+let siteDialogScrollY=0;
 function setSiteDialogState(modal,open){
-    if(open)window.dispatchEvent(new CustomEvent("bld:dialog-open",{detail:{}}));
+    if(open)window.dispatchEvent(new CustomEvent("bld:dialog-open",{detail:{modal}}));
+    const index=activeSiteDialogs.indexOf(modal);
+    if(index!==-1)activeSiteDialogs.splice(index,1);
+    const wasLocked=document.body.classList.contains("dialog-open");
+    if(open)activeSiteDialogs.push(modal);
     modal.classList.toggle("hidden",!open);
-    if(open){
-        document.querySelectorAll(".site-header,main,.site-footer").forEach(element=>{
-            if(!siteDialogBackground.has(element))siteDialogBackground.set(element,element.inert);
-            element.inert=true;
-        });
-    }else{
-        for(const [element,inert] of siteDialogBackground)element.inert=inert;
-        siteDialogBackground.clear();
+    modal.hidden=!open;
+    for(const [element,inert] of siteDialogBackground)element.inert=inert;
+    siteDialogBackground.clear();
+    // Inert sibling branches, including the rest of a header-hosted settings
+    // dialog. Never inert an ancestor of the active dialog itself.
+    let branch=activeSiteDialogs.at(-1);
+    while(branch&&branch!==document.body){
+        for(const sibling of branch.parentElement?.children||[]){
+            if(sibling===branch||sibling.matches("script,style,link,[data-dialog-dismiss]"))continue;
+            siteDialogBackground.set(sibling,sibling.inert);sibling.inert=true;
+        }
+        branch=branch.parentElement;
     }
-    document.body.classList.toggle("dialog-open",open);
+    const locked=activeSiteDialogs.length>0;
+    if(locked&&!wasLocked){
+        siteDialogScrollY=window.scrollY||0;
+        document.body.style.setProperty("--dialog-scroll-offset",`-${siteDialogScrollY}px`);
+    }
+    document.body.classList.toggle("dialog-open",locked);
+    if(!locked&&wasLocked){
+        document.body.style.removeProperty("--dialog-scroll-offset");
+        window.scrollTo({top:siteDialogScrollY,behavior:"instant"});
+    }
 }
+// VisualViewport describes the area above a software keyboard. At pinch-zoom
+// scales, leave normal browser zoom/panning in control.
+function updateSiteVisualViewport(){
+    const viewport=window.visualViewport,root=document.documentElement;
+    if(!viewport)return;
+    const zoomed=Math.abs(viewport.scale-1)>.01;
+    root.style.setProperty("--visual-viewport-height",zoomed?"100dvh":`${viewport.height}px`);
+    root.style.setProperty("--visual-viewport-top",zoomed?"0px":`${viewport.offsetTop}px`);
+}
+window.visualViewport?.addEventListener("resize",updateSiteVisualViewport);
+window.visualViewport?.addEventListener("scroll",updateSiteVisualViewport);
+window.addEventListener("resize",updateSiteVisualViewport);
+updateSiteVisualViewport();
 function siteInformationContent(type){
     if(type==="about")return `
       <div class="about-intro"><span class="info-eyebrow">FOOTBALL. DRAFTING. COMPETITION.</span>
@@ -79,7 +111,7 @@ function closeInfoModal(){
 }
 function trapSiteDialogFocus(event){
     if(event.key!=="Tab")return;
-    const controls=[...event.currentTarget.querySelectorAll('button,a[href],input,select,[tabindex="0"]')].filter(element=>!element.disabled&&element.getClientRects().length);
+    const controls=[...event.currentTarget.querySelectorAll('button,a[href],input,select,[tabindex="0"]')].filter(element=>!element.disabled&&element.tabIndex>=0&&element.getClientRects().length);
     const first=controls[0],last=controls.at(-1);
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}

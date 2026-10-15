@@ -5,7 +5,8 @@ function quickDraftPlayerPool(){
     return players.filter(player=>(Array.isArray(ids)?ids:[...selectedPlayerIds]).includes(player.id));
 }
 function openQuickDraft(){
-    document.getElementById("quickDraftModal")?.remove();
+    const existing=document.getElementById("quickDraftModal");
+    if(existing){setSiteDialogState(existing,false);existing.remove();}
     const saved=loadSavedData(),preferences=saved?.setup||{};
     const pool=quickDraftPlayerPool();
     const value=(n,field)=>saved?.gameActive?saved[`team${n}`]?.[field]:preferences[`team${n}${field==="name"?"Name":"Color"}`];
@@ -26,7 +27,7 @@ function openQuickDraft(){
     const returnFocus=previousFocus?.closest(".site-header")
       ?document.querySelector(isMobileSiteNavigation()?"#directoryMenuToggle":'.directory-item[data-directory-section="play"]')
       :previousFocus;
-    function close(){overlay.remove();returnFocus?.focus();}
+    function close(){setSiteDialogState(overlay,false);overlay.remove();returnFocus?.focus();}
     const form=overlay.querySelector("form"),message=overlay.querySelector("#quickDraftValidation");
     function updateRequirement(){
         const required=Number(form.elements.quickSize.value)*2;
@@ -38,11 +39,7 @@ function openQuickDraft(){
     overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
     overlay.addEventListener("keydown",event=>{
         if(event.key==="Escape"){event.preventDefault();close();}
-        if(event.key==="Tab"){
-            const controls=[...overlay.querySelectorAll("button,input")],first=controls[0],last=controls.at(-1);
-            if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-            else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-        }
+        trapSiteDialogFocus(event);
     });
     overlay.querySelector("[data-quick-edit]").onclick=()=>{close();updateRoute("auctionSetup",{quickDraft:false});};
     form.addEventListener("submit",event=>{
@@ -57,5 +54,5 @@ function openQuickDraft(){
         selectedPlayerIds=new Set(pool.map(player=>player.id));
         close();startRandomDraft();
     });
-    document.body.appendChild(overlay);updateRequirement();overlay.querySelector("[data-quick-close]").focus();
+    document.body.appendChild(overlay);setSiteDialogState(overlay,true);updateRequirement();overlay.querySelector("[data-quick-close]").focus();
 }

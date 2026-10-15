@@ -89,4 +89,3 @@
 .site-utilities{width:max-content}
 .site-utilities .sound-toggle{width:max-content;min-width:76px;max-width:130px}
 .sound-toggle strong{min-width:0;white-space:normal;overflow-wrap:anywhere}
-:root[data-header-compact] .site-header-inner{grid-template-columns:minmax(0,1fr) max-content var(--utility-size)}

@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.6.9.5');
+    assert.equal(data.APP_VERSION,'0.6.9.6');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -537,11 +537,11 @@ function appContext(initialStorage={},hash='#/'){
     const elements=new Map();
     const makeElement=(id='')=>{
         const classes=new Set();
-        return {id,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty(){}},
+        return {id,value:'',textContent:'',innerHTML:'',dataset:{},style:{setProperty(){},removeProperty(){}},
             classList:{add(...names){names.forEach(n=>classes.add(n));},remove(...names){names.forEach(n=>classes.delete(n));},
                 contains:name=>classes.has(name),toggle(name,force){const add=force??!classes.has(name);if(add)classes.add(name);else classes.delete(name);}},
-            addEventListener(){},setAttribute(){},removeAttribute(){},appendChild(){},insertBefore(){},remove(){},focus(){},select(){},
-            querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
+            addEventListener(){},setAttribute(){},removeAttribute(){},hasAttribute(){return false;},appendChild(){},insertBefore(){},before(){},remove(){},focus(){},select(){},matches(){return false;},
+            querySelector(selector){return ['.auction-context-actions','.directory-backdrop','[data-settings-close]','[data-preferences-reset]','[data-mobile-settings]','[data-directory-close]','.mobile-directory-backdrop'].includes(selector)?element(`${id} ${selector}`):null;},querySelectorAll(){return [];},closest(){return null;}};
     };
     const element=id=>{if(!elements.has(id))elements.set(id,makeElement(id));return elements.get(id);};
     for(const match of html.matchAll(/<[^>]+\bid=["']([^"']+)["'][^>]*>/g)){
@@ -568,6 +568,25 @@ function appContext(initialStorage={},hash='#/'){
     }
     return {run,saved,element,labels};
 }
+check('Mobile foundation loads on every route without restricting zoom; dialog locks preserve saves',()=>{
+    for(const file of walk(root).filter(file=>file.endsWith('.html'))){
+        const content=fs.readFileSync(file,'utf8');
+        const viewport=content.match(/<meta name="viewport" content="([^"]+)"/)?.[1]||'';
+        assert(viewport.includes('viewport-fit=cover'),path.relative(root,file)+': safe-area viewport');
+        assert(!/user-scalable\s*=\s*no|maximum-scale/i.test(viewport),'Accessibility zoom must stay available');
+        assert.equal((content.match(/href="css\/mobile.css\?v=/g)||[]).length,1,'One shared mobile stylesheet');
+        assert(content.indexOf('css/mobile.css')>content.indexOf('css/localization.css'),'Mobile foundation follows locale layout');
+    }
+    const app=appContext();app.run(`
+        localStorage.setItem(SAVE_KEY,'unchanged auction');localStorage.setItem(STANDALONE_SAVE_KEY,'unchanged builder');
+        const info=document.getElementById('infoModal'),confirm=document.getElementById('confirmModal');
+        setSiteDialogState(info,true);setSiteDialogState(confirm,true);
+        assert(document.body.classList.contains('dialog-open'));
+        setSiteDialogState(confirm,false);assert(document.body.classList.contains('dialog-open'));
+        setSiteDialogState(info,false);assert(!document.body.classList.contains('dialog-open'));
+        assert.equal(localStorage.getItem(SAVE_KEY),'unchanged auction');assert.equal(localStorage.getItem(STANDALONE_SAVE_KEY),'unchanged builder');
+    `);
+});
 check('v0.6.3 player expansion, conservative estimates and stable chronology',()=>{
     const requested=['Shigeo Mizuki','Hajime Nishioka','Shizuka Haiji','Reiji Hiiragi','Taiga Tsunzaki',
         'Oboabona','Bello','Bats','Leyden','Hermes','Aiki Himizu'];

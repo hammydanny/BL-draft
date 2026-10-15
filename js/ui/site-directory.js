@@ -8,15 +8,21 @@ function refreshDirectoryResume(){
 function updateSiteDirectory(screen){
     const informationPage=document.body.dataset.sitePage;
     if(informationPage){
+        setMobilePageContext(({privacy:"PRIVACY",legal:"LEGAL",changelog:"CHANGELOG","404":"PAGE NOT FOUND"})[informationPage]||"HOME");
         document.getElementById("siteBreadcrumb").textContent=`HOME / ${informationPage.toUpperCase()}`;
         document.querySelectorAll(".footer-links a").forEach(link=>{
             if(new URL(link.href).pathname.endsWith(`/${informationPage}/`))link.setAttribute("aria-current","page");
+        });
+        document.querySelectorAll(".mobile-directory a").forEach(link=>{
+            if(new URL(link.href).pathname.endsWith(`/${informationPage}/`))link.setAttribute("aria-current","page");
+            else link.removeAttribute("aria-current");
         });
         refreshDirectoryResume();
         return;
     }
     const route=getRouteFromLocation();
     const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":"home";
+    setMobilePageContext(({play:"AUCTION",builder:"TEAM BUILDER",database:"DATABASE",home:"HOME"})[section]);
     document.querySelectorAll("[data-directory-section]").forEach(item=>{
         if(item.dataset.directorySection===section)item.setAttribute("aria-current","page");
         else item.removeAttribute("aria-current");
@@ -50,6 +56,14 @@ function updateSiteDirectory(screen){
     auctionScreen.querySelector(".auction-context-actions").hidden=complete;
     if(route==="auctionRoom")ensureAuctionHistoryControls();
 }
+function setMobilePageContext(label){
+    const context=document.getElementById("mobilePageContext");
+    if(context)context.textContent=label;
+    document.querySelectorAll(".mobile-directory [data-directory-section]").forEach(item=>{
+        const active=item.dataset.directorySection===({AUCTION:"play","TEAM BUILDER":"builder",DATABASE:"database",HOME:"home"})[label];
+        if(active)item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");
+    });
+}
 function configureTeamBuilderHeader(standalone){
     document.getElementById("formationHeaderCode").textContent=standalone?"BL // GLOBAL SQUAD LAB":"BL // SQUAD DEPLOYMENT";
     document.getElementById("formationHeaderTitle").innerHTML=standalone?'TEAM <span>BUILDER</span>':'FORMATION <span>BUILDER</span>';
@@ -78,16 +92,54 @@ function runDirectoryAction(action){
 }
 function isMobileSiteNavigation(){return getComputedStyle(document.getElementById("directoryMenuToggle")).display!=="none";}
 function initSiteDirectory(){
-    const header=document.querySelector(".site-header");
-    const directory=document.getElementById("siteDirectory");
-    const toggle=document.getElementById("directoryMenuToggle");
-    const backdrop=header.querySelector(".directory-backdrop");
-    const groups=[...directory.querySelectorAll("details")];
+    const header=document.querySelector(".site-header"),directory=document.getElementById("siteDirectory");
+    const toggle=document.getElementById("directoryMenuToggle"),groups=[...directory.querySelectorAll("details")];
     const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
+    // Keep the desktop directory; mobile shares its actions in a flat touch layout.
+    const drawer=document.createElement("div");drawer.id="mobileDirectory";drawer.className="mobile-directory hidden";
+    drawer.setAttribute("role","dialog");drawer.setAttribute("aria-modal","true");drawer.setAttribute("aria-labelledby","mobileDirectoryTitle");
+    drawer.classList.add("hidden");
+    settings.setAttribute("aria-modal","true");
+    drawer.innerHTML=`
+      <button class="mobile-directory-backdrop" type="button" aria-label="Close navigation" tabindex="-1"></button>
+      <section class="mobile-directory-panel">
+        <div class="mobile-directory-heading"><div><span data-i18n-ignore>BLUE LOCK DRAFT</span><h2 id="mobileDirectoryTitle">Primary directory</h2></div><button type="button" data-directory-close aria-label="Close navigation">×</button></div>
+        <nav class="mobile-directory-links" aria-label="Primary directory">
+          <div class="mobile-primary-links">
+            <button type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></button>
+            <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
+            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>03</span><strong>TEAM BUILDER</strong></button>
+            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>04</span><strong>DATABASE</strong></button>
+          </div>
+          <div class="mobile-secondary-links">
+            <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT</button>
+            <button type="button" data-directory-action="resume" data-directory-href="auction/room/" hidden>RESUME AUCTION</button>
+            <button type="button" data-directory-action="characters" data-directory-href="lore/?view=characters">CHARACTERS</button>
+            <button type="button" data-directory-action="chemistry" data-directory-href="lore/?view=chemistry">CHEMISTRY</button>
+            <button type="button" data-how-to-play>HOW TO PLAY</button>
+            <button type="button" data-about>ABOUT</button>
+            <a href="changelog/">CHANGELOG</a><a href="privacy/">PRIVACY</a><a href="legal/">LEGAL</a>
+          </div>
+        </nav>
+        <button type="button" class="mobile-settings-entry" data-mobile-settings><strong>SETTINGS</strong><span><span>THEME</span> · <span>SOUND EFFECTS</span> · <span>LANGUAGE</span></span><b aria-hidden="true">⚙</b></button>
+      </section>`;
+    document.body.appendChild(drawer);
+    const context=document.createElement("span");context.id="mobilePageContext";context.className="mobile-page-context";context.textContent="HOME";
+    toggle.before(context);toggle.setAttribute("aria-controls","mobileDirectory");
+    const settingsBackdrop=document.createElement("button");settingsBackdrop.type="button";settingsBackdrop.className="settings-backdrop";settingsBackdrop.hidden=true;
+    settingsBackdrop.setAttribute("aria-label","Close settings");settingsBackdrop.setAttribute("data-dialog-dismiss","");settingsBackdrop.tabIndex=-1;header.appendChild(settingsBackdrop);
+    let settingsReturnFocus=settingsToggle;
+    function closeDirectory(restoreFocus=false){
+        const wasOpen=!drawer.classList.contains("hidden");
+        if(wasOpen)setSiteDialogState(drawer,false);
+        toggle.setAttribute("aria-expanded","false");groups.forEach(group=>group.open=false);
+        if(wasOpen&&restoreFocus)toggle.focus({preventScroll:true});
+    }
     function closeSettings(restoreFocus=false){
-        const wasOpen=!settings.hidden;settings.hidden=true;settingsToggle.setAttribute("aria-expanded","false");
-        if(wasOpen)document.getElementById("siteMain").inert=false;
-        if(wasOpen&&restoreFocus)settingsToggle.focus();
+        const wasOpen=!settings.hidden;
+        if(wasOpen)setSiteDialogState(settings,false);
+        settingsBackdrop.hidden=true;settingsToggle.setAttribute("aria-expanded","false");
+        if(wasOpen&&restoreFocus)(isMobileSiteNavigation()?toggle:settingsReturnFocus).focus({preventScroll:true});
     }
     function refreshSettings(){
         const preferences=SitePreferences.get();
@@ -99,14 +151,16 @@ function initSiteDirectory(){
             language.value=preferences.language;
         }
     }
-    settingsToggle.addEventListener("click",()=>{
-        closeDirectory();
-        if(!settings.hidden){closeSettings(true);return;}
-        settings.hidden=false;settingsToggle.setAttribute("aria-expanded","true");refreshSettings();
-        document.getElementById("siteMain").inert=true;
-        settings.querySelector("[data-settings-close]").focus();
-    });
+    function openSettings(){
+        closeDirectory();settingsReturnFocus=document.activeElement;refreshSettings();
+        setSiteDialogState(settings,true);settingsBackdrop.hidden=false;
+        settingsToggle.setAttribute("aria-expanded","true");settings.querySelector("[data-settings-close]").focus();
+    }
+    settingsToggle.addEventListener("click",()=>{if(settings.hidden)openSettings();else closeSettings(true);});
+    drawer.querySelector("[data-mobile-settings]").addEventListener("click",openSettings);
     settings.querySelector("[data-settings-close]").addEventListener("click",()=>closeSettings(true));
+    settingsBackdrop.addEventListener("click",()=>closeSettings(true));
+    settings.addEventListener("keydown",trapSiteDialogFocus);
     settings.addEventListener("change",event=>{
         const input=event.target;
         if(input.name==="siteSound")SitePreferences.set({sfxEnabled:input.value==="on"});
@@ -114,30 +168,26 @@ function initSiteDirectory(){
         if(input.name==="siteLanguage")SitePreferences.set({language:input.value});
     });
     settings.querySelector("[data-preferences-reset]").addEventListener("click",()=>SitePreferences.reset());
-    window.addEventListener("bld:preferences",refreshSettings);
-    refreshSettings();SitePreferences.syncAssets();
+    window.addEventListener("bld:preferences",refreshSettings);refreshSettings();SitePreferences.syncAssets();
     document.querySelector(".skip-link").addEventListener("click",event=>{event.preventDefault();document.getElementById("siteMain").focus();});
-    function closeDirectory(restoreFocus=false){
-        const wasOpen=directory.classList.contains("is-open");
-        directory.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded","false");
-        backdrop.hidden=true;
-        groups.forEach(group=>group.open=false);
-        if(wasOpen&&restoreFocus)toggle.focus();
-    }
     toggle.addEventListener("click",()=>{
-        closeSettings();
-        if(directory.classList.contains("is-open")){closeDirectory(true);return;}
-        directory.classList.add("is-open");
-        toggle.setAttribute("aria-expanded","true");
-        backdrop.hidden=false;
-        directory.querySelector("button").focus();
+        if(!drawer.classList.contains("hidden")){closeDirectory(true);return;}
+        closeSettings();refreshDirectoryResume();setSiteDialogState(drawer,true);
+        toggle.setAttribute("aria-expanded","true");drawer.querySelector("[data-directory-close]").focus();
     });
-    backdrop.addEventListener("click",()=>closeDirectory(true));
+    drawer.querySelector("[data-directory-close]").addEventListener("click",()=>closeDirectory(true));
+    drawer.querySelector(".mobile-directory-backdrop").addEventListener("click",()=>closeDirectory(true));
+    drawer.addEventListener("keydown",trapSiteDialogFocus);
+    drawer.addEventListener("click",event=>{
+        const action=event.target.closest("[data-directory-action]");
+        if(action){closeDirectory(true);runDirectoryAction(action.dataset.directoryAction);}
+        else if(event.target.closest("[data-how-to-play],[data-about]")){
+            const about=!!event.target.closest("[data-about]");closeDirectory(true);openInfoModal(about?"about":"how");
+        }else if(event.target.closest("a[href]"))closeDirectory(true);
+    });
     groups.forEach(group=>group.addEventListener("toggle",()=>{
         group.querySelector("summary").setAttribute("aria-expanded",String(group.open));
-        if(group.open)groups.forEach(other=>{if(other!==group)other.open=false;});
-        refreshDirectoryResume();
+        if(group.open)groups.forEach(other=>{if(other!==group)other.open=false;});refreshDirectoryResume();
     }));
     header.addEventListener("click",event=>{
         const action=event.target.closest("[data-directory-action]");
@@ -145,49 +195,49 @@ function initSiteDirectory(){
         else if(event.target.closest("[data-how-to-play],[data-about]")){closeDirectory();closeSettings();}
     });
     document.addEventListener("click",event=>{
-        if(!header.contains(event.target))closeDirectory();
-        if(!settings.contains(event.target)&&!settingsToggle.contains(event.target))closeSettings();
+        if(!header.contains(event.target))groups.forEach(group=>group.open=false);
     });
     document.addEventListener("keydown",event=>{
         if(event.key==="Escape"){
-            const openGroup=groups.find(group=>group.open);
             if(!settings.hidden){event.preventDefault();closeSettings(true);return;}
-            closeDirectory(true);
-            if(openGroup&&!isMobileSiteNavigation())openGroup.querySelector("summary").focus();
+            if(!drawer.classList.contains("hidden")){event.preventDefault();closeDirectory(true);return;}
+            const openGroup=groups.find(group=>group.open);groups.forEach(group=>group.open=false);openGroup?.querySelector("summary").focus();
         }
         if(event.key==="ArrowDown"&&event.target.matches("summary.directory-item")){
             event.preventDefault();event.target.parentElement.open=true;event.target.parentElement.querySelector("button").focus();
         }
         const options=event.target.closest(".directory-options");
         if(options&&["ArrowDown","ArrowUp","Home","End"].includes(event.key)){
-            event.preventDefault();
-            const controls=[...options.querySelectorAll("button")].filter(button=>!button.hidden);
+            event.preventDefault();const controls=[...options.querySelectorAll("button")].filter(button=>!button.hidden);
             const index=controls.indexOf(document.activeElement);
             const next=event.key==="Home"?0:event.key==="End"?controls.length-1:(index+(event.key==="ArrowDown"?1:-1)+controls.length)%controls.length;
             controls[next]?.focus();
         }
-        if(event.key==="Tab"&&!settings.hidden){
-            const controls=[...settings.querySelectorAll("button,input,select")];const first=controls[0],last=controls.at(-1);
-            if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-            else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-        }
     });
-    directory.addEventListener("focusout",event=>{if(event.relatedTarget&&!directory.contains(event.relatedTarget)&&!isMobileSiteNavigation())closeDirectory();});
-    // Measure the actual translated navigation, independent of its collapsed state.
+    directory.addEventListener("focusout",event=>{if(event.relatedTarget&&!directory.contains(event.relatedTarget)&&!isMobileSiteNavigation())groups.forEach(group=>group.open=false);});
+    // Preserve the desktop content-driven fallback for long translated menus.
+    let compact=document.documentElement.hasAttribute("data-header-compact");
     function fitHeader(){
-        const root=document.documentElement,inner=header.querySelector('.site-header-inner');
-        if(window.innerWidth<=1200){root.setAttribute('data-header-compact','');return;}
-        root.removeAttribute('data-header-compact'); // Measure the expanded layout before the next paint.
-        const probe=directory.cloneNode(true);probe.removeAttribute('id');probe.className='site-directory directory-width-probe';probe.inert=true;probe.setAttribute('aria-hidden','true');probe.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));header.append(probe);
-        const required=header.querySelector('.site-header-brand').getBoundingClientRect().width+probe.getBoundingClientRect().width+header.querySelector('.site-utilities').getBoundingClientRect().width+150+64;
-        probe.remove();root.toggleAttribute('data-header-compact',window.innerWidth<=1200||required>inner.clientWidth);
+        const root=document.documentElement,inner=header.querySelector(".site-header-inner");
+        let next=window.innerWidth<=1200;
+        if(!next){
+            root.removeAttribute("data-header-compact");
+            const probe=directory.cloneNode(true);probe.removeAttribute("id");probe.className="site-directory directory-width-probe";probe.inert=true;probe.setAttribute("aria-hidden","true");
+            probe.querySelectorAll("[id]").forEach(node=>node.removeAttribute("id"));header.append(probe);
+            const required=header.querySelector(".site-header-brand").getBoundingClientRect().width+probe.getBoundingClientRect().width+header.querySelector(".site-utilities").getBoundingClientRect().width+150+64;
+            probe.remove();next=required>inner.clientWidth;
+        }
+        root.toggleAttribute("data-header-compact",next);
+        if(compact!==next){compact=next;closeDirectory();closeSettings();}
     }
-    let fitFrame;function scheduleFit(){if(window.innerWidth<=1200)document.documentElement.setAttribute('data-header-compact','');cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fitHeader);}
-    window.addEventListener('resize',scheduleFit);window.addEventListener('bld:language',scheduleFit);document.fonts?.ready.then(scheduleFit);scheduleFit();
-    let mobile=isMobileSiteNavigation();
-    window.addEventListener("resize",()=>{const next=isMobileSiteNavigation();if(next!==mobile){mobile=next;closeDirectory();closeSettings();}});
+    let fitFrame;function scheduleFit(){cancelAnimationFrame(fitFrame);fitFrame=requestAnimationFrame(fitHeader);}
+    window.addEventListener("resize",scheduleFit);window.addEventListener("bld:language",scheduleFit);document.fonts?.ready.then(scheduleFit);scheduleFit();
     window.addEventListener("pageshow",()=>{closeDirectory();closeSettings();SitePreferences.syncAssets();});
-    window.addEventListener("bld:dialog-open",()=>{closeDirectory();closeSettings();});
+    window.addEventListener("pagehide",()=>{closeDirectory();closeSettings();});
+    window.addEventListener("bld:dialog-open",event=>{
+        if(event.detail.modal!==drawer)closeDirectory();
+        if(event.detail.modal!==settings)closeSettings();
+    });
     if(document.body.dataset.sitePage)updateSiteDirectory();
 }
 initSiteDirectory();
