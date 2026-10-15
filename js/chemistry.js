@@ -131,7 +131,8 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Rin Itoshi","Sae Itoshi",62,"FRACTURED BROTHERS","They once combined naturally as children, but their shared dream collapsed and their current football relationship is openly hostile."],
   ["Rensuke Kunigami","Ryusei Shido",60,"PERSONAL CONFLICT","Shido eliminated Kunigami from the Second Selection path; their later encounters are defined more by confrontation than combination."],
   ["Sae Itoshi","Bunny Iglesias",58,"INTENSE RIVALRY","Sae is shown reacting bitterly to Bunny and his U-20 World Cup motivation is tied to confronting that rivalry."],
-  ["Yoichi Isagi","Vivien Hugo",56,"PHILOSOPHY CLASH","France U-20: Hugo repeatedly challenges Isagi's ego philosophy and tries to redirect his idea of what a striker should be."]
+  ["Yoichi Isagi","Vivien Hugo",56,"PHILOSOPHY CLASH","France U-20: Hugo repeatedly challenges Isagi's ego philosophy and tries to redirect his idea of what a striker should be."],
+  ["Jingo Raichi","Zaruchi",99,"SPECIAL CHEMISTRY","You know the guy with blonde hair and sharp teeth?"]
 ];
 
 const CHEMISTRY_SPECIAL = Object.fromEntries(
