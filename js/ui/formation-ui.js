@@ -335,7 +335,7 @@ function clickFormationPlayerToken(id,slotIndex){
 }
 // Empty-slot shortcut: the existing placement function owns every assignment.
 function openFormationReservePicker(slotIndex){
-    if(!mobileBuilderMedia.matches||selectedFormationPlayerId||getFormationPlayer(formationTeamNumber,slotIndex))return;
+    if(selectedFormationPlayerId||getFormationPlayer(formationTeamNumber,slotIndex))return;
     const teamNumber=formationTeamNumber,team=teamByNumber(teamNumber),slot=FORMATIONS[formationByTeam[teamNumber]][slotIndex];
     if(!slot)return;
     const used=assignedIds(teamNumber),reserves=team.players.filter(player=>!used.has(player.id)&&secretPlayerAvailable(player));
