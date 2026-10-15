@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+
+const root=path.resolve(__dirname,'..');
+const read=file=>fs.readFileSync(path.join(root,file),'utf8');
+
+function parseFrozen(source,name){
+    const token='const '+name+'=Object.freeze(',start=source.indexOf(token);
+    if(start<0)return {};
+    let i=start+token.length,depth=0,inString=false,escaped=false,quote='',begin=i;
+    for(;i<source.length;i++){
+        const char=source[i];
+        if(inString){if(escaped)escaped=false;else if(char==='\\\\')escaped=true;else if(char===quote)inString=false;continue;}
+        if(char==='"'||char==="'"){inString=true;quote=char;continue;}
+        if(char==='{')depth++;
+        else if(char==='}'&&--depth===0)return JSON.parse(source.slice(begin,i+1));
+    }
+    throw new Error('Unclosed localization catalog '+name);
+}
+function catalog(){
+    const context=vm.createContext({window:{}});
+    vm.runInContext(read('js/i18n/messages.js'),context);
+    const localization=read('js/localization.js');
+    return {
+        ...context.window.BLD_MESSAGES,
+        ...parseFrozen(localization,'overrides'),
+        ...parseFrozen(localization,'releaseGateOverrides')
+    };
+}
+function resolver(entries){
+    const folded=new Map(Object.entries(entries).map(([key,value])=>[key.toLocaleLowerCase('en'),value]));
+    const direct=key=>entries[key]||entries[key.toUpperCase()]||folded.get(key.toLocaleLowerCase('en'));
+    return function covered(value,seen=new Set()){
+        const key=String(value).replace(/\s+/g,' ').trim();
+        if(!key||seen.has(key))return false;
+        seen.add(key);
+        if(direct(key))return true;
+        let match=key.match(/^Blue Lock Draft — (.+?) — (.+)$/);
+        if(match)return covered(match[1],seen)&&covered(match[2],seen);
+        if(key.startsWith('Blue Lock Draft — '))return covered(key.slice(18),seen);
+        if(key.endsWith(' — Blue Lock Draft'))return covered(key.slice(0,-18),seen);
+        match=key.match(/^\d{2}\s*\/{1,2}\s*(.+)$/);
+        if(match)return covered(match[1],seen);
+        if(key.startsWith('FORMATION // '))return covered('FORMATION',seen);
+        if(key.includes(' // ')){
+            const parts=key.split(' // ');
+            return parts.some(part=>covered(part,new Set(seen)));
+        }
+        if(/^No sustained shared on-field system has been demonstrated in Blue Lock through chapter \d+\.$/.test(key))
+            return !!direct('No sustained shared on-field system has been demonstrated in Blue Lock through chapter {chapter}.');
+        return false;
+    };
+}
+function decode(value){
+    return value.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim();
+}
+function intentional(value){
+    return /^(?:BLUE LOCK|BLUE LOCK DRAFT|English|Bahasa Melayu|日本語|Français|Deutsch|한국어|Português|Русский|Español|العربية|简体中文|website|noindex|width=device|HAMMYDANNY(?: ↗)?|SYAAFIBWN(?: ↗)?|#[0-9A-F]{6}|[A-Z]{1,3}|SIDE-B|NG XI|\$[\d,]+(?: \/\/ \$\d+ INTERVAL)?|\d+v\d+|V\d+(?:\.\d+)*(?:\.x)?(?: ALPHA)?|V0\.5\.1 \/ 0\.51|Noto Sans.*SIL OFL 1\.1)$/i.test(value);
+}
+function staticCoverage(covered){
+    const pages=[
+        'index.html','404.html','privacy/index.html','legal/index.html','changelog/index.html',
+        'lore/index.html','team-builder/index.html','auction/setup/index.html','auction/room/index.html',
+        'auction/results/index.html','auction/team-builder/index.html'
+    ];
+    const missing=[];
+    for(const file of pages){
+        let html=read(file).replace(/<script\b[\s\S]*?<\/script>/gi,'').replace(/<style\b[\s\S]*?<\/style>/gi,'');
+        const values=[];
+        for(const match of html.matchAll(/>([^<>]+)</g))values.push(decode(match[1]));
+        for(const match of html.matchAll(/\b(?:aria-label|aria-description|title|placeholder|content)="([^"]+)"/gi))values.push(decode(match[1]));
+        for(const value of new Set(values)){
+            if(!/[A-Za-z]/.test(value)||value.length<2||intentional(value)||covered(value))continue;
+            // <time datetime> is localized at runtime with Intl.DateTimeFormat.
+            if(/^\d{1,2} [A-Za-z]+ 20\d{2}$/.test(value))continue;
+            missing.push({file,value});
+        }
+    }
+    return missing;
+}
+function dynamicCoverage(covered){
+    // Hotspots that generate user-visible text dynamically and therefore are not present
+    // as ordinary static page text during the HTML scan.
+    const required=[
+        'ADD PLAYER','BEST FIT','GOOD FIT','OUT OF POSITION','NO RESERVES AVAILABLE','CLOSE',
+        'ASSIGNED','NO FORMATION BUILT',
+        'Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.',
+        'SELECT A ROSTER','No valid lineup could be generated from this roster.','Standalone Auto Best failed:',
+        'Bid amount','CONTINUE BUILDING','ENTER A VALID TEAM SIZE','best XI',
+        'SPECIAL CHEMISTRY','You know the guy with blonde hair and sharp teeth?','NO LINK',
+        'A player cannot form chemistry with themself.',
+        'No sustained shared on-field system has been demonstrated in Blue Lock through chapter 364.'
+    ];
+    return required.filter(value=>!covered(value)).map(value=>({file:'dynamic-ui',value}));
+}
+function scanCoverage(){
+    const entries=catalog(),covered=resolver(entries);
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered)];
+    return {missing,catalogSize:Object.keys(entries).length};
+}
+module.exports={scanCoverage};
+
+if(require.main===module){
+    const result=scanCoverage();
+    for(const item of result.missing)console.error('MISSING',item.file,JSON.stringify(item.value));
+    console.log(`Localization coverage: ${result.missing.length} uncovered source string(s), ${result.catalogSize} catalog entries.`);
+    process.exitCode=result.missing.length?1:0;
+}

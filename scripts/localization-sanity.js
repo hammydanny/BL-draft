@@ -37,8 +37,20 @@ function load(root){
     const context=vm.createContext({window:{}});
     vm.runInContext(fs.readFileSync(path.join(root,'js/i18n/messages.js'),'utf8'),context);
     const localization=fs.readFileSync(path.join(root,'js/localization.js'),'utf8');
-    const match=localization.match(/const overrides=Object\.freeze\((\{.*\})\);/);
-    const overrides=match?JSON.parse(match[1]):{};
+    const parseFrozen=name=>{
+        const token='const '+name+'=Object.freeze(',start=localization.indexOf(token);
+        if(start<0)return {};
+        let i=start+token.length,depth=0,inString=false,escaped=false,quote='',begin=i;
+        for(;i<localization.length;i++){
+            const char=localization[i];
+            if(inString){if(escaped)escaped=false;else if(char==='\\\\')escaped=true;else if(char===quote)inString=false;continue;}
+            if(char==='"'||char==="'"){inString=true;quote=char;continue;}
+            if(char==='{')depth++;
+            else if(char==='}'&&--depth===0)return JSON.parse(localization.slice(begin,i+1));
+        }
+        throw new Error('Unclosed localization catalog '+name);
+    };
+    const overrides={...parseFrozen('overrides'),...parseFrozen('releaseGateOverrides')};
     const messages=context.window.BLD_MESSAGES;
     const records=Object.keys({...messages,...overrides}).map(source=>({source,values:{...messages[source],...overrides[source]}}));
     for(const template of context.window.BLD_MESSAGE_TEMPLATES){

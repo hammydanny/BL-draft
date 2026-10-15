@@ -236,6 +236,8 @@ Before an update is considered complete:
 - New release-specific UI copy must be added to the fully populated `releaseGateOverrides` catalog in `js/localization.js` (or to the main message catalog when appropriate).
 - Dynamic DOM inserted after load must be passed through `SiteI18n.apply(...)` when immediate localization is needed.
 - `node js/preflight.js` must pass the localization release-gate check before commit/push/release.
+- `node scripts/localization-coverage.js` must report **0 uncovered source strings** across canonical pages and dynamic UI hotspots.
+- `node scripts/preflight.js` runs both translation-integrity and source-coverage checks; both are release blockers.
 - The Changelog must describe the update and that new note must also be localized.
 
 An update that introduces untranslated visible UI or accessibility copy is **not complete**.

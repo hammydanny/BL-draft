@@ -4,6 +4,7 @@
 require('../js/preflight.js');
 const assert=require('node:assert/strict');
 const {scan,load,languages}=require('./localization-sanity.js');
+const {scanCoverage}=require('./localization-coverage.js');
 const result=scan(load(require('node:path').resolve(__dirname,'..')));
 assert.equal(result.errors.length,0,JSON.stringify(result.errors));
 const values=Object.fromEntries(languages.map(language=>[language,'Team {team}: {count}']));
@@ -15,3 +16,6 @@ assert(fixture.errors.some(item=>item.language==='fr'&&item.reason.includes('Uni
 assert(fixture.warnings.some(item=>item.language==='ar'&&item.reason.includes('repetition')));
 assert(fixture.warnings.some(item=>item.language==='ko'&&item.reason.includes('sequence')));
 console.log(`PASS localization integrity and corruption detector (${result.warnings.length} warnings require contextual review)`);
+const coverage=scanCoverage();
+assert.equal(coverage.missing.length,0,JSON.stringify(coverage.missing,null,2));
+console.log(`PASS localization source coverage (${coverage.catalogSize} catalog entries)`);

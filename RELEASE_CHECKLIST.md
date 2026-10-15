@@ -5,6 +5,7 @@
 - [ ] `node scripts/preflight.js` PASS, 0 failed checks
 - [ ] LOCALIZATION RELEASE GATE: every new/changed visible string, dynamic UI string, accessibility label and Changelog note is translated in all supported languages
 - [ ] New release-specific copy is registered in `releaseGateOverrides` / the main message catalog and localization preflight passes
+- [ ] Site-wide localization source coverage audit passes with 0 uncovered canonical-page/dynamic-UI strings
 - [ ] Desktop smoke test (1920×1080 and 1366×768)
 - [ ] Mobile smoke test (390×844 and 430×932)
 - [ ] All URLs load and refresh correctly, including `/BL-draft/`
