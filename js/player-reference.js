@@ -281,6 +281,18 @@ const PLAYER_ALIASES=Object.freeze({
         "note": "Rin addresses Bachira after choosing him. Official English Crunchyroll transcript; direct canon usage.",
         "episode": 13
       }
+    },
+    {
+      "name": "King Dribbler",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 315,
+        "url": "https://kmanga.kodansha.com/title/10008/episode/360767",
+        "originalLanguage": "ja",
+        "originalText": "キングドリブラー蜂楽廻",
+        "note": "The match commentator names Bachira King Dribbler after the opening Nigeria goal. Speaker, player and goal context cross-checked in the chapter-315 Japanese dialogue reference: https://www.hellominju.com/2025/08/BlueLock315.html . Official publisher chapter identity verified; English title is a project rendering, not a claim of licensed-English speech-bubble transcription."
+      }
     }
   ],
   "6": [
@@ -967,6 +979,17 @@ const PLAYER_ALIASES=Object.freeze({
         "url": "https://www.hellominju.com/2024/11/BlueLock266.html",
         "note": "Isagi calls Kaiser 超英雄 with スーパースター reading after his Magnus goal. This is an actual internal-monologue title, not merely the chapter title; checked chapter-266 dialogue context. Kodansha's official Full Color Selection contents independently identifies chapter 266 as Super Star."
       }
+    },
+    {
+      "name": "Bastard München U-20 Ace",
+      "verified": true,
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/character/",
+        "originalLanguage": "ja",
+        "originalText": "「バスタード・ミュンヘン」U-20チームのエースフォワード",
+        "note": "Official NEL anime profile identifies Kaiser as the club U-20 ace forward. Included under the same explicit school/club/national-team ace-title standard as Senno’s Ace and Japan U-20 Ace; not inferred from his position."
+      }
     }
   ],
   "57": [
@@ -1058,6 +1081,34 @@ const PLAYER_ALIASES=Object.freeze({
         "type": "official-profile",
         "url": "https://x.com/BLUELOCK_WM/status/1973657698454679911",
         "note": "Official BLUELOCK_WM character Q&A, October 2, 2025. Question explicitly asks for an epithet. Original publisher image inspected: speech identifies Kiyora as ダンスバトル・フットボーラー. This confirms the character-book designation directly rather than relying on a wiki."
+      }
+    }
+  ],
+  "48": [
+    {
+      "name": "Japan U-20 Ace",
+      "verified": true,
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv2nd/news/120/",
+        "originalLanguage": "ja",
+        "originalText": "U-20日本代表のエース。",
+        "note": "Official anime character profile published 2024-06-24 explicitly identifies Sendo as the Japan U-20 ace. Historical title of the original Japan U-20 lineup, not a claim about the current post-NEL team."
+      }
+    }
+  ]
+,
+  "67": [
+    {
+      "name": "Worthless Puppet",
+      "verified": true,
+      "source": {
+        "type": "manga",
+        "chapter": 352,
+        "url": "https://kmanga.kodansha.com/title/10008/episode/366476",
+        "originalLanguage": "ja",
+        "originalText": "ザコ人形（ドール）",
+        "note": "Teddy explicitly identifies himself as an ego-less worthless puppet during his introduction; retained quote for player 67 records the same self-designation. Official Japanese chapter title verified at https://pocket.shonenmagazine.com/title/00617/episode/440724 ; official English chapter title is WORTHLESS PUPPET. Original Japanese self-identification panel inspected; speaker/subject context cross-checked at https://h-snufkin.com/bluelock-en/manga-chapter-352/ . This is actual self-designation, not an alias inferred solely from the chapter title."
       }
     }
   ]
@@ -1804,8 +1855,7 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
       ],
       "aliasAction": "retain-verified-only"
     }
-  }
-});
+  }});
 function isVerifiedCanonQuote(quote){
     return !!quote&&quote.verified===true&&quote.language==="en"&&(quote.localization==="official-English-"+quote.sourceType||(quote.localization==="project-translation-Japanese-manga"&&quote.sourceType==="manga"&&quote.originalLanguage==="ja"&&typeof quote.originalText==="string"&&!!quote.originalText.trim()))&&!!playerById(quote.playerId)&&
         typeof quote.text==="string"&&!!quote.text.trim()&&

@@ -84,3 +84,9 @@
 /* Latin proper names retain their own font metrics under the Arabic locale. */
 :lang(ar) .setup-box-wide .pool-player-info strong{font-family:"Barlow Condensed",sans-serif!important;line-height:1.3!important;margin-top:2px!important;direction:ltr;unicode-bidi:isolate}
 :lang(ar) .settings-grid label{direction:rtl;justify-content:flex-start}
+/* Let translated sound labels take their natural width in the existing header. */
+.site-header-inner{grid-template-columns:220px auto minmax(0,1fr) max-content}
+.site-utilities{width:max-content}
+.site-utilities .sound-toggle{width:max-content;min-width:76px;max-width:130px}
+.sound-toggle strong{min-width:0;white-space:normal;overflow-wrap:anywhere}
+:root[data-header-compact] .site-header-inner{grid-template-columns:minmax(0,1fr) max-content var(--utility-size)}
