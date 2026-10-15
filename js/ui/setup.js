@@ -39,6 +39,7 @@ function categoryBaseSelected(playerId){
 function recomputeSelectedPlayersFromCategories(){
     ensurePoolCategoryState();
     selectedPlayerIds=new Set(players.filter(player=>{
+        if(!secretPlayerAvailable(player))return false;
         const manual=playerPoolManualOverrides[player.id];
         return typeof manual==="boolean"?manual:categoryBaseSelected(player.id);
     }).map(player=>player.id));
@@ -89,12 +90,14 @@ function renderPlayerPool(){
     playerPoolPositionFilter=position;playerPoolGroupFilter=group;playerPoolSort=sort;
 
     let visiblePlayers=players.filter(player => {
+        if(!secretPlayerAvailable(player))return false;
         const matchesQuery=player.name.toLowerCase().includes(query);
-        const matchesPosition=position==="ALL" || positionGroup(primaryPosition(player))===position;
+        const matchesPosition=position==="ALL" || player.allPositions===true || positionGroup(primaryPosition(player))===position;
         const matchesGroup=playerMatchesPoolGroup(player,group);
         return matchesQuery&&matchesPosition&&matchesGroup;
     });
     visiblePlayers.sort((a,b)=>{
+        if(a.secretCharacter!==b.secretCharacter)return a.secretCharacter?-1:1;
         const av=poolSortValue(a,sort),bv=poolSortValue(b,sort);
         if(typeof av==="string")return av.localeCompare(bv);
         return sort==="id"?comparePlayerAppearance(a,b):bv-av||comparePlayerAppearance(a,b);
@@ -135,7 +138,8 @@ function updatePoolStatus(){
     const max=Number(document.getElementById("maxPlayers").value)||0;
     const needed=max*2;
     const selected=selectedPlayerIds.size;
-    count.textContent=`${selected} / ${players.length}`;
+    const availableCount=players.filter(secretPlayerAvailable).length;
+    count.textContent=`${selected} / ${availableCount}`;
     if(max<=0){
         requirement.textContent="ENTER A VALID TEAM SIZE";
         requirement.className="pool-requirement warning";
@@ -160,15 +164,31 @@ document.querySelectorAll("[data-pool-category]").forEach(input=>{
 
 document.getElementById("startGame").addEventListener("click",startGame);
 document.getElementById("randomDraftGame").addEventListener("click",startRandomDraft);
-document.getElementById("playerSearch").addEventListener("input", renderPlayerPool);
+const playerSearchInput=document.getElementById("playerSearch");
+if(secretCharactersUnlocked)playerSearchInput.placeholder="SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...";
+playerSearchInput.addEventListener("input",()=>{
+    if(playerSearchInput.value.trim()===SECRET_CHARACTER_CODE){
+        unlockSecretCharacters();
+        playerSearchInput.value="";
+        playerSearchInput.placeholder="SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...";
+        document.getElementById("playerGroupFilter").value="all";
+        document.getElementById("playerPositionFilter").value="ALL";
+        playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
+        renderPlayerPool();
+        saveSetupPreferences();
+        return;
+    }
+    renderPlayerPool();
+});
 document.getElementById("selectAllPlayers").addEventListener("click", () => {
     Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=true);
     playerPoolManualOverrides={};
+    if(secretCharactersUnlocked)players.filter(player=>player.secretCharacter).forEach(player=>playerPoolManualOverrides[player.id]=true);
     recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
 });
 document.getElementById("invertPlayers").addEventListener("click", () => {
     const previous=new Set(selectedPlayerIds);
-    players.forEach(p=>playerPoolManualOverrides[p.id]=!previous.has(p.id));
+    players.forEach(p=>playerPoolManualOverrides[p.id]=secretPlayerAvailable(p)?!previous.has(p.id):false);
     recomputeSelectedPlayersFromCategories();
     renderPlayerPool();
     saveSetupPreferences();

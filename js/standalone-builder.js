@@ -19,7 +19,7 @@ function loadStandaloneBuilderState(){
     try{
         const saved=normalizeStandaloneSave(JSON.parse(localStorage.getItem(STANDALONE_SAVE_KEY)||"null"));
         if(saved){
-            standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id)));
+            standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id&&secretPlayerAvailable(p))));
             formationByTeam[0]=FORMATIONS[saved.formation]?saved.formation:"4-3-3";
             formationAssignments[0]=saved.assignment&&typeof saved.assignment==="object"?saved.assignment:{};
             formationCaptainByTeam[0]=saved.captainId||null;
@@ -81,8 +81,9 @@ function refreshStandaloneReserveOrder(){
 function standaloneBuilderPoolPlayers(){
     const query=standaloneBuilderQuery.trim().toLowerCase();
     let list=players.filter(player=>{
+        if(!secretPlayerAvailable(player))return false;
         const role=standaloneBuilderRole;
-        const roleOk=role==="ALL"||positionGroup(primaryPosition(player))===role;
+        const roleOk=role==="ALL"||player.allPositions===true||positionGroup(primaryPosition(player))===role;
         const textOk=!query||player.name.toLowerCase().includes(query)||playerPositions(player).some(x=>x.toLowerCase().includes(query));
         return roleOk&&textOk;
     });
@@ -240,10 +241,11 @@ function bindStandaloneBuilderPoolUI(){
     document.querySelectorAll("[data-standalone-action]").forEach(button=>{
         button.onclick=()=>{
             const action=button.dataset.standaloneAction;
+            const availablePlayers=players.filter(secretPlayerAvailable);
             if(action==="top15"){
-                standaloneBuilderPlayerIds=new Set([...players].sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id).slice(0,15).map(p=>p.id));
+                standaloneBuilderPlayerIds=new Set([...availablePlayers].sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id).slice(0,15).map(p=>p.id));
             }else if(action==="all"){
-                standaloneBuilderPlayerIds=new Set(players.map(p=>p.id));
+                standaloneBuilderPlayerIds=new Set(availablePlayers.map(p=>p.id));
             }else{
                 standaloneBuilderPlayerIds.clear();
             }

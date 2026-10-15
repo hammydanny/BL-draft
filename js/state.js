@@ -11,7 +11,16 @@ let auctionUndoStack = [];
 let auctionRedoStack = [];
 let auctionHistoryRestoring = false;
 const AUCTION_UNDO_LIMIT = 60;
-let selectedPlayerIds = new Set(players.map(player => player.id));
+const SECRET_CHARACTER_CODE = "28032009";
+const SECRET_CHARACTER_UNLOCK_KEY = "bldSecretCharactersUnlockedV1";
+let secretCharactersUnlocked = false;
+try { secretCharactersUnlocked = localStorage.getItem(SECRET_CHARACTER_UNLOCK_KEY) === "true"; } catch {}
+function unlockSecretCharacters(){
+    secretCharactersUnlocked = true;
+    try { localStorage.setItem(SECRET_CHARACTER_UNLOCK_KEY, "true"); } catch {}
+}
+function secretPlayerAvailable(player){return !!player && (!player.secretCharacter || secretCharactersUnlocked);}
+let selectedPlayerIds = new Set(players.filter(player => !player.secretCharacter).map(player => player.id));
 let playerPoolPositionFilter = "ALL";
 let playerPoolGroupFilter = "all";
 let playerPoolSort = "id";
