@@ -223,3 +223,20 @@ weapons, invalid source metadata, unsupported country codes, missing local flags
 unverified or malformed quotes and duplicated quote text. See
 [the player audit](docs/player-audit-v0.6.9.1.md) for factual coverage and
 [the release report](docs/release-v0.6.9.1.md) for validation and the file manifest.
+
+## Mandatory localization release gate
+
+Localization is a prerequisite for **every future update**, including small fixes.
+
+Before an update is considered complete:
+
+- Every new or changed user-visible string must be translated into every supported display language: Malay, Japanese, Arabic, Simplified Chinese, French, German, Korean, Portuguese, Russian and Spanish.
+- This includes button text, headings, helper text, validation/errors, dynamically generated UI, placeholders, titles, accessible labels/descriptions and Changelog notes.
+- Proper names, Blue Lock branding, formation codes, OVR/stat abbreviations and canon quotes stay unchanged where the localization policy already treats them as language-neutral or source-exact.
+- New release-specific UI copy must be added to the fully populated `releaseGateOverrides` catalog in `js/localization.js` (or to the main message catalog when appropriate).
+- Dynamic DOM inserted after load must be passed through `SiteI18n.apply(...)` when immediate localization is needed.
+- `node js/preflight.js` must pass the localization release-gate check before commit/push/release.
+- The Changelog must describe the update and that new note must also be localized.
+
+An update that introduces untranslated visible UI or accessibility copy is **not complete**.
+

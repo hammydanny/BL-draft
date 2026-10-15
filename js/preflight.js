@@ -955,6 +955,24 @@ check('Chapter-364 quote boundary, review coverage and new canon aliases remain 
     const alias=data.PLAYER_ALIASES[49][0];
     assert(validateReferenceData({...baseline,aliases:{49:[{...alias,source:{...alias.source,chapter:365}}]}}).some(error=>error.includes('alias')));
 });
+check('Mandatory localization release gate covers current visible update copy in every language',()=>{
+    const source=read('js/localization.js');
+    const match=source.match(/const releaseGateOverrides=Object\\.freeze\\((\\{[\\s\\S]*?\\})\\);\\n\\s*const catalog=/);
+    assert(match,'releaseGateOverrides catalog exists');
+    const gate=JSON.parse(match[1]);
+    const locales=['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'];
+    const required=["ADD PLAYER","BEST FIT","GOOD FIT","OUT OF POSITION","NO RESERVES AVAILABLE","CLOSE","RELEASE HISTORY","CURRENT RELEASE","V0.6 SERIES","V0.5 SERIES","V0.6 BASE","Changelog releases","Open site settings","Close site settings","Tapping an empty pitch position now opens the active team’s Reserve Picker on both desktop and mobile, with positional fit labels. Desktop uses a compact centered dialog with aligned player identity, position badges, OVR and fit status for cleaner scanning; choosing a reserve still uses existing placement logic and selected-player placement takes priority.","The Changelog release-history sidebar now keeps subversions hidden inside click-to-open version groups, uses a small + / − expansion indicator, and animates each group open/closed.","Opening Settings now keeps the document scrollbar gutter reserved while background scrolling is locked, preventing the page from shifting sideways when the gear panel opens or closes.","Localization is now a mandatory release gate: every new or changed visible UI string, accessibility label and Changelog note must ship in all supported languages before an update is considered complete."];
+    for(const key of required){
+        assert(gate[key],'Release-gate translation exists: '+key);
+        for(const locale of locales)assert(typeof gate[key][locale]==='string'&&gate[key][locale].trim(),'Release-gate locale '+locale+': '+key);
+    }
+    const formation=read('js/ui/formation-ui.js'),changelog=read('changelog/index.html'),directory=read('js/ui/site-directory.js');
+    for(const key of ['ADD PLAYER','BEST FIT','GOOD FIT','OUT OF POSITION','NO RESERVES AVAILABLE','CLOSE'])assert(formation.includes(key)&&gate[key],key);
+    for(const key of ['RELEASE HISTORY','CURRENT RELEASE','V0.6 SERIES','V0.5 SERIES','V0.6 BASE'])assert(changelog.includes(key)&&gate[key],key);
+    for(const key of ['Open site settings','Close site settings'])assert(directory.includes(key)&&gate[key],key);
+    assert(formation.includes('SiteI18n?.apply(dialog)'),'Dynamic Reserve Picker localizes immediately');
+    for(const key of ["Tapping an empty pitch position now opens the active team’s Reserve Picker on both desktop and mobile, with positional fit labels. Desktop uses a compact centered dialog with aligned player identity, position badges, OVR and fit status for cleaner scanning; choosing a reserve still uses existing placement logic and selected-player placement takes priority.","The Changelog release-history sidebar now keeps subversions hidden inside click-to-open version groups, uses a small + / − expansion indicator, and animates each group open/closed.","Opening Settings now keeps the document scrollbar gutter reserved while background scrolling is locked, preventing the page from shifting sideways when the gear panel opens or closes.","Localization is now a mandatory release gate: every new or changed visible UI string, accessibility label and Changelog note must ship in all supported languages before an update is considered complete."])assert(changelog.includes(key)&&gate[key],'Localized current Changelog note');
+});
 check('v0.6.9.4 local languages, English canon references and 404 contract',()=>{
     const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);
     const messages=window.BLD_MESSAGES;assert(Object.keys(messages).length>1000);

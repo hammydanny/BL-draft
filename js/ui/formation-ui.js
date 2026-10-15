@@ -353,7 +353,7 @@ function openFormationReservePicker(slotIndex){
         dialog.close();movePlayerToSlot(id,slotIndex);
     });
     dialog.addEventListener("close",()=>{dialog.remove();requestAnimationFrame(()=>{formationContent.querySelector(`[data-slot-index="${slotIndex}"]`)?.focus({preventScroll:true});window.scrollTo({top,behavior:"instant"});});},{once:true});
-    document.body.appendChild(dialog);dialog.showModal();dialog.querySelector("[data-sheet-close]").focus({preventScroll:true});prioritizeVisiblePortraits(dialog);
+    document.body.appendChild(dialog);window.SiteI18n?.apply(dialog);dialog.showModal();dialog.querySelector("[data-sheet-close]").focus({preventScroll:true});prioritizeVisiblePortraits(dialog);
 }
 
 function mobileBuilderPlayerMarkup(team){
