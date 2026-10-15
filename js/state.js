@@ -12,12 +12,17 @@ let auctionRedoStack = [];
 let auctionHistoryRestoring = false;
 const AUCTION_UNDO_LIMIT = 60;
 const SECRET_CHARACTER_CODE = "28032009";
+const SECRET_CHARACTER_UNLOCK_KEY = "bldSecretCharactersUnlockedV1";
 let secretCharactersUnlocked = false;
-// Remove the legacy persisted flag so older versions cannot leave a stale unlock behind.
-try { localStorage.removeItem("bldSecretCharactersUnlockedV1"); } catch {}
+// sessionStorage keeps the unlock through refreshes and page navigation,
+// but the browser clears it when this tab's session ends.
+try { secretCharactersUnlocked = sessionStorage.getItem(SECRET_CHARACTER_UNLOCK_KEY) === "true"; } catch {}
+// Discard the legacy localStorage flag so it cannot unlock future sessions.
+try { localStorage.removeItem(SECRET_CHARACTER_UNLOCK_KEY); } catch {}
 function unlockSecretCharacters(){
     if(secretCharactersUnlocked)return false;
     secretCharactersUnlocked=true;
+    try { sessionStorage.setItem(SECRET_CHARACTER_UNLOCK_KEY, "true"); } catch {}
     // Unlocking grants visibility only; it does not automatically add either
     // secret character to the auction or reuse old saved selection overrides.
     players.filter(player=>player.secretCharacter).forEach(player=>{
