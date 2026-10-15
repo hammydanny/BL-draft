@@ -583,7 +583,8 @@ check('v0.6.3 player expansion, conservative estimates and stable chronology',()
     }
     assert.equal(data.players.find(p=>p.name==='Innocent Onazi').stats.ovr,89);
     assert.equal(data.players.find(p=>p.name==='Junichi Wanima').stats.ovr,data.players.find(p=>p.name==='Keisuke Wanima').stats.ovr+1);
-    assert(!data.players.some(p=>p.name==='John Paccini'));
+    assert(!data.players.filter(p=>!p.secretCharacter).some(p=>p.name==='John Paccini'));
+    assert(data.players.filter(p=>p.secretCharacter).every(p=>p.id>79),'Project characters remain separate from the canon roster');
     assert(!JSON.stringify([data.CHEMISTRY_CONTEXTS,data.CHEMISTRY_SPECIAL_PAIRS]).includes('John Paccini'));
     for(const name of ['MANSHINE CITY','ENGLAND U-20 // FOX SYSTEM']){
         assert(data.CHEMISTRY_CONTEXTS.find(c=>c.name===name)?.players.includes('Rooke'),`Rooke: missing ${name}`);
@@ -604,9 +605,9 @@ check('Every pool category has valid members and first-click selection works wit
             assert.equal(PLAYER_POOL_CATEGORY_IDS[key].size,category.names.length);
             playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES).map(k=>[k,true]));
             playerPoolManualOverrides={};recomputeSelectedPlayersFromCategories();
-            assert.equal(selectedPlayerIds.size,players.length);
+            assert.equal(selectedPlayerIds.size,players.filter(p=>!p.secretCharacter).length);
             setPoolCategoryEnabled(key,false);
-            assert.equal(selectedPlayerIds.size,players.length-category.names.length,key+' first click');
+            assert.equal(selectedPlayerIds.size,players.filter(p=>!p.secretCharacter).length-category.names.length,key+' first click');
             assert([...PLAYER_POOL_CATEGORY_IDS[key]].every(id=>!selectedPlayerIds.has(id)),key+' remove members');
             playerPoolCategoryState=Object.fromEntries(Object.keys(PLAYER_POOL_CATEGORIES).map(k=>[k,false]));
             playerPoolManualOverrides={};recomputeSelectedPlayersFromCategories();
@@ -820,7 +821,7 @@ check('Homepage Scouting Desk reuses database helpers and valid saved-phase navi
         assert.equal(homepageResumeSummary(saved).route,'auctionTeamBuilder');
         assert(homepagePlayerMatches('isagi').some(p=>p.id===1));
         assert.equal(homepagePlayerMatches('no such player').length,0);
-        assert.equal(homepagePlayerMatches('').length,players.length);
+        assert.equal(homepagePlayerMatches('').length,players.filter(p=>!p.secretCharacter).length);
         const dossier=new URL(homepageCharacterUrl(playerById(1)));
         assert.equal(dossier.searchParams.get('view'),'characters');
         assert.equal(dossier.searchParams.get('character'),'1');
@@ -840,12 +841,12 @@ check('Player/reference integrity, chemistry ID adapters, verified quotes and im
     assert.equal(formationFingerprint(data.FORMATIONS),'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e');
     const app=appContext();app.run(`
         assert.equal(PLAYER_RECORDS.size,players.length);
-        for(const player of players){const record=playerRecord(player.id);assert.equal(record.player,player);assert(record.profile?.overview);assert.equal(record.quote,verifiedPlayerQuotes(player.id)[0]||null);assert.equal(record.nationality,player.nationality||null);}
+        for(const player of players){const record=playerRecord(player.id);assert.equal(record.player,player);assert(record.profile?.overview||player.secretCharacter&&player.description);assert.equal(record.quote,verifiedPlayerQuotes(player.id)[0]||null);assert.equal(record.nationality,player.nationality||null);}
         for(const pair of CHEMISTRY_REFERENCE_PAIRS){assert.equal(pair.score,playerChemistry(...pair.playerIds.map(playerById)));}
         const missing={playerId:1,text:'Validation fixture only',sourceType:'manga',chapter:1,sourceReference:'https://example.test/source',sourceNote:'Integrity fixture',verified:false};
         assert(!isVerifiedCanonQuote(missing));assert(!isVerifiedCanonQuote({...missing,verified:true,sourceReference:''}));
         for(const value of [null,{}, {...missing,verified:'true'}, {...missing,verified:true,text:''}, {...missing,verified:true,chapter:0}])assert(!isVerifiedCanonQuote(value));
-        for(const player of players){const markup=characterLoreProfileMarkup(player);assert.equal(markup.includes('class="character-profile-quote"'),!!playerRecord(player.id).quote);assert(!markup.includes('EGO STATEMENT')&&!markup.includes('<figcaption>'),'Quotes stay inside Player Profile without attribution/source UI');}
+        for(const player of players){const markup=characterLoreProfileMarkup(player);assert.equal(markup.includes('class="character-profile-quote"'),!!(playerRecord(player.id).quote||player.secretCharacter&&player.quote));assert(!markup.includes('EGO STATEMENT')&&!markup.includes('<figcaption>'),'Quotes stay inside Player Profile without attribution/source UI');}
     `);
 });
 check('Data validation rejects malformed players, reversed pairs, missing labels, bad IDs, quotes and coordinates',()=>{
@@ -894,7 +895,7 @@ check('Database guidance, accessible controls, scoped styling and metadata found
 
 check('Chapter-364 quote boundary, review coverage and new canon aliases remain searchable',()=>{
     const app=appContext();app.run(`
-        assert.deepEqual(Object.keys(PLAYER_REFERENCE_CONTENT_REVIEW.players).map(Number).sort((a,b)=>a-b),players.map(p=>p.id).sort((a,b)=>a-b));
+        assert.deepEqual(Object.keys(PLAYER_REFERENCE_CONTENT_REVIEW.players).map(Number).sort((a,b)=>a-b),players.filter(p=>!p.secretCharacter).map(p=>p.id).sort((a,b)=>a-b));
         const fixture={...PLAYER_QUOTES.find(q=>q.playerId===49),chapter:364};
         assert.equal(fixture.sourceType,'manga');assert(isVerifiedCanonQuote(fixture));
         assert(!isVerifiedCanonQuote({...fixture,chapter:365}));
@@ -969,6 +970,41 @@ check('v0.6.9.5 deterministic target queue and exact-full free-award Undo',()=>{
             const before=JSON.stringify(auctionSnapshot());awardPlayerFree(2,true);assert.equal(JSON.stringify(auctionSnapshot()),before);
         }
         assert(!validateBid(NaN,team1,0));assert(!validateBid(Infinity,team1,0));
+    `);
+});
+check('Full-team automatic assignment Undo from opening/bidding is held without awarding again',()=>{
+    for(const phase of ['opening','bidding']){
+        const app=appContext();app.run(`
+            resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:2,selectedPlayers:players.slice(0,8)});
+            team1.players=players.slice(0,2);team2.players=[players[2]];
+            currentPlayer=players[3];remainingPlayers=players.slice(4,8);auctionNumber=4;startingTeam=2;
+            currentBid=50;currentBidder=2;uiState={screen:'auction',phase:'${phase}',turn:2};
+            const target=currentPlayer.id,queue=JSON.stringify(remainingPlayers.map(p=>p.id));
+            ${phase==='opening'?'displayOpeningBid();':'displayBiddingTurn(2);'}
+            assert.equal(team2.players.length,2);
+            undoAuctionAction();
+            assert.equal(team2.players.length,1,'Undo must not immediately replay the award while rendering');
+            assert.equal(currentPlayer.id,target);assert.equal(JSON.stringify(remainingPlayers.map(p=>p.id)),queue);
+            assert.equal(uiState.phase,'forced');assert.equal(uiState.assignmentHeld,true);
+            assert(overlayContent.innerHTML.includes('resumeAssignedPlayer'));
+            const held=JSON.stringify(auctionSnapshot());resumeCurrentView();assert.equal(JSON.stringify(auctionSnapshot()),held);
+        `);
+    }
+});
+check('Demonstrated-role audit covers the canon roster without changing gameplay or project characters',()=>{
+    const app=appContext();app.run(`
+        for(const player of players.filter(p=>!p.secretCharacter)){
+            const profile=playerRecord(player.id).profile,audit=profile.positionAudit;
+            assert.equal(audit.throughChapter,364);assert(['documented','unresolved'].includes(audit.status));
+            assert.equal(audit.status==='documented',!!profile.canonPositions?.length);
+            for(const role of profile.canonPositions||[]){assert(/^https:\\/\\//.test(role.sourceUrl));assert(!role.chapter||role.chapter<=364);}
+        }
+        for(const [id,name]of [[18,'Double Aces of Rajitsu Tech'],[19,'Double Aces of Rajitsu Tech'],[20,'King-of-All-Trades'],[62,'Luminous'],[64,'Butterfly Lashes'],[66,'Iron Man'],[67,'Rainbow Knight']])assert(verifiedPlayerAliases(id).some(a=>a.name===name));
+        for(const id of [80,81]){assert(playerById(id).secretCharacter);assert(!PLAYER_PROFILE_METADATA[id]?.canonPositions?.length);}
+        assert(!secretCharactersUnlocked);assert(players.filter(p=>p.secretCharacter).every(p=>!selectedPlayerIds.has(p.id)));
+        unlockSecretCharacters();assert(secretCharactersUnlocked);assert(players.filter(p=>p.secretCharacter).every(p=>!selectedPlayerIds.has(p.id)));
+        assert(canonicalFit(playerById(80),'GK'));assert.equal(positionBadges(playerById(80)).includes('ALL'),true);
+        assert.equal(playerChemistry(playerById(81),playerById(9)),99);
     `);
 });
 check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{

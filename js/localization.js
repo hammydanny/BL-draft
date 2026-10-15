@@ -43,6 +43,7 @@
         if(!translated){const top=key.match(/^TOP (\d+)$/);if(top)translated=text('TOP')+' '+isolate(top[1]);}
         if(!translated){const interval=key.match(/^(\$[\d,]+) INTERVAL$/);if(interval)translated=isolate(interval[1])+' '+text('INTERVAL');}
         if(!translated){const chapter=key.match(/^No sustained shared on-field system has been demonstrated in Blue Lock through chapter (\d+)\.$/);if(chapter)translated=text('No sustained shared on-field system has been demonstrated in Blue Lock through chapter {chapter}.').replace('{chapter}',isolate(chapter[1]));}
+        if(!translated){const chapter=key.match(/^CH\. (\d+)$/);if(chapter)translated=text('CH. {chapter}').replace('{chapter}',isolate(chapter[1]));}
         if(!translated&&key.startsWith('Blue Lock Draft — '))translated='Blue Lock Draft — '+text(key.slice(18));
         if(!translated&&key.endsWith(' — Blue Lock Draft'))translated=text(key.slice(0,-18))+' — Blue Lock Draft';
         if(!translated&&key.includes(' // ')){

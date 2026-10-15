@@ -19,7 +19,7 @@ function isSaveAssignment(value){
 }
 function isSaveUI(value){
     return isSaveRecord(value)&&["auction","formation","auction-team-builder"].includes(value.screen)&&
-        ["coin","opening","bidding","zero","forced","sold","next","complete","team-builder"].includes(value.phase)&&
+        ["coin","coin-result","opening","bidding","zero","forced","sold","next","complete","team-builder"].includes(value.phase)&&
         (value.turn==null||value.turn===1||value.turn===2);
 }
 function isSaveTeam(value,playerKey){
@@ -261,12 +261,13 @@ function restoreGame(saved){
 }
 function resumeCurrentView(){
     if(uiState.phase==="coin"){showCoinFlip();return;}
+    if(uiState.phase==="coin-result"){showCoinResult();return;}
     if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}
     if(uiState.phase==="complete"){showAuctionComplete();return;}
     if(!currentPlayer){startNextAuction();return;}
     if(uiState.phase==="bidding"){displayBiddingTurn(uiState.turn);return;}
     if(uiState.phase==="zero"){displayZeroBudgetChoice(uiState.turn);return;}
-    if(uiState.phase==="forced"){showForcedAssignment(uiState.turn,true);return;}
+    if(uiState.phase==="forced"){showForcedAssignment(uiState.turn,true,!!uiState.assignmentHeld);return;}
     if(uiState.phase==="sold"){
         const last=auctionHistory[auctionHistory.length-1];
         renderSoldState(last);return;

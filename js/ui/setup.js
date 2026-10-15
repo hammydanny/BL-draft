@@ -44,6 +44,9 @@ function recomputeSelectedPlayersFromCategories(){
         return typeof manual==="boolean"?manual:categoryBaseSelected(player.id);
     }).map(player=>player.id));
 }
+// Short chip captions keep the nine filters secondary. Full category names remain
+// on each checkbox and in its tooltip, including the actual selection count.
+const POOL_CATEGORY_CAPTIONS=Object.freeze({"blue-lock-project":"BLUE LOCK","original-u20":"JAPAN U-20 · ORIGINAL","world-five":"WORLD FIVE","master-strikers":"MASTERS","new-gen-11":"NG XI","nel-foreign":"NEL · OVERSEAS","japan-world-cup":"JAPAN · WORLD CUP","world-cup-new":"WORLD CUP · NEW","side-b":"SIDE-B"});
 function renderPoolCategoryControls(){
     ensurePoolCategoryState();
     document.querySelectorAll("[data-pool-category]").forEach(input=>{
@@ -54,7 +57,11 @@ function renderPoolCategoryControls(){
         const label=input.closest("label");
         if(label){
             label.dataset.selectionState=input.checked?"all":input.indeterminate?"partial":"none";
-            label.title=`${selectedCount}/${ids.size} players selected`;
+            const category=PLAYER_POOL_CATEGORIES[input.dataset.poolCategory];
+            input.setAttribute("aria-label",category.label);
+            const caption=input.nextElementSibling?.firstChild;
+            if(caption?.nodeType===3)caption.nodeValue=POOL_CATEGORY_CAPTIONS[input.dataset.poolCategory]||category.label;
+            label.title=`${category.label} // ${selectedCount}/${ids.size} players selected`;
         }
     });
 }

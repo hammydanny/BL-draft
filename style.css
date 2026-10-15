@@ -1287,10 +1287,12 @@ html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pit
 .settings-grid>div{min-width:0;display:flex;flex-direction:column}
 .settings-grid label{flex:1;min-height:2.6em;display:flex;align-items:center;line-height:1.3}
 .settings-grid input{width:100%;margin-top:4px}
-.pool-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:8px!important}
-.pool-category-grid label{min-width:0;display:flex!important;height:auto}
-.pool-category-grid label span{flex:1;height:auto;min-height:48px!important;overflow-wrap:anywhere;line-height:1.3!important}
-@media(max-width:600px){.pool-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+.pool-category-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-auto-rows:1fr;gap:4px!important}
+.pool-category-grid label{min-width:0;display:flex!important;height:auto;margin:0!important}
+.pool-category-grid label span{flex:1;height:auto;min-height:32px!important;padding:4px 5px 4px 22px!important;overflow-wrap:anywhere;line-height:1.2!important;box-shadow:none!important;background:var(--bg-surface)!important}
+@media(max-width:1000px){.pool-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:600px){.pool-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:360px){.pool-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 /* Decorative rails occupy their own tracks; content cannot cross them. */
 .game-overlay{display:grid;grid-template-rows:minmax(8px,1fr) auto minmax(8px,1fr);place-items:center;gap:18px;padding:clamp(12px,3vh,25px) 25px;overflow:auto}
 .game-overlay:before,.game-overlay:after{position:static;inset:auto;width:100%;height:1px;pointer-events:none}
@@ -1308,3 +1310,17 @@ html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pit
 .forced-destination strong{overflow-wrap:anywhere}
 /* Reserve cards need room for translated drag hints beside the portrait. */
 @media(max-width:900px){.bench-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr))}.bench-player img{flex-shrink:0}.bench-player>b{min-width:0;overflow-wrap:anywhere}}
+
+/* Full-roster assignment controls stay reachable inside the cinematic. */
+.assignment-controls{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.assignment-controls .primary-button{flex:1 1 210px;width:auto;margin-top:0}
+.assignment-controls .context-control{flex:0 0 auto;min-width:88px}
+.coin-winner{overflow-wrap:anywhere;line-height:1.15}
+.coin-first-label{font-size:clamp(16px,2.4vw,22px)!important;font-weight:800;letter-spacing:1px}
+
+/* Canon role evidence remains readable with multiple deployed positions. */
+.character-position-analysis li{display:flex;align-items:flex-start;gap:10px;margin-block:8px;overflow-wrap:anywhere}
+.character-position-analysis li>b{flex:0 0 32px;direction:ltr}
+.character-position-analysis li>span{min-width:0;flex:1}
+.character-position-analysis li small{display:block;color:var(--text-muted);font-size:12px;line-height:1.4}
+.canon-position-source{display:inline-block;margin-inline-end:8px;font-size:12px;color:var(--accent);text-underline-offset:3px}

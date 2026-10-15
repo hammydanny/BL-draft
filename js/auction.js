@@ -118,8 +118,10 @@ function restoreAuctionSnapshot(snapshot){
     hydrateAuctionSnapshot(snapshot);
     updatePlayersRemaining();
     saveGame();
-    // Restoring a forced assignment must not immediately replay the award.
-    if(uiState.phase==="forced")showForcedAssignment(uiState.turn,true,true);
+    // Rendering an undone automatic award must never award the target again.
+    // Older/opening/bidding snapshots can legitimately have one full roster too.
+    const forcedTeam=currentPlayer&&!auctionHistory.some(entry=>entry.player.id===currentPlayer.id)?onlyTeamWithSpace():null;
+    if(uiState.phase==="forced"||forcedTeam)showForcedAssignment(forcedTeam||uiState.turn,true,true);
     else resumeCurrentView();
     auctionHistoryRestoring=false;
     updateAuctionUndoRedoControls();
@@ -195,17 +197,25 @@ function startRandomDraft(){
 }
 
 function showCoinFlip(){
-    const t=teamByNumber(startingTeam);
     showOverlay(`
       <div class="overlay-kicker">OPENING PRIORITY // RANDOMIZED</div>
       <div class="coin-stage" aria-label="${esc(SiteI18n.text('Team coin flip'))}"><div class="coin" style="--coin-end:${startingTeam===1?'1440deg':'1620deg'}">
         <div class="coin-face coin-front" style="${teamVars(team1)}"><span>1</span></div>
         <div class="coin-face coin-back" style="${teamVars(team2)}"><span>2</span></div>
       </div></div>
-      <div class="overlay-eyebrow">FIRST BID CONTROL</div>
-      <h2 style="${teamVars(t)};color:var(--team)">${esc(t.name)}</h2>
-      <p>WON THE INITIAL DRAW</p>`);
-    scheduleAuctionTransition(()=>hideOverlay(startNextAuction),2800);
+      <p>DETERMINING FIRST TEAM</p>`);
+    // The existing physical flip lasts 2 seconds. Announce its existing result
+    // only after the coin has settled; never draw another random winner.
+    scheduleAuctionTransition(showCoinResult,2200);
+}
+function showCoinResult(){
+    const winner=teamByNumber(startingTeam);
+    uiState={screen:"auction",phase:"coin-result",turn:startingTeam};saveGame();
+    showOverlay(`
+      <div class="overlay-kicker">COIN FLIP RESULT</div>
+      <h2 class="coin-winner" data-i18n-ignore style="${teamVars(winner)};color:var(--team-heading,var(--team))">${esc(winner.name)}</h2>
+      <p class="coin-first-label">GOES FIRST</p>`);
+    scheduleAuctionTransition(()=>hideOverlay(startNextAuction),1400);
 }
 
 function startNextAuction(){
@@ -225,16 +235,20 @@ function startNextAuction(){
 }
 
 function showForcedAssignment(teamNumber,resuming=false,hold=false){
-    uiState={screen:"auction",phase:"forced",turn:teamNumber};saveGame();
+    cancelAuctionTransition();
+    uiState={screen:"auction",phase:"forced",turn:teamNumber,...(hold?{assignmentHeld:true}:{})};saveGame();
     const team=teamByNumber(teamNumber);
     const fullTeam=teamByNumber(otherTeamNumber(teamNumber));
+    // Refresh the underlying target and roster counts as well as the cinematic.
+    renderAuctionScreen(`<div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>`);
     showOverlay(`
       <div class="overlay-kicker">ROSTER CAPACITY PROTOCOL // ${String(auctionNumber).padStart(2,"0")}</div>
       <div class="reveal-image"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(currentPlayer)}" alt="${esc(currentPlayer.name)}" loading="eager" fetchpriority="high" decoding="async" width="150" height="170"></div>
       <div class="overlay-eyebrow">AUTOMATIC ASSIGNMENT</div>
       <h2>${esc(currentPlayer.name)}</h2>
       <p><strong style="${teamVars(fullTeam)};color:var(--team-heading,var(--team))">${esc(fullTeam.name)}</strong> HAS FILLED ITS ROSTER</p>
-      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div>${hold?'<button id="resumeAssignedPlayer" class="primary-button"><span>NEXT PLAYER</span><b>→</b></button>':''}`);
+      <div class="forced-destination" style="${teamVars(team)}">ASSIGNED TO <strong>${esc(team.name)}</strong></div><div class="assignment-controls"><button id="assignmentUndoButton" class="context-control" type="button" ${auctionUndoStack.length?"":"disabled"}>↶ <span>UNDO</span></button>${hold?'<button id="resumeAssignedPlayer" class="primary-button"><span>NEXT PLAYER</span><b>→</b></button>':''}</div>`);
+    document.getElementById("assignmentUndoButton").addEventListener("click",undoAuctionAction);
     if(hold){document.getElementById("resumeAssignedPlayer").addEventListener("click",advanceToNextAuction);return;}
     const delay=resuming?500:1500;
     scheduleAuctionTransition(()=>hideOverlay(()=>{
