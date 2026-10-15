@@ -88,9 +88,10 @@ function sortedCharacterRecords(sort){
 }
 function filteredCharacterLore(){
     const query=normalizeLoreSearch(loreControlValue("characterLoreSearch").trim()),position=loreControlValue("characterLorePosition","ALL"),grade=loreControlValue("characterLoreGrade","ALL"),category=loreControlValue("characterLoreCategory","ALL"),affiliation=loreControlValue("characterLoreAffiliation","ALL");
+    const revealSecrets=query===normalizeLoreSearch(SECRET_CHARACTER_CODE);
     return sortedCharacterRecords(loreControlValue("characterLoreSort","chronological")).filter(record=>{
-        const secretNameSearch=!!query&&record.player.secretCharacter&&matchesLoreSearch(normalizeLoreSearch(record.player.name),query);
-        const visible=!record.player.secretCharacter||secretNameSearch;
+        if(revealSecrets)return !!record.player.secretCharacter;
+        const visible=!record.player.secretCharacter;
         return visible&&matchesLoreSearch(characterSearchText(record),query)&&(position==="ALL"||playerPositions(record.player).some(role=>role===position||positionGroup(role)===position))&&(grade==="ALL"||playerStatGrade(playerOverall(record.player))===grade)&&(category==="ALL"||record.categories.some(item=>item.key===category))&&(affiliation==="ALL"||record.affiliations.some(context=>context.id===affiliation));
     });
 }
@@ -149,8 +150,9 @@ function renderCharacterLore(){
     const status=screen?.querySelector(".page-context-status");if(status)status.textContent="SCOUT // COMPARE // OPEN A DOSSIER";
     const filtered=filteredCharacterLore();renderLoreCards(grid,filtered,characterLoreCard,"NO CHARACTERS MATCH YOUR FILTERS. TRY RESET FILTERS.");prioritizeVisiblePortraits(grid);syncCharacterCompareButtons();
     const query=normalizeLoreSearch(loreControlValue("characterLoreSearch").trim());
-    const total=players.filter(player=>!player.secretCharacter||(query&&matchesLoreSearch(normalizeLoreSearch(player.name),query))).length;
-    const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${total} PLAYERS`;
+    const revealSecrets=query===normalizeLoreSearch(SECRET_CHARACTER_CODE);
+    const total=revealSecrets?players.filter(player=>player.secretCharacter).length:players.filter(player=>!player.secretCharacter).length;
+    const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${total} ${revealSecrets?"SECRET CHARACTERS":"PLAYERS"}`;
 }
 function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
 function syncDatabaseMetadata(title,description){
@@ -206,7 +208,11 @@ function bindLoreUI(){
     document.getElementById("characterLoreCompareView")?.addEventListener("click",()=>{const panel=document.getElementById("characterLoreComparison");panel?.scrollIntoView({behavior:"instant",block:"start"});const title=document.getElementById("characterCompareTitle");title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});});
     document.getElementById("menuLore")?.addEventListener("click",openLoreMenu);document.getElementById("loreCharacters")?.addEventListener("click",openCharacterLore);document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);
     for(const [kind,render] of [["character",renderCharacterLore],["chemistry",renderChemistryLore]]){
-        let pending;document.getElementById(kind+"LoreSearch")?.addEventListener("input",()=>{clearTimeout(pending);pending=setTimeout(render,120);});
+        let pending;document.getElementById(kind+"LoreSearch")?.addEventListener("input",()=>{
+            const search=document.getElementById(kind+"LoreSearch");
+            if(kind==="character"&&search?.value.trim()===SECRET_CHARACTER_CODE)unlockSecretCharacters();
+            clearTimeout(pending);pending=setTimeout(render,120);
+        });
         for(const control of kind==="character"?["Position","Grade","Affiliation","Category","Sort"]:["PlayerA","PlayerB","Context","Type","Tier","Sort"])document.getElementById(kind+"Lore"+control)?.addEventListener("change",()=>{clearTimeout(pending);render();});
         document.getElementById(kind+"LoreReset")?.addEventListener("click",()=>{clearTimeout(pending);resetLoreFilters(kind);});
     }
