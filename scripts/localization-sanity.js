@@ -43,7 +43,7 @@ function load(root){
         let i=start+token.length,depth=0,inString=false,escaped=false,quote='',begin=i;
         for(;i<localization.length;i++){
             const char=localization[i];
-            if(inString){if(escaped)escaped=false;else if(char==='\\\\')escaped=true;else if(char===quote)inString=false;continue;}
+            if(inString){if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char===quote)inString=false;continue;}
             if(char==='"'||char==="'"){inString=true;quote=char;continue;}
             if(char==='{')depth++;
             else if(char==='}'&&--depth===0)return JSON.parse(localization.slice(begin,i+1));

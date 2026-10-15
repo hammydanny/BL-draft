@@ -13,7 +13,7 @@ function parseFrozen(source,name){
     let i=start+token.length,depth=0,inString=false,escaped=false,quote='',begin=i;
     for(;i<source.length;i++){
         const char=source[i];
-        if(inString){if(escaped)escaped=false;else if(char==='\\\\')escaped=true;else if(char===quote)inString=false;continue;}
+        if(inString){if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char===quote)inString=false;continue;}
         if(char==='"'||char==="'"){inString=true;quote=char;continue;}
         if(char==='{')depth++;
         else if(char==='}'&&--depth===0)return JSON.parse(source.slice(begin,i+1));
