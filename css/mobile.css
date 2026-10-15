@@ -15,6 +15,7 @@
 .site-settings{z-index:4}
 /* Fixed-body locking also prevents background swipes on touch Safari. The
    shared dialog controller records/restores the exact document scroll offset. */
+html{scrollbar-gutter:stable}
 body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0);width:100%;overflow:hidden}
 .info-card,.quick-draft-card,.confirm-card,.site-settings{overscroll-behavior:contain;scrollbar-gutter:stable;scroll-padding-block:20px}
 .confirm-card{max-height:calc(100dvh - 40px);overflow:auto}
