@@ -96,9 +96,11 @@ function renderPlayerPool(){
     const sort=document.getElementById("playerSort")?.value||playerPoolSort||"id";
     playerPoolPositionFilter=position;playerPoolGroupFilter=group;playerPoolSort=sort;
 
+    const revealSecretCharacters=query===SECRET_CHARACTER_CODE;
     let visiblePlayers=players.filter(player => {
+        if(player.secretCharacter&&!revealSecretCharacters)return false;
         if(!secretPlayerAvailable(player))return false;
-        const matchesQuery=player.name.toLowerCase().includes(query);
+        const matchesQuery=player.secretCharacter?revealSecretCharacters:player.name.toLowerCase().includes(query);
         const matchesPosition=position==="ALL" || player.allPositions===true || positionGroup(primaryPosition(player))===position;
         const matchesGroup=playerMatchesPoolGroup(player,group);
         return matchesQuery&&matchesPosition&&matchesGroup;
@@ -172,34 +174,42 @@ document.querySelectorAll("[data-pool-category]").forEach(input=>{
 document.getElementById("startGame").addEventListener("click",startGame);
 document.getElementById("randomDraftGame").addEventListener("click",startRandomDraft);
 const playerSearchInput=document.getElementById("playerSearch");
-playerSearchInput.placeholder=secretCharactersUnlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
+playerSearchInput.placeholder="SEARCH PLAYERS...";
 playerSearchInput.addEventListener("input",()=>{
-    if(playerSearchInput.value.trim()===SECRET_CHARACTER_CODE){
-        if(!secretCharactersUnlocked){
-            unlockSecretCharacters();
-            document.getElementById("playerGroupFilter").value="all";
-            document.getElementById("playerPositionFilter").value="ALL";
-            playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
-            recomputeSelectedPlayersFromCategories();
-            saveSetupPreferences();
-        }
-        // The code is a one-way unlock for this page session, never a toggle.
-        playerSearchInput.value="";
-        playerSearchInput.placeholder=secretCharactersUnlocked?"SECRET CHARACTERS UNLOCKED — SEARCH PLAYERS...":"SEARCH PLAYERS...";
-        renderPlayerPool();
-        return;
+    const revealSecretCharacters=playerSearchInput.value.trim()===SECRET_CHARACTER_CODE;
+    if(revealSecretCharacters){
+        unlockSecretCharacters();
+        document.getElementById("playerGroupFilter").value="all";
+        document.getElementById("playerPositionFilter").value="ALL";
+        playerPoolGroupFilter="all";playerPoolPositionFilter="ALL";
+        recomputeSelectedPlayersFromCategories();
+        saveSetupPreferences();
     }
+    // Keep the code in the search bar: secret entries are visible only while
+    // this exact code remains here.
     renderPlayerPool();
 });
 document.getElementById("selectAllPlayers").addEventListener("click", () => {
+    const revealSecretCharacters=playerSearchInput.value.trim()===SECRET_CHARACTER_CODE;
+    const previousSelected=new Set(selectedPlayerIds);
     Object.keys(PLAYER_POOL_CATEGORIES).forEach(k=>playerPoolCategoryState[k]=true);
     playerPoolManualOverrides={};
-    if(secretCharactersUnlocked)players.filter(player=>player.secretCharacter).forEach(player=>playerPoolManualOverrides[player.id]=true);
+    players.filter(player=>player.secretCharacter).forEach(player=>{
+        // Bulk-select only reveals/adds hidden entries when their code is present.
+        playerPoolManualOverrides[player.id]=revealSecretCharacters?true:previousSelected.has(player.id);
+    });
     recomputeSelectedPlayersFromCategories();renderPlayerPool();saveSetupPreferences();
 });
 document.getElementById("invertPlayers").addEventListener("click", () => {
     const previous=new Set(selectedPlayerIds);
-    players.forEach(p=>playerPoolManualOverrides[p.id]=secretPlayerAvailable(p)?!previous.has(p.id):false);
+    const revealSecretCharacters=playerSearchInput.value.trim()===SECRET_CHARACTER_CODE;
+    players.forEach(p=>{
+        if(p.secretCharacter&&!revealSecretCharacters){
+            playerPoolManualOverrides[p.id]=previous.has(p.id);
+            return;
+        }
+        playerPoolManualOverrides[p.id]=secretPlayerAvailable(p)?!previous.has(p.id):false;
+    });
     recomputeSelectedPlayersFromCategories();
     renderPlayerPool();
     saveSetupPreferences();

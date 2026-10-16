@@ -80,11 +80,13 @@ function refreshStandaloneReserveOrder(){
 }
 function standaloneBuilderPoolPlayers(){
     const query=standaloneBuilderQuery.trim().toLowerCase();
+    const revealSecretCharacters=query===SECRET_CHARACTER_CODE;
     let list=players.filter(player=>{
+        if(player.secretCharacter&&!revealSecretCharacters)return false;
         if(!secretPlayerAvailable(player))return false;
         const role=standaloneBuilderRole;
         const roleOk=role==="ALL"||player.allPositions===true||positionGroup(primaryPosition(player))===role;
-        const textOk=!query||player.name.toLowerCase().includes(query)||playerPositions(player).some(x=>x.toLowerCase().includes(query));
+        const textOk=player.secretCharacter?revealSecretCharacters:(!query||player.name.toLowerCase().includes(query)||playerPositions(player).some(x=>x.toLowerCase().includes(query)));
         return roleOk&&textOk;
     });
     list.sort(compareStandalonePlayers);
@@ -240,13 +242,24 @@ function bindStandaloneBuilderPoolUI(){
     const search=document.getElementById("standalonePoolSearch");
     const role=document.getElementById("standalonePoolRole");
     const sort=document.getElementById("standalonePoolSort");
-    if(search)search.oninput=()=>{standaloneBuilderQuery=search.value;refreshStandalonePoolGrid();};
+    if(search)search.oninput=()=>{
+        standaloneBuilderQuery=search.value;
+        if(standaloneBuilderQuery.trim()===SECRET_CHARACTER_CODE){
+            unlockSecretCharacters();
+            standaloneBuilderRole="ALL";
+            if(role)role.value="ALL";
+        }
+        // Keep the code in the input. Secret entries disappear as soon as it
+        // is changed or removed.
+        refreshStandalonePoolGrid();
+    };
     if(role)role.onchange=()=>{standaloneBuilderRole=role.value;refreshStandalonePoolGrid();saveStandaloneBuilderState();};
     if(sort)sort.onchange=()=>{standaloneBuilderSort=sort.value;refreshStandalonePoolGrid();refreshStandaloneReserveOrder();saveStandaloneBuilderState();};
     document.querySelectorAll("[data-standalone-action]").forEach(button=>{
         button.onclick=()=>{
             const action=button.dataset.standaloneAction;
-            const availablePlayers=players.filter(secretPlayerAvailable);
+            const revealSecretCharacters=standaloneBuilderQuery.trim()===SECRET_CHARACTER_CODE;
+            const availablePlayers=players.filter(player=>secretPlayerAvailable(player)&&(!player.secretCharacter||revealSecretCharacters));
             if(action==="top15"){
                 standaloneBuilderPlayerIds=new Set([...availablePlayers].sort((a,b)=>playerOverall(b)-playerOverall(a)||a.id-b.id).slice(0,15).map(p=>p.id));
             }else if(action==="all"){
