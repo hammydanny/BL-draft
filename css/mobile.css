@@ -303,32 +303,32 @@ body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0)
 /* Mobile directory stays fully visible without its own scroll region. */
 @media(max-width:767px){
     .mobile-directory-heading{position:static;padding-block:10px 8px}
-    .mobile-directory-heading button{flex-basis:40px;width:40px;height:40px}
+    .mobile-directory-heading button{flex-basis:44px;width:44px;height:44px}
     .mobile-directory-links{display:grid;align-content:start;flex:1 1 auto;padding-block:8px}
     .mobile-primary-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
     .mobile-primary-links button{min-height:46px;padding:7px 10px;gap:9px}
     .mobile-primary-links button>span{flex-basis:20px}
     .mobile-primary-links strong{font-size:15px}
     .mobile-secondary-links{grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 4px;margin-top:10px;padding-top:8px}
-    .mobile-secondary-links :is(button,a){min-height:38px;padding:6px 5px;font-size:12px}
+    .mobile-secondary-links :is(button,a){min-height:44px;padding:6px 5px;font-size:12px}
     .mobile-settings-entry{min-height:54px;padding:8px 6px}
     .mobile-settings-entry strong{font-size:14px}
     .mobile-settings-entry>span{font-size:11px}
 }
-@media(max-height:620px) and (max-width:900px){
+@media(max-height:620px) and (max-width:1200px){
     .mobile-directory-panel{width:min(520px,calc(100% - 12px));padding:max(4px,var(--safe-top)) max(8px,var(--safe-right)) max(4px,var(--safe-bottom)) 8px}
     .mobile-directory-heading{padding-block:4px}
     .mobile-directory-heading span{font-size:13px}
     .mobile-directory-heading h2{margin-top:1px;font-size:15px}
-    .mobile-directory-heading button{flex-basis:36px;width:36px;height:36px}
+    .mobile-directory-heading button{flex-basis:44px;width:44px;height:44px}
     .mobile-directory-links{padding-block:5px}
     .mobile-primary-links{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
-    .mobile-primary-links button{min-height:40px;padding:4px 6px;gap:5px}
+    .mobile-primary-links button{min-height:44px;padding:4px 6px;gap:5px}
     .mobile-primary-links button>span{display:none}
     .mobile-primary-links strong{font-size:13px}
     .mobile-secondary-links{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;margin-top:6px;padding-top:6px}
-    .mobile-secondary-links :is(button,a){justify-content:center;min-height:34px;padding:4px;text-align:center;font-size:11px}
-    .mobile-settings-entry{min-height:42px;padding:5px 4px}
+    .mobile-secondary-links :is(button,a){justify-content:center;min-height:44px;padding:4px;text-align:center;font-size:11px}
+    .mobile-settings-entry{min-height:44px;padding:5px 4px}
     .mobile-settings-entry>span{display:none}
 }
 
@@ -452,7 +452,7 @@ body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0)
   .mobile-builder-pool-dialog .standalone-pool-player small{font-size:10px}
   .mobile-builder-pool-dialog .standalone-pool-player:active{transform:none;background:var(--team-soft,rgba(20,156,255,.16))}
   #formation-screen :is(button,summary):focus-visible{outline:2px solid var(--accent-text);outline-offset:2px}
-  :lang(ar) #formation-screen :is(.mobile-builder-player,.mobile-chemistry-toggle,.mobile-reserves-toggle,.builder-more-actions),:lang(ar) .mobile-builder-pool-dialog{direction:rtl}
+  :lang(ar) #formation-screen :is(.mobile-builder-player,.mobile-chemistry-toggle,.mobile-reserves-toggle,.builder-more-actions),:lang(ar) .mobile-builder-pool-dialog{direction:ltr}
 }
 @media(min-width:768px) and (max-width:1024px) and (min-height:501px){
   #formation-screen .formation-v2-shell{--pitch-height:clamp(700px,85vw,780px)}
@@ -625,4 +625,4 @@ html:has(.phase4-sheet[open]){overflow:hidden}
     letter-spacing:.35px;
   }
 }
-:lang(ar) .phase4-sheet{direction:rtl}
+:lang(ar) .phase4-sheet{direction:ltr}

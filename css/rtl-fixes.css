@@ -1,0 +1,217 @@
+/* Arabic/RTL correction layer.
+   Keep UI geometry, tactical layouts, card grids and icon order stable.
+   Only textual content adopts RTL reading/alignment. */
+
+:lang(ar) body,
+:lang(ar) .home-shell,
+:lang(ar) .home-hero,
+:lang(ar) .home-modes,
+:lang(ar) .home-mode,
+:lang(ar) .home-resume,
+:lang(ar) .lore-screen,
+:lang(ar) .lore-content-shell,
+:lang(ar) .lore-toolbar,
+:lang(ar) .character-lore-grid,
+:lang(ar) .character-lore-card,
+:lang(ar) .character-profile-hero,
+:lang(ar) .character-profile-overview,
+:lang(ar) .character-profile-section,
+:lang(ar) .character-position-analysis,
+:lang(ar) .chemistry-lore-grid,
+:lang(ar) .chemistry-lore-card,
+:lang(ar) .chemistry-pair-evaluation,
+:lang(ar) .mobile-database-tabs,
+:lang(ar) .mobile-compare-bar,
+:lang(ar) .mobile-chemistry-check,
+:lang(ar) .mobile-builder-pool-dialog,
+:lang(ar) .phase4-sheet,
+:lang(ar) .reserve-picker,
+:lang(ar) .reserve-picker-player,
+:lang(ar) .mobile-builder-player,
+:lang(ar) .mobile-chemistry-toggle,
+:lang(ar) .mobile-reserves-toggle,
+:lang(ar) .builder-more-actions {
+  direction:ltr;
+}
+
+/* Do not let data-i18n-text flip flex/grid containers. Plaintext bidi keeps
+   Arabic punctuation and mixed Latin/numbers readable without reordering UI. */
+:lang(ar) [data-i18n-text] {
+  unicode-bidi:plaintext;
+  text-align:right;
+}
+
+/* Text-bearing elements get Arabic reading direction; structural controls do not. */
+:lang(ar) :is(
+  p,h1,h2,h3,h4,legend,
+  .home-kicker,.home-hero-tagline,.home-hero-description,.home-introduction>span,
+  .home-preview-title>span,.home-preview-title>p,.home-art-heading>span,.home-art-footer>span,
+  .home-section-heading span,.home-mode-title,.home-mode-description,.home-mode-action,
+  .home-resume-code>span,.home-resume-progress-label,.home-resume-facts span,
+  .database-hub-intro>span,.lore-kicker,.database-intro p,
+  .character-profile-kicker,.character-profile-rating-note,.character-profile-description,
+  .character-profile-quote blockquote,.character-profile-categories span,
+  .character-profile-section>p,.character-profile-section h3,.character-profile-section h4,
+  .character-position-analysis li span,.chemistry-lore-description,
+  .phase4-sheet-heading h2,.reserve-picker-player strong,.reserve-picker-player small,.reserve-picker-player em
+) {
+  direction:rtl;
+  unicode-bidi:plaintext;
+  text-align:right;
+}
+
+/* Controls keep their visual order, while the label itself reads from the right. */
+:lang(ar) :is(button,a,summary,label) {
+  unicode-bidi:plaintext;
+}
+:lang(ar) :is(.home-button span,.home-text-button,.home-section-link,.directory-item,.directory-options button,
+  .lore-actions button span,.lore-actions button b,.database-tabs button,.mobile-database-tabs button,
+  .formation-actions button span,.builder-more-actions button,.mobile-chemistry-toggle span,.mobile-reserves-toggle span) {
+  direction:rtl;
+  unicode-bidi:plaintext;
+  text-align:right;
+}
+
+/* Homepage: right-align Arabic copy without mirroring cards, preview geometry or arrows. */
+:lang(ar) .home-hero-copy,
+:lang(ar) .home-preview-title,
+:lang(ar) .home-mode,
+:lang(ar) .home-scouting,
+:lang(ar) .home-resume>div,
+:lang(ar) .database-hub-intro {
+  text-align:right;
+}
+:lang(ar) .home-mode { align-items:stretch; }
+:lang(ar) .home-mode-top,
+:lang(ar) .home-mode-action { width:100%; }
+:lang(ar) .home-mode-top>span,
+:lang(ar) .home-mode-action { text-align:right; }
+:lang(ar) .home-resume {
+  border-left:1px solid var(--border-strong);
+  border-right:3px solid var(--accent);
+}
+:lang(ar) .scout-options button {
+  align-items:flex-end;
+  text-align:right;
+}
+:lang(ar) .scout-chemistry-score small {
+  margin-left:0;
+  margin-right:5px;
+}
+
+/* Character database / dossier: content is RTL, card/grid anatomy remains unchanged. */
+:lang(ar) .character-lore-card,
+:lang(ar) .character-profile-overview,
+:lang(ar) .character-profile-section,
+:lang(ar) .chemistry-lore-card,
+:lang(ar) .chemistry-pair-evaluation {
+  text-align:right;
+}
+:lang(ar) .character-profile-person-link { text-align:right; }
+:lang(ar) .character-position-analysis ul {
+  padding-left:0;
+  padding-right:20px;
+}
+:lang(ar) .character-profile-quote,
+:lang(ar) .character-profile-quote[data-i18n-ignore] blockquote {
+  direction:rtl !important;
+  unicode-bidi:plaintext !important;
+  text-align:right !important;
+}
+:lang(ar) .character-profile-quote {
+  padding-left:0;
+  padding-right:10px;
+  border-left:0;
+  border-right:2px solid var(--border-strong);
+}
+:lang(ar) .chemistry-lore-card,
+:lang(ar) .chemistry-pair-evaluation {
+  border-left:1px solid var(--border-subtle);
+  border-right:3px solid var(--relationship-color);
+}
+
+/* Reserve picker: stop the dialog/grid from being auto-mirrored. The portrait stays
+   in its normal column, identity stays central, fit status stays in its normal column. */
+:lang(ar) .phase4-sheet-heading,
+:lang(ar) .reserve-picker-player {
+  direction:ltr;
+}
+:lang(ar) .phase4-sheet-heading h2 {
+  flex:1;
+  min-width:0;
+}
+:lang(ar) .reserve-picker-player>span {
+  direction:rtl;
+  text-align:right;
+}
+:lang(ar) .reserve-picker-player .position-badges {
+  direction:ltr;
+  justify-content:flex-end;
+}
+:lang(ar) .reserve-picker-player small {
+  justify-self:end;
+}
+:lang(ar) .reserve-picker-player em {
+  direction:rtl;
+  text-align:center;
+}
+@media(min-width:1025px){
+  :lang(ar) .reserve-picker-player>span {
+    grid-template-areas:"name name" "rating badges";
+  }
+  :lang(ar) .reserve-picker-player .position-badges {
+    grid-area:badges;
+    justify-content:flex-end;
+  }
+  :lang(ar) .reserve-picker-player small {
+    grid-area:rating;
+    justify-self:end;
+  }
+}
+
+/* Mobile builder sheets/cards follow the same rule: stable geometry, RTL copy. */
+:lang(ar) .mobile-builder-player>span,
+:lang(ar) .mobile-builder-pool-dialog :is(h2,h3,p,label),
+:lang(ar) .builder-more-actions button {
+  direction:rtl;
+  unicode-bidi:plaintext;
+  text-align:right;
+}
+
+/* Header/settings/dropdowns: keep anchoring/icon placement stable; align Arabic labels. */
+:lang(ar) .site-settings,
+:lang(ar) .directory-options,
+:lang(ar) .site-directory { direction:ltr; }
+:lang(ar) .site-settings :is(h2,p,label),
+:lang(ar) .directory-options button,
+:lang(ar) .directory-item:not(.site-header-brand) {
+  direction:rtl;
+  unicode-bidi:plaintext;
+  text-align:right;
+}
+:lang(ar) .site-header-brand,
+:lang(ar) .position-badges,
+:lang(ar) .slot-position,
+:lang(ar) .player-stats-axis,
+:lang(ar) .player-stats-radar,
+:lang(ar) .player-stats-overall,
+:lang(ar) .player-stats-grade,
+:lang(ar) .evaluation-grade,
+:lang(ar) .effective-ovr,
+:lang(ar) .captain-badge,
+:lang(ar) .football-pitch,
+:lang(ar) .formation-player-token,
+:lang(ar) .character-card-rating,
+:lang(ar) .character-profile-ovr strong,
+:lang(ar) .character-profile-score,
+:lang(ar) .chemistry-lore-score {
+  direction:ltr;
+  unicode-bidi:isolate;
+}
+
+/* Inputs should begin on the right in Arabic but keep native control geometry. */
+:lang(ar) :is(input[type="text"],input[type="search"],textarea) {
+  direction:rtl;
+  unicode-bidi:plaintext;
+  text-align:right;
+}

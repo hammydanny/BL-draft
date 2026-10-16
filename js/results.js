@@ -198,7 +198,9 @@ function createShareTeam(team,n){
     </article>`;
 }
 function openShareScreen(){
-    document.getElementById("shareScreen")?.remove();
+    const previous=document.getElementById("shareScreen");
+    if(previous){setSiteDialogState(previous,false);previous.remove();}
+    const previousFocus=document.activeElement;
     const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
     screen.innerHTML=`<div class="share-shell">
       <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button></div></div>
@@ -208,8 +210,17 @@ function openShareScreen(){
         <div class="share-team-grid">${createShareTeam(team1,1)}${createShareTeam(team2,2)}</div>
         <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
       </div></div>`;
+    screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","Auction results report");
     document.body.appendChild(screen);
-    document.getElementById("closeShareScreen").onclick=()=>{screen.remove();};
+    setSiteDialogState(screen,true);
+    prioritizeVisiblePortraits(screen);
+    function close(){setSiteDialogState(screen,false);screen.remove();if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
+    screen.addEventListener("keydown",event=>{
+        if(event.key==="Escape"){event.preventDefault();close();return;}
+        trapSiteDialogFocus(event);
+    });
+    document.getElementById("closeShareScreen").onclick=close;
+    document.getElementById("closeShareScreen").focus();
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
 }

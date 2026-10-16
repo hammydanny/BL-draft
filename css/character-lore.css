@@ -187,7 +187,7 @@
   .lore-toolbar label:has(select[id$="Sort"]){grid-column:2;grid-row:2}
   .mobile-lore-filter-fields{display:grid;align-content:start;gap:14px}
   .mobile-lore-filter-fields label{display:block;min-width:0;font-weight:800;font-size:14px;line-height:1.4;overflow-wrap:anywhere}
-  .mobile-lore-filter-fields select{display:block;width:100%;min-width:0;min-height:48px;margin-top:5px;padding:10px;font-size:16px;color:var(--text-primary);background:var(--bg-surface-raised);border:1px solid var(--border-strong)}
+  .mobile-lore-filter-fields select{display:block;width:100%;min-width:0;min-height:48px;margin-top:5px;padding:10px;font:700 16px "Rajdhani",sans-serif;color:var(--text-primary);background:var(--bg-surface-raised);border:1px solid var(--border-strong)}
   #characterLoreGrid:not(.character-lore-profile-grid){grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .character-lore-card .character-lore-image-wrap{aspect-ratio:1/1}
   .character-lore-card:hover{transform:none}
@@ -275,7 +275,7 @@
   .mobile-chemistry-check{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px;margin-bottom:10px;background:var(--bg-surface);border:1px solid var(--border-strong)}
   .mobile-chemistry-check h2{grid-column:1/-1;margin:0;color:var(--accent-text);font-size:16px}
   .mobile-chemistry-check label{min-width:0;font-size:12px;font-weight:800}
-  .mobile-chemistry-check select{display:block;width:100%;min-width:0;min-height:44px;padding:8px;margin-top:5px;font-size:14px;color:var(--text-primary);background:var(--bg-surface-raised);border:1px solid var(--border-strong)}
+  .mobile-chemistry-check select{display:block;width:100%;min-width:0;min-height:44px;padding:8px;margin-top:5px;font:700 14px "Rajdhani",sans-serif;color:var(--text-primary);background:var(--bg-surface-raised);border:1px solid var(--border-strong)}
   #chemistryLoreGrid{grid-template-columns:minmax(0,1fr);gap:8px}
   .chemistry-lore-card{padding:12px}
   .chemistry-lore-heading{gap:8px}
@@ -287,7 +287,7 @@
   .chemistry-pair-evaluation{padding:12px;gap:8px;margin-bottom:10px}
   .chemistry-pair-evaluation h2{font-size:22px}
   :is(#character-lore-screen,#chemistry-lore-screen) :is(button,a,select,input):focus-visible{outline:2px solid var(--accent-text);outline-offset:-2px}
-  :lang(ar) :is(.character-profile-overview,.character-profile-section,.character-lore-card,.chemistry-lore-card,.chemistry-pair-evaluation,.mobile-compare-bar,.mobile-chemistry-check,.mobile-database-tabs){direction:rtl}
+  :lang(ar) :is(.character-profile-overview,.character-profile-section,.character-lore-card,.chemistry-lore-card,.chemistry-pair-evaluation,.mobile-compare-bar,.mobile-chemistry-check,.mobile-database-tabs){direction:ltr}
   :lang(ar) :is(.character-profile-ovr strong,.character-card-rating,.character-profile-score,.chemistry-lore-score,.mobile-comparison-stats strong){direction:ltr;unicode-bidi:isolate}
 }
 @media(min-width:768px) and (max-width:1024px) and (min-height:501px){
@@ -314,4 +314,3 @@
   #character-lore-screen.character-lore-detail-view :is(.lore-toolbar,.database-intro,.mobile-database-tabs){display:none}
 }
 
-.character-profile-quote[data-i18n-ignore] blockquote{direction:ltr;unicode-bidi:plaintext;text-align:start}

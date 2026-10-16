@@ -23,6 +23,8 @@ function parseFrozen(source,name){
 function catalog(){
     const context=vm.createContext({window:{}});
     vm.runInContext(read('js/i18n/messages.js'),context);
+    const quoteCatalog='js/i18n/quote-messages.js';
+    if(fs.existsSync(path.join(root,quoteCatalog)))vm.runInContext(read(quoteCatalog),context);
     const localization=read('js/localization.js');
     return {
         ...context.window.BLD_MESSAGES,
@@ -47,7 +49,7 @@ function resolver(entries){
         if(key.startsWith('FORMATION // '))return covered('FORMATION',seen);
         if(key.includes(' // ')){
             const parts=key.split(' // ');
-            return parts.some(part=>covered(part,new Set(seen)));
+            return parts.every(part=>!/[A-Za-z]/.test(part)||intentional(part)||covered(part,new Set(seen)));
         }
         if(/^No sustained shared on-field system has been demonstrated in Blue Lock through chapter \d+\.$/.test(key))
             return !!direct('No sustained shared on-field system has been demonstrated in Blue Lock through chapter {chapter}.');
@@ -58,7 +60,16 @@ function decode(value){
     return value.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/\s+/g,' ').trim();
 }
 function intentional(value){
-    return /^(?:BLUE LOCK|BLUE LOCK DRAFT|English|Bahasa Melayu|日本語|Français|Deutsch|한국어|Português|Русский|Español|العربية|简体中文|website|noindex|width=device|HAMMYDANNY(?: ↗)?|SYAAFIBWN(?: ↗)?|#[0-9A-F]{6}|[A-Z]{1,3}|SIDE-B|NG XI|\$[\d,]+(?: \/\/ \$\d+ INTERVAL)?|\d+v\d+|V\d+(?:\.\d+)*(?:\.x)?(?: ALPHA)?|V0\.5\.1 \/ 0\.51|Noto Sans.*SIL OFL 1\.1)$/i.test(value);
+    return /^(?:BLUE LOCK|BLUE LOCK DRAFT|English|Bahasa Melayu|日本語|Français|Deutsch|한국어|Português|Русский|Español|العربية|简体中文|website|noindex|HAMMYDANNY(?: ↗)?|SYAAFIBWN(?: ↗)?|#[0-9A-F]{6}|[A-Z]{1,3}|SIDE-B|NG XI|\$[\d,]+(?: \/\/ \$\d+ INTERVAL)?|\d+v\d+|V\d+(?:\.\d+)*(?:\.x)?(?: ALPHA)?|V0\.5\.1 \/ 0\.51|Noto Sans.*SIL OFL 1\.1)$/i.test(value);
+}
+function sourceStrings(html){
+    html=html.replace(/<script\b[\s\S]*?<\/script>/gi,'').replace(/<style\b[\s\S]*?<\/style>/gi,'')
+        // Viewport directives configure the browser; descriptive metadata still needs translation.
+        .replace(/<meta\b(?=[^>]*\bname\s*=\s*["']viewport["'])[^>]*>/gi,'');
+    const values=[];
+    for(const match of html.matchAll(/>([^<>]+)</g))values.push(decode(match[1]));
+    for(const match of html.matchAll(/\b(?:aria-label|aria-description|title|placeholder|content)="([^"]+)"/gi))values.push(decode(match[1]));
+    return [...new Set(values)];
 }
 function staticCoverage(covered){
     const pages=[
@@ -68,11 +79,7 @@ function staticCoverage(covered){
     ];
     const missing=[];
     for(const file of pages){
-        let html=read(file).replace(/<script\b[\s\S]*?<\/script>/gi,'').replace(/<style\b[\s\S]*?<\/style>/gi,'');
-        const values=[];
-        for(const match of html.matchAll(/>([^<>]+)</g))values.push(decode(match[1]));
-        for(const match of html.matchAll(/\b(?:aria-label|aria-description|title|placeholder|content)="([^"]+)"/gi))values.push(decode(match[1]));
-        for(const value of new Set(values)){
+        for(const value of sourceStrings(read(file))){
             if(!/[A-Za-z]/.test(value)||value.length<2||intentional(value)||covered(value))continue;
             // <time datetime> is localized at runtime with Intl.DateTimeFormat.
             if(/^\d{1,2} [A-Za-z]+ 20\d{2}$/.test(value))continue;
@@ -81,12 +88,31 @@ function staticCoverage(covered){
     }
     return missing;
 }
+function quoteCoverage(covered){
+    const reference=read('js/player-reference.js'),marker='const PLAYER_QUOTES=Object.freeze(',start=reference.indexOf(marker);
+    if(start<0)return [{file:'js/player-reference.js',value:'PLAYER_QUOTES registry missing'}];
+    let i=start+marker.length,depth=0,inString=false,escaped=false,quote='',begin=i,end=-1;
+    for(;i<reference.length;i++){
+        const char=reference[i];
+        if(inString){if(escaped)escaped=false;else if(char==='\\')escaped=true;else if(char===quote)inString=false;continue;}
+        if(char==='"'||char==="'"){inString=true;quote=char;continue;}
+        if(char==='[')depth++;
+        else if(char===']'&&--depth===0){end=i+1;break;}
+    }
+    if(end<0)return [{file:'js/player-reference.js',value:'PLAYER_QUOTES registry could not be parsed'}];
+    const canonical=JSON.parse(reference.slice(begin,end)).map(record=>record?.text).filter(value=>typeof value==='string'&&/[\p{L}]/u.test(value));
+    const players=read('js/players.js'),secret=[];
+    for(const match of players.matchAll(/\bquote\s*:\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g)){
+        try{const value=vm.runInNewContext(match[1]);if(typeof value==='string'&&/[\p{L}]/u.test(value))secret.push(value);}catch{}
+    }
+    return [...new Set([...canonical,...secret])].filter(value=>!covered(value)).map(value=>({file:'player-quotes',value}));
+}
 function dynamicCoverage(covered){
     // Hotspots that generate user-visible text dynamically and therefore are not present
     // as ordinary static page text during the HTML scan.
     const required=[
         'ADD PLAYER','BEST FIT','GOOD FIT','OUT OF POSITION','NO RESERVES AVAILABLE','CLOSE',
-        'ASSIGNED','NO FORMATION BUILT',
+        'ASSIGNED','NO FORMATION BUILT','Auction results report',
         'Select at least one player from the Global Player Pool first. Auto Best Team only uses players in your selected standalone roster.',
         'SELECT A ROSTER','No valid lineup could be generated from this roster.','Standalone Auto Best failed:',
         'Bid amount','CONTINUE BUILDING','ENTER A VALID TEAM SIZE','best XI',
@@ -98,10 +124,10 @@ function dynamicCoverage(covered){
 }
 function scanCoverage(){
     const entries=catalog(),covered=resolver(entries);
-    const missing=[...staticCoverage(covered),...dynamicCoverage(covered)];
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered)];
     return {missing,catalogSize:Object.keys(entries).length};
 }
-module.exports={scanCoverage};
+module.exports={scanCoverage,sourceStrings,resolver,quoteCoverage};
 
 if(require.main===module){
     const result=scanCoverage();
