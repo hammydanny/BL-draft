@@ -23,8 +23,7 @@ function parseFrozen(source,name){
 function catalog(){
     const context=vm.createContext({window:{}});
     vm.runInContext(read('js/i18n/messages.js'),context);
-    const quoteCatalog='js/i18n/quote-messages.js';
-    if(fs.existsSync(path.join(root,quoteCatalog)))vm.runInContext(read(quoteCatalog),context);
+    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
     const localization=read('js/localization.js');
     return {
         ...context.window.BLD_MESSAGES,
@@ -122,9 +121,24 @@ function dynamicCoverage(covered){
     ];
     return required.filter(value=>!covered(value)).map(value=>({file:'dynamic-ui',value}));
 }
+function replayabilityCoverage(covered){
+    const missing=[];
+    for(const file of ['js/replayability.js','js/ui/replayability-ui.js']){
+        const source=read(file),values=[];
+        for(const match of source.matchAll(/(?:replayFail|replayText|replayDialog|showSiteError|showConfirm)\("([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/(?:showSiteError|showConfirm)\("[^"\n]+",\s*"([^"\n]+)"/g))values.push(match[1]);
+        if(file.endsWith('-ui.js'))for(const match of source.matchAll(/>\s*([A-Za-z][^<>${}`\n]*?)\s*</g))values.push(match[1]);
+        for(const match of source.matchAll(/(?:aria-label|placeholder)="([^"${}]+)"/g))values.push(match[1]);
+        for(const value of new Set(values.map(decode))){if(!intentional(value)&&!covered(value))missing.push({file,value});}
+    }
+    for(const value of ['CPU considering…','CPU passes','CPU raises','CPU prioritising squad need','EASY','NORMAL','HARD','PREPARING IMAGE…','SAVE IMAGE','Some portraits are not ready. Try again.','Image export is unavailable.','I can run my ass off.','CHALLENGE COMPLETE','CHALLENGE IN PROGRESS','COMPLETE SQUAD','CHALLENGE POOL']){
+        if(!covered(value))missing.push({file:'replayability-dynamic-ui',value});
+    }
+    return missing;
+}
 function scanCoverage(){
     const entries=catalog(),covered=resolver(entries);
-    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered)];
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered)];
     return {missing,catalogSize:Object.keys(entries).length};
 }
 module.exports={scanCoverage,sourceStrings,resolver,quoteCoverage};

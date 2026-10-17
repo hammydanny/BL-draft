@@ -13,7 +13,7 @@ if(initialSaved?.gameActive&&getRouteFromLocation()==="auctionSetup")restoreSetu
     team1Name:initialSaved.team1.name,team2Name:initialSaved.team2.name,
     team1Color:initialSaved.team1.color,team2Color:initialSaved.team2.color,
     budget:initialSaved.startingBudget,bidIncrement:initialSaved.bidIncrement,
-    maxPlayers:initialSaved.maxPlayers,team2CpuControlled:initialSaved.team2CpuControlled,selected:initialSaved.selectedPlayerIds
+    maxPlayers:initialSaved.maxPlayers,team2CpuControlled:initialSaved.team2CpuControlled,cpuDifficulty:initialSaved.cpuDifficulty,selected:initialSaved.selectedPlayerIds
 }});
 const initialRoute=getRouteFromLocation();
 const routeIsCanonical=normalizeCurrentRoute(initialRoute);
@@ -45,3 +45,5 @@ if(!pendingRoutePath){
     }else document.documentElement.classList.remove("app-initializing");
 }
 }
+
+if(typeof initReplayabilityUI==="function")initReplayabilityUI();

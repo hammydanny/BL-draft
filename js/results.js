@@ -101,6 +101,7 @@ function createFinalTeamCard(team,n){
         <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
       </div>
       ${resultChemistryLinksMarkup(team,n)}
+      ${typeof squadReplayActions==="function"?squadReplayActions(n):""}
       <div class="final-roster">${roster}</div>
     </article>`;
 }
@@ -112,6 +113,7 @@ function createFullHistory(){
       <b>${x.price===0?"FREE":"$"+x.price.toLocaleString()}</b></div>`).join("");
 }
 function showAuctionComplete(){
+    if(typeof ensureCpuSquadBuilt==="function")ensureCpuSquadBuilt();
     auctionScreen.dataset.auctionPhase="complete";
     auctionScreen.style.setProperty("--auction-dock-height","0px");
     const wasComplete=uiState.phase==="complete";
@@ -124,15 +126,19 @@ function showAuctionComplete(){
       <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
       <div class="results-actions results-actions-top">
         <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
+        <button id="saveResultsImage" type="button" class="primary-button restart-button">SAVE IMAGE</button>
         <button id="shareResultsButton" class="primary-button restart-button share-action"><span>SHARE / SAVE RESULT</span><b>↗</b></button>
         <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
       </div>
+      ${team2CpuControlled?`<p class="cpu-status">${esc(SiteI18n.text("SINGLEPLAYER"))} · ${esc(SiteI18n.text(cpuDifficulty.toUpperCase()))}</p>`:""}
+      ${typeof challengeStatusMarkup==="function"?challengeStatusMarkup(1):""}
       ${createResultsComparison()}
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
     window.scrollTo({top:0,behavior:"instant"});
     document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
+    document.getElementById("saveResultsImage").onclick=()=>saveDraftImage();
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
     if(appRelativePath()!==routePath("auctionResults"))updateRoute("auctionResults");
@@ -203,7 +209,7 @@ function openShareScreen(){
     const previousFocus=document.activeElement;
     const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
     screen.innerHTML=`<div class="share-shell">
-      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
+      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="saveReportImage" type="button">SAVE IMAGE</button><button id="printShareResult">PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
       <div id="shareCard" class="share-card">
         <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>DRAFT</b></h2></div><strong>FINAL</strong></div>
         <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
@@ -221,6 +227,7 @@ function openShareScreen(){
     });
     document.getElementById("closeShareScreen").onclick=close;
     document.getElementById("closeShareScreen").focus();
+    document.getElementById("saveReportImage").onclick=()=>saveDraftImage();
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
     document.getElementById("shareTeamsAndLink").onclick=shareResultsImageAndLink;
@@ -245,24 +252,25 @@ function shareImageRoundRect(ctx,x,y,w,h,r,fill,stroke){
     if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}
 }
 function shareImageText(ctx,value,x,y,maxWidth,font,color,align="left"){
-    let label=String(value??"");ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;
+    let label=String(value??"");ctx.font=font;ctx.fillStyle=color;ctx.direction=/[\u0600-\u06ff]/.test(label)?"rtl":"ltr";ctx.textAlign=align;
     while(label.length>2&&ctx.measureText(label).width>maxWidth)label=label.slice(0,-2)+"…";
     ctx.fillText(label,x,y);ctx.textAlign="left";
 }
 function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
-    const {x,y,width,height}=layout,accent=/^#[0-9a-f]{3,8}$/i.test(String(team.color||""))?team.color:"#25a9ff";
+    const {x,y,width,height,portraits}=layout,accent=/^#[0-9a-f]{3,8}$/i.test(String(team.color||""))?team.color:"#25a9ff";
     const translate=value=>window.SiteI18n?.text(value)||value,spent=startingBudget-team.budget;
     const captain=team.players.find(player=>player.id===snap.captainId)||null;
+    const reportOVR=snap.deployedCount?snap.ovr:naturalSquadOVR(team),reportChemistry=snap.deployedCount?snap.chemistry:rosterChemistrySnapshot(team);
     const usedIds=new Set(Object.values(snap.assignment||{}).filter(Boolean).map(String));
     shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
-    shareImageText(ctx,"SQUAD 0"+n+"  //  "+snap.formation,x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
+    shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+snap.formation,x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
     shareImageText(ctx,team.name,x+28,y+78,width-178,'900 italic 39px "Barlow Condensed", sans-serif',"#f0f7ff");
     shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
     const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*4)/5;
     const metrics=[
-        [translate("TEAM OVR"),String(snap.ovr||"--")],[translate("CHEMISTRY"),String(snap.chemistry?.overall||"--")],
+        [translate(snap.deployedCount?"TEAM OVR":"SQUAD OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],
         [translate("CAPTAIN"),captain?.name||translate("UNASSIGNED")],[translate("DEPLOYED"),snap.deployedCount+"/"+Math.min(11,team.players.length)],
-        [translate("REMAINING"),"$"+team.budget.toLocaleString()]
+        n?[translate("REMAINING"),"$"+team.budget.toLocaleString()]:[translate("RESERVES"),String(snap.reserves.length)]
     ];
     metrics.forEach((metric,i)=>{
         const mx=x+24+i*(metricW+gap);shareImageRoundRect(ctx,mx,metricY,metricW,metricH,8,"#102b46","#244c6d");
@@ -292,49 +300,63 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
         shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"#0c3456",isCaptain?"#ffd36e":accent);
         shareImageText(ctx,slot.label+(isCaptain?" · C":""),markerX+8,markerY+15,markerW-40,'800 11px "Barlow Condensed", sans-serif',isCaptain?"#ffdc83":"#70c6ff");
         shareImageText(ctx,String(playerOverall(player)),markerX+markerW-8,markerY+15,27,'900 12px "Barlow Condensed", sans-serif',"#eaf6ff","right");
-        shareImageText(ctx,player.name,markerX+markerW/2,markerY+35,markerW-12,'800 13px "Barlow Condensed", sans-serif',"#f5faff","center");
+        if(portraits?.get(player.id))ctx.drawImage(portraits.get(player.id),markerX+5,markerY+18,24,26);
+        shareImageText(ctx,player.name,markerX+33,markerY+35,markerW-38,'800 13px "Barlow Condensed", sans-serif',"#f5faff","left");
     });
-    shareImageText(ctx,translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString(),x+25,y+571,width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
+    shareImageText(ctx,n?translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString():translate("DEPLOYED")+"  "+snap.deployedCount+"     //     "+translate("RESERVES")+"  "+snap.reserves.length,x+25,y+571,width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
     shareImageText(ctx,translate("SQUAD ROSTER"),x+25,y+600,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
     const listX=x+24,listY=y+625,rowH=29,listW=width-48;
     shareImageText(ctx,translate("PLAYER"),listX+12,listY-5,390,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("POSITION"),listX+435,listY-5,85,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("ROLE"),listX+540,listY-5,75,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,"OVR",listX+685,listY-5,42,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
-    shareImageText(ctx,translate("FEE"),listX+listW-10,listY-5,73,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
+    if(n)shareImageText(ctx,translate("FEE"),listX+listW-10,listY-5,73,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
     team.players.forEach((player,index)=>{
         const ry=listY+index*rowH;ctx.fillStyle=index%2===0?"#0c2742":"#0a2139";ctx.fillRect(listX,ry,listW,rowH-2);
         const signing=getTeamHistory(n).find(record=>record.player?.id===player.id),fee=signing?.price??0;
         let position="—";try{position=typeof primaryPosition==="function"?primaryPosition(player):(player.position||player.positions?.[0]||"—");}catch(e){}
         if(Array.isArray(position))position=position[0]||"—";
         const starter=usedIds.has(String(player.id)),status=starter?translate("STARTER"):translate("RESERVE");
-        shareImageText(ctx,player.name,listX+12,ry+19,405,'700 14px "Barlow Condensed", sans-serif',"#e3eef8");
+        if(portraits?.get(player.id))ctx.drawImage(portraits.get(player.id),listX+7,ry+1,23,25);
+        shareImageText(ctx,player.name,listX+38,ry+19,380,'700 14px "Barlow Condensed", sans-serif',"#e3eef8");
         shareImageText(ctx,String(position),listX+435,ry+19,85,'700 13px "Barlow Condensed", sans-serif',"#9bc0dc");
         shareImageText(ctx,status,listX+540,ry+19,82,'800 12px "Barlow Condensed", sans-serif',starter?"#72c4ff":"#7e9bb6");
         shareImageText(ctx,String(playerOverall(player)),listX+685,ry+19,42,'900 14px "Barlow Condensed", sans-serif',"#f2f8ff","right");
-        shareImageText(ctx,fee===0?translate("FREE"):"$"+fee.toLocaleString(),listX+listW-10,ry+19,73,'800 13px "Barlow Condensed", sans-serif',"#b3d4ec","right");
+        if(n)shareImageText(ctx,fee===0?translate("FREE"):"$"+fee.toLocaleString(),listX+listW-10,ry+19,73,'800 13px "Barlow Condensed", sans-serif',"#b3d4ec","right");
     });
 }
-function createAuctionShareImageBlob(){
-    return new Promise((resolve,reject)=>{
-        const maxRoster=Math.max(team1.players.length,team2.players.length,1),panelY=228,panelHeight=665+maxRoster*29;
-        const canvas=document.createElement("canvas");canvas.width=1800;canvas.height=panelY+panelHeight+100;
-        const ctx=canvas.getContext("2d");if(!ctx){reject(new Error("Canvas is unavailable"));return;}
-        ctx.fillStyle="#061426";ctx.fillRect(0,0,canvas.width,canvas.height);
-        const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
-        backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
-        ctx.fillStyle=backdrop;ctx.fillRect(0,0,canvas.width,canvas.height);
-        shareImageText(ctx,"BLUE LOCK DRAFT",54,75,980,'900 italic 56px "Barlow Condensed", sans-serif',"#f1f8ff");
-        shareImageText(ctx,window.SiteI18n?.text("FINAL RESULT")||"FINAL RESULT",58,120,950,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
-        shareImageText(ctx,auctionHistory.length+" "+(window.SiteI18n?.text("TRANSFERS")||"TRANSFERS")+"  //  "+(window.SiteI18n?.text("FINAL MATCHUP REPORT")||"FINAL MATCHUP REPORT"),canvas.width-54,82,1050,'800 18px "Barlow Condensed", sans-serif',"#94b5d2","right");
-        ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
-        const margin=48,gap=24,panelW=(canvas.width-margin*2-gap)/2,snap1=shareFormationSnapshot(1),snap2=shareFormationSnapshot(2);
-        drawAuctionShareImageTeam(ctx,team1,1,snap1,{x:margin,y:panelY,width:panelW,height:panelHeight});
-        drawAuctionShareImageTeam(ctx,team2,2,snap2,{x:margin+panelW+gap,y:panelY,width:panelW,height:panelHeight});
-        ctx.fillStyle="#2a81ba";ctx.fillRect(54,canvas.height-64,canvas.width-108,1);
-        shareImageText(ctx,appRootUrl().href,canvas.width/2,canvas.height-31,canvas.width-108,'700 17px "Barlow Condensed", sans-serif',"#8eb5d4","center");
-        canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Unable to encode PNG")),"image/png");
-    });
+async function createAuctionShareImageBlob(teamNumber=null){
+    const numbers=teamNumber===0?[0]:[1,2];
+    const entries=numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
+    await document.fonts?.ready;
+    const text=["TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)])).join(" ");
+    if(document.fonts?.load)await Promise.all([document.fonts.load('800 18px "Barlow Condensed"',text),document.fonts.load('700 14px "Rajdhani"',text)]);
+    const portraits=new Map();
+    await Promise.all([...new Map(entries.flatMap(entry=>entry.team.players).map(p=>[p.id,p])).values()].map(async player=>{
+        const ready=await warmPlayerPortrait(player);
+        if(!ready?.image||ready.state!=="ready")throw new Error("Some portraits are not ready. Try again.");
+        portraits.set(player.id,ready.image);
+    }));
+    const maxRoster=Math.max(...entries.map(entry=>entry.team.players.length),1),panelY=210,panelHeight=665+maxRoster*29;
+    const canvas=document.createElement("canvas");canvas.width=entries.length===1?1100:1800;canvas.height=panelY+panelHeight+100;
+    const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Image export is unavailable.");
+    const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
+    ctx.fillStyle=backdrop;ctx.fillRect(0,0,canvas.width,canvas.height);
+    shareImageText(ctx,"BLUE LOCK DRAFT",54,75,980,'900 italic 56px "Barlow Condensed", sans-serif',"#f1f8ff");
+    shareImageText(ctx,SiteI18n.text(teamNumber===0?"SQUAD REPORT":"FINAL RESULT"),58,120,canvas.width-108,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
+    ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
+    const margin=48,gap=24,panelW=(canvas.width-margin*2-gap*(entries.length-1))/entries.length;
+    entries.forEach((entry,i)=>drawAuctionShareImageTeam(ctx,entry.team,entry.n,entry.snap,{x:margin+i*(panelW+gap),y:panelY,width:panelW,height:panelHeight,portraits}));
+    ctx.fillStyle="#2a81ba";ctx.fillRect(54,canvas.height-64,canvas.width-108,1);
+    shareImageText(ctx,appRootUrl().href,canvas.width/2,canvas.height-31,canvas.width-108,'700 17px "Barlow Condensed", sans-serif',"#8eb5d4","center");
+    return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Image export is unavailable.")),"image/png"));
+}
+async function saveDraftImage(teamNumber=null){
+    const button=document.getElementById("saveReportImage")||document.getElementById("saveResultsImage");if(button?.disabled)return;
+    if(button){button.disabled=true;button.textContent=SiteI18n.text("PREPARING IMAGE…");}
+    try{const blob=await createAuctionShareImageBlob(teamNumber),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="blue-lock-draft-"+localDraftDate()+".png";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+    catch(error){showSiteError(error.message==="Some portraits are not ready. Try again."?error.message:"Image export is unavailable.","SAVE IMAGE");}
+    finally{if(button?.isConnected){button.disabled=false;button.textContent=SiteI18n.text("SAVE IMAGE");}}
 }
 function fallbackCopyShareText(text){
     const field=document.createElement("textarea");field.value=text;field.setAttribute("readonly","");
@@ -344,7 +366,7 @@ function fallbackCopyShareText(text){
 
 function createAuctionShareMessage(){
     const link=appRootUrl().href;
-    return "I just finished my Blue Lock Draft!\n"+team1.name+" vs. "+team2.name+"\nView the teams and build your own: "+link;
+    return SiteI18n.text("I just finished my Blue Lock Draft!")+"\n"+team1.name+" vs. "+team2.name+"\n"+SiteI18n.text("View the teams and build your own:")+" "+link;
 }
 async function copyShareMessageText(message){
     if(navigator.clipboard?.writeText){
@@ -473,7 +495,7 @@ function openStandaloneShareScreen(){
         <button id="closeShareScreen">← TEAM BUILDER</button>
         <div>
           <button id="copyStandaloneShare">COPY SUMMARY</button>
-          <button id="printShareResult">SAVE / PRINT</button>
+          <button id="saveReportImage" type="button">SAVE IMAGE</button><button id="printShareResult">PRINT</button>
         </div>
       </div>
       <div id="shareCard" class="share-card standalone-share-card">
@@ -504,6 +526,7 @@ function openStandaloneShareScreen(){
     });
     document.getElementById("closeShareScreen").onclick=close;
     document.getElementById("closeShareScreen").focus();
+    document.getElementById("saveReportImage").onclick=()=>saveDraftImage(formationTeamNumber===0?0:null);
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
 }

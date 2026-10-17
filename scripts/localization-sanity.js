@@ -36,6 +36,7 @@ function scan(records){
 function load(root){
     const context=vm.createContext({window:{}});
     vm.runInContext(fs.readFileSync(path.join(root,'js/i18n/messages.js'),'utf8'),context);
+    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
     const localization=fs.readFileSync(path.join(root,'js/localization.js'),'utf8');
     const parseFrozen=name=>{
         const token='const '+name+'=Object.freeze(',start=localization.indexOf(token);

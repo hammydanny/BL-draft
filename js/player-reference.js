@@ -2013,3 +2013,8 @@ const PLAYER_RECORDS=new Map(players.map(player=>[player.id,{
     affiliations:CHEMISTRY_REFERENCE_CONTEXTS.filter(context=>context.playerIds.includes(player.id))
 }]));
 function playerRecord(id){return PLAYER_RECORDS.get(Number(id))||null;}
+
+function displayedPlayerQuotes(playerId){
+    if(Number(playerId)===69)return [{playerId:69,text:"I can run my ass off.",verified:false,sourceType:"user-request",sourceNote:"User-specified display wording; independent source verification pending."}];
+    return verifiedPlayerQuotes(playerId);
+}

@@ -1,0 +1,19 @@
+/* v0.7.1: existing shell, cards and palettes; geometry remains LTR in every locale. */
+.replay-discovery,.replay-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.replay-discovery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:14px}
+.replay-discovery button,.replay-actions button,.replay-body button{min-height:44px;padding:10px 12px;border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text-primary);font:800 14px/1.3 "Rajdhani",sans-serif;cursor:pointer;overflow-wrap:anywhere}
+.replay-discovery button:hover,.replay-actions button:hover,.replay-body button:hover{border-color:var(--accent);background:var(--accent-soft)}
+.replay-card{width:min(760px,100%)}.replay-body{min-width:0;direction:ltr}.replay-body form{display:grid;gap:12px}.replay-body label{font-weight:800;color:var(--text-secondary)}
+.replay-body input,.replay-body textarea,.cpu-difficulty select{box-sizing:border-box;min-width:0;width:100%;min-height:44px;padding:10px;color:var(--text-primary);background:var(--bg-input);border:1px solid var(--border-strong);font:600 16px/1.4 "Rajdhani",sans-serif}
+.replay-body textarea{min-height:150px;resize:vertical;overflow-wrap:anywhere}.replay-feedback{overflow-wrap:anywhere;color:var(--danger);font-size:14px}.replay-feedback:empty{display:none}
+.saved-squad-list,.challenge-list{display:grid;gap:12px}.saved-squad-item{min-width:0;padding:14px;background:var(--bg-surface-raised);border:1px solid var(--border-subtle)}
+.saved-squad-item h3{margin:0;font:800 24px/1.2 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}.saved-squad-item p{margin:8px 0;font-size:15px;overflow-wrap:anywhere}
+.cpu-difficulty{display:grid;gap:6px;margin-top:12px}.cpu-difficulty[hidden]{display:none}.cpu-difficulty label{font-size:14px}.cpu-status{display:block;font:700 13px/1.3 "Rajdhani",sans-serif;color:var(--accent-text);padding:6px 10px;overflow-wrap:anywhere}
+.challenge-progress,.setup-challenge-status{padding:14px;margin:12px 0;background:var(--bg-surface-raised);border:1px solid var(--accent);color:var(--text-primary)}
+.setup-challenge-status{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.setup-challenge-status[hidden]{display:none}.setup-challenge-status button{min-height:44px;padding:8px;font:800 14px "Rajdhani",sans-serif}
+.challenge-progress h3{margin:0 0 8px}.challenge-progress ul{display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;list-style:none;font-size:14px}.challenge-progress li{unicode-bidi:plaintext}
+.replay-actions button:focus-visible,.replay-discovery button:focus-visible,.replay-body :is(button,input,textarea):focus-visible{outline:2px solid var(--accent-text);outline-offset:2px}
+:lang(ar) :is(.replay-body,.saved-squad-item,.replay-discovery,.replay-actions,.challenge-progress){direction:ltr}
+:lang(ar) :is(.replay-body p,.replay-body h3,.replay-body label,.replay-feedback,.challenge-progress h3,.cpu-status){direction:rtl;unicode-bidi:plaintext;text-align:right}
+@media(max-width:767px){.replay-discovery{grid-template-columns:repeat(2,minmax(0,1fr))}.replay-actions button{flex:1 1 120px}.replay-card{padding-inline:14px}.replay-discovery button{font-size:14px}}
+@media print{.replay-actions,.challenge-progress,.cpu-status{display:none!important}}

@@ -25,3 +25,5 @@ assert(!fixtureCovered('KNOWN LABEL // Untranslated action'));
 const coverage=scanCoverage();
 assert.equal(coverage.missing.length,0,JSON.stringify(coverage.missing,null,2));
 console.log(`PASS localization source coverage (${coverage.catalogSize} catalog entries)`);
+
+require('./replayability-tests.js').runReplayabilityTests();

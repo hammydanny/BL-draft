@@ -6,8 +6,8 @@ let standaloneBuilderLoaded=false;
 function standaloneBuilderSyncTeam(){
     standaloneBuilderTeam.players=players.filter(p=>standaloneBuilderPlayerIds.has(p.id));
     standaloneBuilderTeam.budget=0;
-    standaloneBuilderTeam.name="GLOBAL XI";
-    standaloneBuilderTeam.color="#19a7ff";
+    standaloneBuilderTeam.name=standaloneBuilderName;
+    standaloneBuilderTeam.color=standaloneBuilderColor;
     if(!formationByTeam[0])formationByTeam[0]="4-3-3";
     if(!formationAssignments[0])formationAssignments[0]={};
     if(!Object.prototype.hasOwnProperty.call(formationCaptainByTeam,0))formationCaptainByTeam[0]=null;
@@ -19,6 +19,7 @@ function loadStandaloneBuilderState(){
     try{
         const saved=normalizeStandaloneSave(JSON.parse(localStorage.getItem(STANDALONE_SAVE_KEY)||"null"));
         if(saved){
+            standaloneBuilderName=typeof saved.name==="string"?saved.name.slice(0,32):"GLOBAL XI";standaloneBuilderColor=/^#[0-9a-f]{6}$/i.test(saved.color||"")?saved.color:"#19a7ff";
             standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id&&secretPlayerAvailable(p))));
             formationByTeam[0]=FORMATIONS[saved.formation]?saved.formation:"4-3-3";
             formationAssignments[0]=saved.assignment&&typeof saved.assignment==="object"?saved.assignment:{};
@@ -33,7 +34,7 @@ function loadStandaloneBuilderState(){
 function saveStandaloneBuilderState(){
     try{
         localStorage.setItem(STANDALONE_SAVE_KEY,JSON.stringify({
-            schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
+            schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,name:standaloneBuilderName,color:standaloneBuilderColor,
             playerIds:[...standaloneBuilderPlayerIds],
             formation:formationByTeam[0]||"4-3-3",
             assignment:formationAssignments[0]||{},

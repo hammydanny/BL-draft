@@ -119,6 +119,9 @@ function normalizeAuctionSave(value){
            !Object.values(value.formationCaptainByTeam).every(id=>id===null||Number.isInteger(id))))return null;
     }
     const normalized={...cleanSavedPlayerReferences(value),schemaVersion:AUCTION_SAVE_SCHEMA_VERSION};
+    normalized.cpuDifficulty=["easy","normal","hard"].includes(value.cpuDifficulty)?value.cpuDifficulty:"normal";
+    normalized.cpuPersonalitySeed=Number.isInteger(value.cpuPersonalitySeed)?value.cpuPersonalitySeed:1;
+    try{normalized.activeDraftChallenge=value.activeDraftChallenge&&typeof normalizeDraftChallenge==="function"?normalizeDraftChallenge(value.activeDraftChallenge):null;}catch{normalized.activeDraftChallenge=null;}
     if(value.setup){
         normalized.setup={...value.setup};
         if(value.setup.selected)normalized.setup.selected=value.setup.selected.filter(id=>playerById(id));
@@ -164,6 +167,7 @@ function saveSetupPreferences(){
                 team1Name:document.getElementById("team1Name").value,
                 team2Name:document.getElementById("team2Name").value,
                 team2CpuControlled:document.getElementById("team2CpuControlled").checked,
+                cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal",
                 team1Color:document.getElementById("team1Color").value,
                 team2Color:document.getElementById("team2Color").value,
                 budget:document.getElementById("budget").value,
@@ -188,7 +192,7 @@ function saveGame(){
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
             schemaVersion:AUCTION_SAVE_SCHEMA_VERSION,
-            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,team2CpuControlled,
+            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,cpuBuiltRosterKey,activeDraftChallenge,
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
@@ -213,6 +217,7 @@ function restoreSetup(saved){
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
     const cpuControl=document.getElementById("team2CpuControlled");
     if(cpuControl&&typeof s.team2CpuControlled==="boolean")cpuControl.checked=s.team2CpuControlled;
+    if(document.getElementById("cpuDifficulty"))document.getElementById("cpuDifficulty").value=normalizeCpuDifficulty(s.cpuDifficulty);
     if(s.poolCategories&&typeof s.poolCategories==="object"){
         playerPoolCategoryState={...s.poolCategories};
         playerPoolManualOverrides={...(s.poolManualOverrides||{})};
@@ -274,6 +279,8 @@ function restoreGame(saved){
     if(auctionSaveNeedsSecretCode(saved)){requestSecretAuctionAccess(saved);return;}
     startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
     draftMode=saved.draftMode==="random"?"random":"auction";
+    team2CpuControlled=!!saved.team2CpuControlled;cpuDifficulty=normalizeCpuDifficulty(saved.cpuDifficulty);cpuPersonalitySeed=Number.isInteger(saved.cpuPersonalitySeed)?saved.cpuPersonalitySeed:1;
+    activeDraftChallenge=saved.activeDraftChallenge?normalizeDraftChallenge(saved.activeDraftChallenge):null;cpuBuiltRosterKey=typeof saved.cpuBuiltRosterKey==="string"?saved.cpuBuiltRosterKey:"";
     auctionNumber=saved.auctionNumber;currentBid=saved.currentBid;currentBidder=saved.currentBidder;
     currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
     remainingPlayers=hydratePlayers(saved.remainingPlayerIds);

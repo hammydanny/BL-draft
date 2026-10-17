@@ -140,6 +140,7 @@ function renderPlayerPool(){
     renderPoolCategoryControls();
     empty.classList.toggle("hidden", visiblePlayers.length !== 0);
     updatePoolStatus();
+    if(typeof lockChallengeSetupControls==="function")lockChallengeSetupControls();
 }
 function updatePoolStatus(){
     const count=document.getElementById("selectedPlayerCount");

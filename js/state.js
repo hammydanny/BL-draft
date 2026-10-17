@@ -8,6 +8,9 @@ let remainingPlayers = [], currentPlayer = null, currentBid = 0, currentBidder =
 let startingTeam = null, auctionNumber = 0, auctionHistory = [];
 let draftMode = "auction";
 let team2CpuControlled = false;
+let cpuDifficulty="normal",cpuPersonalitySeed=1,cpuLastAction="",cpuBuiltRosterKey="";
+let activeDraftChallenge=null,setupDraftChallenge=null;
+let standaloneBuilderName="GLOBAL XI",standaloneBuilderColor="#19a7ff";
 let auctionUndoStack = [];
 let auctionRedoStack = [];
 let auctionHistoryRestoring = false;

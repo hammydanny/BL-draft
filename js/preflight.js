@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7');
+    assert.equal(data.APP_VERSION,'0.7.1');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -595,7 +595,7 @@ check('Phase 2 presentation preserves Auction state, exposes full history and us
     assert(light.includes('viewBox="0 0 512 512"'));
     const embedded=/data:image\/webp;base64,([^\"]+)/.exec(light)?.[1];
     assert(embedded&&Buffer.from(embedded,'base64').equals(hd),'Both themes derive from the same legitimate HD image');
-    for(const file of walk(root).filter(file=>file.endsWith('.html')))assert(fs.readFileSync(file,'utf8').includes('images/bld-logo-header-hd.webp?v=0.6.7&header=phase2'),'Every entry point uses HD branding');
+    for(const file of walk(root).filter(file=>file.endsWith('.html')))assert(fs.readFileSync(file,'utf8').match(/images\/bld-logo-header-hd\.webp\?v=[^" ]+&header=phase2/),'Every entry point uses HD branding');
     const app=appContext();app.run(`
         resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:11,selectedPlayers:players.slice(0,30)});
         currentPlayer=playerById(3);startingTeam=1;auctionNumber=13;currentBid=50;currentBidder=1;

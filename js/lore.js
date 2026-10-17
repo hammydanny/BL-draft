@@ -104,7 +104,7 @@ function characterLoreCard(record){
 function characterPersonLink(id){const player=playerById(id);if(!secretPlayerAvailable(player))return "";return `<a class="character-profile-person-link" data-character-id="${id}" href="${characterDossierHref(id)}">${esc(player.name)}</a>`;}
 function dossierSection(code,title,content){return `<section class="character-profile-section"><div class="character-profile-section-heading"><span>${code}</span><h3>${title}</h3></div>${content}</section>`;}
 function characterLoreProfileMarkup(player){
-    const record=playerRecord(player.id),weapons=player.weapons||[],history=record.affiliations,quotes=verifiedPlayerQuotes(player.id),canon=record.profile?.canonPositions||[];
+    const record=playerRecord(player.id),weapons=player.weapons||[],history=record.affiliations,quotes=displayedPlayerQuotes(player.id),canon=record.profile?.canonPositions||[];
     const links=getCharacterChemistry(player).pairLinks.slice().sort((a,b)=>b.score-a.score||a.title.localeCompare(b.title));
     if(player.profileChemistry){
         const target=playerById(player.profileChemistry.playerId);

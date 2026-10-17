@@ -117,7 +117,7 @@ function displayOpeningBid(){
     const starter=teamByNumber(startingTeam);
     if(team1.budget===0&&team2.budget===0){currentBid=0;currentBidder=startingTeam;awardPlayer(startingTeam);return;}
     if(starter.budget===0){displayZeroBudgetChoice(startingTeam===1?2:1);return;}
-    if(team2CpuControlled&&startingTeam===2){showCpuThinking();scheduleAuctionTransition(performCpuOpeningBid,850);return;}
+    if(team2CpuControlled&&startingTeam===2){showCpuThinking();scheduleAuctionTransition(performCpuOpeningBid,560);return;}
     renderAuctionScreen(`
       ${turnIndicator("OPENING BID",starter)}
       <div class="bid-panel" style="${teamVars(starter)}">
@@ -133,6 +133,7 @@ function displayOpeningBid(){
     enableEnterKey(input,placeOpeningBid); focusBidInput(input);
 }
 
+function cpuStatusMarkup(){return team2CpuControlled?`<span class="cpu-status" role="status" aria-live="polite">${esc(SiteI18n.text(cpuLastAction||"SINGLEPLAYER"))} · ${esc(SiteI18n.text(cpuDifficulty.toUpperCase()))}</span>`:"";}
 function turnIndicator(label,team){
     return `<div class="turn-indicator active-turn" style="${teamVars(team)}">
       <div class="turn-pulse"></div><span>${label}</span><strong>${esc(team.name)}</strong>
@@ -168,8 +169,8 @@ function displayBiddingTurn(teamNumber){
     const team=teamByNumber(teamNumber);
     if(isTeamFull(teamNumber)){awardPlayer(otherTeamNumber(teamNumber));return;}
     if(team.budget===0){awardPlayer(currentBidder);return;}
-    if(teamNumber===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(performCpuResponse,850);return;}
-    const holder=teamByNumber(currentBidder), min=currentBid+bidIncrement;
+    if(teamNumber===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(performCpuResponse,560);return;}
+    const holder=teamByNumber(currentBidder), min=nextLegalAuctionBid(currentBid);
     renderAuctionScreen(`
       ${turnIndicator("YOUR TURN // BID OR PASS",team)}
       <div class="bid-panel" style="${teamVars(team)}">
@@ -204,7 +205,7 @@ function renderSoldState(last){
 
 function displayZeroBudgetChoice(n){
     uiState={screen:"auction",phase:"zero",turn:n};saveGame();
-    if(n===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(resolveCpuZeroBudgetChoice,850);return;}
+    if(n===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(resolveCpuZeroBudgetChoice,560);return;}
     const rich=teamByNumber(n), broke=teamByNumber(n===1?2:1);
     renderAuctionScreen(`
       ${turnIndicator("AUCTION CONTROL",rich)}
@@ -262,6 +263,7 @@ function ensureAuctionHistoryControls(){
 }
 
 function renderAuctionScreen(actionHTML){
+    actionHTML=cpuStatusMarkup()+actionHTML;
     ensureAuctionHistoryControls();
     const action=auctionContent.querySelector(".action-container");
     const previousPlayerId=auctionContent.dataset.playerId;

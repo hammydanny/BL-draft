@@ -26,13 +26,16 @@ function getValidatedSetup(){
     const requiredPlayers=setupMaxPlayers*2;
     if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers) return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
-    return {n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,selectedPlayers};
+    if(typeof validateChallengeSetup==="function"&&!validateChallengeSetup({budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,selectedPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal"}))return;
+    return {cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal",challenge:setupDraftChallenge,n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,selectedPlayers};
 }
 
 function resetDraftState(setup){
     cancelAuctionTransition();
     formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};formationCaptainByTeam={1:null,2:null};
     bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;team2CpuControlled=!!setup.team2CpuControlled;
+    cpuDifficulty=normalizeCpuDifficulty(setup.cpuDifficulty);cpuPersonalitySeed=(Math.random()*0xffffffff)>>>0;cpuLastAction="";cpuBuiltRosterKey="";
+    activeDraftChallenge=setup.challenge?normalizeDraftChallenge(setup.challenge):null;
     team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
     team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
     remainingPlayers=shufflePlayers(setup.selectedPlayers);auctionHistory=[];auctionNumber=0;
@@ -42,95 +45,104 @@ function resetDraftState(setup){
 }
 
 
-const CPU_POSITION_GROUPS={
-    GK:["GK"],
-    DEF:["CB","LB","RB","LWB","RWB"],
-    MID:["CDM","CM","CAM","AM","LM","RM"],
-    ATT:["CF","ST","SS","LW","RW"]
-};
-function cpuRoleGroup(position){
-    const value=String(position||"").trim().toUpperCase();
-    return Object.keys(CPU_POSITION_GROUPS).find(group=>CPU_POSITION_GROUPS[group].includes(value))||null;
+// The same authoritative minimum is used by human inputs and CPU decisions.
+function nextLegalAuctionBid(current=0){
+    const step=Number(bidIncrement);return (Math.floor((Math.max(0,Number(current)||0)+1e-8)/step)+1)*step;
 }
-function cpuPlayerRoles(player){
-    return [...new Set([player?.primaryPosition,...(player?.positions||[])].map(cpuRoleGroup).filter(Boolean))];
-}
+const CPU_POSITION_GROUPS={GK:["GK"],DEF:["CB","LB","RB","LWB","RWB","DF","WB"],MID:["DM","CDM","CM","CAM","AM","LM","RM","WM","MF"],ATT:["CF","ST","SS","LW","RW","FW"]};
+const CPU_DIFFICULTIES=Object.freeze({
+    easy:{need:.35,scarcity:.05,chemistry:.08,quality:.95,discipline:.62,variation:.35},
+    normal:{need:.75,scarcity:.45,chemistry:.38,quality:.8,discipline:.84,variation:.18},
+    hard:{need:1.1,scarcity:.85,chemistry:.65,quality:.75,discipline:1,variation:.12}
+});
+function normalizeCpuDifficulty(value){return Object.hasOwn(CPU_DIFFICULTIES,value)?value:"normal";}
+function cpuRoleGroup(position){return Object.keys(CPU_POSITION_GROUPS).find(group=>CPU_POSITION_GROUPS[group].includes(String(position).toUpperCase()))||null;}
+function cpuPlayerRoles(player){return player?.allPositions?Object.keys(CPU_POSITION_GROUPS):[...new Set(playerPositions(player).map(cpuRoleGroup).filter(Boolean))];}
 function cpuRoleTargets(){
-    const goalkeeper=Math.max(0,Math.round(maxPlayers*.08));
-    const defender=Math.round(maxPlayers*.28);
-    const midfielder=Math.round(maxPlayers*.27);
-    const attacker=Math.max(1,maxPlayers-goalkeeper-defender-midfielder);
-    return {GK:goalkeeper,DEF:defender,MID:midfielder,ATT:attacker};
+    const size=Math.min(11,maxPlayers),gk=size>=5?1:0,def=Math.round(size*.3),mid=Math.round(size*.28);
+    return {GK:gk,DEF:def,MID:mid,ATT:Math.max(1,size-gk-def-mid)};
+}
+function cpuPublicAlternatives(){
+    // Public pool membership and already-signed players only. Never read the hidden queue.
+    const signed=new Set([...team1.players,...team2.players].map(p=>p.id));
+    return players.filter(p=>selectedPlayerIds.has(p.id)&&!signed.has(p.id)&&p.id!==currentPlayer?.id&&secretPlayerAvailable(p));
+}
+function cpuVariation(salt){
+    let hash=(cpuPersonalitySeed||1)>>>0;
+    for(const c of String(salt))hash=Math.imul(hash^c.charCodeAt(0),16777619)>>>0;
+    return hash/4294967296;
+}
+function cpuFormationCoverage(roster){
+    let best=0;
+    for(const shape of Object.values(FORMATIONS)){
+        const used=new Set();let score=0;
+        // Scarce slots first so a flexible forward does not displace the only keeper.
+        const slots=shape.map(slot=>({slot,options:roster.filter(p=>canonicalFit(p,slot.label))})).sort((a,b)=>a.options.length-b.options.length);
+        for(const {slot,options} of slots){
+            const p=options.filter(p=>!used.has(p.id)).sort((a,b)=>effectiveOVR(b,slot.label)-effectiveOVR(a,slot.label))[0];
+            if(p){used.add(p.id);score+=1+effectiveOVR(p,slot.label)/100;}
+        }
+        best=Math.max(best,score);
+    }return best;
 }
 function cpuPositionFit(player,team){
-    const counts={GK:0,DEF:0,MID:0,ATT:0};
-    team.players.forEach(member=>{
-        const role=cpuRoleGroup(member?.primaryPosition||(member?.positions||[])[0]);
-        if(role)counts[role]++;
-    });
-    const roles=cpuPlayerRoles(player);
-    if(!roles.length)return 0;
-    const targets=cpuRoleTargets();
-    let best=-12;
-    roles.forEach(role=>{
-        const target=Math.max(1,targets[role]||1),gap=target-counts[role];
-        const fit=gap>0?2+Math.min(8,gap/target*8):-4-Math.min(8,(counts[role]-target)*2);
-        best=Math.max(best,fit);
-    });
-    if(roles.filter(role=>targets[role]>counts[role]).length>1)best+=1.25;
-    return Math.max(-12,Math.min(11,best));
+    const targets=cpuRoleTargets(),counts={GK:0,DEF:0,MID:0,ATT:0};
+    for(const p of team.players){const role=cpuRoleGroup(primaryPosition(p));if(role)counts[role]++;}
+    return Math.max(...cpuPlayerRoles(player).map(role=>targets[role]>counts[role]?6+6*(targets[role]-counts[role])/Math.max(1,targets[role]):-4-3*(counts[role]-targets[role])),0);
 }
 function cpuChemistryFit(player,team){
-    if(!team.players.length||typeof playerChemistry!=="function")return 0;
-    const values=team.players.map(member=>Number(playerChemistry(player,member))).filter(Number.isFinite);
-    if(!values.length)return 0;
-    const average=values.reduce((sum,value)=>sum+value,0)/values.length;
-    const strongest=Math.max(...values);
-    const fit=(average-75)*.3+(strongest>=90?1.5:strongest<65?-1.5:0);
-    return Math.max(-8,Math.min(8,fit));
+    const links=team.players.map(p=>playerChemistry(player,p)).sort((a,b)=>b-a).slice(0,4);
+    return links.length?Math.max(-8,Math.min(10,(links.reduce((a,b)=>a+b,0)/links.length-72)*.4)):0;
 }
 function evaluateCpuTarget(team=team2){
     if(!currentPlayer)return {rating:0,positionFit:0,chemistryFit:0,score:0};
-    const rawRating=typeof playerOverall==="function"?Number(playerOverall(currentPlayer)):Number(currentPlayer.stats?.ovr);
-    const rating=Number.isFinite(rawRating)?rawRating:(Number(currentPlayer.stats?.ovr)||50);
-    const positionFit=cpuPositionFit(currentPlayer,team);
-    const chemistryFit=cpuChemistryFit(currentPlayer,team);
-    const score=Math.max(40,Math.min(100,rating+positionFit+chemistryFit));
-    return {rating,positionFit,chemistryFit,score};
+    const cfg=CPU_DIFFICULTIES[normalizeCpuDifficulty(cpuDifficulty)],rating=playerOverall(currentPlayer),roles=cpuPlayerRoles(currentPlayer),alternatives=cpuPublicAlternatives();
+    const positionFit=cpuPositionFit(currentPlayer,team),chemistryFit=cpuChemistryFit(currentPlayer,team);
+    const available=alternatives.filter(p=>cpuPlayerRoles(p).some(role=>roles.includes(role)));
+    const stronger=available.filter(p=>playerOverall(p)>rating).length,percentile=1-stronger/Math.max(1,available.length);
+    const scarcity=positionFit>0?Math.max(0,10-available.length)*1.3:0;
+    const improvement=cpuDifficulty==="hard"?Math.max(0,cpuFormationCoverage([...team.players,currentPlayer])-cpuFormationCoverage(team.players)):0;
+    const saturation=team.players.filter(p=>cpuPlayerRoles(p).some(role=>roles.includes(role))&&playerOverall(p)>=rating).length;
+    const score=rating*cfg.quality+positionFit*cfg.need+chemistryFit*cfg.chemistry+scarcity*cfg.scarcity+improvement*3+percentile*6-saturation*(cpuDifficulty==="hard"?3:1);
+    return {rating,positionFit,chemistryFit,scarcity,improvement,score,saturation,percentile};
 }
 function cpuMaximumBid(team,evaluation){
-    const slots=Math.max(1,maxPlayers-team.players.length);
-    const reserve=Math.max(0,(slots-1)*bidIncrement);
-    const affordable=Math.max(0,team.budget-reserve);
-    const averageBudget=team.budget/slots;
-    const playerValue=averageBudget*(.2+evaluation.score/50);
-    const purseLimit=team.budget*(slots<=2?.85:.42);
-    const limit=Math.min(affordable,playerValue,purseLimit);
-    return Math.floor((limit+1e-7)/bidIncrement)*bidIncrement;
+    const cfg=CPU_DIFFICULTIES[normalizeCpuDifficulty(cpuDifficulty)],slots=Math.max(1,maxPlayers-team.players.length);
+    const reserve=(slots-1)*nextLegalAuctionBid(0),affordable=Math.max(0,team.budget-reserve),average=team.budget/slots;
+    const style=.9+cpuVariation(currentPlayer?.id+":"+team.players.map(p=>p.id).join(","))*cfg.variation*2;
+    const quality=Math.max(.18,(evaluation.score-35)/45),urgency=evaluation.positionFit>8?1.15:1;
+    const limit=Math.min(affordable,average*quality*style*urgency/(cfg.discipline||1),team.budget*(slots<=2?1:.48));
+    return Math.max(0,Math.floor((limit+1e-7)/bidIncrement)*bidIncrement);
 }
 function cpuOpeningBid(team,evaluation){
-    const step=bidIncrement;
-    if(team.budget<step)return 0;
-    const slots=Math.max(1,maxPlayers-team.players.length);
-    const averageBudget=team.budget/slots;
-    const maximum=Math.max(step,cpuMaximumBid(team,evaluation));
-    const proposed=Math.floor((averageBudget*(.1+evaluation.score/450)+1e-7)/step)*step;
-    return Math.min(maximum,Math.max(step,proposed));
+    const minimum=nextLegalAuctionBid(0),maximum=cpuMaximumBid(team,evaluation);
+    if(team.budget<minimum)return 0;
+    // An opener must bid or yield to the existing free-signing choice.
+    if(maximum<minimum)return minimum;
+    const extra=evaluation.positionFit>8&&evaluation.rating>86?Math.floor(cpuVariation("open:"+currentPlayer.id)*3):0;
+    return Math.min(maximum,minimum*(1+extra));
 }
-function cpuValuesTarget(evaluation){
-    return evaluation.score>=68||evaluation.positionFit>=7||evaluation.chemistryFit>=6;
-}
+function cpuValuesTarget(evaluation){return evaluation.score>=48||evaluation.positionFit>=8;}
 function cpuChooseBid(team,current=0,opening=false,evaluation=evaluateCpuTarget(team)){
+    if(team.players.length>=maxPlayers)return null;
     if(opening)return cpuOpeningBid(team,evaluation);
-    if(!cpuValuesTarget(evaluation))return null;
-    const next=current+bidIncrement;
-    return next<=cpuMaximumBid(team,evaluation)?next:null;
+    const next=nextLegalAuctionBid(current),maximum=cpuMaximumBid(team,evaluation);
+    if(next>maximum||next>team.budget||!cpuValuesTarget(evaluation))return null;
+    // Willingness changes through a bidding war, rather than one mechanical fixed ceiling.
+    const pressure=next/Math.max(1,maximum),bargain=next<team.budget/Math.max(1,maxPlayers-team.players.length)*.45;
+    const caution=cpuDifficulty==="easy"?.03:cpuDifficulty==="hard"?.12:.08;
+    const opponent=team===team2?team1:team2,opponentAverage=opponent.budget/Math.max(1,maxPlayers-opponent.players.length);
+    const opponentOverpay=current>opponentAverage*1.6&&evaluation.positionFit<8;
+    const fatigue=Math.max(0,pressure-.55)*caution+(evaluation.saturation>2?.08:0)+(opponentOverpay?(cpuDifficulty==="hard"?.12:cpuDifficulty==="normal"?.06:0):0);
+    const interest=cpuVariation(currentPlayer.id+":"+current+":"+team.players.length);
+    if(!bargain&&evaluation.positionFit<10&&interest<fatigue)return null;
+    return next;
 }
 function showCpuThinking(){
     renderAuctionScreen(`
       ${turnIndicator("CPU EVALUATING",team2)}
       <div class="bid-panel" style="${teamVars(team2)}">
-        <div class="panel-code">POSITION / CHEMISTRY / BUDGET ANALYSIS</div>
+        <div class="panel-code">CPU considering…</div>
       </div>`);
     SiteI18n.apply?.(auctionContent);
 }
@@ -140,6 +152,7 @@ function performCpuOpeningBid(){
     const bid=cpuChooseBid(team2,0,true,evaluation);
     if(!bid){displayZeroBudgetChoice(1);return;}
     recordAuctionUndoPoint("OPENING BID");
+    cpuLastAction=evaluation.positionFit>9?"CPU prioritising squad need":"CPU raises";
     currentBid=bid;currentBidder=2;
     playSfx("bid");triggerFx("bid");
     displayBiddingTurn(1);
@@ -147,9 +160,10 @@ function performCpuOpeningBid(){
 function performCpuResponse(){
     if(!team2CpuControlled||uiState.phase!=="bidding"||uiState.turn!==2||!currentPlayer)return;
     const bid=cpuChooseBid(team2,currentBid,false);
-    if(bid===null){passBid();return;}
+    if(bid===null){cpuLastAction="CPU passes";passBid();return;}
     recordAuctionUndoPoint("BID");
     const previousBidder=currentBidder;
+    cpuLastAction=evaluateCpuTarget(team2).positionFit>9?"CPU prioritising squad need":"CPU raises";
     currentBid=bid;currentBidder=2;
     playSfx(previousBidder&&previousBidder!==2?"outbid":"bid");triggerFx("bid");
     displayBiddingTurn(1);
@@ -175,7 +189,7 @@ function auctionSnapshot(){
         team2:{name:team2.name,color:team2.color,budget:team2.budget,playerIds:team2.players.map(p=>p.id)},
         remainingPlayerIds:remainingPlayers.map(p=>p.id),
         currentPlayerId:currentPlayer?.id??null,
-        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,team2CpuControlled,
+        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,activeDraftChallenge,
         auctionHistory:auctionHistory.map(x=>({
             auction:x.auction,playerId:x.player?.id??x.playerId,teamNumber:x.teamNumber,
             teamName:x.teamName,teamColor:x.teamColor,price:x.price,
@@ -205,6 +219,7 @@ function hydrateAuctionSnapshot(snapshot){
     auctionNumber=Number(snapshot.auctionNumber||0);
     draftMode=snapshot.draftMode==="random"?"random":"auction";
     team2CpuControlled=!!snapshot.team2CpuControlled;
+    cpuDifficulty=normalizeCpuDifficulty(snapshot.cpuDifficulty);cpuPersonalitySeed=Number.isInteger(snapshot.cpuPersonalitySeed)?snapshot.cpuPersonalitySeed:1;activeDraftChallenge=snapshot.activeDraftChallenge?normalizeDraftChallenge(snapshot.activeDraftChallenge):null;cpuLastAction="";
     auctionHistory=(snapshot.auctionHistory||[]).map(x=>{
         const player=byId(x.playerId);
         return player?{...x,player}:null;
@@ -306,6 +321,7 @@ function shufflePlayers(list){
 }
 
 function startRandomDraft(){
+    if(setupDraftChallenge){showSiteError("Challenge setup is fixed. Restore its rules or leave the challenge.","DRAFT CHALLENGES");return;}
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="random";
     const shuffled=shufflePlayers(setup.selectedPlayers);
@@ -348,6 +364,7 @@ function showCoinResult(){
 }
 
 function startNextAuction(){
+    cpuLastAction="";
     uiState={screen:"auction",phase:"next",turn:null};
     if(remainingPlayers.length===0 || (isTeamFull(1) && isTeamFull(2))){
         showAuctionComplete(); return;

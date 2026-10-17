@@ -205,16 +205,19 @@ function renderFormationBuilder({preserveScroll=true}={}){
 
     formationContent.innerHTML=`
       <div class="formation-v2-shell">
+        ${typeof challengeStatusMarkup==="function"?challengeStatusMarkup(formationTeamNumber):""}
         <div class="formation-topbar">
           <div class="formation-team-tabs">
             ${standalone
-              ?`<div class="standalone-builder-label"><span>STANDALONE</span><strong>GLOBAL XI</strong></div>`
+              ?`<div class="standalone-builder-label"><span>STANDALONE</span><strong data-i18n-ignore>${esc(team.name)}</strong></div>`
               :[1,2].map(n=>{const t=teamByNumber(n);return `<button class="${formationTeamNumber===n?"active":""}" style="${teamVars(t)}" onclick="switchFormationTeam(${n})"><span>SQUAD 0${n}</span>${esc(t.name)}</button>`}).join("")}
           </div>
           <div class="formation-actions">
             <button class="formation-auto" onclick="${standalone&&typeof autoBestStandaloneTeam==='function'?'autoBestStandaloneTeam()':'autoBestXI()'}">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
             <details class="builder-more"><summary aria-controls="builderMoreActions">MORE ACTIONS <span aria-hidden="true">⋯</span></summary><div id="builderMoreActions" class="builder-more-actions">
             ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ SHARE TEAM</button>`:""}
+            ${typeof squadReplayActions==="function"?squadReplayActions(formationTeamNumber):""}
+            <button type="button" data-saved-squads>SAVED SQUADS</button><button type="button" data-replay-import>IMPORT SQUAD</button>
             <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
             <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
             <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>
@@ -429,7 +432,7 @@ function bindMobileBuilderPresentation(){
     const actions=formationContent.querySelector(".formation-actions");
     let more=actions?.querySelector(".builder-more");
     if(!mobileBuilderMedia.matches&&more){
-        more.querySelectorAll(".builder-more-actions>button").forEach(button=>actions.insertBefore(button,more));
+        more.querySelectorAll(".builder-more-actions>button,.builder-more-actions>.replay-actions>button").forEach(button=>actions.insertBefore(button,more));
         more.remove();
     }else if(mobileBuilderMedia.matches&&actions&&!more){
         more=document.createElement("details");more.className="builder-more";
