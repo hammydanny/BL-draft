@@ -101,7 +101,7 @@ function createFinalTeamCard(team,n){
         <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
       </div>
       ${resultChemistryLinksMarkup(team,n)}
-      ${typeof squadReplayActions==="function"?squadReplayActions(n):""}
+      ${typeof resultTeamActions==="function"?resultTeamActions(n):""}
       <div class="final-roster">${roster}</div>
     </article>`;
 }
@@ -114,6 +114,7 @@ function createFullHistory(){
 }
 function showAuctionComplete(){
     if(typeof ensureCpuSquadBuilt==="function")ensureCpuSquadBuilt();
+    if(typeof ensureModeInitialLineup==="function")ensureModeInitialLineup();
     auctionScreen.dataset.auctionPhase="complete";
     auctionScreen.style.setProperty("--auction-dock-height","0px");
     const wasComplete=uiState.phase==="complete";
@@ -123,22 +124,22 @@ function showAuctionComplete(){
     updateSiteDirectory(auctionScreen);
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
-      <h2>DRAFT <span>COMPLETE</span></h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
-      <div class="results-actions results-actions-top">
+      <h2>${activeDraftChallenge?esc(replayText(activeDraftChallenge.id==="daily"?"DAILY REPORT":"MISSION REPORT")):"DRAFT <span>COMPLETE</span>"}</h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
+      <div class="results-actions results-actions-top result-action-toolbar">
         <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
-        <button id="saveResultsImage" type="button" class="primary-button restart-button">SAVE IMAGE</button>
-        <button id="shareResultsButton" class="primary-button restart-button share-action"><span>SHARE / SAVE RESULT</span><b>↗</b></button>
+        <button id="shareResultsButton" type="button">SAVE</button><button id="nativeShareResults" type="button">SHARE</button>
         <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
       </div>
       ${team2CpuControlled?`<p class="cpu-status">${esc(SiteI18n.text("SINGLEPLAYER"))} · ${esc(SiteI18n.text(cpuDifficulty.toUpperCase()))}</p>`:""}
-      ${typeof challengeStatusMarkup==="function"?challengeStatusMarkup(1):""}
+      ${typeof modeResultsMarkup==="function"?modeResultsMarkup():""}
       ${createResultsComparison()}
       <div class="final-team-grid">${createFinalTeamCard(team1,1)}${createFinalTeamCard(team2,2)}</div>
       <section class="full-history"><div class="history-heading"><div><span>COMPLETE RECORD</span><h3>TRANSFER DATABASE</h3></div><b>${String(auctionHistory.length).padStart(2,"0")}</b></div><div class="full-history-list">${createFullHistory()}</div></section>
     </div>`;
+    if(!wasComplete&&typeof animateModeResult==="function")animateModeResult();
     window.scrollTo({top:0,behavior:"instant"});
     document.getElementById("formationBuilderButton").addEventListener("click",openAuctionTeamBuilder);
-    document.getElementById("saveResultsImage").onclick=()=>saveDraftImage();
+    document.getElementById("nativeShareResults").onclick=()=>shareResultsImageAndLink();
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
     if(appRelativePath()!==routePath("auctionResults"))updateRoute("auctionResults");
@@ -203,34 +204,27 @@ function createShareTeam(team,n){
       ${snap.reserves.length?`<div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.map(p=>`<b><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="24" height="26" loading="lazy" decoding="async"><span>${esc(p.name)}</span> <i>${playerOverall(p)}</i></b>`).join("")}</div></div>`:""}
     </article>`;
 }
-function openShareScreen(){
-    const previous=document.getElementById("shareScreen");
-    if(previous){setSiteDialogState(previous,false);previous.remove();}
-    const previousFocus=document.activeElement;
-    const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
-    screen.innerHTML=`<div class="share-shell">
-      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="saveReportImage" type="button">SAVE IMAGE</button><button id="printShareResult">PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
-      <div id="shareCard" class="share-card">
-        <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>DRAFT</b></h2></div><strong>FINAL</strong></div>
-        <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
-        <div class="share-team-grid">${createShareTeam(team1,1)}${createShareTeam(team2,2)}</div>
-        <div class="share-card-footer"><span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span><span>UNOFFICIAL FAN PROJECT // 2026</span></div>
-      </div></div>`;
-    screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","Auction results report");
-    document.body.appendChild(screen);
-    setSiteDialogState(screen,true);
-    prioritizeVisiblePortraits(screen);
-    function close(){setSiteDialogState(screen,false);screen.remove();if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});}
-    screen.addEventListener("keydown",event=>{
-        if(event.key==="Escape"){event.preventDefault();close();return;}
-        trapSiteDialogFocus(event);
-    });
-    document.getElementById("closeShareScreen").onclick=close;
-    document.getElementById("closeShareScreen").focus();
-    document.getElementById("saveReportImage").onclick=()=>saveDraftImage();
-    document.getElementById("printShareResult").onclick=()=>window.print();
-    document.getElementById("copyShareSummary").onclick=copyShareSummary;
-    document.getElementById("shareTeamsAndLink").onclick=shareResultsImageAndLink;
+function openShareScreen(){return openExportPreview();}
+function openExportPreview(teamNumber=null){
+    const previous=document.getElementById("shareScreen");if(previous){setSiteDialogState(previous,false);previous.remove();}
+    const previousFocus=document.activeElement,screen=document.createElement("section");let imageUrl=null,preparedBlob=null;
+    screen.id="shareScreen";screen.className="share-screen export-preview";screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","SAVE PREVIEW");
+    screen.innerHTML=`<div class="export-preview-shell"><div class="share-toolbar"><button id="closeShareScreen" type="button">BACK</button><h2>SAVE PREVIEW</h2><div><button id="saveReportImage" type="button" disabled>SAVE IMAGE</button><button id="printShareResult" type="button" disabled>PRINT</button>${teamNumber===0?'<button id="copyStandaloneShare" type="button">COPY SUMMARY</button>':'<button id="shareTeamsAndLink" type="button" disabled>SHARE</button>'}</div></div><p id="exportPreviewStatus" role="status">PREPARING IMAGE…</p><div id="shareCard" class="export-preview-image"><img id="exportPreviewImage" alt="Result image preview" hidden></div>${teamNumber===0?`<div class="standalone-report-actions">${resultTeamActions(0)}<button type="button" data-saved-squads>SAVED SQUADS</button><button type="button" data-replay-import>IMPORT SQUAD</button></div>`:""}</div>`;
+    document.body.appendChild(screen);setSiteDialogState(screen,true);SiteI18n.apply(screen);
+    const close=()=>{setSiteDialogState(screen,false);screen.remove();if(imageUrl)URL.revokeObjectURL(imageUrl);if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});};
+    document.getElementById("closeShareScreen").onclick=close;document.getElementById("closeShareScreen").focus();
+    screen.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();close();}else trapSiteDialogFocus(event);});
+    document.getElementById("saveReportImage").onclick=()=>{if(preparedBlob)saveDraftImage(teamNumber,preparedBlob);};document.getElementById("printShareResult").onclick=()=>{if(preparedBlob)window.print();};
+    if(teamNumber===0)document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
+    else document.getElementById("shareTeamsAndLink").onclick=()=>shareResultsImageAndLink(preparedBlob);
+    requestAnimationFrame(async()=>{try{const blob=await createAuctionShareImageBlob(teamNumber);if(!screen.isConnected)return;preparedBlob=blob;imageUrl=URL.createObjectURL(blob);const image=document.getElementById("exportPreviewImage");image.src=imageUrl;await image.decode();if(!screen.isConnected)return;image.hidden=false;document.getElementById("exportPreviewStatus").textContent=replayText("This is the exact image that will be saved.");for(const id of ["saveReportImage","printShareResult","shareTeamsAndLink"]){const button=document.getElementById(id);if(button)button.disabled=false;}}
+        catch(error){if(screen.isConnected)document.getElementById("exportPreviewStatus").textContent=replayText(error.message==="Some portraits are not ready. Try again."?error.message:"Image export is unavailable.");}});
+    return screen;
+}
+function exportModeReport(){
+    if(activeDraftChallenge){const r=modeScore(activeDraftChallenge);return {title:replayText(activeDraftChallenge.title),subtitle:[activeDraftChallenge.date,r.grade,replayText(r.gradeLabel),replayText("FINAL SCORE")+" "+r.score.toLocaleString(SiteI18n.language)].filter(Boolean).join(" · "),left:r.components.map(c=>replayText(c.label)+"  "+(c.value>0?"+":"")+c.value.toLocaleString(SiteI18n.language)),right:r.goals.map(g=>(g.pass?"✓ ":"○ ")+replayText(g.label)+"  "+g.current+" / "+g.target)};}
+    if(team2CpuControlled)return {title:replayText("VS CPU")+" · "+replayText(cpuDifficulty.toUpperCase()),subtitle:replayText("DRAFT VERDICT"),left:[team1.name+" · "+replayText("TEAM QUALITY")+" "+naturalSquadOVR(team1),team2.name+" · "+replayText("TEAM QUALITY")+" "+naturalSquadOVR(team2)],right:[team1.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team1,1).overall,team2.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team2,2).overall]};
+    return null;
 }
 async function copyShareSummary(){
     const t=value=>window.SiteI18n?.text(value)||value;
@@ -263,7 +257,7 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     const reportOVR=snap.deployedCount?snap.ovr:naturalSquadOVR(team),reportChemistry=snap.deployedCount?snap.chemistry:rosterChemistrySnapshot(team);
     const usedIds=new Set(Object.values(snap.assignment||{}).filter(Boolean).map(String));
     shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
-    shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+snap.formation,x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
+    shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+"\u2066"+snap.formation+"\u2069",x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
     shareImageText(ctx,team.name,x+28,y+78,width-178,'900 italic 39px "Barlow Condensed", sans-serif',"#f0f7ff");
     shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
     const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*4)/5;
@@ -328,8 +322,9 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
 async function createAuctionShareImageBlob(teamNumber=null){
     const numbers=teamNumber===0?[0]:[1,2];
     const entries=numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
+    const modeReport=teamNumber===0?null:exportModeReport();
     await document.fonts?.ready;
-    const text=["TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)])).join(" ");
+    const text=["TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
     if(document.fonts?.load)await Promise.all([document.fonts.load('800 18px "Barlow Condensed"',text),document.fonts.load('700 14px "Rajdhani"',text)]);
     const portraits=new Map();
     await Promise.all([...new Map(entries.flatMap(entry=>entry.team.players).map(p=>[p.id,p])).values()].map(async player=>{
@@ -337,7 +332,8 @@ async function createAuctionShareImageBlob(teamNumber=null){
         if(!ready?.image||ready.state!=="ready")throw new Error("Some portraits are not ready. Try again.");
         portraits.set(player.id,ready.image);
     }));
-    const maxRoster=Math.max(...entries.map(entry=>entry.team.players.length),1),panelY=210,panelHeight=665+maxRoster*29;
+    const reportHeight=modeReport?125+Math.max(modeReport.left.length,modeReport.right.length)*27:0;
+    const maxRoster=Math.max(...entries.map(entry=>entry.team.players.length),1),panelY=210+reportHeight,panelHeight=665+maxRoster*29;
     const canvas=document.createElement("canvas");canvas.width=entries.length===1?1100:1800;canvas.height=panelY+panelHeight+100;
     const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Image export is unavailable.");
     const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
@@ -345,16 +341,22 @@ async function createAuctionShareImageBlob(teamNumber=null){
     shareImageText(ctx,"BLUE LOCK DRAFT",54,75,980,'900 italic 56px "Barlow Condensed", sans-serif',"#f1f8ff");
     shareImageText(ctx,SiteI18n.text(teamNumber===0?"SQUAD REPORT":"FINAL RESULT"),58,120,canvas.width-108,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
     ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
+    if(modeReport){
+        shareImageRoundRect(ctx,48,168,canvas.width-96,reportHeight-12,12,"#102b46","#2c5774");
+        shareImageText(ctx,modeReport.title,72,201,canvas.width-144,'900 28px "Barlow Condensed", sans-serif',"#f4d17d");
+        shareImageText(ctx,modeReport.subtitle,72,230,canvas.width-144,'800 20px "Barlow Condensed", sans-serif',"#d5eaff");
+        for(const [column,lines]of [modeReport.left,modeReport.right].entries())for(const [row,line]of lines.entries())shareImageText(ctx,line,72+column*(canvas.width-144)/2,263+row*27,(canvas.width-170)/2,'700 17px "Rajdhani", sans-serif',"#bcd4e9");
+    }
     const margin=48,gap=24,panelW=(canvas.width-margin*2-gap*(entries.length-1))/entries.length;
     entries.forEach((entry,i)=>drawAuctionShareImageTeam(ctx,entry.team,entry.n,entry.snap,{x:margin+i*(panelW+gap),y:panelY,width:panelW,height:panelHeight,portraits}));
     ctx.fillStyle="#2a81ba";ctx.fillRect(54,canvas.height-64,canvas.width-108,1);
     shareImageText(ctx,appRootUrl().href,canvas.width/2,canvas.height-31,canvas.width-108,'700 17px "Barlow Condensed", sans-serif',"#8eb5d4","center");
     return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Image export is unavailable.")),"image/png"));
 }
-async function saveDraftImage(teamNumber=null){
+async function saveDraftImage(teamNumber=null,preparedBlob=null){
     const button=document.getElementById("saveReportImage")||document.getElementById("saveResultsImage");if(button?.disabled)return;
     if(button){button.disabled=true;button.textContent=SiteI18n.text("PREPARING IMAGE…");}
-    try{const blob=await createAuctionShareImageBlob(teamNumber),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="blue-lock-draft-"+localDraftDate()+".png";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+    try{const blob=preparedBlob||await createAuctionShareImageBlob(teamNumber),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="blue-lock-draft-"+localDraftDate()+".png";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
     catch(error){showSiteError(error.message==="Some portraits are not ready. Try again."?error.message:"Image export is unavailable.","SAVE IMAGE");}
     finally{if(button?.isConnected){button.disabled=false;button.textContent=SiteI18n.text("SAVE IMAGE");}}
 }
@@ -374,14 +376,14 @@ async function copyShareMessageText(message){
     }
     return fallbackCopyShareText(message);
 }
-async function shareResultsImageAndLink(){
-    const button=document.getElementById("shareTeamsAndLink");if(!button)return;
+async function shareResultsImageAndLink(previewBlob=null){
+    const button=document.getElementById("shareTeamsAndLink")||document.getElementById("nativeShareResults");if(!button)return;
     const translate=value=>window.SiteI18n?.text(value)||value;
     const message=createAuctionShareMessage();
     button.disabled=true;
     try{
         if(typeof navigator.share==="function"&&typeof navigator.canShare==="function"){
-            const imageBlob=await createAuctionShareImageBlob();
+            const imageBlob=previewBlob||await createAuctionShareImageBlob();
             const imageFile=new File([imageBlob],"blue-lock-draft-results-"+new Date().toISOString().slice(0,10)+".png",{type:"image/png"});
             if(navigator.canShare({files:[imageFile]})){
                 await navigator.share({title:"Blue Lock Draft",text:message,files:[imageFile]});
@@ -483,50 +485,5 @@ ${t("DEVELOPED BY")} hammydanny@Github // ${t("WITH SUPPORT FROM")} syaafibwn@Gi
 }
 
 function openStandaloneShareScreen(){
-    standaloneBuilderSyncTeam();
-    saveStandaloneBuilderState();
-    document.getElementById("shareScreen")?.remove();
-
-    const screen=document.createElement("section");
-    screen.id="shareScreen";
-    screen.className="share-screen standalone-share-screen";
-    screen.innerHTML=`<div class="share-shell standalone-share-shell">
-      <div class="share-toolbar">
-        <button id="closeShareScreen">← TEAM BUILDER</button>
-        <div>
-          <button id="copyStandaloneShare">COPY SUMMARY</button>
-          <button id="saveReportImage" type="button">SAVE IMAGE</button><button id="printShareResult">PRINT</button>
-        </div>
-      </div>
-      <div id="shareCard" class="share-card standalone-share-card">
-        <div class="share-card-top">
-          <div><span>BL // STANDALONE SQUAD REPORT</span><h2>GLOBAL <b>XI</b></h2></div>
-          <strong>TEAM</strong>
-        </div>
-        <div class="standalone-share-grid">${createStandaloneShareTeam()}</div>
-        <div class="share-card-footer">
-          <span>DEVELOPED BY <b>HAMMYDANNY@GITHUB</b> // WITH THE SUPPORT OF <b>SYAAFIBWN@GITHUB</b></span>
-          <span>UNOFFICIAL FAN PROJECT // 2026</span>
-        </div>
-      </div>
-    </div>`;
-    screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","Standalone squad report");
-    const previousFocus=document.activeElement;
-    const builderViewport=captureFormationViewport();
-    document.body.appendChild(screen);
-    prioritizeVisiblePortraits(screen);
-    function close(){screen.remove();previousFocus?.focus({preventScroll:true});restoreFormationViewport(builderViewport);}
-    screen.addEventListener("keydown",event=>{
-        if(event.key==="Escape"){event.preventDefault();close();}
-        if(event.key==="Tab"){
-            const buttons=[...screen.querySelectorAll("button")],first=buttons[0],last=buttons.at(-1);
-            if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-            else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-        }
-    });
-    document.getElementById("closeShareScreen").onclick=close;
-    document.getElementById("closeShareScreen").focus();
-    document.getElementById("saveReportImage").onclick=()=>saveDraftImage(formationTeamNumber===0?0:null);
-    document.getElementById("printShareResult").onclick=()=>window.print();
-    document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
+    standaloneBuilderSyncTeam();saveStandaloneBuilderState();return openExportPreview(0);
 }

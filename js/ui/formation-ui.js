@@ -205,7 +205,6 @@ function renderFormationBuilder({preserveScroll=true}={}){
 
     formationContent.innerHTML=`
       <div class="formation-v2-shell">
-        ${typeof challengeStatusMarkup==="function"?challengeStatusMarkup(formationTeamNumber):""}
         <div class="formation-topbar">
           <div class="formation-team-tabs">
             ${standalone
@@ -215,9 +214,8 @@ function renderFormationBuilder({preserveScroll=true}={}){
           <div class="formation-actions">
             <button class="formation-auto" onclick="${standalone&&typeof autoBestStandaloneTeam==='function'?'autoBestStandaloneTeam()':'autoBestXI()'}">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
             <details class="builder-more"><summary aria-controls="builderMoreActions">MORE ACTIONS <span aria-hidden="true">⋯</span></summary><div id="builderMoreActions" class="builder-more-actions">
-            ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ SHARE TEAM</button>`:""}
-            ${typeof squadReplayActions==="function"?squadReplayActions(formationTeamNumber):""}
-            <button type="button" data-saved-squads>SAVED SQUADS</button><button type="button" data-replay-import>IMPORT SQUAD</button>
+            ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ TEAM REPORT</button>`:""}
+
             <button class="formation-reset" onclick="resetCurrentFormation()">↻ CLEAR XI</button>
             <button class="formation-database-toggle" onclick="togglePlayerDatabase()">${playerDatabaseHidden?"SHOW DATABASE":"HIDE DATABASE"}</button>
             <button class="formation-bench-toggle" onclick="toggleBench()">${benchCollapsed?"SHOW BENCH":"HIDE BENCH"}</button>

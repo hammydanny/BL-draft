@@ -114,6 +114,7 @@ function displayOpeningBid(){
     uiState={screen:"auction",phase:"opening",turn:startingTeam};saveGame();
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
+    if(resolveModeOpening())return;
     const starter=teamByNumber(startingTeam);
     if(team1.budget===0&&team2.budget===0){currentBid=0;currentBidder=startingTeam;awardPlayer(startingTeam);return;}
     if(starter.budget===0){displayZeroBudgetChoice(startingTeam===1?2:1);return;}
@@ -167,6 +168,7 @@ function displayBiddingTurn(teamNumber){
     const forcedTeam=onlyTeamWithSpace();
     if(forcedTeam){awardPlayerFree(forcedTeam,true);return;}
     const team=teamByNumber(teamNumber);
+    if(activeDraftChallenge?.v===2&&!modeCanSign(team,currentPlayer)){awardPlayer(currentBidder);return;}
     if(isTeamFull(teamNumber)){awardPlayer(otherTeamNumber(teamNumber));return;}
     if(team.budget===0){awardPlayer(currentBidder);return;}
     if(teamNumber===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(performCpuResponse,560);return;}
@@ -281,12 +283,13 @@ function renderAuctionScreen(actionHTML){
         if(historyPanel)historyPanel.outerHTML=createAuctionHistoryPanel();
         window.scrollTo({top:scroll,behavior:"instant"});
         syncMobileAuctionPresentation();
+        if(typeof updateModeHud==="function")updateModeHud();
         return;
     }
     auctionContent.dataset.playerId=String(currentPlayer.id);
     mobileAuctionStatsExpanded=defaultMobileAuctionStatsExpanded();
     auctionContent.classList.remove("auction-enter");void auctionContent.offsetWidth;auctionContent.classList.add("auction-enter");
-    auctionContent.innerHTML=`<div class="auction-layout auction-command-shell">
+    auctionContent.innerHTML=`${typeof modeHudMarkup==="function"?modeHudMarkup():""}<div class="auction-layout auction-command-shell">
       <div class="auction-command-grid">
         ${createTeamTracker(team1,1)}
         <main class="auction-main auction-command-center">${createPlayerCard()}<div class="action-container">${actionHTML}</div></main>
@@ -296,6 +299,7 @@ function renderAuctionScreen(actionHTML){
     </div>`;
     window.scrollTo({top:previousPlayerId?scroll:0,behavior:"instant"});
     syncMobileAuctionPresentation();
+    if(typeof configureModeAuctionHeader==="function")configureModeAuctionHeader();
 }
 
 function updatePlayersRemaining(){

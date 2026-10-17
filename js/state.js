@@ -196,3 +196,6 @@ const GAME_MODES={
     full:{budget:15000,increment:50,maxPlayers:15}
 };
 
+
+// Optional mode state travels with the existing auction save and Undo/Redo.
+let draftModeState={refreshes:0,lineupKey:"",retired:[]};

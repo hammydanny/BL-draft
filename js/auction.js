@@ -35,10 +35,11 @@ function resetDraftState(setup){
     formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};formationCaptainByTeam={1:null,2:null};
     bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;team2CpuControlled=!!setup.team2CpuControlled;
     cpuDifficulty=normalizeCpuDifficulty(setup.cpuDifficulty);cpuPersonalitySeed=(Math.random()*0xffffffff)>>>0;cpuLastAction="";cpuBuiltRosterKey="";
-    activeDraftChallenge=setup.challenge?normalizeDraftChallenge(setup.challenge):null;
+    activeDraftChallenge=setup.challenge?normalizeDraftChallenge(setup.challenge):null;draftModeState=normalizeDraftModeState(null,activeDraftChallenge);
+    if(activeDraftChallenge?.id==="daily"&&activeDraftChallenge.v===2)cpuPersonalitySeed=replayHash("cpu-v072:"+exportChallengeCode(activeDraftChallenge));
     team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
     team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
-    remainingPlayers=shufflePlayers(setup.selectedPlayers);auctionHistory=[];auctionNumber=0;
+    remainingPlayers=activeDraftChallenge?.v===2?modeMarketOrder(activeDraftChallenge):shufflePlayers(setup.selectedPlayers);auctionHistory=[];auctionNumber=0;
     currentPlayer=null;currentBid=0;currentBidder=null;
     auctionUndoStack=[];auctionRedoStack=[];auctionHistoryRestoring=false;
     updateAuctionUndoRedoControls?.();
@@ -51,9 +52,7 @@ function nextLegalAuctionBid(current=0){
 }
 const CPU_POSITION_GROUPS={GK:["GK"],DEF:["CB","LB","RB","LWB","RWB","DF","WB"],MID:["DM","CDM","CM","CAM","AM","LM","RM","WM","MF"],ATT:["CF","ST","SS","LW","RW","FW"]};
 const CPU_DIFFICULTIES=Object.freeze({
-    easy:{need:.35,scarcity:.05,chemistry:.08,quality:.95,discipline:.62,variation:.35},
-    normal:{need:.75,scarcity:.45,chemistry:.38,quality:.8,discipline:.84,variation:.18},
-    hard:{need:1.1,scarcity:.85,chemistry:.65,quality:.75,discipline:1,variation:.12}
+    easy:{variation:.28},normal:{variation:.10},hard:{variation:.025}
 });
 function normalizeCpuDifficulty(value){return Object.hasOwn(CPU_DIFFICULTIES,value)?value:"normal";}
 function cpuRoleGroup(position){return Object.keys(CPU_POSITION_GROUPS).find(group=>CPU_POSITION_GROUPS[group].includes(String(position).toUpperCase()))||null;}
@@ -72,47 +71,70 @@ function cpuVariation(salt){
     for(const c of String(salt))hash=Math.imul(hash^c.charCodeAt(0),16777619)>>>0;
     return hash/4294967296;
 }
-function cpuFormationCoverage(roster){
-    let best=0;
-    for(const shape of Object.values(FORMATIONS)){
-        const used=new Set();let score=0;
-        // Scarce slots first so a flexible forward does not displace the only keeper.
-        const slots=shape.map(slot=>({slot,options:roster.filter(p=>canonicalFit(p,slot.label))})).sort((a,b)=>a.options.length-b.options.length);
-        for(const {slot,options} of slots){
-            const p=options.filter(p=>!used.has(p.id)).sort((a,b)=>effectiveOVR(b,slot.label)-effectiveOVR(a,slot.label))[0];
-            if(p){used.add(p.id);score+=1+effectiveOVR(p,slot.label)/100;}
-        }
-        best=Math.max(best,score);
-    }return best;
+// Derived plans contain only owned players, formations and public pool membership.
+const cpuPlanCache=new Map();
+function cpuAssignment(roster,shape,indices){
+    const rows=indices.length,columns=roster.length+rows,u=Array(rows+1).fill(0),v=Array(columns+1).fill(0),p=Array(columns+1).fill(0),way=Array(columns+1).fill(0);
+    const affinity=new Map(roster.map(player=>[player.id,cpuChemistryFit(player,{players:roster.filter(p=>p.id!==player.id)})]));
+    const weights=indices.map(index=>roster.map(player=>canonicalFit(player,shape[index].label)?160+effectiveOVR(player,shape[index].label)+(primaryFit(player,shape[index].label)?3:0)+affinity.get(player.id)*.15:-1000).concat(Array(rows).fill(0)));
+    // Rectangular maximum-weight assignment. Dummy columns represent genuine gaps.
+    for(let i=1;i<=rows;i++){
+        p[0]=i;let j0=0;const minimum=Array(columns+1).fill(Infinity),used=Array(columns+1).fill(false);
+        do{used[j0]=true;const i0=p[j0];let delta=Infinity,j1=0;
+            for(let j=1;j<=columns;j++)if(!used[j]){const cost=-weights[i0-1][j-1]-u[i0]-v[j];if(cost<minimum[j]){minimum[j]=cost;way[j]=j0;}if(minimum[j]<delta){delta=minimum[j];j1=j;}}
+            for(let j=0;j<=columns;j++)if(used[j]){u[p[j]]+=delta;v[j]-=delta;}else minimum[j]-=delta;j0=j1;
+        }while(p[j0]!==0);
+        do{const j1=way[j0];p[j0]=p[j1];j0=j1;}while(j0);
+    }
+    const assignment={};for(let j=1;j<=roster.length;j++)if(p[j]&&weights[p[j]-1][j-1]>0)assignment[indices[p[j]-1]]=roster[j-1].id;return assignment;
 }
-function cpuPositionFit(player,team){
-    const targets=cpuRoleTargets(),counts={GK:0,DEF:0,MID:0,ATT:0};
-    for(const p of team.players){const role=cpuRoleGroup(primaryPosition(p));if(role)counts[role]++;}
-    return Math.max(...cpuPlayerRoles(player).map(role=>targets[role]>counts[role]?6+6*(targets[role]-counts[role])/Math.max(1,targets[role]):-4-3*(counts[role]-targets[role])),0);
+function cpuPlanRoster(roster){
+    const sorted=[...new Map(roster.map(p=>[p.id,p])).values()].sort((a,b)=>a.id-b.id),key=maxPlayers+":"+sorted.map(p=>p.id).join(",");if(cpuPlanCache.has(key))return cpuPlanCache.get(key);
+    let best=null;
+    for(const [formation,shape]of Object.entries(FORMATIONS)){
+        const indices=FORMATION_ACTIVE_PRIORITY[formation].slice(0,Math.min(11,maxPlayers)),assignment=cpuAssignment(sorted,shape,indices),placed=Object.values(assignment).map(playerById),used=new Set(placed.map(p=>p.id));
+        const quality=Object.entries(assignment).reduce((sum,[index,id])=>sum+effectiveOVR(playerById(id),shape[index].label),0),fitCount=placed.length;
+        const links=[];for(let a=0;a<placed.length;a++)for(let b=a+1;b<placed.length;b++)links.push(playerChemistry(placed[a],placed[b]));
+        const chemistry=links.length?chemistryNetworkScore(links):0,depth=sorted.filter(p=>!used.has(p.id)).sort((a,b)=>playerOverall(b)-playerOverall(a)).slice(0,4).reduce((sum,p)=>sum+playerOverall(p)*.08,0);
+        const score=fitCount*160+quality+chemistry*.18+depth;
+        const candidate={formation,assignment,quality,fitCount,missing:indices.length-fitCount,chemistry,depth,score};if(!best||score>best.score+.001)best=candidate;
+    }
+    if(cpuPlanCache.size>220)cpuPlanCache.clear();cpuPlanCache.set(key,best);return best;
 }
+function cpuFormationCoverage(roster){return cpuPlanRoster(roster).fitCount;}
+function cpuPositionFit(player,team){const before=cpuPlanRoster(team.players),after=cpuPlanRoster([...team.players,player]);return after.fitCount>before.fitCount?12:after.quality-before.quality>10?5:0;}
 function cpuChemistryFit(player,team){
-    const links=team.players.map(p=>playerChemistry(player,p)).sort((a,b)=>b-a).slice(0,4);
-    return links.length?Math.max(-8,Math.min(10,(links.reduce((a,b)=>a+b,0)/links.length-72)*.4)):0;
+    const links=team.players.map(p=>playerChemistry(player,p)).sort((a,b)=>b-a).slice(0,5);return links.length?Math.max(-7,Math.min(10,(links.reduce((a,b)=>a+b,0)/links.length-72)*.4)):0;
+}
+function cpuObjectiveValue(player,team){
+    const rule=activeDraftChallenge;if(!rule||rule.v!==2)return 0;let value=0;
+    for(const o of rule.objectives){if(["player","captain"].includes(o.type)&&o.id===player.id)value+=10;
+        if(o.type==="categoryMin"&&modeCategory(player,o.key)&&team.players.filter(p=>modeCategory(p,o.key)).length<o.target)value+=6;
+        if(o.type==="nation"&&player.nationality?.code===o.key&&team.players.filter(p=>p.nationality?.code===o.key).length<o.target)value+=6;
+        if(o.type==="statCount"&&playerStats(player)[o.key]>=o.threshold&&team.players.filter(p=>playerStats(p)[o.key]>=o.threshold).length<o.target)value+=6;
+    }return Math.min(15,value);
 }
 function evaluateCpuTarget(team=team2){
     if(!currentPlayer)return {rating:0,positionFit:0,chemistryFit:0,score:0};
-    const cfg=CPU_DIFFICULTIES[normalizeCpuDifficulty(cpuDifficulty)],rating=playerOverall(currentPlayer),roles=cpuPlayerRoles(currentPlayer),alternatives=cpuPublicAlternatives();
-    const positionFit=cpuPositionFit(currentPlayer,team),chemistryFit=cpuChemistryFit(currentPlayer,team);
-    const available=alternatives.filter(p=>cpuPlayerRoles(p).some(role=>roles.includes(role)));
-    const stronger=available.filter(p=>playerOverall(p)>rating).length,percentile=1-stronger/Math.max(1,available.length);
-    const scarcity=positionFit>0?Math.max(0,10-available.length)*1.3:0;
-    const improvement=cpuDifficulty==="hard"?Math.max(0,cpuFormationCoverage([...team.players,currentPlayer])-cpuFormationCoverage(team.players)):0;
-    const saturation=team.players.filter(p=>cpuPlayerRoles(p).some(role=>roles.includes(role))&&playerOverall(p)>=rating).length;
-    const score=rating*cfg.quality+positionFit*cfg.need+chemistryFit*cfg.chemistry+scarcity*cfg.scarcity+improvement*3+percentile*6-saturation*(cpuDifficulty==="hard"?3:1);
-    return {rating,positionFit,chemistryFit,scarcity,improvement,score,saturation,percentile};
+    const rating=playerOverall(currentPlayer),before=cpuPlanRoster(team.players),after=cpuPlanRoster([...team.players,currentPlayer]),fitGain=Math.max(0,after.fitCount-before.fitCount),upgrade=Math.max(0,after.quality-before.quality-fitGain*75),depthGain=Math.max(0,after.depth-before.depth);
+    const positionFit=fitGain?12:upgrade>10?5:0,chemistryFit=cpuChemistryFit(currentPlayer,team),targetSlot=Object.keys(after.assignment).find(index=>after.assignment[index]===currentPlayer.id),targetLabel=targetSlot==null?null:FORMATIONS[after.formation][targetSlot].label;
+    const alternatives=cpuPublicAlternatives().filter(p=>targetLabel?canonicalFit(p,targetLabel):cpuPlayerRoles(p).some(role=>cpuPlayerRoles(currentPlayer).includes(role))),stronger=alternatives.filter(p=>playerOverall(p)>rating).length;
+    const scarcity=fitGain?Math.max(0,5-alternatives.filter(p=>playerOverall(p)>=rating-6).length):0,percentile=1-stronger/Math.max(1,alternatives.length),saturation=team.players.filter(p=>cpuPlayerRoles(p).some(role=>cpuPlayerRoles(currentPlayer).includes(role))&&playerOverall(p)>=rating).length;
+    const objectiveValue=cpuObjectiveValue(currentPlayer,team),intelligence=cpuDifficulty==="hard"?1:cpuDifficulty==="normal"?.7:.25;
+    const score=rating*.65+positionFit*intelligence*2+Math.min(25,upgrade)*intelligence+chemistryFit*(cpuDifficulty==="hard"?.6:.25)+scarcity*intelligence*2+objectiveValue*.5-saturation*(cpuDifficulty==="hard"?3:1);
+    return {rating,positionFit,chemistryFit,score,scarcity,percentile,saturation,before,after,fitGain,upgrade,depthGain,objectiveValue,improvement:Math.max(0,(after.score-before.score)/100),tier:fitGain||upgrade>8?rating>=94?"elite":"starter":upgrade>2?"upgrade":"depth"};
 }
 function cpuMaximumBid(team,evaluation){
-    const cfg=CPU_DIFFICULTIES[normalizeCpuDifficulty(cpuDifficulty)],slots=Math.max(1,maxPlayers-team.players.length);
-    const reserve=(slots-1)*nextLegalAuctionBid(0),affordable=Math.max(0,team.budget-reserve),average=team.budget/slots;
-    const style=.9+cpuVariation(currentPlayer?.id+":"+team.players.map(p=>p.id).join(","))*cfg.variation*2;
-    const quality=Math.max(.18,(evaluation.score-35)/45),urgency=evaluation.positionFit>8?1.15:1;
-    const limit=Math.min(affordable,average*quality*style*urgency/(cfg.discipline||1),team.budget*(slots<=2?1:.48));
-    return Math.max(0,Math.floor((limit+1e-7)/bidIncrement)*bidIncrement);
+    const slots=Math.max(1,maxPlayers-team.players.length),minimum=nextLegalAuctionBid(0),average=team.budget/slots,hard=cpuDifficulty==="hard",normal=cpuDifficulty==="normal";
+    const gaps=Math.min(slots-1,evaluation.after?.missing??Math.max(0,Math.min(11,maxPlayers)-team.players.length-1)),reserve=Math.max((slots-1)*minimum,Math.min(team.budget*.8,gaps*average*(hard?.6:normal?.4:.15)+(slots-1-gaps)*minimum));
+    const affordable=Math.max(0,team.budget-reserve),gain=evaluation.fitGain??(evaluation.positionFit>=8?1:0),upgrade=evaluation.upgrade??Math.max(0,(evaluation.score-65)/3);
+    const intelligence=hard?1:normal?.7:.25,quality=Math.max(.15,(evaluation.rating-55)/45),variation=CPU_DIFFICULTIES[cpuDifficulty].variation;
+    const style=1+(cpuVariation(currentPlayer.id+":"+team.players.length)-.5)*2*variation;
+    let factor=.3+quality*.45+gain*(hard?1.4:normal?1.1:.65)+Math.min(1,upgrade/24)*intelligence+(evaluation.scarcity||0)*.07+(evaluation.objectiveValue||0)*.025+Math.max(0,evaluation.chemistryFit||0)*.012;
+    if(!hard&&!normal)factor+=(evaluation.rating>=88?.8:.25);
+    if(hard&&evaluation.before?.missing>0&&!gain&&upgrade<5)factor=Math.min(factor,.3);
+    if(hard&&!gain&&upgrade<2)factor=Math.min(factor,.4+Math.min(.15,(evaluation.depthGain||0)/20));
+    const cap=Math.min(affordable,average*factor*style,team.budget*(slots<=2?1:hard?.36:.48));return Math.max(0,Math.floor((cap+1e-7)/bidIncrement)*bidIncrement);
 }
 function cpuOpeningBid(team,evaluation){
     const minimum=nextLegalAuctionBid(0),maximum=cpuMaximumBid(team,evaluation);
@@ -124,18 +146,16 @@ function cpuOpeningBid(team,evaluation){
 }
 function cpuValuesTarget(evaluation){return evaluation.score>=48||evaluation.positionFit>=8;}
 function cpuChooseBid(team,current=0,opening=false,evaluation=evaluateCpuTarget(team)){
-    if(team.players.length>=maxPlayers)return null;
+    if(team.players.length>=maxPlayers||!modeCanSign(team,currentPlayer))return opening?0:null;
     if(opening)return cpuOpeningBid(team,evaluation);
     const next=nextLegalAuctionBid(current),maximum=cpuMaximumBid(team,evaluation);
     if(next>maximum||next>team.budget||!cpuValuesTarget(evaluation))return null;
-    // Willingness changes through a bidding war, rather than one mechanical fixed ceiling.
-    const pressure=next/Math.max(1,maximum),bargain=next<team.budget/Math.max(1,maxPlayers-team.players.length)*.45;
-    const caution=cpuDifficulty==="easy"?.03:cpuDifficulty==="hard"?.12:.08;
-    const opponent=team===team2?team1:team2,opponentAverage=opponent.budget/Math.max(1,maxPlayers-opponent.players.length);
-    const opponentOverpay=current>opponentAverage*1.6&&evaluation.positionFit<8;
-    const fatigue=Math.max(0,pressure-.55)*caution+(evaluation.saturation>2?.08:0)+(opponentOverpay?(cpuDifficulty==="hard"?.12:cpuDifficulty==="normal"?.06:0):0);
-    const interest=cpuVariation(currentPlayer.id+":"+current+":"+team.players.length);
-    if(!bargain&&evaluation.positionFit<10&&interest<fatigue)return null;
+    // Hard has almost no random withdrawal: marginal value and completion reserves decide.
+    const average=team.budget/Math.max(1,maxPlayers-team.players.length),opponent=team===team2?team1:team2;
+    if(cpuDifficulty==="hard"){
+        if(evaluation.before?.missing&&!evaluation.fitGain&&evaluation.upgrade<3&&next>average*.3)return null;
+        if(current>opponent.budget/Math.max(1,maxPlayers-opponent.players.length)*1.8&&!evaluation.fitGain&&next>maximum*.85)return null;
+    }else if(next>maximum*.7&&evaluation.positionFit<8&&cpuVariation(currentPlayer.id+":"+current+":"+team.players.length)<(cpuDifficulty==="easy"?.07:.03))return null;
     return next;
 }
 function showCpuThinking(){
@@ -189,7 +209,7 @@ function auctionSnapshot(){
         team2:{name:team2.name,color:team2.color,budget:team2.budget,playerIds:team2.players.map(p=>p.id)},
         remainingPlayerIds:remainingPlayers.map(p=>p.id),
         currentPlayerId:currentPlayer?.id??null,
-        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,activeDraftChallenge,
+        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,activeDraftChallenge,draftModeState:JSON.parse(JSON.stringify(draftModeState)),
         auctionHistory:auctionHistory.map(x=>({
             auction:x.auction,playerId:x.player?.id??x.playerId,teamNumber:x.teamNumber,
             teamName:x.teamName,teamColor:x.teamColor,price:x.price,
@@ -219,7 +239,7 @@ function hydrateAuctionSnapshot(snapshot){
     auctionNumber=Number(snapshot.auctionNumber||0);
     draftMode=snapshot.draftMode==="random"?"random":"auction";
     team2CpuControlled=!!snapshot.team2CpuControlled;
-    cpuDifficulty=normalizeCpuDifficulty(snapshot.cpuDifficulty);cpuPersonalitySeed=Number.isInteger(snapshot.cpuPersonalitySeed)?snapshot.cpuPersonalitySeed:1;activeDraftChallenge=snapshot.activeDraftChallenge?normalizeDraftChallenge(snapshot.activeDraftChallenge):null;cpuLastAction="";
+    cpuDifficulty=normalizeCpuDifficulty(snapshot.cpuDifficulty);cpuPersonalitySeed=Number.isInteger(snapshot.cpuPersonalitySeed)?snapshot.cpuPersonalitySeed:1;activeDraftChallenge=snapshot.activeDraftChallenge?normalizeDraftChallenge(snapshot.activeDraftChallenge):null;draftModeState=normalizeDraftModeState(snapshot.draftModeState,activeDraftChallenge);cpuLastAction="";
     auctionHistory=(snapshot.auctionHistory||[]).map(x=>{
         const player=byId(x.playerId);
         return player?{...x,player}:null;
@@ -301,7 +321,7 @@ function advanceToNextAuction(){
 
 function startGame(){
     const setup=getValidatedSetup();if(!setup)return;
-    resetDraftState(setup);draftMode="auction";startingTeam=Math.random()<.5?1:2;
+    resetDraftState(setup);draftMode="auction";startingTeam=activeDraftChallenge?.id==="daily"&&activeDraftChallenge.v===2?cpuPersonalitySeed%2+1:Math.random()<.5?1:2;
     uiState={screen:"auction",phase:"coin",turn:null};saveGame();
     // Save once, then let the actual destination document restore the coin phase.
     if(!historyOnlyNavigation()){updateRoute("auctionRoom");return;}
@@ -369,6 +389,7 @@ function startNextAuction(){
     if(remainingPlayers.length===0 || (isTeamFull(1) && isTeamFull(2))){
         showAuctionComplete(); return;
     }
+    if(activeDraftChallenge?.v===2){showModeMarket();return;}
     currentPlayer=remainingPlayers.shift();
     currentBid=0; currentBidder=null; auctionNumber++;
     updatePlayersRemaining();
@@ -408,6 +429,7 @@ function awardPlayerFree(teamNumber,forced=false){
     if(!currentPlayer||isTeamFull(teamNumber)||auctionHistory.some(entry=>entry.player.id===currentPlayer.id))return;
     recordAuctionUndoPoint(forced?"AUTO ASSIGNMENT":"FREE SIGNING");
     const winner=teamByNumber(teamNumber);
+    if(!modeCanSign(winner,currentPlayer)){retireModeTarget();return;}
     winner.players.push(currentPlayer);
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber,teamName:winner.name,teamColor:winner.color,price:0,automatic:forced});
     startingTeam=otherTeamNumber(startingTeam);
@@ -462,6 +484,7 @@ function placeBid(n){
 }
 
 function validateBid(bid,team,minimum){
+    if(!modeCanSign(team,currentPlayer)){showSiteError("This contract exceeds the mission limit.","DRAFT CHALLENGES");return false;}
     if(!Number.isFinite(bid)||bid<=minimum){showSiteError(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`,"BID REJECTED");return false;}
     if(bid%bidIncrement!==0){showSiteError(`Bids must be in intervals of $${bidIncrement}.`,"INVALID BID INTERVAL");return false;}
     if(bid>team.budget){showSiteError(`${team.name} only has $${team.budget.toLocaleString()} remaining.`,"INSUFFICIENT BUDGET");return false;}
@@ -479,6 +502,7 @@ function awardPlayer(n){
         showAuctionComplete();return;
     }
     const winner=teamByNumber(n), price=currentBid;
+    if(!modeCanSign(winner,currentPlayer)){retireModeTarget();return;}
     winner.budget-=price; winner.players.push(currentPlayer);
     auctionHistory.push({auction:auctionNumber,player:currentPlayer,teamNumber:n,teamName:winner.name,teamColor:winner.color,price});
     startingTeam=startingTeam===1?2:1;
@@ -504,3 +528,44 @@ function buyWithControl(n){
 
 function passWithControl(n){recordAuctionUndoPoint("CONTROL PASS");playSfx("pass");const broke=n===1?2:1;currentBid=0;currentBidder=broke;awardPlayer(broke);}
 
+
+// Mission-only public nomination market. Classic auctions keep their original queue flow.
+function modeMarketOrder(rule){
+    const seed=rule.id==="daily"?replayHash("market-v072:"+exportChallengeCode(rule)):cpuPersonalitySeed;
+    const ordered=seededDraftShuffle(rule.playerIds,seed),anchors=(rule.objectives||[]).filter(o=>o.type==="player"||o.type==="captain").map(o=>o.id);
+    return [...new Set([...anchors,...ordered])].map(playerById);
+}
+function showModeMarket(){
+    cancelAuctionTransition();gameOverlay.classList.add("hidden");
+    if(!remainingPlayers.length||isTeamFull(1)&&isTeamFull(2)){showAuctionComplete();return;}
+    currentPlayer=null;currentBid=0;currentBidder=null;uiState={screen:"auction",phase:"market",turn:1};saveGame();
+    const candidates=remainingPlayers.slice(0,3);auctionContent.dataset.playerId="";auctionScreen.dataset.auctionPhase="market";auctionScreen.style.setProperty("--auction-dock-height","0px");ensureAuctionHistoryControls();
+    auctionContent.innerHTML=`${modeHudMarkup()}<section class="nomination-market"><div class="market-heading"><div><span>PUBLIC MARKET</span><h2>NOMINATE YOUR NEXT TARGET</h2><p>Choose the footballer who best serves this mission. Both managers may bid.</p></div><b>${remainingPlayers.length} <span>PLAYERS LEFT</span></b></div><div class="market-candidates">${candidates.map(p=>`<button type="button" class="market-player" data-mode-nominate="${p.id}" ${![team1,team2].some(team=>team.players.length<maxPlayers&&modeCanSign(team,p))?"disabled":""}><span class="market-player-rating" aria-label="${esc(replayText("OVERALL RATING"))}">${playerOverall(p)}</span><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="160" height="180" loading="eager"><strong data-i18n-ignore>${esc(p.name)}</strong>${positionBadges(p,true)}<span class="market-nominate-label">NOMINATE <b aria-hidden="true">→</b></span></button>`).join("")}</div><div class="market-footer"><button type="button" data-mode-refresh ${!draftModeState.refreshes||remainingPlayers.length<=3?"disabled":""}>SCOUT MARKET <b>${draftModeState.refreshes}</b></button><p>Refresh moves these targets to the back of the market. It does not remove them.</p></div></section>`;
+    auctionContent.querySelectorAll("[data-mode-nominate]").forEach(button=>button.onclick=()=>selectModeNomination(Number(button.dataset.modeNominate)));
+    auctionContent.querySelector("[data-mode-refresh]").onclick=()=>{if(uiState.phase!=="market"||!draftModeState.refreshes||remainingPlayers.length<=3)return;recordAuctionUndoPoint("SCOUT MARKET");draftModeState.refreshes--;remainingPlayers.push(...remainingPlayers.splice(0,3));playSfx("select");showModeMarket();};
+    if(!candidates.some(p=>[team1,team2].some(team=>team.players.length<maxPlayers&&modeCanSign(team,p)))){
+        // Invalid contracts cannot trap an otherwise playable market.
+        for(const p of candidates)draftModeState.retired.push(p.id);remainingPlayers.splice(0,candidates.length);saveGame();scheduleAuctionTransition(showModeMarket,100);
+    }
+    prioritizeVisiblePortraits(auctionContent);SiteI18n.apply(auctionContent);updatePlayersRemaining();configureModeAuctionHeader();
+}
+function selectModeNomination(id){
+    if(!activeDraftChallenge||activeDraftChallenge.v!==2||uiState.phase!=="market"||!remainingPlayers.slice(0,3).some(p=>p.id===id))return;
+    recordAuctionUndoPoint("NOMINATE");const index=remainingPlayers.findIndex(p=>p.id===id);currentPlayer=remainingPlayers.splice(index,1)[0];currentBid=0;currentBidder=null;auctionNumber++;cpuLastAction="";uiState={screen:"auction",phase:"opening",turn:startingTeam};saveGame();updatePlayersRemaining();showPlayerReveal();
+}
+function retireModeTarget(){
+    if(!currentPlayer)return;recordAuctionUndoPoint("CONTROL PASS");draftModeState.retired.push(currentPlayer.id);currentPlayer=null;currentBid=0;currentBidder=null;showModeMarket();
+}
+function resolveModeOpening(){
+    if(!activeDraftChallenge||activeDraftChallenge.v!==2)return false;
+    const eligible=[1,2].filter(n=>!isTeamFull(n)&&modeCanSign(teamByNumber(n),currentPlayer));
+    if(eligible.length===2)return false;if(!eligible.length){retireModeTarget();return true;}
+    showExclusiveModeContract(eligible[0]);return true;
+}
+function showExclusiveModeContract(n){
+    cancelAuctionTransition();uiState={screen:"auction",phase:"contract",turn:n};saveGame();const team=teamByNumber(n),cost=team.budget>=bidIncrement?nextLegalAuctionBid(0):0;
+    renderAuctionScreen(`<div class="exclusive-contract" style="${teamVars(team)}"><span>EXCLUSIVE CONTRACT</span><h3 data-i18n-ignore>${esc(team.name)}</h3><p>The other squad cannot sign this player under the mission rules.</p><div class="winning-price">${cost?"$"+cost.toLocaleString():esc(replayText("FREE"))}</div>${n===2&&team2CpuControlled?'<p>CPU considering…</p>':'<div class="bid-actions"><button type="button" id="modeContractBuy">SIGN PLAYER</button><button type="button" id="modeContractPass">PASS</button></div>'}</div>`);
+    const buy=()=>{if(uiState.phase!=="contract"||uiState.turn!==n||!modeCanSign(team,currentPlayer))return;recordAuctionUndoPoint("CONTROL BUY");currentBid=cost;currentBidder=n;awardPlayer(n);};
+    if(n===2&&team2CpuControlled)scheduleAuctionTransition(()=>{const evaluation=evaluateCpuTarget(team);if(cpuMaximumBid(team,evaluation)>=cost||!cost||team.players.length<maxPlayers-1)buy();else retireModeTarget();},420);
+    else{document.getElementById("modeContractBuy").onclick=buy;document.getElementById("modeContractPass").onclick=retireModeTarget;}
+}

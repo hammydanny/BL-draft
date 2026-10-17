@@ -29,6 +29,8 @@ function databaseViewForScreen(screen){
 }
 function canonicalRouteUrl(route,{databaseView=null,quickDraft=null}={}){
     const url=new URL(routePath(route),appRootUrl());
+    const challenge=new URL(window.location.href).searchParams.get("challenge");
+    if(route==="menu"&&["daily","draft","all","cpu"].includes(challenge))url.searchParams.set("challenge",challenge);
     if(route==="lore"&&(databaseView==="characters"||databaseView==="chemistry"))url.searchParams.set("view",databaseView);
     if(route==="auctionSetup"&&(quickDraft===true||(quickDraft===null&&new URL(window.location.href).searchParams.get("draft")==="quick")))url.searchParams.set("draft","quick");
     return url;

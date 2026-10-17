@@ -27,3 +27,5 @@ assert.equal(coverage.missing.length,0,JSON.stringify(coverage.missing,null,2));
 console.log(`PASS localization source coverage (${coverage.catalogSize} catalog entries)`);
 
 require('./replayability-tests.js').runReplayabilityTests();
+
+require('./game-modes-tests.js').runGameModeTests();

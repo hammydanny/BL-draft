@@ -127,6 +127,8 @@ function replayabilityCoverage(covered){
         const source=read(file),values=[];
         for(const match of source.matchAll(/(?:replayFail|replayText|replayDialog|showSiteError|showConfirm)\("([^"\n]+)"/g))values.push(match[1]);
         for(const match of source.matchAll(/(?:showSiteError|showConfirm)\("[^"\n]+",\s*"([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/modeDefinition\("[^"\n]+","([^"\n]+)","([^"\n]+)"/g))values.push(match[1],match[2]);
+        for(const match of source.matchAll(/\blabel:"([A-Z][A-Z ]+)"/g))values.push(match[1]);
         if(file.endsWith('-ui.js'))for(const match of source.matchAll(/>\s*([A-Za-z][^<>${}`\n]*?)\s*</g))values.push(match[1]);
         for(const match of source.matchAll(/(?:aria-label|placeholder)="([^"${}]+)"/g))values.push(match[1]);
         for(const value of new Set(values.map(decode))){if(!intentional(value)&&!covered(value))missing.push({file,value});}
@@ -134,6 +136,7 @@ function replayabilityCoverage(covered){
     for(const value of ['CPU considering…','CPU passes','CPU raises','CPU prioritising squad need','EASY','NORMAL','HARD','PREPARING IMAGE…','SAVE IMAGE','Some portraits are not ready. Try again.','Image export is unavailable.','I can run my ass off.','CHALLENGE COMPLETE','CHALLENGE IN PROGRESS','COMPLETE SQUAD','CHALLENGE POOL']){
         if(!covered(value))missing.push({file:'replayability-dynamic-ui',value});
     }
+    for(const value of ['NOMINATE','A star-first manager who can overlook squad balance.','Balances starting roles, value and chemistry.','Plans formations, protects future contracts and rejects marginal upgrades.','Choose one of three public targets before each auction. Spend scouting refreshes carefully.','Classic auction rules. Objectives are checked at squad review.','Build a squad within the challenge rules.','EXTREME','VS CPU','CHALLENGES','COMPLETED','PERSONAL BEST','TODAY\'S MISSION','EGO SINGULARITY','WORLD CLASS DRAFT','ELITE SQUAD','STRONG FOUNDATION','INCOMPLETE EGO','REBUILD THE VISION','ELITE CONTRACTS','BONUS','MISSION FAILED','YOUR SQUAD HAS THE EDGE','CPU SQUAD HAS THE EDGE','BALANCED DRAFT','DAILY REPORT','MISSION REPORT','DAILY MARKET','MISSION MARKET','TEAM REPORT','SAVE PREVIEW','Result image preview','This is the exact image that will be saved.','NOMINATE YOUR NEXT TARGET','Choose the footballer who best serves this mission. Both managers may bid.','SCOUT MARKET','Refresh moves these targets to the back of the market. It does not remove them.','EXCLUSIVE CONTRACT','The other squad cannot sign this player under the mission rules.','SIGN PLAYER','This contract exceeds the mission limit.','Enter a budget in valid bid intervals.'])if(!covered(value))missing.push({file:'v072-mode-ui',value});
     return missing;
 }
 function scanCoverage(){

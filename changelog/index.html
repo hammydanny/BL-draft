@@ -11,27 +11,28 @@
     <meta property="og:site_name" content="Blue Lock Draft">
     <meta property="og:title" content="Blue Lock Draft — Change Log">
     <meta property="og:description" content="Blue Lock Draft release history: website improvements, stabilization and earlier game milestones.">
-    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.7.1">
-    <script src="js/site-preferences.js?v=0.7.1&auction=phase2"></script>
-    <link rel="stylesheet" href="css/fonts.css?v=0.7.1&final=phase5">
-    <link rel="stylesheet" href="css/site-theme.css?v=0.7.1">
-    <link rel="stylesheet" href="style.css?v=0.7.1&auction=phase2">
-    <link rel="stylesheet" href="css/site-header.css?v=0.7.1">
-    <link rel="stylesheet" href="css/site-information.css?v=0.7.1">
-    <link rel="stylesheet" href="css/legal.css?v=0.7.1&changelog=groups5">
-    <link rel="stylesheet" href="css/localization.css?v=0.7.1">
-    <link rel="stylesheet" href="css/mobile.css?v=0.7.1&auction=phase2&builder=phase3&database=phase4&final=phase5">
-    <link rel="stylesheet" href="css/replayability.css?v=0.7.1">
-    <link rel="stylesheet" href="css/rtl-fixes.css?v=0.7.1&rtl=final1">
-    <script defer src="js/version.js?v=0.7.1"></script>
-    <script defer src="js/i18n/messages.js?v=0.7.1&builder=phase3&database=phase4"></script>
-    <script defer src="js/i18n/quote-messages.js?v=0.7.1&quotes=final1"></script>
-    <script defer src="js/i18n/replayability-messages.js?v=0.7.1"></script>
-    <script defer src="js/localization.js?v=0.7.1&final=phase5"></script>
-    <script defer src="js/audio.js?v=0.7.1"></script>
-    <script defer src="js/ui/site-information.js?v=0.7.1"></script>
-    <script defer src="js/ui/site-directory.js?v=0.7.1&auction=phase2"></script>
-    <script defer src="js/site-runtime.js?v=0.7.1"></script>
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.7.2">
+    <script src="js/site-preferences.js?v=0.7.2&auction=phase2"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.7.2&final=phase5">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.7.2">
+    <link rel="stylesheet" href="style.css?v=0.7.2&auction=phase2">
+    <link rel="stylesheet" href="css/site-header.css?v=0.7.2">
+    <link rel="stylesheet" href="css/site-information.css?v=0.7.2">
+    <link rel="stylesheet" href="css/legal.css?v=0.7.2&changelog=groups5">
+    <link rel="stylesheet" href="css/localization.css?v=0.7.2">
+    <link rel="stylesheet" href="css/mobile.css?v=0.7.2&auction=phase2&builder=phase3&database=phase4&final=phase5">
+    <link rel="stylesheet" href="css/replayability.css?v=0.7.2">
+    <link rel="stylesheet" href="css/draft-modes.css?v=0.7.2">
+    <link rel="stylesheet" href="css/rtl-fixes.css?v=0.7.2&rtl=final1">
+    <script defer src="js/version.js?v=0.7.2"></script>
+    <script defer src="js/i18n/messages.js?v=0.7.2&builder=phase3&database=phase4"></script>
+    <script defer src="js/i18n/quote-messages.js?v=0.7.2&quotes=final1"></script>
+    <script defer src="js/i18n/replayability-messages.js?v=0.7.2"></script>
+    <script defer src="js/localization.js?v=0.7.2&final=phase5"></script>
+    <script defer src="js/audio.js?v=0.7.2"></script>
+    <script defer src="js/ui/site-information.js?v=0.7.2"></script>
+    <script defer src="js/ui/site-directory.js?v=0.7.2&auction=phase2"></script>
+    <script defer src="js/site-runtime.js?v=0.7.2"></script>
 </head>
 <body data-site-page="changelog">
     <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
@@ -39,7 +40,7 @@
     <header class="site-header" role="banner">
         <div class="site-header-inner">
             <button data-i18n-ignore class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
-                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header-hd.webp?v=0.7.1&header=phase2" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header-hd.webp?v=0.7.2&header=phase2" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
                 <span>BLUE LOCK <em>DRAFT</em></span>
             </button>
             <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
@@ -50,6 +51,13 @@
                         <button type="button" data-directory-action="new-auction" data-directory-href="auction/setup/">AUCTION DRAFT</button>
                         <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT <small>SKIP BIDDING</small></button>
                         <button type="button" data-directory-action="resume" hidden>RESUME AUCTION</button>
+                    </div>
+                </details>
+                <details class="directory-group">
+                    <summary class="directory-item" data-directory-section="challenges" aria-expanded="false">CHALLENGES <span aria-hidden="true">⌄</span></summary>
+                    <div class="directory-options">
+                        <button type="button" data-directory-action="daily-draft" data-directory-href="./?challenge=daily">DAILY EGO DRAFT</button>
+                        <button type="button" data-directory-action="draft-challenges" data-directory-href="./?challenge=draft">DRAFT CHALLENGES</button>
                     </div>
                 </details>
                 <button class="directory-item" type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder">TEAM BUILDER</button>
@@ -87,6 +95,7 @@
             <nav class="information-index changelog-index" aria-label="Changelog releases">
                 <span>RELEASE HISTORY</span>
                 <a href="changelog/#release-current">CURRENT RELEASE</a>
+                <a href="changelog/#release-071">V0.7.1</a>
                 <a href="changelog/#release-07">V0.7</a>
 
                 <details class="changelog-index-group">
@@ -145,7 +154,15 @@
             <article class="legal-document changelog-document">
                 <header class="legal-document-header"><span class="legal-document-kicker">THE PROGRAM EVOLVES</span><h2>Release notes, without the noise.</h2><p>Website and game milestones from the project's documented history.</p></header>
                 <div class="legal-document-body release-timeline">
-                    <section id="release-current" class="release-entry release-entry-current"><div class="release-heading"><h3>V0.7.1</h3><span class="release-tag">SINGLEPLAYER EXPANSION &amp; DRAFT REPLAYABILITY</span></div><p><time datetime="2026-10-17">17 October 2026</time></p><ul>
+                    <section id="release-current" class="release-entry release-entry-current"><div class="release-heading"><h3>V0.7.2</h3><span class="release-tag">GAME MODE OVERHAUL</span></div><p><time datetime="2026-10-18">18 October 2026</time></p><ul>
+                        <li>Daily Ego Draft now rotates themed missions with a public three-player market, scouting refreshes, live objectives, weighted scoring, grades and local daily bests.</li>
+                        <li>Ten curated Draft Challenges add mission briefings, required signings and captains, tactical and chemistry goals, equal contract limits, replay grades and validated rule codes.</li>
+                        <li>CPU managers now compare formation plans, meaningful upgrades, versatile roles, chemistry and public scarcity while reserving future contracts. Hard uses very small variation and walks away from poor value.</li>
+                        <li>SAVE opens the exact high-resolution PNG preview. SAVE IMAGE and PRINT are explicit preview actions; portraits and translated fonts load before the report is ready.</li>
+                        <li>The Play hub and Challenges header separate the four modes. Compact result actions replace Builder clutter, and CPU, Daily and mission reports show their own evaluations.</li>
+                        <li>New mode screens, objectives and reports support all eleven languages, touch layouts, both themes and the existing Arabic text direction without mirroring the pitch.</li>
+                    </ul></section>
+                    <section id="release-071" class="release-entry"><div class="release-heading"><h3>V0.7.1</h3><span class="release-tag">SINGLEPLAYER EXPANSION &amp; DRAFT REPLAYABILITY</span></div><p><time datetime="2026-10-17">17 October 2026</time></p><ul>
                         <li>Easy, Normal and Hard CPU opponents now weigh public player-pool scarcity, position coverage, chemistry, value and budget differently, without reading the hidden auction order.</li>
                         <li>Human and CPU bids now share one next-legal-bid calculation. The minimum increment is applied once, and the CPU builds its final lineup with the existing formation and captain solver.</li>
                         <li>Squads can be saved locally, duplicated, deleted and loaded into Team Builder. Validated squad codes preserve the exact formation, deployed players, reserves, captain, name and colour.</li>

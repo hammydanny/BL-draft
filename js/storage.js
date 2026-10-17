@@ -19,8 +19,8 @@ function isSaveAssignment(value){
 }
 function isSaveUI(value){
     return isSaveRecord(value)&&["auction","formation","auction-team-builder"].includes(value.screen)&&
-        ["coin","coin-result","opening","bidding","zero","forced","sold","next","complete","team-builder"].includes(value.phase)&&
-        (value.turn==null||value.turn===1||value.turn===2);
+        ["market","contract","coin","coin-result","opening","bidding","zero","forced","sold","next","complete","team-builder"].includes(value.phase)&&
+        (value.turn==null||value.turn===1||value.turn===2)&&(value.phase!=="contract"||value.turn===1||value.turn===2);
 }
 function isSaveTeam(value,playerKey){
     return isSaveRecord(value)&&typeof value.name==="string"&&
@@ -192,7 +192,7 @@ function saveGame(){
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
             schemaVersion:AUCTION_SAVE_SCHEMA_VERSION,
-            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,cpuBuiltRosterKey,activeDraftChallenge,
+            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,team2CpuControlled,cpuDifficulty,cpuPersonalitySeed,cpuBuiltRosterKey,activeDraftChallenge,draftModeState,
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
@@ -280,7 +280,7 @@ function restoreGame(saved){
     startingBudget=saved.startingBudget;bidIncrement=saved.bidIncrement;maxPlayers=saved.maxPlayers;startingTeam=saved.startingTeam;
     draftMode=saved.draftMode==="random"?"random":"auction";
     team2CpuControlled=!!saved.team2CpuControlled;cpuDifficulty=normalizeCpuDifficulty(saved.cpuDifficulty);cpuPersonalitySeed=Number.isInteger(saved.cpuPersonalitySeed)?saved.cpuPersonalitySeed:1;
-    activeDraftChallenge=saved.activeDraftChallenge?normalizeDraftChallenge(saved.activeDraftChallenge):null;cpuBuiltRosterKey=typeof saved.cpuBuiltRosterKey==="string"?saved.cpuBuiltRosterKey:"";
+    activeDraftChallenge=saved.activeDraftChallenge?normalizeDraftChallenge(saved.activeDraftChallenge):null;draftModeState=normalizeDraftModeState(saved.draftModeState,activeDraftChallenge);cpuBuiltRosterKey=typeof saved.cpuBuiltRosterKey==="string"?saved.cpuBuiltRosterKey:"";
     auctionNumber=saved.auctionNumber;currentBid=saved.currentBid;currentBidder=saved.currentBidder;
     currentPlayer=players.find(p=>p.id===saved.currentPlayerId)||null;
     remainingPlayers=hydratePlayers(saved.remainingPlayerIds);
@@ -303,6 +303,8 @@ function restoreGame(saved){
     resumeCurrentView();
 }
 function resumeCurrentView(){
+    if(uiState.phase==="market"&&activeDraftChallenge?.v===2){showModeMarket();return;}
+    if(uiState.phase==="contract"&&activeDraftChallenge?.v===2){showExclusiveModeContract(uiState.turn);return;}
     if(uiState.phase==="coin"){showCoinFlip();return;}
     if(uiState.phase==="coin-result"){showCoinResult();return;}
     if(uiState.screen==="formation"){auctionScreen.classList.add("hidden");formationScreen.classList.remove("hidden");renderFormationBuilder();return;}

@@ -164,7 +164,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7.1');
+    assert.equal(data.APP_VERSION,'0.7.2');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -559,12 +559,13 @@ function appContext(initialStorage={},hash='#/'){
     const window={location:{href:baseURI+'index.html'+hash,hash},addEventListener(type,fn){(events[type]??=[]).push(fn);},dispatchEvent(event){for(const fn of events[event.type]||[])fn(event);},scrollTo(){},matchMedia:()=>({matches:false,addEventListener(){}})};
     const history={state:null,replaceState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;},
         pushState(state,unused,url){this.state=state;window.location.hash=new URL(url).hash;}};
-    const context=vm.createContext({document,window,history,localStorage,URL,console,assert,navigator:{},getComputedStyle:()=>({display:'none'}),CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},
+    const context=vm.createContext({document,window,history,localStorage,URL,TextEncoder,TextDecoder,btoa,atob,console,assert,navigator:{},getComputedStyle:()=>({display:'none'}),CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},
         setTimeout(){return 1;},clearTimeout(){},requestAnimationFrame(){return 1;},cancelAnimationFrame(){}});
     const run=code=>vm.runInContext(code,context,{timeout:30000});
     for(const file of scripts){
         vm.runInContext(read(file),context,{filename:file,timeout:30000});
         if(file==='js/site-preferences.js')context.SitePreferences=window.SitePreferences;
+        if(file==='js/localization.js')context.SiteI18n=window.SiteI18n;
     }
     return {run,saved,element,labels};
 }

@@ -60,7 +60,7 @@ function setMobilePageContext(label){
     const context=document.getElementById("mobilePageContext");
     if(context)context.textContent=label;
     document.querySelectorAll(".mobile-directory [data-directory-section]").forEach(item=>{
-        const active=item.dataset.directorySection===({AUCTION:"play","TEAM BUILDER":"builder",DATABASE:"database",HOME:"home"})[label];
+        const active=item.dataset.directorySection===({AUCTION:"play","VS CPU":"play",CHALLENGES:"challenges","DAILY EGO DRAFT":"challenges","TEAM BUILDER":"builder",DATABASE:"database",HOME:"home"})[label];
         if(active)item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");
     });
 }
@@ -73,6 +73,10 @@ function configureTeamBuilderHeader(standalone){
     updateSiteDirectory(formationScreen);
 }
 function runDirectoryAction(action){
+    if(["challenges","daily-draft","draft-challenges"].includes(action)&&typeof openChallengesMenu==="function"){
+        if(action==="daily-draft")openDraftChallenges(true);else if(action==="draft-challenges")openDraftChallenges();else openChallengesMenu();return;
+    }
+
     if(document.body.dataset.sitePage){
         const button=document.querySelector(`[data-directory-action="${action}"][data-directory-href]`);
         if(button)window.location.assign(new URL(button.dataset.directoryHref,document.baseURI).href);
@@ -109,8 +113,9 @@ function initSiteDirectory(){
           <div class="mobile-primary-links">
             <button type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></button>
             <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
-            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>03</span><strong>TEAM BUILDER</strong></button>
-            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>04</span><strong>DATABASE</strong></button>
+            <button type="button" data-directory-action="challenges" data-directory-href="./?challenge=all" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>CHALLENGES</strong></button>
+            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>04</span><strong>TEAM BUILDER</strong></button>
+            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>05</span><strong>DATABASE</strong></button>
           </div>
           <div class="mobile-secondary-links">
             <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT</button>
