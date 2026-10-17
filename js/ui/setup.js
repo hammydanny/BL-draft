@@ -239,4 +239,5 @@ function syncTeamConfigColors(){
 window.addEventListener("load",syncTeamConfigColors,{once:true});
 
 ["team1Name","team2Name","team1Color","team2Color","budget","bidIncrement","maxPlayers"].forEach(id=>document.getElementById(id).addEventListener("change",saveSetupPreferences));
+document.getElementById("team2CpuControlled").addEventListener("change",saveSetupPreferences);
 

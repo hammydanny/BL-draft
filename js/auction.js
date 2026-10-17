@@ -26,13 +26,13 @@ function getValidatedSetup(){
     const requiredPlayers=setupMaxPlayers*2;
     if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers) return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
-    return {n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,selectedPlayers};
+    return {n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,selectedPlayers};
 }
 
 function resetDraftState(setup){
     cancelAuctionTransition();
     formationInitialized=false;formationAssignments={1:{},2:{}};formationByTeam={1:"4-3-3",2:"4-3-3"};formationCaptainByTeam={1:null,2:null};
-    bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;
+    bidIncrement=setup.bidIncrement;maxPlayers=setup.maxPlayers;startingBudget=setup.budget;team2CpuControlled=!!setup.team2CpuControlled;
     team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
     team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
     remainingPlayers=shufflePlayers(setup.selectedPlayers);auctionHistory=[];auctionNumber=0;
@@ -41,13 +41,141 @@ function resetDraftState(setup){
     updateAuctionUndoRedoControls?.();
 }
 
+
+const CPU_POSITION_GROUPS={
+    GK:["GK"],
+    DEF:["CB","LB","RB","LWB","RWB"],
+    MID:["CDM","CM","CAM","AM","LM","RM"],
+    ATT:["CF","ST","SS","LW","RW"]
+};
+function cpuRoleGroup(position){
+    const value=String(position||"").trim().toUpperCase();
+    return Object.keys(CPU_POSITION_GROUPS).find(group=>CPU_POSITION_GROUPS[group].includes(value))||null;
+}
+function cpuPlayerRoles(player){
+    return [...new Set([player?.primaryPosition,...(player?.positions||[])].map(cpuRoleGroup).filter(Boolean))];
+}
+function cpuRoleTargets(){
+    const goalkeeper=Math.max(0,Math.round(maxPlayers*.08));
+    const defender=Math.round(maxPlayers*.28);
+    const midfielder=Math.round(maxPlayers*.27);
+    const attacker=Math.max(1,maxPlayers-goalkeeper-defender-midfielder);
+    return {GK:goalkeeper,DEF:defender,MID:midfielder,ATT:attacker};
+}
+function cpuPositionFit(player,team){
+    const counts={GK:0,DEF:0,MID:0,ATT:0};
+    team.players.forEach(member=>{
+        const role=cpuRoleGroup(member?.primaryPosition||(member?.positions||[])[0]);
+        if(role)counts[role]++;
+    });
+    const roles=cpuPlayerRoles(player);
+    if(!roles.length)return 0;
+    const targets=cpuRoleTargets();
+    let best=-12;
+    roles.forEach(role=>{
+        const target=Math.max(1,targets[role]||1),gap=target-counts[role];
+        const fit=gap>0?2+Math.min(8,gap/target*8):-4-Math.min(8,(counts[role]-target)*2);
+        best=Math.max(best,fit);
+    });
+    if(roles.filter(role=>targets[role]>counts[role]).length>1)best+=1.25;
+    return Math.max(-12,Math.min(11,best));
+}
+function cpuChemistryFit(player,team){
+    if(!team.players.length||typeof playerChemistry!=="function")return 0;
+    const values=team.players.map(member=>Number(playerChemistry(player,member))).filter(Number.isFinite);
+    if(!values.length)return 0;
+    const average=values.reduce((sum,value)=>sum+value,0)/values.length;
+    const strongest=Math.max(...values);
+    const fit=(average-75)*.3+(strongest>=90?1.5:strongest<65?-1.5:0);
+    return Math.max(-8,Math.min(8,fit));
+}
+function evaluateCpuTarget(team=team2){
+    if(!currentPlayer)return {rating:0,positionFit:0,chemistryFit:0,score:0};
+    const rawRating=typeof playerOverall==="function"?Number(playerOverall(currentPlayer)):Number(currentPlayer.stats?.ovr);
+    const rating=Number.isFinite(rawRating)?rawRating:(Number(currentPlayer.stats?.ovr)||50);
+    const positionFit=cpuPositionFit(currentPlayer,team);
+    const chemistryFit=cpuChemistryFit(currentPlayer,team);
+    const score=Math.max(40,Math.min(100,rating+positionFit+chemistryFit));
+    return {rating,positionFit,chemistryFit,score};
+}
+function cpuMaximumBid(team,evaluation){
+    const slots=Math.max(1,maxPlayers-team.players.length);
+    const reserve=Math.max(0,(slots-1)*bidIncrement);
+    const affordable=Math.max(0,team.budget-reserve);
+    const averageBudget=team.budget/slots;
+    const playerValue=averageBudget*(.2+evaluation.score/50);
+    const purseLimit=team.budget*(slots<=2?.85:.42);
+    const limit=Math.min(affordable,playerValue,purseLimit);
+    return Math.floor((limit+1e-7)/bidIncrement)*bidIncrement;
+}
+function cpuOpeningBid(team,evaluation){
+    const step=bidIncrement;
+    if(team.budget<step)return 0;
+    const slots=Math.max(1,maxPlayers-team.players.length);
+    const averageBudget=team.budget/slots;
+    const maximum=Math.max(step,cpuMaximumBid(team,evaluation));
+    const proposed=Math.floor((averageBudget*(.1+evaluation.score/450)+1e-7)/step)*step;
+    return Math.min(maximum,Math.max(step,proposed));
+}
+function cpuValuesTarget(evaluation){
+    return evaluation.score>=68||evaluation.positionFit>=7||evaluation.chemistryFit>=6;
+}
+function cpuChooseBid(team,current=0,opening=false,evaluation=evaluateCpuTarget(team)){
+    if(opening)return cpuOpeningBid(team,evaluation);
+    if(!cpuValuesTarget(evaluation))return null;
+    const next=current+bidIncrement;
+    return next<=cpuMaximumBid(team,evaluation)?next:null;
+}
+function showCpuThinking(){
+    renderAuctionScreen(`
+      ${turnIndicator("CPU EVALUATING",team2)}
+      <div class="bid-panel" style="${teamVars(team2)}">
+        <div class="panel-code">POSITION / CHEMISTRY / BUDGET ANALYSIS</div>
+      </div>`);
+    SiteI18n.apply?.(auctionContent);
+}
+function performCpuOpeningBid(){
+    if(!team2CpuControlled||startingTeam!==2||!currentPlayer||uiState.phase!=="opening")return;
+    const evaluation=evaluateCpuTarget(team2);
+    const bid=cpuChooseBid(team2,0,true,evaluation);
+    if(!bid){displayZeroBudgetChoice(1);return;}
+    recordAuctionUndoPoint("OPENING BID");
+    currentBid=bid;currentBidder=2;
+    playSfx("bid");triggerFx("bid");
+    displayBiddingTurn(1);
+}
+function performCpuResponse(){
+    if(!team2CpuControlled||uiState.phase!=="bidding"||uiState.turn!==2||!currentPlayer)return;
+    const bid=cpuChooseBid(team2,currentBid,false);
+    if(bid===null){passBid();return;}
+    recordAuctionUndoPoint("BID");
+    const previousBidder=currentBidder;
+    currentBid=bid;currentBidder=2;
+    playSfx(previousBidder&&previousBidder!==2?"outbid":"bid");triggerFx("bid");
+    displayBiddingTurn(1);
+}
+function resolveCpuZeroBudgetChoice(){
+    if(!team2CpuControlled||uiState.phase!=="zero"||uiState.turn!==2||!currentPlayer)return;
+    const evaluation=evaluateCpuTarget(team2);
+    const bid=cpuChooseBid(team2,0,true,evaluation);
+    if(bid>=bidIncrement&&(evaluation.score>=74||evaluation.positionFit>=7||evaluation.chemistryFit>=7)){
+        currentBid=bid;currentBidder=2;
+        playSfx("bid");triggerFx("bid");
+        awardPlayer(2);
+    }else{
+        currentBid=0;currentBidder=1;
+        playSfx("pass");
+        awardPlayer(1);
+    }
+}
+
 function auctionSnapshot(){
     return {
         team1:{name:team1.name,color:team1.color,budget:team1.budget,playerIds:team1.players.map(p=>p.id)},
         team2:{name:team2.name,color:team2.color,budget:team2.budget,playerIds:team2.players.map(p=>p.id)},
         remainingPlayerIds:remainingPlayers.map(p=>p.id),
         currentPlayerId:currentPlayer?.id??null,
-        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,
+        currentBid,currentBidder,startingTeam,auctionNumber,draftMode,team2CpuControlled,
         auctionHistory:auctionHistory.map(x=>({
             auction:x.auction,playerId:x.player?.id??x.playerId,teamNumber:x.teamNumber,
             teamName:x.teamName,teamColor:x.teamColor,price:x.price,
@@ -76,6 +204,7 @@ function hydrateAuctionSnapshot(snapshot){
     startingTeam=snapshot.startingTeam??startingTeam;
     auctionNumber=Number(snapshot.auctionNumber||0);
     draftMode=snapshot.draftMode==="random"?"random":"auction";
+    team2CpuControlled=!!snapshot.team2CpuControlled;
     auctionHistory=(snapshot.auctionHistory||[]).map(x=>{
         const player=byId(x.playerId);
         return player?{...x,player}:null;
