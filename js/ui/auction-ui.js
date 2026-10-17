@@ -117,6 +117,7 @@ function displayOpeningBid(){
     const starter=teamByNumber(startingTeam);
     if(team1.budget===0&&team2.budget===0){currentBid=0;currentBidder=startingTeam;awardPlayer(startingTeam);return;}
     if(starter.budget===0){displayZeroBudgetChoice(startingTeam===1?2:1);return;}
+    if(team2CpuControlled&&startingTeam===2){showCpuThinking();scheduleAuctionTransition(performCpuOpeningBid,850);return;}
     renderAuctionScreen(`
       ${turnIndicator("OPENING BID",starter)}
       <div class="bid-panel" style="${teamVars(starter)}">
@@ -167,6 +168,7 @@ function displayBiddingTurn(teamNumber){
     const team=teamByNumber(teamNumber);
     if(isTeamFull(teamNumber)){awardPlayer(otherTeamNumber(teamNumber));return;}
     if(team.budget===0){awardPlayer(currentBidder);return;}
+    if(teamNumber===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(performCpuResponse,850);return;}
     const holder=teamByNumber(currentBidder), min=currentBid+bidIncrement;
     renderAuctionScreen(`
       ${turnIndicator("YOUR TURN // BID OR PASS",team)}
@@ -202,6 +204,7 @@ function renderSoldState(last){
 
 function displayZeroBudgetChoice(n){
     uiState={screen:"auction",phase:"zero",turn:n};saveGame();
+    if(n===2&&team2CpuControlled){showCpuThinking();scheduleAuctionTransition(resolveCpuZeroBudgetChoice,850);return;}
     const rich=teamByNumber(n), broke=teamByNumber(n===1?2:1);
     renderAuctionScreen(`
       ${turnIndicator("AUCTION CONTROL",rich)}

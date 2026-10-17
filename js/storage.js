@@ -36,7 +36,8 @@ function isSaveSnapshot(value){
         isSaveNumber(value.currentBid)&&isSaveNumber(value.auctionNumber)&&
         (value.currentPlayerId==null||Number.isInteger(value.currentPlayerId))&&
         (value.currentBidder==null||[1,2].includes(value.currentBidder))&&
-        (value.startingTeam==null||[1,2].includes(value.startingTeam));
+        (value.startingTeam==null||[1,2].includes(value.startingTeam))&&
+        (value.team2CpuControlled===undefined||typeof value.team2CpuControlled==="boolean");
 }
 
 // Old saves may contain a player removed from the playable database. Drop only
@@ -75,9 +76,11 @@ function normalizeAuctionSave(value){
     if(!isSaveRecord(value)||
        (value.schemaVersion!==undefined&&value.schemaVersion!==AUCTION_SAVE_SCHEMA_VERSION))return null;
     if(value.gameActive!==undefined&&typeof value.gameActive!=="boolean")return null;
+    if(value.team2CpuControlled!==undefined&&typeof value.team2CpuControlled!=="boolean")return null;
     if(value.setup!==undefined){
         const setup=value.setup;
         if(!isSaveRecord(setup))return null;
+        if(setup.team2CpuControlled!==undefined&&typeof setup.team2CpuControlled!=="boolean")return null;
         if(setup.selected!==undefined&&!isSavePlayerList(setup.selected))return null;
         for(const key of ["poolCategories","poolManualOverrides"]){
             if(setup[key]!==undefined&&(!isSaveRecord(setup[key])||
@@ -160,6 +163,7 @@ function saveSetupPreferences(){
             setup:{
                 team1Name:document.getElementById("team1Name").value,
                 team2Name:document.getElementById("team2Name").value,
+                team2CpuControlled:document.getElementById("team2CpuControlled").checked,
                 team1Color:document.getElementById("team1Color").value,
                 team2Color:document.getElementById("team2Color").value,
                 budget:document.getElementById("budget").value,
@@ -184,7 +188,7 @@ function saveGame(){
     try{
         localStorage.setItem(SAVE_KEY,JSON.stringify({
             schemaVersion:AUCTION_SAVE_SCHEMA_VERSION,
-            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,
+            gameActive:true,uiState,startingBudget,bidIncrement,maxPlayers,startingTeam,auctionNumber,currentBid,currentBidder,draftMode,team2CpuControlled,
             currentPlayerId:currentPlayer?.id??null,
             remainingPlayerIds:serializePlayerList(remainingPlayers),
             selectedPlayerIds:[...selectedPlayerIds],
@@ -207,6 +211,8 @@ function restoreSetup(saved){
     });
     document.getElementById("team1ColorValue").textContent=document.getElementById("team1Color").value.toUpperCase();
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
+    const cpuControl=document.getElementById("team2CpuControlled");
+    if(cpuControl&&typeof s.team2CpuControlled==="boolean")cpuControl.checked=s.team2CpuControlled;
     if(s.poolCategories&&typeof s.poolCategories==="object"){
         playerPoolCategoryState={...s.poolCategories};
         playerPoolManualOverrides={...(s.poolManualOverrides||{})};
@@ -274,6 +280,7 @@ function restoreGame(saved){
     selectedPlayerIds=new Set(saved.selectedPlayerIds||players.map(p=>p.id));
     team1={...saved.team1,players:hydratePlayers(saved.team1?.players)};
     team2={...saved.team2,players:hydratePlayers(saved.team2?.players)};
+    team2CpuControlled=!!saved.team2CpuControlled;
     auctionHistory=(saved.auctionHistory||[]).map(x=>({...x,player:players.find(p=>p.id===x.playerId)})).filter(x=>x.player);
     auctionUndoStack=Array.isArray(saved.auctionUndoStack)?saved.auctionUndoStack:[];
     auctionRedoStack=Array.isArray(saved.auctionRedoStack)?saved.auctionRedoStack:[];
