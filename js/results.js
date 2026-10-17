@@ -203,7 +203,7 @@ function openShareScreen(){
     const previousFocus=document.activeElement;
     const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
     screen.innerHTML=`<div class="share-shell">
-      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="copyShareMessage" class="copy-share-message" type="button">COPY MESSAGE</button><button id="printShareResult">SAVE / PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
+      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
       <div id="shareCard" class="share-card">
         <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>DRAFT</b></h2></div><strong>FINAL</strong></div>
         <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
@@ -223,7 +223,6 @@ function openShareScreen(){
     document.getElementById("closeShareScreen").focus();
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
-    document.getElementById("copyShareMessage").onclick=copyAuctionShareMessage;
     document.getElementById("shareTeamsAndLink").onclick=shareResultsImageAndLink;
 }
 async function copyShareSummary(){
@@ -352,19 +351,6 @@ function createAuctionShareMessage(){
     const link=appRootUrl().href;
     return "I just finished my Blue Lock Draft!\n"+team1.name+" vs. "+team2.name+"\nView the teams and build your own: "+link;
 }
-async function copyAuctionShareMessage(){
-    const button=document.getElementById("copyShareMessage");if(!button)return;
-    const original="COPY MESSAGE",message=createAuctionShareMessage();button.disabled=true;
-    try{
-        if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(message);
-        else if(!fallbackCopyShareText(message))throw new Error("Clipboard access blocked");
-        button.textContent="COPIED ✓";
-    }catch(error){
-        if(fallbackCopyShareText(message))button.textContent="COPIED ✓";
-        else showSiteError("Your browser blocked clipboard access. Select and copy the message manually.","SHARE ERROR");
-    }finally{button.disabled=false;setTimeout(()=>{if(button.isConnected)button.textContent=original;},1800);}
-}
-
 async function shareResultsImageAndLink(){
     const button=document.getElementById("shareTeamsAndLink");if(!button)return;
     const translate=value=>window.SiteI18n?.text(value)||value,message=createAuctionShareMessage();
