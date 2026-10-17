@@ -378,6 +378,13 @@ to{opacity:1;transform:none;filter:none}}
 .share-toolbar{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
 .share-toolbar>div{display:flex;gap:6px}
 .share-toolbar button{min-height:36px;padding:6px 10px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-strong);font-size:12px;font-weight:800;letter-spacing:1.4px}
+.share-toolbar button.copy-share-message{color:#d9edff;background:linear-gradient(135deg,#0b2038,#123959);border-color:#285779}
+.share-toolbar button.copy-share-message:hover{color:#fff;background:linear-gradient(135deg,#103052,#174d77);border-color:#4b94c8}
+.share-toolbar button.copy-share-message:disabled{opacity:.72;cursor:wait}
+.share-toolbar button.share-copy-link-image{color:#f2f8ff;background:linear-gradient(135deg,#092d50,#07558b);border-color:#236c9e;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.22)}
+.share-toolbar button.share-copy-link-image:hover{color:#fff;background:linear-gradient(135deg,#0b3b66,#0870b5);border-color:#56b8f5}
+.share-toolbar button.share-copy-link-image:focus-visible{outline:2px solid #79cfff;outline-offset:3px}
+.share-toolbar button.share-copy-link-image:disabled{opacity:.72;cursor:wait}
 .share-card{position:relative;padding:8px 10px;background:radial-gradient(circle at 50% 0,rgba(20,156,255,.14),transparent 34%),linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface) 72%),var(--bg-surface);border:1px solid rgba(64,172,255,.28);box-shadow:var(--shadow-strong)}
 .share-card:before{content:"";position:absolute;left:0;top:0;width:160px;height:3px;background:var(--blue)}
 .share-card-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:4px}

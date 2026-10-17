@@ -203,7 +203,7 @@ function openShareScreen(){
     const previousFocus=document.activeElement;
     const screen=document.createElement("section");screen.id="shareScreen";screen.className="share-screen";
     screen.innerHTML=`<div class="share-shell">
-      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="printShareResult">SAVE / PRINT</button></div></div>
+      <div class="share-toolbar"><button id="closeShareScreen">← RESULTS</button><div><button id="copyShareSummary">COPY SUMMARY</button><button id="copyShareMessage" class="copy-share-message" type="button">COPY MESSAGE</button><button id="printShareResult">SAVE / PRINT</button><button id="shareTeamsAndLink" class="share-copy-link-image" type="button">SHARE</button></div></div>
       <div id="shareCard" class="share-card">
         <div class="share-card-top"><div><span>BL // FINAL MATCHUP REPORT</span><h2>BLUE LOCK <b>DRAFT</b></h2></div><strong>FINAL</strong></div>
         <div class="share-versus"><span>${esc(team1.name)}</span><b>VS</b><span>${esc(team2.name)}</span></div>
@@ -223,6 +223,8 @@ function openShareScreen(){
     document.getElementById("closeShareScreen").focus();
     document.getElementById("printShareResult").onclick=()=>window.print();
     document.getElementById("copyShareSummary").onclick=copyShareSummary;
+    document.getElementById("copyShareMessage").onclick=copyAuctionShareMessage;
+    document.getElementById("shareTeamsAndLink").onclick=shareResultsImageAndLink;
 }
 async function copyShareSummary(){
     const t=value=>window.SiteI18n?.text(value)||value;
@@ -235,6 +237,152 @@ async function copyShareSummary(){
     try{await navigator.clipboard.writeText(text);const b=document.getElementById("copyShareSummary");b.textContent="COPIED ✓";setTimeout(()=>b.textContent="COPY SUMMARY",1400);}
     catch(e){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
 }
+
+function shareImageRoundRect(ctx,x,y,w,h,r,fill,stroke){
+    const radius=Math.min(r,w/2,h/2);
+    ctx.beginPath();ctx.moveTo(x+radius,y);ctx.lineTo(x+w-radius,y);ctx.arcTo(x+w,y,x+w,y+radius,radius);
+    ctx.lineTo(x+w,y+h-radius);ctx.arcTo(x+w,y+h,x+w-radius,y+h,radius);ctx.lineTo(x+radius,y+h);ctx.arcTo(x,y+h,x,y+h-radius,radius);
+    ctx.lineTo(x,y+radius);ctx.arcTo(x,y,x+radius,y,radius);ctx.closePath();
+    if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1.5;ctx.stroke();}
+}
+function shareImageText(ctx,value,x,y,maxWidth,font,color,align="left"){
+    let label=String(value??"");ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;
+    while(label.length>2&&ctx.measureText(label).width>maxWidth)label=label.slice(0,-2)+"…";
+    ctx.fillText(label,x,y);ctx.textAlign="left";
+}
+function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
+    const {x,y,width,height}=layout,accent=/^#[0-9a-f]{3,8}$/i.test(String(team.color||""))?team.color:"#25a9ff";
+    const translate=value=>window.SiteI18n?.text(value)||value,spent=startingBudget-team.budget;
+    const captain=team.players.find(player=>player.id===snap.captainId)||null;
+    const usedIds=new Set(Object.values(snap.assignment||{}).filter(Boolean).map(String));
+    shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
+    shareImageText(ctx,"SQUAD 0"+n+"  //  "+snap.formation,x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
+    shareImageText(ctx,team.name,x+28,y+78,width-178,'900 italic 39px "Barlow Condensed", sans-serif',"#f0f7ff");
+    shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
+    const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*4)/5;
+    const metrics=[
+        [translate("TEAM OVR"),String(snap.ovr||"--")],[translate("CHEMISTRY"),String(snap.chemistry?.overall||"--")],
+        [translate("CAPTAIN"),captain?.name||translate("UNASSIGNED")],[translate("DEPLOYED"),snap.deployedCount+"/"+Math.min(11,team.players.length)],
+        [translate("REMAINING"),"$"+team.budget.toLocaleString()]
+    ];
+    metrics.forEach((metric,i)=>{
+        const mx=x+24+i*(metricW+gap);shareImageRoundRect(ctx,mx,metricY,metricW,metricH,8,"#102b46","#244c6d");
+        shareImageText(ctx,metric[0],mx+10,metricY+19,metricW-20,'800 11px "Barlow Condensed", sans-serif',"#87a9c8");
+        shareImageText(ctx,metric[1],mx+10,metricY+46,metricW-20,'800 19px "Barlow Condensed", sans-serif',"#f2f8ff");
+    });
+    const pitchX=x+24,pitchY=y+181,pitchW=width-48,pitchH=360;
+    shareImageRoundRect(ctx,pitchX,pitchY,pitchW,pitchH,10,"#071d31","#2c5774");
+    ctx.strokeStyle="rgba(109,185,229,.24)";ctx.lineWidth=1.5;ctx.strokeRect(pitchX+14,pitchY+14,pitchW-28,pitchH-28);
+    ctx.beginPath();ctx.moveTo(pitchX+14,pitchY+pitchH/2);ctx.lineTo(pitchX+pitchW-14,pitchY+pitchH/2);ctx.stroke();
+    ctx.beginPath();ctx.arc(pitchX+pitchW/2,pitchY+pitchH/2,52,0,Math.PI*2);ctx.stroke();
+    ctx.strokeRect(pitchX+pitchW*.34,pitchY+14,pitchW*.32,53);ctx.strokeRect(pitchX+pitchW*.34,pitchY+pitchH-67,pitchW*.32,53);
+    ctx.strokeRect(pitchX+pitchW*.42,pitchY+14,pitchW*.16,21);ctx.strokeRect(pitchX+pitchW*.42,pitchY+pitchH-35,pitchW*.16,21);
+    (snap.chemistry?.links||[]).filter(link=>Number(link.value)>=82&&link.a?.slot&&link.b?.slot).slice(0,14).forEach(link=>{
+        ctx.strokeStyle="rgba(63,173,255,.30)";ctx.lineWidth=2;ctx.beginPath();
+        ctx.moveTo(pitchX+pitchW*(Number(link.a.slot.x)||0)/100,pitchY+pitchH*(Number(link.a.slot.y)||0)/100);
+        ctx.lineTo(pitchX+pitchW*(Number(link.b.slot.x)||0)/100,pitchY+pitchH*(Number(link.b.slot.y)||0)/100);ctx.stroke();
+    });
+    const markerW=Math.min(148,pitchW*.205),markerH=48;
+    (snap.shape||[]).forEach((slot,index)=>{
+        const player=team.players.find(item=>item.id===snap.assignment?.[index]);
+        const centerX=pitchX+pitchW*(Number(slot.x)||0)/100,centerY=pitchY+pitchH*(Number(slot.y)||0)/100;
+        const markerX=Math.max(pitchX+3,Math.min(pitchX+pitchW-markerW-3,centerX-markerW/2));
+        const markerY=Math.max(pitchY+3,Math.min(pitchY+pitchH-markerH-3,centerY-markerH/2));
+        if(!player){shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"rgba(7,31,51,.90)","rgba(101,153,186,.50)");shareImageText(ctx,slot.label+"  +",markerX+markerW/2,markerY+29,markerW-12,'800 15px "Barlow Condensed", sans-serif',"#6887a2","center");return;}
+        const isCaptain=player.id===snap.captainId;
+        shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"#0c3456",isCaptain?"#ffd36e":accent);
+        shareImageText(ctx,slot.label+(isCaptain?" · C":""),markerX+8,markerY+15,markerW-40,'800 11px "Barlow Condensed", sans-serif',isCaptain?"#ffdc83":"#70c6ff");
+        shareImageText(ctx,String(playerOverall(player)),markerX+markerW-8,markerY+15,27,'900 12px "Barlow Condensed", sans-serif',"#eaf6ff","right");
+        shareImageText(ctx,player.name,markerX+markerW/2,markerY+35,markerW-12,'800 13px "Barlow Condensed", sans-serif',"#f5faff","center");
+    });
+    shareImageText(ctx,translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString(),x+25,y+571,width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
+    shareImageText(ctx,translate("SQUAD ROSTER"),x+25,y+600,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
+    const listX=x+24,listY=y+625,rowH=29,listW=width-48;
+    shareImageText(ctx,translate("PLAYER"),listX+12,listY-5,390,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
+    shareImageText(ctx,translate("POSITION"),listX+435,listY-5,85,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
+    shareImageText(ctx,translate("ROLE"),listX+540,listY-5,75,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
+    shareImageText(ctx,"OVR",listX+685,listY-5,42,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
+    shareImageText(ctx,translate("FEE"),listX+listW-10,listY-5,73,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
+    team.players.forEach((player,index)=>{
+        const ry=listY+index*rowH;ctx.fillStyle=index%2===0?"#0c2742":"#0a2139";ctx.fillRect(listX,ry,listW,rowH-2);
+        const signing=getTeamHistory(n).find(record=>record.player?.id===player.id),fee=signing?.price??0;
+        let position="—";try{position=typeof primaryPosition==="function"?primaryPosition(player):(player.position||player.positions?.[0]||"—");}catch(e){}
+        if(Array.isArray(position))position=position[0]||"—";
+        const starter=usedIds.has(String(player.id)),status=starter?translate("STARTER"):translate("RESERVE");
+        shareImageText(ctx,player.name,listX+12,ry+19,405,'700 14px "Barlow Condensed", sans-serif',"#e3eef8");
+        shareImageText(ctx,String(position),listX+435,ry+19,85,'700 13px "Barlow Condensed", sans-serif',"#9bc0dc");
+        shareImageText(ctx,status,listX+540,ry+19,82,'800 12px "Barlow Condensed", sans-serif',starter?"#72c4ff":"#7e9bb6");
+        shareImageText(ctx,String(playerOverall(player)),listX+685,ry+19,42,'900 14px "Barlow Condensed", sans-serif',"#f2f8ff","right");
+        shareImageText(ctx,fee===0?translate("FREE"):"$"+fee.toLocaleString(),listX+listW-10,ry+19,73,'800 13px "Barlow Condensed", sans-serif',"#b3d4ec","right");
+    });
+}
+function createAuctionShareImageBlob(){
+    return new Promise((resolve,reject)=>{
+        const maxRoster=Math.max(team1.players.length,team2.players.length,1),panelY=228,panelHeight=665+maxRoster*29;
+        const canvas=document.createElement("canvas");canvas.width=1800;canvas.height=panelY+panelHeight+100;
+        const ctx=canvas.getContext("2d");if(!ctx){reject(new Error("Canvas is unavailable"));return;}
+        ctx.fillStyle="#061426";ctx.fillRect(0,0,canvas.width,canvas.height);
+        const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+        backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
+        ctx.fillStyle=backdrop;ctx.fillRect(0,0,canvas.width,canvas.height);
+        shareImageText(ctx,"BLUE LOCK DRAFT",54,75,980,'900 italic 56px "Barlow Condensed", sans-serif',"#f1f8ff");
+        shareImageText(ctx,window.SiteI18n?.text("FINAL RESULT")||"FINAL RESULT",58,120,950,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
+        shareImageText(ctx,auctionHistory.length+" "+(window.SiteI18n?.text("TRANSFERS")||"TRANSFERS")+"  //  "+(window.SiteI18n?.text("FINAL MATCHUP REPORT")||"FINAL MATCHUP REPORT"),canvas.width-54,82,1050,'800 18px "Barlow Condensed", sans-serif',"#94b5d2","right");
+        ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
+        const margin=48,gap=24,panelW=(canvas.width-margin*2-gap)/2,snap1=shareFormationSnapshot(1),snap2=shareFormationSnapshot(2);
+        drawAuctionShareImageTeam(ctx,team1,1,snap1,{x:margin,y:panelY,width:panelW,height:panelHeight});
+        drawAuctionShareImageTeam(ctx,team2,2,snap2,{x:margin+panelW+gap,y:panelY,width:panelW,height:panelHeight});
+        ctx.fillStyle="#2a81ba";ctx.fillRect(54,canvas.height-64,canvas.width-108,1);
+        shareImageText(ctx,appRootUrl().href,canvas.width/2,canvas.height-31,canvas.width-108,'700 17px "Barlow Condensed", sans-serif',"#8eb5d4","center");
+        canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Unable to encode PNG")),"image/png");
+    });
+}
+function downloadAuctionShareImage(blob){
+    const objectUrl=URL.createObjectURL(blob),anchor=document.createElement("a");
+    anchor.href=objectUrl;anchor.download="blue-lock-draft-results-"+new Date().toISOString().slice(0,10)+".png";
+    document.body.appendChild(anchor);anchor.click();anchor.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),30000);
+}
+function fallbackCopyShareText(text){
+    const field=document.createElement("textarea");field.value=text;field.setAttribute("readonly","");
+    field.style.position="fixed";field.style.opacity="0";field.style.pointerEvents="none";document.body.appendChild(field);field.select();
+    let copied=false;try{copied=document.execCommand("copy");}catch(e){}field.remove();return copied;
+}
+
+function createAuctionShareMessage(){
+    const link=appRootUrl().href;
+    return "I just finished my Blue Lock Draft!\n"+team1.name+" vs. "+team2.name+"\nView the teams and build your own: "+link;
+}
+async function copyAuctionShareMessage(){
+    const button=document.getElementById("copyShareMessage");if(!button)return;
+    const original="COPY MESSAGE",message=createAuctionShareMessage();button.disabled=true;
+    try{
+        if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(message);
+        else if(!fallbackCopyShareText(message))throw new Error("Clipboard access blocked");
+        button.textContent="COPIED ✓";
+    }catch(error){
+        if(fallbackCopyShareText(message))button.textContent="COPIED ✓";
+        else showSiteError("Your browser blocked clipboard access. Select and copy the message manually.","SHARE ERROR");
+    }finally{button.disabled=false;setTimeout(()=>{if(button.isConnected)button.textContent=original;},1800);}
+}
+
+async function shareResultsImageAndLink(){
+    const button=document.getElementById("shareTeamsAndLink");if(!button)return;
+    const translate=value=>window.SiteI18n?.text(value)||value,message=createAuctionShareMessage();
+    button.disabled=true;let imageBlob=null,copied=false,imageCopied=false;
+    try{
+        imageBlob=await createAuctionShareImageBlob();
+        if(navigator.clipboard?.write&&typeof ClipboardItem==="function"){
+            try{const item=new ClipboardItem({"image/png":imageBlob,"text/plain":new Blob([message],{type:"text/plain"})});await navigator.clipboard.write([item]);copied=true;imageCopied=true;}catch(e){}
+        }
+        if(!copied&&navigator.clipboard?.writeText){try{await navigator.clipboard.writeText(message);copied=true;}catch(e){}}
+        if(!copied)copied=fallbackCopyShareText(message);
+        if(!imageCopied)downloadAuctionShareImage(imageBlob);
+        if(copied)button.textContent=translate("COPIED ✓");
+        else showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");
+    }catch(error){showSiteError("Your browser blocked clipboard access. Use SAVE / PRINT instead.","SHARE ERROR");}
+    finally{button.disabled=false;setTimeout(()=>{if(button.isConnected)button.textContent=translate("SHARE");},1800);}
+}
+
 function restartAuction(){
     showConfirm("START A NEW AUCTION","Your current auction and saved progress will be cleared.",()=>{
         clearSavedGame();
