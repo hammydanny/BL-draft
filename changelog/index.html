@@ -11,25 +11,25 @@
     <meta property="og:site_name" content="Blue Lock Draft">
     <meta property="og:title" content="Blue Lock Draft — Change Log">
     <meta property="og:description" content="Blue Lock Draft release history: website improvements, stabilization and earlier game milestones.">
-    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.9.7">
-    <script src="js/site-preferences.js?v=0.6.9.7&auction=phase2"></script>
-    <link rel="stylesheet" href="css/fonts.css?v=0.6.9.7&final=phase5">
-    <link rel="stylesheet" href="css/site-theme.css?v=0.6.9.7">
-    <link rel="stylesheet" href="style.css?v=0.6.9.7&auction=phase2">
-    <link rel="stylesheet" href="css/site-header.css?v=0.6.9.7">
-    <link rel="stylesheet" href="css/site-information.css?v=0.6.9.7">
-    <link rel="stylesheet" href="css/legal.css?v=0.6.9.7&changelog=groups5">
-    <link rel="stylesheet" href="css/localization.css?v=0.6.9.7">
-    <link rel="stylesheet" href="css/mobile.css?v=0.6.9.7&auction=phase2&builder=phase3&database=phase4&final=phase5">
-    <link rel="stylesheet" href="css/rtl-fixes.css?v=0.6.9.7&rtl=final1">
-    <script defer src="js/version.js?v=0.6.9.7"></script>
-    <script defer src="js/i18n/messages.js?v=0.6.9.7&builder=phase3&database=phase4"></script>
-    <script defer src="js/i18n/quote-messages.js?v=0.6.9.7&quotes=final1"></script>
-    <script defer src="js/localization.js?v=0.6.9.7&final=phase5"></script>
-    <script defer src="js/audio.js?v=0.6.9.7"></script>
-    <script defer src="js/ui/site-information.js?v=0.6.9.7"></script>
-    <script defer src="js/ui/site-directory.js?v=0.6.9.7&auction=phase2"></script>
-    <script defer src="js/site-runtime.js?v=0.6.9.7"></script>
+    <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.6.7">
+    <script src="js/site-preferences.js?v=0.6.7&auction=phase2"></script>
+    <link rel="stylesheet" href="css/fonts.css?v=0.6.7&final=phase5">
+    <link rel="stylesheet" href="css/site-theme.css?v=0.6.7">
+    <link rel="stylesheet" href="style.css?v=0.6.7&auction=phase2">
+    <link rel="stylesheet" href="css/site-header.css?v=0.6.7">
+    <link rel="stylesheet" href="css/site-information.css?v=0.6.7">
+    <link rel="stylesheet" href="css/legal.css?v=0.6.7&changelog=groups5">
+    <link rel="stylesheet" href="css/localization.css?v=0.6.7">
+    <link rel="stylesheet" href="css/mobile.css?v=0.6.7&auction=phase2&builder=phase3&database=phase4&final=phase5">
+    <link rel="stylesheet" href="css/rtl-fixes.css?v=0.6.7&rtl=final1">
+    <script defer src="js/version.js?v=0.6.7"></script>
+    <script defer src="js/i18n/messages.js?v=0.6.7&builder=phase3&database=phase4"></script>
+    <script defer src="js/i18n/quote-messages.js?v=0.6.7&quotes=final1"></script>
+    <script defer src="js/localization.js?v=0.6.7&final=phase5"></script>
+    <script defer src="js/audio.js?v=0.6.7"></script>
+    <script defer src="js/ui/site-information.js?v=0.6.7"></script>
+    <script defer src="js/ui/site-directory.js?v=0.6.7&auction=phase2"></script>
+    <script defer src="js/site-runtime.js?v=0.6.7"></script>
 </head>
 <body data-site-page="changelog">
     <a class="skip-link" href="#siteMain">SKIP TO CONTENT</a>
@@ -37,7 +37,7 @@
     <header class="site-header" role="banner">
         <div class="site-header-inner">
             <button data-i18n-ignore class="site-header-brand" type="button" data-directory-action="home" data-directory-href="./" aria-label="Blue Lock Draft home">
-                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header-hd.webp?v=0.6.9.7&header=phase2" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
+                <img class="site-header-brand-logo" data-theme-logo data-logo-theme="dark" src="images/bld-logo-header-hd.webp?v=0.6.7&header=phase2" alt="BLD" width="40" height="40" loading="eager" decoding="async" fetchpriority="high">
                 <span>BLUE LOCK <em>DRAFT</em></span>
             </button>
             <nav id="siteDirectory" class="site-directory" aria-label="Primary directory">
@@ -176,8 +176,12 @@
                                 <summary><span><strong>V0.6.9 SERIES</strong><small>Database, canon data, localisation and mobile overhaul</small></span><b aria-hidden="true">⌄</b></summary>
                                 <div class="release-series-content">
                                     <section id="release-067-cpu" class="release-entry"><div class="release-heading"><h3>V0.6.7</h3><span class="release-tag">AUCTION CPU / STRATEGIC BIDDING</span></div><p><time datetime="2026-10-17">17 October 2026</time></p><ul>
-                                        <li>Added optional CPU control for Team 2 in Auction Setup.</li>
-                                        <li>CPU decisions weigh player OVR, roster position coverage, chemistry links, and remaining budget.</li>
+                                        <li>Added an optional Team 2 CPU setting in Auction Setup; leaving it off preserves the existing human-versus-human auction.</li>
+                                        <li>For each auction target, the CPU weighs player OVR and position coverage across goalkeeper, defence, midfield and attack.</li>
+                                        <li>The CPU checks chemistry with Team 2's current roster, favouring promising links and scoring down poor fits.</li>
+                                        <li>Its bid ceiling reflects remaining cash and open roster slots, reserving money for future signings instead of spending the whole budget on one character.</li>
+                                        <li>The CPU automatically submits an opening bid, responds to human bids or passes when the asking price exceeds its valuation.</li>
+                                        <li>CPU bidding follows the configured bid interval and respects existing budget, roster-capacity, save/resume and undo/redo rules.</li>
                                     </ul></section>
                                     <section id="release-0696" class="release-entry"><div class="release-heading"><h3>V0.6.9.6</h3><span class="release-tag">MOBILE OVERHAUL</span></div><p><time datetime="2026-10-15">15 October 2026</time></p><ul>
                                         <li>Compact mobile header and flat navigation drawer with shared theme, sound and language settings.</li>
