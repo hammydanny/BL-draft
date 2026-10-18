@@ -1,3 +1,4 @@
+function playerBattleBadges(player){const profile=player&&player.battleSim;if(!profile)return"";const items=[...(profile.passives||[]).map(x=>({label:"PASSIVE · "+x.name,title:x.description})),...(profile.specials||[]).map(x=>({label:"SPECIAL · "+x.name,title:x.description}))];return items.length?`<span class="player-battle-badges">${items.map(x=>`<small class="player-battle-badge" title="${esc(x.title)}">${esc(x.label)}</small>`).join("")}</span>`:"";}
 // BLUE LOCK DRAFT // FORMATION UI
 // Split from the former root script.js. Classic scripts share the same global scope.
 function waitForAutoBestPaint(){
@@ -305,7 +306,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
                     onclick="selectBenchPlayer(${p.id})" draggable="false"
                     onpointerdown="beginFormationPointerDrag(event,${p.id})" aria-pressed="${p.id===selectedFormationPlayerId}">
                     <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
-                    <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small></span>
+                    <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small>${playerBattleBadges(p)}</span>
                     <b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
