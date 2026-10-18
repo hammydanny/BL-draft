@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Haneru Shindo (ID 60).
+const PLAYER_60_REFERENCE = {"overview":"A World Cup-era forward in the current database, represented as a developing attacker whose value comes from direct movement and finishing support.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Professional/Side-B profile verified; exact deployed slot is not established by the checked evidence."}};

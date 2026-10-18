@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Shigeo Mizuki (ID 69).
+const PLAYER_69_REFERENCE = {"overview":"A Japanese forward in Side-B, first shown on a screen in chapter 311 and introduced in person in chapter 327. He identifies stamina as his strength and partners with Nagi in the Bird Cage challenge.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Japan U-20 and Side-B participation does not itself establish a demonstrated position."}};

@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Taiga Tsunzaki (ID 73).
+const PLAYER_73_REFERENCE = {"overview":"A Japanese forward in the fourth Second Selection clear team alongside Nanase, Hiiragi and Haiji. He played on Third Selection Team C2 and was a Manshine City reserve in the NEL. A distinctive weapon is not specifically demonstrated. His selection number was 100.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Selection/club membership does not establish an on-field deployment."}};

@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Junichi Wanima (ID 18).
+const PLAYER_18_REFERENCE = {"overview":"One half of the Wanima partnership, a forward who thrives on synchronized movement and familiar combination play built through years beside his brother.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Team W and later participation verified; exact position not established by the checked deployment evidence."}};
