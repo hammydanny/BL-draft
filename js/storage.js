@@ -150,8 +150,8 @@ function normalizeStandaloneSave(value){
     const selected=new Set(playerIds);
     return {...value,schemaVersion:STANDALONE_SAVE_SCHEMA_VERSION,
         playerIds,
-        formation:Object.hasOwn(FORMATIONS,value.formation)?value.formation:"4-3-3",
-        assignment:Object.fromEntries(Object.entries(value.assignment||{}).filter(([,id])=>id===null||selected.has(id))),
+        formation:knownFormation(value.formation)?value.formation:"4-3-3",
+        assignment:Object.fromEntries(Object.entries(value.assignment||{}).filter(([slot,id])=>Number(slot)<formationShape(knownFormation(value.formation)?value.formation:"4-3-3").length&&(id===null||selected.has(id)))),
         captainId:selected.has(value.captainId)?value.captainId:null};
 }
 

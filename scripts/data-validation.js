@@ -29,7 +29,7 @@ function validateReferenceData(data){
             requireField(['physical','technical','mental'].includes(weapon?.category),`${player.name}: invalid/missing weapon category`);
             requireField(!/\bflow(?:\s+state)?\b/i.test(String(weapon?.name||'')),`${player.name}: Flow is not a weapon`);
             if(weapon?.source!==undefined)requireField(sourceValid(weapon.source),`${player.name}: invalid weapon source`);
-            if(weapon?.battleSimType!==undefined)requireField(weapon.battleSimType==='TBD'&&weapon.battleSimDescription==='Placeholder: Battle Sim effect to be defined.',`${player.name}: Battle Sim must remain a placeholder`);
+            if(weapon?.battleSimType!==undefined)requireField(['TBD','Passive','Special Move','Ultimate'].includes(weapon.battleSimType)&&text(weapon.battleSimDescription)&&(weapon.battleSimType!=='TBD'||weapon.battleSimDescription==='Placeholder: Battle Sim effect to be defined.'),`${player.name}: invalid Battle Sim ability metadata`);
         }
         const nationality=player.nationality;
         if(nationality!==null&&nationality!==undefined){

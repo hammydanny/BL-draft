@@ -21,7 +21,7 @@ function loadStandaloneBuilderState(){
         if(saved){
             standaloneBuilderName=typeof saved.name==="string"?saved.name.slice(0,32):"GLOBAL XI";standaloneBuilderColor=/^#[0-9a-f]{6}$/i.test(saved.color||"")?saved.color:"#19a7ff";
             standaloneBuilderPlayerIds=new Set((saved.playerIds||[]).filter(id=>players.some(p=>p.id===id&&secretPlayerAvailable(p))));
-            formationByTeam[0]=FORMATIONS[saved.formation]?saved.formation:"4-3-3";
+            formationByTeam[0]=knownFormation(saved.formation)?saved.formation:"4-3-3";
             formationAssignments[0]=saved.assignment&&typeof saved.assignment==="object"?saved.assignment:{};
             formationCaptainByTeam[0]=saved.captainId||null;
             standaloneBuilderRole=saved.role||"ALL";

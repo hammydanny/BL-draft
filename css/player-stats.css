@@ -84,7 +84,7 @@
 .results-chemistry-panel{margin:10px 0 12px;padding:10px;border:1px solid var(--border-subtle);background:linear-gradient(135deg,color-mix(in srgb,var(--team, var(--accent)) 7%,var(--bg-surface)),var(--bg-surface))}
 .results-chemistry-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .results-chemistry-head>div span,.results-chemistry-head>div strong{display:block}
-.results-chemistry-head span{color:var(--accent-text);font:900 11px/1 "Rajdhani",sans-serif;letter-spacing:1.1px}
+.results-chemistry-head span{color:var(--accent-text);font:900 12px/1 "Rajdhani",sans-serif;letter-spacing:1.1px}
 .results-chemistry-head strong{margin-top:3px;color:var(--text-secondary);font:700 11px/1.1 "Rajdhani",sans-serif;letter-spacing:.7px}
 .results-chemistry-head>b{display:grid;place-items:center;min-width:42px;height:34px;padding:0 8px;border:1px solid currentColor;background:var(--bg-surface-raised);font:900 24px/1 "Barlow Condensed",sans-serif}
 .results-chemistry-head>b.chemical,.result-chem-link.chemical>b{color:var(--chem-chemical)}
@@ -115,13 +115,13 @@
 @media(max-width:760px){.formation-pitch-v2{--slot-position-height:14.5px}.formation-pitch-v2 .slot-position{min-width:28px;max-width:50px;padding:0 5px!important;font-size:12.5px!important}}
 @media(max-width:760px){.results-chemistry-links{grid-template-columns:1fr}.result-chem-link{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto}}
 
-.player-battle-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;min-width:0}.player-battle-badge{display:inline-block;max-width:100%;padding:3px 6px;border:1px solid var(--border-strong);color:var(--accent-text);background:var(--bg-surface-raised);font:800 10px/1.15 "Rajdhani",sans-serif;letter-spacing:.35px;white-space:normal}.player-info-abilities .player-battle-badges{margin-top:0}.player-battle-empty{color:var(--text-muted);font-size:11px;letter-spacing:.4px}.character-profile-weapon-battle-sim{margin:7px 0 0;padding:6px 8px;border-left:2px solid var(--accent-text);background:var(--bg-surface-raised);color:var(--text-secondary);font-size:12px;line-height:1.45}.character-profile-weapon-battle-sim b{display:block;margin-bottom:2px;color:var(--accent-text);font-size:10px;letter-spacing:.6px}
+.player-battle-badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;min-width:0}.player-battle-badge{display:inline-block;max-width:100%;padding:3px 6px;border:1px solid var(--border-strong);color:var(--accent-text);background:var(--bg-surface-raised);font:800 12px/1.15 "Rajdhani",sans-serif;letter-spacing:.35px;white-space:normal}.player-info-abilities .player-battle-badges{margin-top:0}.player-battle-empty{color:var(--text-muted);font-size:12px;letter-spacing:.4px}.character-profile-weapon-battle-sim{margin:7px 0 0;padding:6px 8px;border-left:2px solid var(--accent-text);background:var(--bg-surface-raised);color:var(--text-secondary);font-size:12px;line-height:1.45}.character-profile-weapon-battle-sim b{display:block;margin-bottom:2px;color:var(--accent-text);font-size:12px;letter-spacing:.6px}
 
 
 /* Battle Sim descriptions in the selected-player profile. */
 .player-battle-ability-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;min-width:0}
 .player-battle-ability-box{min-width:0;padding:8px 9px;border:1px solid var(--border-strong);border-left:3px solid var(--accent-text);background:var(--bg-surface-raised)}
-.player-battle-ability-box h3{margin:0 0 6px;color:var(--accent-text);font:900 11px/1 "Rajdhani",sans-serif;letter-spacing:.9px;text-transform:uppercase}
+.player-battle-ability-box h3{margin:0 0 6px;color:var(--accent-text);font:900 12px/1 "Rajdhani",sans-serif;letter-spacing:.9px;text-transform:uppercase}
 .player-battle-ability{min-width:0}
 .player-battle-ability+.player-battle-ability{margin-top:8px;padding-top:8px;border-top:1px solid var(--border-subtle)}
 .player-battle-ability>strong{display:block;color:var(--text-primary);font:900 14px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}

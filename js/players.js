@@ -101,17 +101,10 @@ function comparePlayerAppearance(a,b){
 function playerStats(player){return player?.stats||{ovr:70,off:70,sho:70,spd:70,def:70,pas:70,dri:70,gk:40};}
 
 function squadRatings(teamNumber){
-    const team=teamByNumber(teamNumber), assignments=formationAssignments[teamNumber]||{}, shape=FORMATIONS[formationByTeam[teamNumber]||"4-3-3"];
-    const placed=Object.entries(assignments).map(([slot,id])=>{
-      const p=team.players.find(x=>x.id===id), label=shape?.[Number(slot)]?.label;
-      return p&&label?{p,label,eff:effectiveOVR(p,label)}:null;
-    }).filter(Boolean);
+    const profile=formationContributionSnapshot(teamNumber),placed=profile.members;
     if(!placed.length)return {ovr:0,att:0,mid:0,def:0};
-    const avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/Math.max(1,a.length));
-    const attack=placed.filter(x=>["ST","CF","LW","RW","AM"].includes(x.label));
-    const midfield=placed.filter(x=>["CM","DM","AM","LM","RM","LWB","RWB"].includes(x.label));
-    const defence=placed.filter(x=>["GK","CB","LB","RB","LWB","RWB","DM"].includes(x.label));
-    return {ovr:avg(placed.map(x=>x.eff)),att:avg((attack.length?attack:placed).map(x=>x.eff)),mid:avg((midfield.length?midfield:placed).map(x=>x.eff)),def:avg((defence.length?defence:placed).map(x=>x.eff))};
+    const group=labels=>{const matches=placed.filter(x=>labels.includes(x.label));return lineupOVRProfile((matches.length?matches:placed).map(x=>x.raw)).value;};
+    return {ovr:profile.effectiveQuality,att:group(["ST","CF","LW","RW","AM"]),mid:group(["CM","DM","AM","LM","RM","LWB","RWB"]),def:group(["GK","CB","LB","RB","LWB","RWB","DM"])};
 }
 
 function playerPositions(player){return Array.isArray(player?.positions)&&player.positions.length?player.positions:["FW"];}
@@ -174,20 +167,7 @@ function playerOverall(player){
   const stated=Number(playerStats(player).ovr);
   return Number.isFinite(stated)?Math.max(1,Math.min(100,Math.round(stated))):calculatePositionOVR(player,primaryPosition(player));
 }
-function effectiveOVR(player,slotLabel){
-  if(!player||!slotLabel)return 0;
-  const overall=playerOverall(player);
-  const naturalRaw=calculatePositionOVR(player,primaryPosition(player));
-  const slotRaw=calculatePositionOVR(player,slotLabel);
-  // Component attributes only nudge the current-canon OVR for a specific role.
-  // They no longer replace the player's actual overall standing.
-  const roleDelta=Math.max(-4,Math.min(4,Math.round((slotRaw-naturalRaw)*0.35)));
-  let score=overall+roleDelta;
-  if(primaryFit(player,slotLabel)) return Math.max(1,Math.min(100,score));
-  if(canonicalFit(player,slotLabel)) return Math.max(1,Math.min(100,score-1));
-  const pg=positionGroup(primaryPosition(player)), sg=positionGroup(slotLabel);
-  return Math.max(1,Math.min(100,score-(pg===sg?4:9)));
-}
+function effectiveOVR(player,slotLabel,links=[]){return playerContribution(player,slotLabel,links).effective;}
 function positionGroup(position){
   const p=normalizePosition(position);
   if(p==="GK")return "GK";

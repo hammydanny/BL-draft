@@ -5,7 +5,7 @@ function soloDate(value){if(typeof value!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test
 function soloWithTeam(state,callback){
     const old={team:standaloneBuilderTeam,formation:formationByTeam[0],assignment:formationAssignments[0],captain:formationCaptainByTeam[0],size:maxPlayers,budget:startingBudget};
     standaloneBuilderTeam={name:replayText(state.kind==="daily"?"DAILY EGO DRAFT":puzzleMission(state.mission).title),color:state.kind==="daily"?"#e1b24f":"#dc7389",players:state.ids.map(playerById),budget:state.kind==="daily"?0:puzzleMission(state.mission).budget-puzzleSpend(state)};
-    formationByTeam[0]=state.formation||"4-3-3";formationAssignments[0]={...(state.assignment||{})};formationCaptainByTeam[0]=state.captain||null;maxPlayers=state.kind==="daily"?dailyPickRule(state.date).size:11;startingBudget=state.kind==="daily"?0:puzzleMission(state.mission).budget;
+    formationByTeam[0]=state.formation||"4-3-3";formationAssignments[0]={...(state.assignment||{})};formationCaptainByTeam[0]=state.captain||null;maxPlayers=state.kind==="daily"?dailyRuleForState(state).size:11;startingBudget=state.kind==="daily"?0:puzzleMission(state.mission).budget;
     try{return callback();}finally{standaloneBuilderTeam=old.team;if(old.formation===undefined)delete formationByTeam[0];else formationByTeam[0]=old.formation;if(old.assignment===undefined)delete formationAssignments[0];else formationAssignments[0]=old.assignment;if(old.captain===undefined)delete formationCaptainByTeam[0];else formationCaptainByTeam[0]=old.captain;maxPlayers=old.size;startingBudget=old.budget;}
 }
 function soloSnapshot(state){return soloWithTeam(state,()=>{const snap=shareFormationSnapshot(0);return {...snap,team:{...snap.team,players:[...snap.team.players]},assignment:{...snap.assignment}};});}
@@ -25,37 +25,41 @@ const DAILY_PICK_THEMES=Object.freeze([
 ]);
 function dailyPickRule(date=localDraftDate()){
     const day=soloDate(typeof date==="string"?date:localDraftDate(date)),seed=replayHash("BLD-picks-v0721:"+day),theme=DAILY_PICK_THEMES[seed%DAILY_PICK_THEMES.length];
-    const size=theme.id==="underdog"?[7,8,11][seed%3]:[7,8,11,14][Math.floor(seed/10)%4];
+    const size=theme.id==="underdog"?[7,8,9,10,11][seed%5]:[7,8,9,10,11,14][Math.floor(seed/10)%6];
     let pool=challengePool().filter(id=>theme.id!=="underdog"||playerOverall(playerById(id))<=89);
     if(theme.id==="crisis")pool=pool.filter(id=>![26,29,33,43].includes(id));
     // Keep enough distinct choices for the largest run, including both token rerolls.
     return {...theme,date:day,seed,size,tokens:2,pool};
 }
-function dailyPickNew(date=localDraftDate()){const rule=dailyPickRule(date);return {v:1,kind:"daily",date:rule.date,ids:[],seen:[],actions:[],tokens:2,formation:"4-3-3",assignment:{},captain:null,phase:"picking",attempt:0};}
-function dailyPickPlan(state,formation=null){
+function dailyRuleForState(state){const rule=dailyPickRule(state.date);return state.carry?{...rule,size:state.carry.size}:rule;}
+function dailyPickNew(date=localDraftDate()){
+    const rule=dailyPickRule(date),formation=dailyFormationNames(rule.size)[0];
+    return {v:2,kind:"daily",date:rule.date,ids:[],seen:[],actions:[],tokens:2,chosenFormation:formation,formation,assignment:{},captain:null,phase:"formation",attempt:0};
+}
+function dailyPickPlan(state,formation=state.formation){
     return soloWithTeam(state,()=>{
-        if(formation){const best=bestLineupForFormation(0,formation);return best?{formation,assignment:best.assignment}:null;}
-        const plan=cpuPlanRoster(standaloneBuilderTeam.players),shape=FORMATIONS[plan.formation],assignment={...plan.assignment},used=new Set(Object.values(assignment)),remaining=state.ids.filter(id=>!used.has(id));
-        for(const slot of FORMATION_ACTIVE_PRIORITY[plan.formation].slice(0,Math.min(11,state.ids.length)))if(!assignment[slot]&&remaining.length)assignment[slot]=remaining.shift();
-        return {formation:plan.formation,assignment};
+        const shape=formationShape(formation),slots=shape.map((_,i)=>i),assignment=cpuAssignment(standaloneBuilderTeam.players,shape,slots),used=new Set(Object.values(assignment)),remaining=state.ids.filter(id=>!used.has(id));
+        for(const slot of slots)if(!assignment[slot]&&remaining.length)assignment[slot]=remaining.shift();
+        return {formation,assignment};
     });
 }
+function dailyStartPicks(state){if(state.kind!=="daily"||state.phase!=="formation"||!dailyFormationNames(dailyRuleForState(state).size).includes(state.formation))replayFail("Invalid draft action.");state.chosenFormation=state.formation;state.phase="picking";return state;}
 function dailyPickWeight(p,rule,state){
     const s=playerStats(p),links=state.ids.map(id=>playerChemistry(p,playerById(id))),chem=links.length?Math.max(...links):72;
     switch(rule.id){case "speed":return 1+Math.max(0,s.spd-70)/4;case "core":return modeCategory(p,"blue-lock-project")?7:1;case "world":return p.nationality?.code!=="JP"&&playerOverall(p)>=90?7:1;case "chemistry":return 1+Math.max(0,chem-70)/3;case "wall":return 1+Math.max(0,s.def-65)/4;case "creative":return 1+Math.max(0,(s.pas+s.dri)/2-70)/4;case "crisis":return cpuPlayerRoles(p).includes("ATT")?4:1;default:return 1;}
 }
 function dailyPickOptions(state){
-    const rule=dailyPickRule(state.date);if(state.ids.length>=rule.size)return [];
+    const rule=dailyRuleForState(state);if(state.ids.length>=rule.size)return [];
     const available=rule.pool.map(playerById).filter(p=>!state.seen.includes(p.id)&&!state.ids.includes(p.id)),round=state.ids.length;
     // The superstar theme has one elite offer round; unused elite cards cannot return.
     const kingRound=rule.id==="king"&&round===Math.min(2,rule.size-1);
     let pool=available.filter(p=>rule.id!=="king"||kingRound||playerOverall(p)<94);
-    let h=replayHash(rule.seed+":"+round+":"+state.actions.length+":"+state.ids.join(","));const random=()=>{h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;};
+    let h=replayHash("v0722:"+rule.seed+":"+state.chosenFormation+":"+round+":"+state.actions.length+":"+state.ids.join(","));const random=()=>{h=(Math.imul(h,1664525)+1013904223)>>>0;return h/4294967296;};
     const chosen=[],take=list=>{if(!list.length)return;let total=list.reduce((sum,p)=>sum+dailyPickWeight(p,rule,state),0),value=random()*total;const p=list.find(p=>(value-=dailyPickWeight(p,rule,state))<=0)||list.at(-1);chosen.push(p);pool=pool.filter(other=>other.id!==p.id);};
     if(kingRound){take(pool.filter(p=>playerOverall(p)>=94));pool=pool.filter(p=>playerOverall(p)<94);}
-    const plan=dailyPickPlan(state),shape=FORMATIONS[plan.formation],slots=FORMATION_ACTIVE_PRIORITY[plan.formation].slice(0,Math.min(11,rule.size)),gaps=slots.filter(i=>!plan.assignment[i]||!canonicalFit(playerById(plan.assignment[i]),shape[i].label));
+    const plan=dailyPickPlan(state),shape=formationShape(plan.formation),slots=shape.map((_,i)=>i),gaps=slots.filter(i=>!plan.assignment[i]||!canonicalFit(playerById(plan.assignment[i]),shape[i].label));
     const need=gaps.sort((a,b)=>pool.filter(p=>canonicalFit(p,shape[a].label)).length-pool.filter(p=>canonicalFit(p,shape[b].label)).length)[0];
-    if(chosen.length<2&&need!==undefined)take(pool.filter(p=>canonicalFit(p,shape[need].label)));
+    if(chosen.length<2&&need!==undefined&&(random()<.72||rule.size-round<=2))take(pool.filter(p=>canonicalFit(p,shape[need].label)));
     while(chosen.length<3&&pool.length)take(pool);
     return chosen.map(p=>p.id);
 }
@@ -66,17 +70,26 @@ function dailyPickAction(state,action){
     else replayFail("Invalid draft action.");
     state.seen.push(...options);state.actions.push(action.type==="pick"?{type:"pick",id:action.id}:{type:"reroll"});
     Object.assign(state,dailyPickPlan(state));state.captain=soloChooseCaptain(state);
-    if(state.ids.length===dailyPickRule(state.date).size){state.phase="review";const best=dailyFormations(state)[0];if(best)Object.assign(state,{formation:best.formation,assignment:best.assignment});state.captain=soloChooseCaptain(state);}
+    if(state.ids.length===dailyRuleForState(state).size){state.phase="review";const best=dailyFormations(state).find(f=>f.formation===state.formation);if(best)Object.assign(state,{assignment:best.assignment});state.captain=soloChooseCaptain(state);}
     return state;
 }
 const dailyFormationCache=new Map();
-function dailyFormations(state){const key=state.ids.join(",")+":"+state.captain;if(dailyFormationCache.has(key))return dailyFormationCache.get(key).map(f=>({...f,assignment:{...f.assignment}}));const result=soloWithTeam(state,()=>Object.keys(FORMATIONS).map(formation=>{const best=bestLineupForFormation(0,formation);if(!best)return null;formationByTeam[0]=formation;formationAssignments[0]=best.assignment;const snap=shareFormationSnapshot(0);return {formation,assignment:best.assignment,fit:soloFitCount(snap),ovr:snap.ovr,chemistry:snap.chemistry.overall};}).filter(Boolean).sort((a,b)=>(b.fit*150+b.ovr+b.chemistry*.25)-(a.fit*150+a.ovr+a.chemistry*.25)).slice(0,3));if(dailyFormationCache.size>40)dailyFormationCache.clear();dailyFormationCache.set(key,result);return result.map(f=>({...f,assignment:{...f.assignment}}));}
+function dailyFormations(state){
+    const key=SQUAD_BALANCE_REVISION+":"+state.ids.join(",")+":"+state.captain+":"+dailyRuleForState(state).size;
+    if(dailyFormationCache.has(key))return dailyFormationCache.get(key).map(f=>({...f,assignment:{...f.assignment}}));
+    const result=soloWithTeam(state,()=>dailyFormationNames(dailyRuleForState(state).size).map(formation=>{
+        const best=bestLineupForFormation(0,formation);if(!best)return null;
+        formationByTeam[0]=formation;formationAssignments[0]=best.assignment;
+        const snap=shareFormationSnapshot(0);return {formation,assignment:best.assignment,fit:soloFitCount(snap),ovr:snap.ovr,chemistry:snap.chemistry.overall};
+    }).filter(Boolean));
+    if(dailyFormationCache.size>40)dailyFormationCache.clear();dailyFormationCache.set(key,result);return result.map(f=>({...f,assignment:{...f.assignment}}));
+}
 function dailyObjective(state,snap){
-    const rule=dailyPickRule(state.date),roster=state.ids.map(playerById);let current=0,target=rule.target,label="DAILY OBJECTIVE";
+    const rule=dailyRuleForState(state),roster=state.ids.map(playerById);let current=0,target=rule.target,label="DAILY OBJECTIVE";
     switch(rule.id){case "speed":current=Math.round(roster.reduce((sum,p)=>sum+playerStats(p).spd,0)/Math.max(1,roster.length));label="SPEED";break;case "core":current=roster.filter(p=>modeCategory(p,"blue-lock-project")).length;target=Math.ceil(rule.size*rule.target);label="BLUE LOCK ELEVEN";break;case "chemistry":current=snap.chemistry.overall;label="CHEMISTRY";break;case "wall":current=roster.filter(p=>playerStats(p).def>=82).length;label="DEFENCE";break;case "creative":current=roster.filter(p=>playerStats(p).pas>=85).length;label="PASSING";break;case "chaos":case "crisis":current=soloFitCount(snap);target=Math.ceil(Math.min(11,rule.size)*rule.target);label="POSITIONAL FIT";break;default:current=snap.ovr;label="TEAM OVR";}
     return {current,target,label,pass:current>=target};
 }
-function dailyPickScore(state){const snap=soloSnapshot(state),goal=dailyObjective(state,snap),slots=Math.min(11,dailyPickRule(state.date).size),fit=soloFitCount(snap),components=[{label:"TEAM QUALITY",value:Math.round(snap.ovr*52)},{label:"CHEMISTRY",value:Math.round(snap.chemistry.overall*25)},{label:"DAILY OBJECTIVE",value:Math.round(Math.min(1,goal.current/Math.max(1,goal.target))*1400)},{label:"SQUAD BALANCE",value:Math.round(fit/slots*1900)}],score=components.reduce((sum,c)=>sum+c.value,0),complete=state.ids.length===dailyPickRule(state.date).size,[grade,gradeLabel]=modeGrade(score,complete&&fit>=Math.ceil(slots*.7)&&canonicalFit(playerById(state.assignment[0]),"GK"));return {snap,goal,components,score,grade,gradeLabel,complete};}
+function dailyPickScore(state){const snap=soloSnapshot(state),goal=dailyObjective(state,snap),slots=Math.min(11,dailyRuleForState(state).size),fit=soloFitCount(snap),components=[{label:"TEAM QUALITY",value:Math.round(qualityScore(snap.positionOvr)*52)},{label:"CHEMISTRY",value:Math.round(boundedNumber((snap.contribution.chemistryImpact+3)/7,0,1)*2500)},{label:"DAILY OBJECTIVE",value:Math.round(Math.min(1,goal.current/Math.max(1,goal.target))*1400)},{label:"SQUAD BALANCE",value:Math.round(fit/slots*1900)}],score=components.reduce((sum,c)=>sum+c.value,0),complete=state.ids.length===dailyRuleForState(state).size,[grade,gradeLabel]=modeGrade(score,complete&&fit>=Math.ceil(slots*.7)&&canonicalFit(playerById(state.assignment[0]),"GK"));return {snap,goal,components,score,grade,gradeLabel,complete};}
 // Fixed mission recipes: canonical player IDs, fixed formations and visible acquisition costs.
 function puzzleMissions(){
     const full=challengePool(),budgetPool=full.filter(id=>playerOverall(playerById(id))<=89),base=[8,33,40,16,26,20,28,27,7,15,29,24,4,23,9,39,42,43,45,41,78,74,49,50,51,56,30,22,25,48];
@@ -110,7 +123,7 @@ function puzzlePlace(state,slot,id){
     if(id===null)delete next.assignment[slot];else{if(!m.pool.includes(id)||!canonicalFit(playerById(id),FORMATIONS[m.formation][slot].label))replayFail("Choose a player who fits this position.");const previous=Object.keys(next.assignment).find(i=>next.assignment[i]===id);if(previous!==undefined){if(m.locked.includes(Number(previous)))replayFail("Locked players must stay in their positions.");delete next.assignment[previous];}next.assignment[slot]=id;}
     return puzzleValidate(next);
 }
-function puzzleScore(state){return soloWithTeam(state,()=>{const m=puzzleMission(state.mission),snap=shareFormationSnapshot(0),fit=soloFitCount(snap),valid={label:"POSITIONAL FIT",current:fit,target:11,pass:fit===11&&snap.deployedCount===11},required=[valid,...m.goals.map(o=>modeObjectiveEvaluation(o,standaloneBuilderTeam,snap))],bonus=m.bonus.map(o=>modeObjectiveEvaluation(o,standaloneBuilderTeam,snap)),complete=required.every(g=>g.pass),hits=bonus.filter(g=>g.pass).length,efficiency=(m.budget-puzzleSpend(state))/Math.max(1,m.budget),score=Math.round(snap.ovr*45+snap.chemistry.overall*25+fit/11*1500+hits/Math.max(1,bonus.length)*1500+efficiency*500),grades=["D","C","B","A","S","S+"],grade=!complete?"D":hits===0?"C":hits<bonus.length?"B":score>=9900?"S+":score>=9200?"S":"A";return {snap,required,bonus,complete,score,grade,gradeLabel:complete?"CHALLENGE COMPLETE":"MISSION FAILED",components:[{label:"TEAM QUALITY",value:Math.round(snap.ovr*45)},{label:"CHEMISTRY",value:Math.round(snap.chemistry.overall*25)},{label:"BONUS",value:hits}]};});}
+function puzzleScore(state){return soloWithTeam(state,()=>{const m=puzzleMission(state.mission),snap=shareFormationSnapshot(0),fit=soloFitCount(snap),valid={label:"POSITIONAL FIT",current:fit,target:11,pass:fit===11&&snap.deployedCount===11},required=[valid,...m.goals.map(o=>modeObjectiveEvaluation(o,standaloneBuilderTeam,snap))],bonus=m.bonus.map(o=>modeObjectiveEvaluation(o,standaloneBuilderTeam,snap)),complete=required.every(g=>g.pass),hits=bonus.filter(g=>g.pass).length,efficiency=(m.budget-puzzleSpend(state))/Math.max(1,m.budget),score=Math.round(qualityScore(snap.positionOvr)*45+boundedNumber((snap.contribution.chemistryImpact+3)/7,0,1)*2500+fit/11*1500+hits/Math.max(1,bonus.length)*1500+efficiency*500),grades=["D","C","B","A","S","S+"],grade=!complete?"D":hits===0?"C":hits<bonus.length?"B":score>=8600?"S+":score>=7900?"S":"A";return {snap,required,bonus,complete,score,grade,gradeLabel:complete?"CHALLENGE COMPLETE":"MISSION FAILED",components:[{label:"TEAM QUALITY",value:Math.round(qualityScore(snap.positionOvr)*45)},{label:"CHEMISTRY",value:Math.round(boundedNumber((snap.contribution.chemistryImpact+3)/7,0,1)*2500)},{label:"BONUS",value:hits}]};});}
 function soloSquad(state){const snap=soloSnapshot(state);return normalizeReplaySquad({v:1,name:snap.team.name,color:snap.team.color,playerIds:[...state.ids],formation:state.formation,assignment:{...state.assignment},captainId:state.captain});}
 function soloRecords(){try{const raw=JSON.parse(localStorage.getItem(SOLO_RECORD_KEY)||"{}");if(!replayRecord(raw))return {};const out={};for(const [key,item]of Object.entries(raw).slice(-60)){try{if(!/^(?:daily:\d{4}-\d{2}-\d{2}|puzzle:[a-z-]+)$/.test(key)||!replayRecord(item)||!Number.isInteger(item.attempts)||item.attempts<1||item.attempts>100000||!Number.isInteger(item.score)||item.score<0||item.score>12000||!["S+","S","A","B","C","D"].includes(item.grade))continue;out[key]={...item,complete:item.complete===true,squad:item.squad?normalizeReplaySquad(item.squad):null};}catch{}}return out;}catch{return {};}}
 function soloRecordKey(state){return state.kind==="daily"?"daily:"+state.date:"puzzle:"+state.mission;}
@@ -123,14 +136,32 @@ function soloRecordResult(state){
     soloWriteRecords(all);return result;
 }
 
+function normalizeDailyCarry(value,date){
+    const rule=dailyPickRule(date);if(!replayRecord(value)||![7,8,11,14].includes(value.size)||!Array.isArray(value.ids)||value.ids.length>value.size||new Set(value.ids).size!==value.ids.length||!value.ids.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!Array.isArray(value.seen)||value.seen.length>48||!value.seen.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!value.ids.every(id=>value.seen.includes(id))||!Number.isInteger(value.tokens)||value.tokens<0||value.tokens>2||value.captainId!=null&&(!Number.isInteger(value.captainId)||!value.ids.includes(value.captainId)))replayFail("Saved draft is invalid or outdated.");
+    return {size:value.size,ids:[...value.ids],seen:[...new Set(value.seen)],tokens:value.tokens,captainId:value.captainId??null};
+}
+function migrateDailyRun(value){
+    const date=soloDate(value.date);if(!Array.isArray(value.actions)||value.actions.length>16||!value.actions.every(a=>replayRecord(a)&&(a.type==="pick"&&Number.isInteger(a.id)||a.type==="reroll")))replayFail("Saved draft is invalid or outdated.");
+    const ids=value.actions.filter(a=>a.type==="pick").map(a=>a.id),tokens=2-value.actions.filter(a=>a.type==="reroll").length,seed=dailyPickRule(date).seed,theme=DAILY_PICK_THEMES[seed%10],size=theme.id==="underdog"?[7,8,11][seed%3]:[7,8,11,14][Math.floor(seed/10)%4];
+    if(JSON.stringify(ids)!==JSON.stringify(value.ids)||tokens!==value.tokens||!knownFormation(value.formation))replayFail("Saved draft is invalid or outdated.");
+    const state=dailyPickNew(date);state.carry=normalizeDailyCarry({size,ids,seen:value.seen,tokens,captainId:value.captain},date);state.ids=[...ids];state.seen=[...state.carry.seen];state.tokens=tokens;state.formation=dailyFormationNames(size)[0];state.chosenFormation=state.formation;Object.assign(state,dailyPickPlan(state));state.captain=state.carry.captainId;state.captain=soloChooseCaptain(state);state.phase=ids.length===size?(value.phase==="result"?"result":"review"):ids.length?"picking":"formation";state.attempt=Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1;return state;
+}
 function normalizeSoloState(value){
-    if(!replayRecord(value)||value.v!==1)replayFail("Saved draft is invalid or outdated.");
+    if(!replayRecord(value)||![1,2].includes(value.v))replayFail("Saved draft is invalid or outdated.");
     if(value.kind==="daily"){
-        let clean=dailyPickNew(soloDate(value.date));if(!Array.isArray(value.actions)||value.actions.length>16)replayFail("Saved draft is invalid or outdated.");for(const action of value.actions){if(!replayRecord(action))replayFail("Invalid draft action.");dailyPickAction(clean,action);}
-        if(clean.phase==="review"){const forms=dailyFormations(clean);if(typeof value.formation!=="string"||!forms.some(f=>f.formation===value.formation))replayFail("This squad uses an unknown formation.");Object.assign(clean,dailyPickPlan(clean,value.formation));clean.captain=soloChooseCaptain(clean);if(value.phase==="result")clean.phase="result";}
+        if(value.v===1)return migrateDailyRun(value);
+        let clean=dailyPickNew(soloDate(value.date));
+        if(value.carry){clean.carry=normalizeDailyCarry(value.carry,value.date);clean.ids=[...clean.carry.ids];clean.seen=[...clean.carry.seen];clean.tokens=clean.carry.tokens;}
+        if(!dailyFormationNames(dailyRuleForState(clean).size).includes(value.chosenFormation))replayFail("This squad uses an unknown formation.");
+        clean.formation=value.chosenFormation;clean.chosenFormation=value.chosenFormation;Object.assign(clean,dailyPickPlan(clean));clean.captain=clean.carry?.captainId||null;clean.captain=soloChooseCaptain(clean);
+        if(clean.ids.length===dailyRuleForState(clean).size)clean.phase="review";else if(value.phase!=="formation")dailyStartPicks(clean);
+        if(!Array.isArray(value.actions)||value.actions.length>16)replayFail("Saved draft is invalid or outdated.");for(const action of value.actions){if(!replayRecord(action))replayFail("Invalid draft action.");dailyPickAction(clean,action);}
+        if(clean.phase==="review"){
+            const form=dailyFormations(clean).find(f=>f.formation===value.formation);if(!form)replayFail("This squad uses an unknown formation.");Object.assign(clean,{formation:form.formation,assignment:form.assignment});clean.captain=soloChooseCaptain(clean);if(value.phase==="result")clean.phase="result";
+        }
         clean.attempt=Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1;return clean;
     }
-    if(value.kind==="puzzle"){const m=puzzleMission(value.mission);return puzzleValidate({v:1,kind:"puzzle",mission:m.id,formation:value.formation,assignment:value.assignment,captain:value.captain,ids:[],phase:value.phase==="result"?"result":"building",attempt:Number.isInteger(value.attempt)&&value.attempt>0?value.attempt:1});}
+    if(value.kind==="puzzle"){const m=puzzleMission(value.mission);return puzzleValidate({v:1,kind:"puzzle",mission:m.id,formation:value.formation,assignment:value.assignment,captain:value.captain,ids:[],phase:value.phase==="result"?"result":"building",attempt:Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1});}
     replayFail("Saved draft is invalid or outdated.");
 }
 function soloLoad(){try{const raw=localStorage.getItem(SOLO_SAVE_KEY);return raw?normalizeSoloState(JSON.parse(raw)):null;}catch{return null;}}

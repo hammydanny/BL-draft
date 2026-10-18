@@ -7,6 +7,7 @@ const vm=require('node:vm');
 const assert=require('node:assert/strict');
 const {spawnSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..');
+const {loadPlayerModules}=require('../scripts/test-player-modules.js');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
 let failures=0;
 function check(name,fn){
@@ -90,7 +91,7 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     for(const [index,src] of scripts.entries()){
         assert(!/^(?:https?:)?\/\//.test(src),'Unexpected remote application script');
         assert(fs.existsSync(path.join(root,src.split('?')[0])),`Missing ${src}`);
-        assert(src==='js/site-preferences.js'||/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
+        assert(['js/site-preferences.js','js/players-loader.js'].includes(src)||/\bdefer\b/i.test(scriptTags[index]),`${src} must be deferred`);
         assert(!/\btype\s*=\s*["']module["']/i.test(scriptTags[index]),'Keep classic scripts');
     }
     assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
@@ -109,7 +110,8 @@ const baseURI='https://example.test/BL-draft/';
 const sandbox=vm.createContext({URL,document:{baseURI,addEventListener(){}},window:{addEventListener(){}}});
 let data;
 check('Data modules initialize in classic shared scope',()=>{
-    for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/formations.js','js/storage.js']){
+    loadPlayerModules(sandbox);
+    for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/squad-balance.js','js/formations.js','js/storage.js']){
         vm.runInContext(read(file),sandbox,{filename:file});
     }
     data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_ALIASES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
@@ -164,7 +166,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7.2.1');
+    assert.equal(data.APP_VERSION,'0.7.2.2');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -302,12 +304,13 @@ check('Every section page has ordered scripts, versioned styles, valid assets an
     const context=vm.createContext({window:{addEventListener(){}},URL});
     vm.runInContext(read('js/router.js'),context);
     for(const page of Object.values(vm.runInContext('APP_ROUTE_PATHS',context))){
+        if(page.startsWith("battle-sim/"))continue; // Preserved simulator documents redirect to the disabled information page.
         const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
         const tags=[...content.matchAll(/<script\b([^>]*)>/gi)].map(match=>match[1]);
         const refs=tags.map(tag=>/\bsrc=["']([^"']+)["']/i.exec(tag)?.[1]).filter(Boolean);
         assert.deepEqual(refs.map(src=>src.split('?')[0]),scripts,`${page}: script order`);
         refs.forEach((src,index)=>{
-            assert(src.startsWith('js/site-preferences.js?')||tags[index].includes('defer'),`${page}: non-deferred application script`);
+            assert(src.startsWith('js/site-preferences.js?')||src.startsWith('js/players-loader.js?')||tags[index].includes('defer'),`${page}: non-deferred application script`);
             assert.equal(new URL(src,baseURI).searchParams.get('v'),data.APP_VERSION,`${page}: script cache version`);
             assert(fs.existsSync(path.join(root,src.split('?')[0])),`${page}: missing ${src}`);
         });
@@ -336,7 +339,7 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
@@ -379,7 +382,7 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html']);
     const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
@@ -445,7 +448,7 @@ check('Worker is scope-safe, version-sensitive and cannot pin an old app shell',
 check('Readability/builder UX, independent transparent favicon and Quick Draft contracts',()=>{
     const ui=read('js/ui/formation-ui.js'),standalone=read('js/standalone-builder.js'),quick=read('js/ui/quick-draft.js'),preferences=read('js/site-preferences.js');
     const pitch=ui.slice(ui.indexOf('${slots.map'),ui.indexOf('${createPlayerInfoSidebar'));
-    assert(pitch.includes('effectiveOVR(p,s.label)'),'Pitch must display current adjusted OVR');
+    assert(pitch.includes('contributions.get(p.id).effective'),'Pitch must display the shared contextual contribution');
     assert(!pitch.includes('positionBadges('),'No player position lists beneath pitch portraits');
     assert(ui.includes('playerStatsRadar(player,"sidebar")'),'Builder profile keeps the shared attribute radar');
     assert(!ui.includes('<span>PLAYER</span>'),'Redundant profile label removed');
@@ -502,12 +505,12 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
         assert(fs.existsSync(path.join(root,route,'index.html')),`Missing canonical ${route}`);
     }
     const legacy=vm.runInContext('LEGACY_PAGE_ROUTES',context);
-    for(const page of Object.keys(legacy))assert(fs.existsSync(path.join(root,page)),`Missing legacy ${page}`);
+    for(const page of Object.keys(legacy))assert(fs.existsSync(path.join(root,page))||page==="battle-sim.html"&&fs.existsSync(path.join(root,"battle-sim-disabled/index.html")),`Missing legacy ${page}`);
     const preload=content=>[...content.matchAll(/<link rel="preload"[^>]+>/g)].map(match=>match[0]);
     for(const page of walk(root).filter(file=>file.endsWith('.html'))){
         const content=fs.readFileSync(page,'utf8');
         const relative=path.relative(root,page);
-        if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
@@ -563,6 +566,7 @@ function appContext(initialStorage={},hash='#/'){
         setTimeout(){return 1;},clearTimeout(){},requestAnimationFrame(){return 1;},cancelAnimationFrame(){}});
     const run=code=>vm.runInContext(code,context,{timeout:30000});
     for(const file of scripts){
+        if(file==='js/players-loader.js'){loadPlayerModules(context);continue;}
         vm.runInContext(read(file),context,{filename:file,timeout:30000});
         if(file==='js/site-preferences.js')context.SitePreferences=window.SitePreferences;
         if(file==='js/localization.js')context.SiteI18n=window.SiteI18n;
@@ -830,8 +834,7 @@ check('Auto Best cached scoring equals live scoring and uses conservative OVR we
             assert.deepEqual(evaluateFormationCandidate(0,name,assignment,search),evaluateFormationCandidate(0,name,assignment));
             const m=formationLineupMetrics(0,name,assignment);
             if(m.chemistry){
-                const expected=m.teamOvrRaw*.54+m.chemistry*.24+m.fitScore*.14+m.lineupFloor*.05+m.chemistryFloor*.03
-                    -m.offPosition*.38-m.weakLinks*.22+Math.min(m.eliteLinks,4)*.08;
+                const expected=m.teamOvrRaw*.86+m.fitScore*.10+m.lineupFloor*.04-m.offPosition*.9;
                 assert.equal(m.composite,expected);
             }
         }
@@ -925,7 +928,7 @@ check('Data validation rejects malformed players, reversed pairs, missing labels
 });
 check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
     const lore=read('js/lore.js'),css=read('css/character-lore.css');
-    assert(!lore.includes('BATTLE SIM')&&!lore.includes('Placeholder:'),'No future-mode placeholder UI');
+    assert(read('js/router.js').includes('battle-sim-disabled/'),'Existing future-mode descriptions must not enable Battle Sim');
     for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
     for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');

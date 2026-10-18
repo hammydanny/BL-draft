@@ -8,9 +8,9 @@ function runSoloDraftTests(){
     const before={team:standaloneBuilderTeam,formation:formationByTeam[0],assignment:formationAssignments[0],captain:formationCaptainByTeam[0],size:maxPlayers,budget:startingBudget};
     localStorage.setItem(SAVE_KEY,'auction sentinel');localStorage.setItem(STANDALONE_SAVE_KEY,'builder sentinel');
     const themes=new Set(),sizes=new Set();for(let day=0;day<180;day++){const early=new Date(2026,0,1+day,0,1),late=new Date(2026,0,1+day,23,59),a=dailyPickRule(early),b=dailyPickRule(late);assert.deepEqual(a,b);themes.add(a.id);sizes.add(a.size);assert.equal(new Set(a.pool).size,a.pool.length);assert(a.pool.every(id=>playerById(id)&&!playerById(id).secretCharacter));if(a.id==='underdog')assert(a.pool.every(id=>playerOverall(playerById(id))<=89));if(a.id==='crisis')assert(!a.pool.includes(26));}
-    assert.equal(themes.size,10);assert.deepEqual([...sizes].sort((a,b)=>a-b),[7,8,11,14]);assert.throws(()=>dailyPickRule('2026-02-30'));
+    assert.equal(themes.size,10);assert.deepEqual([...sizes].sort((a,b)=>a-b),[7,8,9,10,11,14]);assert.throws(()=>dailyPickRule('2026-02-30'));
     const completed=[];for(let day=0;day<30;day++){
-        const date=localDraftDate(new Date(2026,9,1+day)),a=dailyPickNew(date),b=dailyPickNew(date);assert.deepEqual(dailyPickOptions(a),dailyPickOptions(b));soloBeginAttempt(a);soloState=a;assert(soloSave());assert.deepEqual(soloLoad().ids,a.ids);assert.equal(soloRecords()[soloRecordKey(a)].attempts,1);
+        const date=localDraftDate(new Date(2026,9,1+day)),a=dailyPickNew(date),b=dailyPickNew(date);assert.deepEqual(dailyPickOptions(a),dailyPickOptions(b));dailyStartPicks(a);dailyStartPicks(b);soloBeginAttempt(a);soloState=a;assert(soloSave());assert.deepEqual(soloLoad().ids,a.ids);assert.equal(soloRecords()[soloRecordKey(a)].attempts,1);
         for(let r=0;r<2;r++){const previous=dailyPickOptions(a);dailyPickAction(a,{type:'reroll'});assert(dailyPickOptions(a).every(id=>!previous.includes(id)));}
         assert.equal(a.tokens,0);assert.throws(()=>dailyPickAction(a,{type:'reroll'}));assert.throws(()=>dailyPickAction(a,{type:'pick',id:80}));
         while(a.phase==='picking'){
@@ -18,7 +18,7 @@ function runSoloDraftTests(){
             const pick=choices[day%3];dailyPickAction(a,{type:'pick',id:pick});assert.throws(()=>dailyPickAction(a,{type:'pick',id:pick}));
             if(a.phase==='picking'&&a.ids.length===3){const reload=normalizeSoloState(JSON.parse(JSON.stringify(a)));assert.deepEqual(dailyPickOptions(reload),dailyPickOptions(a));assert.deepEqual(reload.ids,a.ids);}
         }
-        assert.equal(a.ids.length,dailyPickRule(date).size);assert.equal(new Set(a.ids).size,a.ids.length);assert.equal(a.phase,'review');const forms=dailyFormations(a);assert.equal(forms.length,3);assert(forms.every(f=>Object.hasOwn(FORMATIONS,f.formation)));assert(forms.some(f=>f.formation===a.formation));assert(Object.values(a.assignment).includes(a.captain));
+        assert.equal(a.ids.length,dailyPickRule(date).size);assert.equal(new Set(a.ids).size,a.ids.length);assert.equal(a.phase,'review');const forms=dailyFormations(a);assert.equal(forms.length,3);assert(forms.every(f=>knownFormation(f.formation)));assert(forms.some(f=>f.formation===a.formation));assert(Object.values(a.assignment).includes(a.captain));
         const frozen=JSON.stringify(a),restored=normalizeSoloState(JSON.parse(frozen));assert.deepEqual(restored.assignment,a.assignment);const score=dailyPickScore(a);assert.equal(score.components.length,4);assert.equal(score.score,score.components.reduce((sum,c)=>sum+c.value,0));assert(score.score>=0&&score.score<=11000);assert.equal(score.snap.reserves.length,Math.max(0,a.ids.length-11));assert(Number.isFinite(score.snap.chemistry.overall));
         a.phase='result';soloRecordResult(a);soloState=a;soloSave();assert.equal(soloLoad().phase,'result');const best=soloRecords()[soloRecordKey(a)];assert.equal(best.score,score.score);assert.deepEqual(best.squad.assignment,a.assignment);soloBeginAttempt(dailyPickNew(date));assert.equal(soloRecords()[soloRecordKey(a)].attempts,2);completed.push(a);
         assert.throws(()=>normalizeSoloState({...a,formation:'8-8-8'}));assert.throws(()=>normalizeSoloState({...a,actions:[{type:'pick',id:80}]}));assert.throws(()=>normalizeSoloState({...a,v:99}));
@@ -60,6 +60,6 @@ function runSoloDraftTests(){
         for(const args of images){assert.equal(args.length,9);assert.equal(args[2],0);assert(Math.abs(args[3]/args[4]-args[7]/args[8])<.00001,'Portrait must preserve its aspect ratio');}
     }
  `);
- console.log('PASS v0.7.2.1: 30 complete Daily sessions, 180 stable dates, 10 themes/4 sizes, rerolls/refresh/records, 10 solvable locked-core puzzles, budgets/roles/grades, save isolation and reserve-only image reports');
+ console.log('PASS v0.7.2.1: 30 complete Daily sessions, 180 stable dates, 10 themes/6 sizes, rerolls/refresh/records, 10 solvable locked-core puzzles, budgets/roles/grades, save isolation and reserve-only image reports');
 }
 module.exports={runSoloDraftTests};if(require.main===module)runSoloDraftTests();

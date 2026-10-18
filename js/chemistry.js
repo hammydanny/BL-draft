@@ -296,10 +296,10 @@ const FORMATION_CHEMISTRY_EDGES = {
 };
 
 function formationChemistryForAssignment(teamNumber,ass,formation=formationByTeam[teamNumber]||"4-3-3",activeSlotsInput=null){
-    const team=teamByNumber(teamNumber);
-    const shape=FORMATIONS[formation];
-    const edgePairs=FORMATION_CHEMISTRY_EDGES[formation]||[];
-    const activeSlots=activeSlotsInput||new Set(shape.map((_,i)=>i));
+    return tacticalChemistrySnapshot(teamByNumber(teamNumber).players,ass,formationShape(formation),formationEdgePairs(formation),activeSlotsInput);
+}
+function tacticalChemistrySnapshot(roster,ass,shape,edgePairs,activeSlotsInput=null){
+    const team={players:roster},activeSlots=activeSlotsInput||new Set(shape.map((_,i)=>i));
     const eligibleEdges=edgePairs.filter(([a,b])=>activeSlots.has(a)&&activeSlots.has(b));
 
     const links=eligibleEdges.map(([ai,bi])=>{
@@ -347,7 +347,7 @@ function formationChemistry(teamNumber){
     const formation=formationByTeam[teamNumber]||"4-3-3";
     const activeSlots=typeof activeFormationSlotIndices==="function"
       ?activeFormationSlotIndices(teamNumber)
-      :new Set((FORMATIONS[formation]||[]).map((_,i)=>i));
+      :new Set((formationShape(formation)||[]).map((_,i)=>i));
     return formationChemistryForAssignment(teamNumber,formationAssignments[teamNumber]||{},formation,activeSlots);
 }
 

@@ -141,7 +141,7 @@ function replayabilityCoverage(covered){
 }
 function soloDraftCoverage(covered){
     const missing=[];
-    for(const file of ['js/solo-draft.js','js/ui/solo-draft-ui.js']){
+    for(const file of ['js/solo-draft.js','js/ui/solo-draft-ui.js','js/squad-balance.js']){
         const source=read(file),values=[];
         for(const match of source.matchAll(/(?:replayFail|replayText|replayDialog|showSiteError|showConfirm)\("([^"\n]+)"/g))values.push(match[1]);
         for(const match of source.matchAll(/(?:showSiteError|showConfirm)\("[^"\n]+",\s*"([^"\n]+)"/g))values.push(match[1]);
@@ -154,9 +154,13 @@ function soloDraftCoverage(covered){
     }
     return missing;
 }
+function balanceCoverage(covered){
+    const values=["BASE QUALITY","EFFECTIVE OVR","POSITION IMPACT","CHEMISTRY IMPACT","PROJECTED LINEUP","ACTIVE LINEUP","DAILY FORMATIONS","Move impact: effective OVR {ovr}, chemistry {chem}.","Team OVR {current} → {next}. Chemistry {chem}."];
+    return values.filter(value=>!covered(value)).map(value=>({file:"v0722-feedback",value}));
+}
 function scanCoverage(){
     const entries=catalog(),covered=resolver(entries);
-    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered)];
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered),...balanceCoverage(covered)];
     return {missing,catalogSize:Object.keys(entries).length};
 }
 module.exports={scanCoverage,sourceStrings,resolver,quoteCoverage};

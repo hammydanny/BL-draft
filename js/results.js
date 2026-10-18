@@ -24,19 +24,16 @@ function rosterChemistrySnapshot(team){
     const known=links.filter(link=>link.known).map(link=>link.score);
     return {overall:chemistryNetworkScore(links.map(link=>link.score),known,links.length),links,source:"ROSTER NETWORK"};
 }
+function resultSquadContribution(team,n){
+    const assignment=formationAssignments[n]||{},deployed=Object.values(assignment).filter(Boolean).length;
+    if(deployed)return {...formationContributionSnapshot(n),projected:false,deployed};
+    const plan=cpuPlanRoster(team.players),shape=formationShape(plan.formation),chemistry=tacticalChemistrySnapshot(team.players,plan.assignment,shape,formationEdgePairs(plan.formation),new Set(shape.map((_,i)=>i)));
+    return {...lineupContributionSnapshot(team.players,plan.assignment,shape,chemistry),chemistry,projected:true,deployed:plan.fitCount};
+}
 function resultChemistrySnapshot(team,n){
-    const assignment=formationAssignments?.[n]||{};
-    const deployed=Object.values(assignment).filter(Boolean).length;
-    if(deployed>=2){
-        const formation=formationByTeam[n]||"4-3-3";
-        const active=activeFormationSlotIndices(n);
-        const chemistry=formationChemistryForAssignment(n,assignment,formation,active);
-        const links=[...chemistry.links].sort((x,y)=>y.value-x.value).map(link=>({
-            a:link.a.p,b:link.b.p,score:link.value,label:link.relation.label,reason:link.relation.reason,known:true
-        }));
-        return {overall:chemistry.overall,links,source:`${formation} ACTIVE LINKS`};
-    }
-    return rosterChemistrySnapshot(team);
+    const profile=resultSquadContribution(team,n),chem=profile.chemistry;
+    const links=[...chem.links].sort((x,y)=>y.value-x.value).map(link=>({a:link.a.p,b:link.b.p,score:link.value,label:link.relation?.label||chemistryRelation(link.a.p,link.b.p).label,reason:link.relation?.reason||"",known:true}));
+    return {overall:chem.overall,links,source:profile.projected?"PROJECTED LINEUP":"ACTIVE LINEUP"};
 }
 function resultChemistryLinksMarkup(team,n){
     const snap=resultChemistrySnapshot(team,n);
@@ -83,13 +80,13 @@ function createResultsComparison(){
     </section>`;
 }
 function createFinalTeamCard(team,n){
-    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chemistry=resultChemistrySnapshot(team,n),chem=chemistry.links[0]||null;
+    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chemistry=resultChemistrySnapshot(team,n),chem=chemistry.links[0]||null,contribution=resultSquadContribution(team,n);
     const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
       <div class="final-stats final-stats-v9">
-        <div><span>SQUAD OVR</span><strong>${naturalSquadOVR(team)||"--"}</strong></div>
+        <div><span>BASE QUALITY</span><strong>${contribution.baseQuality||"--"}</strong></div>
         <div><span>PLAYERS</span><strong>${team.players.length}</strong></div>
         <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
         <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
@@ -100,6 +97,7 @@ function createFinalTeamCard(team,n){
         <div><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
         <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
       </div>
+      <div class="results-contribution"><span><small>EFFECTIVE OVR</small><b>${contribution.effectiveQuality||"—"}</b></span><span><small>CHEMISTRY IMPACT</small><b>${signedImpact(contribution.chemistryImpact)}</b></span><span><small>POSITIONAL FIT</small><b>${contribution.members.filter(m=>canonicalFit(m.player,m.label)).length} / ${Math.min(11,team.players.length)}</b></span>${contribution.projected?'<small>PROJECTED LINEUP</small>':""}</div>
       ${resultChemistryLinksMarkup(team,n)}
       ${typeof resultTeamActions==="function"?resultTeamActions(n):""}
       <div class="final-roster">${roster}</div>
@@ -169,23 +167,23 @@ function openBattleSimFromResults(){
 function shareFormationSnapshot(n){
     const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3";
     const assignment={...(formationAssignments[n]||{})};
-    const shape=FORMATIONS[formation]||FORMATIONS["4-3-3"];
+    const shape=formationShape(formation)||FORMATIONS["4-3-3"];
     const deployedCount=Object.values(assignment).filter(Boolean).length;
     const active=deployedCount
       ?activeFormationSlotIndices(n)
       :new Set(preferredActiveSlotIndicesForFormation(n,formation));
     const chemistry=formationChemistryForAssignment(n,assignment,formation,active);
-    const ovr=formationTeamOVRForAssignment(n,assignment,formation);
+    const contribution=lineupContributionSnapshot(team.players,assignment,shape,chemistry),ovr=contribution.effectiveQuality;
     const captainId=formationCaptainByTeam[n]&&Object.values(assignment).includes(formationCaptainByTeam[n])
       ?formationCaptainByTeam[n]
       :null;
     const used=new Set(Object.values(assignment));
     const reserves=team.players.filter(p=>!used.has(p.id));
     return {
-      team,formation,assignment,chemistry,ovr,captainId,reserves,
+      team,formation,assignment,chemistry,ovr,baseOvr:contribution.baseQuality,positionOvr:contribution.positionQuality,contribution,captainId,reserves,
       deployment:formationDeploymentLimit(n),
       deployedCount,
-      complete:deployedCount>=Math.min(11,team.players.length),
+      complete:deployedCount>=Math.min(shape.length,team.players.length),
       shape
     };
 }
@@ -197,7 +195,7 @@ function shareChemistrySvg(snap){
 function createShareTeam(team,n){
     const spent=startingBudget-team.budget,snap=shareFormationSnapshot(n);
     const captain=team.players.find(p=>p.id===snap.captainId)||null;
-    const target=Math.min(11,team.players.length);
+    const target=snap.deployment;
     const stateLabel=snap.deployedCount===0?"NO FORMATION BUILT":snap.complete?"FORMATION COMPLETE":`INCOMPLETE ${snap.deployedCount}/${target}`;
     return `<article class="share-team share-team-v15" style="${teamVars(team)}">
       <div class="share-team-head"><div><span>SQUAD 0${n} // ${stateLabel}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
@@ -283,12 +281,12 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     const reportOVR=snap.deployedCount?snap.ovr:naturalSquadOVR(team),reportChemistry=snap.deployedCount?snap.chemistry:rosterChemistrySnapshot(team);
     const usedIds=new Set(Object.values(snap.assignment||{}).filter(Boolean).map(String));
     shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
-    shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+"\u2066"+snap.formation+"\u2069",x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
+    shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+"\u2066"+formationLabel(snap.formation)+"\u2069",x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
     shareImageText(ctx,team.name,x+28,y+78,width-178,'900 italic 39px "Barlow Condensed", sans-serif',"#f0f7ff");
     shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
-    const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*4)/5;
+    const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*5)/6;
     const metrics=[
-        [translate(snap.deployedCount?"TEAM OVR":"SQUAD OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],
+        [translate("BASE QUALITY"),String(snap.baseOvr||naturalSquadOVR(team)||"--")],[translate("EFFECTIVE OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],
         [translate("CAPTAIN"),captain?.name||translate("UNASSIGNED")],[translate("DEPLOYED"),snap.deployedCount+"/"+Math.min(11,team.players.length)],
         n?[translate("REMAINING"),"$"+team.budget.toLocaleString()]:[translate("RESERVES"),String(snap.reserves.length)]
     ];
@@ -318,8 +316,8 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
         if(!player){shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"rgba(7,31,51,.90)","rgba(101,153,186,.50)");shareImageText(ctx,slot.label+"  +",markerX+markerW/2,markerY+29,markerW-12,'800 15px "Barlow Condensed", sans-serif',"#6887a2","center");return;}
         const isCaptain=player.id===snap.captainId;
         shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"#0c3456",isCaptain?"#ffd36e":accent);
-        shareImageText(ctx,slot.label+(isCaptain?" · C":""),markerX+8,markerY+15,markerW-40,'800 11px "Barlow Condensed", sans-serif',isCaptain?"#ffdc83":"#70c6ff");
-        shareImageText(ctx,String(playerOverall(player)),markerX+markerW-8,markerY+15,27,'900 12px "Barlow Condensed", sans-serif',"#eaf6ff","right");
+        shareImageText(ctx,slot.label+(isCaptain?" · C":""),markerX+8,markerY+15,markerW-76,'800 11px "Barlow Condensed", sans-serif',isCaptain?"#ffdc83":"#70c6ff");
+        shareImageText(ctx,playerOverall(player)+" → "+(snap.contribution?.members.find(m=>m.player.id===player.id)?.effective||effectiveOVR(player,slot.label)),markerX+markerW-8,markerY+15,58,'900 12px "Barlow Condensed", sans-serif',"#eaf6ff","right");
         if(portraits?.get(player.id))drawReportPortrait(ctx,portraits.get(player.id),markerX+5,markerY+18,24,26);
         shareImageText(ctx,player.name,markerX+33,markerY+35,markerW-38,'800 13px "Barlow Condensed", sans-serif',"#f5faff","left");
     });
@@ -351,7 +349,7 @@ async function createAuctionShareImageBlob(teamNumber=null,reportEntries=null,re
     const entries=reportEntries||numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
     const modeReport=reportOverride||(teamNumber===0?null:exportModeReport());
     await document.fonts?.ready;
-    const text=["TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
+    const text=["BASE QUALITY","EFFECTIVE OVR","TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
     if(document.fonts?.load)await Promise.all([document.fonts.load('800 18px "Barlow Condensed"',text),document.fonts.load('700 14px "Rajdhani"',text)]);
     const portraits=new Map();
     await Promise.all([...new Map(entries.flatMap(entry=>entry.team.players).map(p=>[p.id,p])).values()].map(async player=>{
@@ -367,6 +365,7 @@ async function createAuctionShareImageBlob(teamNumber=null,reportEntries=null,re
     ctx.fillStyle=backdrop;ctx.fillRect(0,0,canvas.width,canvas.height);
     shareImageText(ctx,"BLUE LOCK DRAFT",54,75,980,'900 italic 56px "Barlow Condensed", sans-serif',"#f1f8ff");
     shareImageText(ctx,SiteI18n.text(teamNumber===0?"SQUAD REPORT":"FINAL RESULT"),58,120,canvas.width-108,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
+    shareImageText(ctx,SiteI18n.text("BASE OVR")+" → "+SiteI18n.text("EFFECTIVE OVR"),canvas.width-58,120,(canvas.width-108)/2,'700 14px "Rajdhani", sans-serif',"#8fb6d4","right");
     ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
     if(modeReport){
         const reportY=panelY+panelHeight+18;
@@ -456,7 +455,7 @@ function restartAuction(){
 function createStandaloneShareTeam(){
     const team=standaloneBuilderTeam,snap=shareFormationSnapshot(0);
     const captain=team.players.find(p=>p.id===snap.captainId)||null;
-    const target=Math.min(11,team.players.length);
+    const target=snap.deployment;
     const stateLabel=snap.deployedCount===0?"NO FORMATION BUILT":snap.complete?"FORMATION COMPLETE":`INCOMPLETE ${snap.deployedCount}/${target}`;
     return `<article class="share-team standalone-share-team" style="${teamVars(team)}">
       <div class="squad-report-status"><span>${stateLabel}</span><b>${team.players.length} SELECTED</b></div>
@@ -474,7 +473,7 @@ function createStandaloneShareTeam(){
             const player=team.players.find(p=>p.id===snap.assignment[i]);
             if(!player)return `<div class="share-pitch-empty" style="left:${slot.x}%;top:${slot.y}%"><span>${slot.label}</span><b>+</b></div>`;
             return `<div class="share-pitch-player" style="left:${slot.x}%;top:${slot.y}%">
-              <div class="report-player-portrait">${player.id===snap.captainId?'<i class="report-captain">C</i>':""}<img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="60" height="60" loading="eager" decoding="async"><span class="report-position">${slot.label}</span><em>${effectiveOVR(player,slot.label)}</em></div><b>${esc(player.name)}</b>
+              <div class="report-player-portrait">${player.id===snap.captainId?'<i class="report-captain">C</i>':""}<img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" width="60" height="60" loading="eager" decoding="async"><span class="report-position">${slot.label}</span><em title="${esc(contributionExplanation(snap.contribution.members.find(m=>m.player.id===player.id)))}">${playerOverall(player)}</em></div><b>${esc(player.name)}</b>
             </div>`;
           }).join("")}
         </div>

@@ -1,0 +1,482 @@
+[
+  {
+    "name": "7v7:2-2-2",
+    "date": "2026-10-08",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 17
+      },
+      {
+        "type": "pick",
+        "id": 36
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 74
+      },
+      {
+        "type": "pick",
+        "id": 63
+      },
+      {
+        "type": "pick",
+        "id": 20
+      },
+      {
+        "type": "pick",
+        "id": 78
+      }
+    ]
+  },
+  {
+    "name": "7v7:2-3-1",
+    "date": "2026-10-08",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 4
+      },
+      {
+        "type": "pick",
+        "id": 66
+      },
+      {
+        "type": "pick",
+        "id": 7
+      },
+      {
+        "type": "pick",
+        "id": 8
+      },
+      {
+        "type": "pick",
+        "id": 40
+      },
+      {
+        "type": "pick",
+        "id": 78
+      },
+      {
+        "type": "pick",
+        "id": 9
+      }
+    ]
+  },
+  {
+    "name": "7v7:3-2-1",
+    "date": "2026-10-08",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 71
+      },
+      {
+        "type": "pick",
+        "id": 21
+      },
+      {
+        "type": "pick",
+        "id": 20
+      },
+      {
+        "type": "pick",
+        "id": 63
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 78
+      },
+      {
+        "type": "pick",
+        "id": 40
+      }
+    ]
+  },
+  {
+    "name": "8v8:3-2-2",
+    "date": "2026-10-02",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 74
+      },
+      {
+        "type": "pick",
+        "id": 73
+      },
+      {
+        "type": "pick",
+        "id": 8
+      },
+      {
+        "type": "pick",
+        "id": 20
+      },
+      {
+        "type": "pick",
+        "id": 17
+      },
+      {
+        "type": "pick",
+        "id": 28
+      },
+      {
+        "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 63
+      }
+    ]
+  },
+  {
+    "name": "8v8:2-3-2",
+    "date": "2026-10-02",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 13
+      },
+      {
+        "type": "pick",
+        "id": 30
+      },
+      {
+        "type": "pick",
+        "id": 31
+      },
+      {
+        "type": "pick",
+        "id": 22
+      },
+      {
+        "type": "pick",
+        "id": 48
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 40
+      },
+      {
+        "type": "pick",
+        "id": 24
+      }
+    ]
+  },
+  {
+    "name": "8v8:3-3-1",
+    "date": "2026-10-02",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 15
+      },
+      {
+        "type": "pick",
+        "id": 17
+      },
+      {
+        "type": "pick",
+        "id": 39
+      },
+      {
+        "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 46
+      },
+      {
+        "type": "pick",
+        "id": 5
+      },
+      {
+        "type": "pick",
+        "id": 16
+      },
+      {
+        "type": "pick",
+        "id": 9
+      }
+    ]
+  },
+  {
+    "name": "9v9:3-3-2",
+    "date": "2026-10-06",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 36
+      },
+      {
+        "type": "pick",
+        "id": 1
+      },
+      {
+        "type": "pick",
+        "id": 58
+      },
+      {
+        "type": "pick",
+        "id": 26
+      },
+      {
+        "type": "pick",
+        "id": 23
+      },
+      {
+        "type": "pick",
+        "id": 4
+      },
+      {
+        "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 74
+      },
+      {
+        "type": "pick",
+        "id": 40
+      }
+    ]
+  },
+  {
+    "name": "9v9:3-2-3",
+    "date": "2026-10-06",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 68
+      },
+      {
+        "type": "pick",
+        "id": 19
+      },
+      {
+        "type": "pick",
+        "id": 11
+      },
+      {
+        "type": "pick",
+        "id": 78
+      },
+      {
+        "type": "pick",
+        "id": 3
+      },
+      {
+        "type": "pick",
+        "id": 20
+      },
+      {
+        "type": "pick",
+        "id": 56
+      },
+      {
+        "type": "pick",
+        "id": 16
+      },
+      {
+        "type": "pick",
+        "id": 57
+      }
+    ]
+  },
+  {
+    "name": "9v9:4-2-2",
+    "date": "2026-10-06",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 2
+      },
+      {
+        "type": "pick",
+        "id": 43
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 45
+      },
+      {
+        "type": "pick",
+        "id": 17
+      },
+      {
+        "type": "pick",
+        "id": 27
+      },
+      {
+        "type": "pick",
+        "id": 16
+      },
+      {
+        "type": "pick",
+        "id": 56
+      },
+      {
+        "type": "pick",
+        "id": 1
+      }
+    ]
+  },
+  {
+    "name": "10v10:3-3-3",
+    "date": "2026-10-01",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 44
+      },
+      {
+        "type": "pick",
+        "id": 27
+      },
+      {
+        "type": "pick",
+        "id": 39
+      },
+      {
+        "type": "pick",
+        "id": 65
+      },
+      {
+        "type": "pick",
+        "id": 26
+      },
+      {
+        "type": "pick",
+        "id": 29
+      },
+      {
+        "type": "pick",
+        "id": 73
+      },
+      {
+        "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 74
+      },
+      {
+        "type": "pick",
+        "id": 78
+      }
+    ]
+  },
+  {
+    "name": "10v10:4-3-2",
+    "date": "2026-10-01",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 43
+      },
+      {
+        "type": "pick",
+        "id": 75
+      },
+      {
+        "type": "pick",
+        "id": 8
+      },
+      {
+        "type": "pick",
+        "id": 33
+      },
+      {
+        "type": "pick",
+        "id": 73
+      },
+      {
+        "type": "pick",
+        "id": 72
+      },
+      {
+        "type": "pick",
+        "id": 77
+      },
+      {
+        "type": "pick",
+        "id": 42
+      },
+      {
+        "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 48
+      }
+    ]
+  },
+  {
+    "name": "10v10:3-4-2",
+    "date": "2026-10-01",
+    "actions": [
+      {
+        "type": "pick",
+        "id": 27
+      },
+      {
+        "type": "pick",
+        "id": 17
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 46
+      },
+      {
+        "type": "pick",
+        "id": 41
+      },
+      {
+        "type": "pick",
+        "id": 69
+      },
+      {
+        "type": "pick",
+        "id": 65
+      },
+      {
+        "type": "pick",
+        "id": 16
+      },
+      {
+        "type": "pick",
+        "id": 5
+      },
+      {
+        "type": "pick",
+        "id": 44
+      }
+    ]
+  }
+]

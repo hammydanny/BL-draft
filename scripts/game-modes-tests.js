@@ -4,7 +4,8 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 function createModeTestContext(){
     const root=path.resolve(__dirname,'..'),store=new Map(),element={value:'#123abc',classList:{add(){},remove(){}},addEventListener(){},style:{setProperty(){}}};
     const context=vm.createContext({assert,URL,TextEncoder,TextDecoder,Date,btoa,atob,console,setTimeout:()=>1,clearTimeout(){},requestAnimationFrame(){},window:{addEventListener(){},SiteI18n:{text:value=>value}},document:{baseURI:'https://example.test/BL-draft/',getElementById:()=>element,querySelector(){return null;},querySelectorAll(){return [];},addEventListener(){}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value),removeItem:key=>store.delete(key)},sessionStorage:{getItem(){return null;},setItem(){},removeItem(){}}});
-    for(const file of ['version','players','state','chemistry','player-reference','formations','replayability','storage','results','auction'])vm.runInContext(fs.readFileSync(path.join(root,'js',file+'.js'),'utf8'),context,{filename:file});
+    require('./test-player-modules').loadPlayerModules(context);
+    for(const file of ['version','players','state','chemistry','player-reference','squad-balance','formations','replayability','storage','results','auction'])vm.runInContext(fs.readFileSync(path.join(root,'js',file+'.js'),'utf8'),context,{filename:file});
     return {context,run:code=>vm.runInContext(code,context)};
 }
 function runGameModeTests(){

@@ -5,7 +5,8 @@ function runReplayabilityTests(){
     const root=path.resolve(__dirname,'..'),store=new Map(),elements=new Map();
     const element=id=>{if(!elements.has(id))elements.set(id,{value:id.includes('Color')?'#19a7ff':'',classList:{add(){},remove(){},contains(){return false;}},style:{setProperty(){}},addEventListener(){},querySelector(){return element('child');},querySelectorAll(){return [];},setAttribute(){}});return elements.get(id);};
     const context=vm.createContext({assert,URL,TextEncoder,TextDecoder,Date,btoa,atob,console,setTimeout:()=>1,clearTimeout(){},requestAnimationFrame(){},cancelAnimationFrame(){},window:{addEventListener(){},SiteI18n:{text:value=>value}},document:{baseURI:'https://example.test/BL-draft/',getElementById:element,querySelector(){return null;},querySelectorAll(){return [];},addEventListener(){}},localStorage:{getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value),removeItem:key=>store.delete(key)},sessionStorage:{getItem(){return null;},setItem(){},removeItem(){}}});
-    for(const file of ['js/version.js','js/players.js','js/state.js','js/chemistry.js','js/player-reference.js','js/formations.js','js/replayability.js','js/storage.js','js/results.js','js/auction.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+    require('./test-player-modules').loadPlayerModules(context);
+    for(const file of ['js/version.js','js/players.js','js/state.js','js/chemistry.js','js/player-reference.js','js/squad-balance.js','js/formations.js','js/replayability.js','js/storage.js','js/results.js','js/auction.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
     const run=code=>vm.runInContext(code,context);
     run(`
         selectedPlayerIds=new Set(players.filter(p=>!p.secretCharacter).map(p=>p.id));maxPlayers=15;bidIncrement=50;startingBudget=15000;cpuPersonalitySeed=19;

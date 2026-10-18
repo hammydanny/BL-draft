@@ -12,7 +12,7 @@ function replayDecode(code,prefix){
 }
 function normalizeReplaySquad(value,{allowLocked=false}={}){
     if(!replayRecord(value)||value.v!==1||typeof value.name!=="string"||!value.name.trim()||value.name.length>32||typeof value.color!=="string"||!/^#[0-9a-f]{6}$/i.test(value.color))replayFail("Invalid squad data.");
-    if(typeof value.formation!=="string"||!Object.hasOwn(FORMATIONS,value.formation))replayFail("This squad uses an unknown formation.");
+    if(typeof value.formation!=="string"||!knownFormation(value.formation))replayFail("This squad uses an unknown formation.");
     const ids=value.playerIds;
     if(!Array.isArray(ids)||!ids.length||ids.length>players.length||!ids.every(Number.isInteger)||new Set(ids).size!==ids.length)replayFail("Invalid squad data.");
     if(ids.some(id=>!playerById(id)))replayFail("This squad contains a missing player.");
@@ -20,7 +20,7 @@ function normalizeReplaySquad(value,{allowLocked=false}={}){
     if(!replayRecord(value.assignment))replayFail("Invalid squad positions.");
     const assignment={};const used=new Set();
     for(const [slot,id]of Object.entries(value.assignment)){
-        if(!/^(?:[0-9]|10)$/.test(slot)||!ids.includes(id)||used.has(id))replayFail("Invalid squad positions.");
+        if(!/^(?:[0-9]|10)$/.test(slot)||Number(slot)>=formationShape(value.formation).length||!ids.includes(id)||used.has(id))replayFail("Invalid squad positions.");
         assignment[slot]=id;used.add(id);
     }
     if(value.captainId!==null&&(!Number.isInteger(value.captainId)||!used.has(value.captainId)))replayFail("Invalid squad captain.");
@@ -167,9 +167,9 @@ function modeSquadView(n,live=false){
     const assignment=Object.fromEntries(Object.entries(snap.assignment).filter(([i,id])=>snap.shape[i]&&owned.has(id)&&!used.has(id)&&(used.add(id),true)));
     if(Object.keys(assignment).length!==snap.deployedCount){snap.assignment=assignment;snap.deployedCount=Object.keys(assignment).length;snap.captainId=used.has(snap.captainId)?snap.captainId:null;snap.ovr=formationTeamOVRForAssignment(n,assignment,snap.formation);snap.chemistry=formationChemistryForAssignment(n,assignment,snap.formation,new Set(Object.keys(assignment).map(Number)));}
     if(live&&team.players.length&&snap.deployedCount!==Math.min(11,team.players.length)){
-        const plan=cpuPlanRoster(team.players),shape=FORMATIONS[plan.formation];const ratings=Object.entries(plan.assignment).map(([i,id])=>effectiveOVR(playerById(id),shape[i].label));
-        const links=[];const placed=Object.values(plan.assignment).map(playerById);for(let i=0;i<placed.length;i++)for(let j=i+1;j<placed.length;j++)links.push(playerChemistry(placed[i],placed[j]));
-        return {...snap,formation:plan.formation,shape,assignment:plan.assignment,deployedCount:placed.length,ovr:lineupOVRProfile(ratings).value,chemistry:{overall:chemistryNetworkScore(links)},captainId:snap.captainId};
+        const plan=cpuPlanRoster(team.players),shape=formationShape(plan.formation),chemistry=tacticalChemistrySnapshot(team.players,plan.assignment,shape,formationEdgePairs(plan.formation),new Set(shape.map((_,i)=>i))),contribution=lineupContributionSnapshot(team.players,plan.assignment,shape,chemistry);
+        return {...snap,formation:plan.formation,shape,assignment:plan.assignment,deployedCount:contribution.members.length,ovr:contribution.effectiveQuality,baseOvr:contribution.baseQuality,positionOvr:contribution.positionQuality,contribution,chemistry,captainId:snap.captainId};
+
     }return snap;
 }
 function modeGoal(type,current,target,label,extra={}){return {type,current,target,label,pass:extra.maximum?current<=target:current>=target,...extra};}

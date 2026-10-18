@@ -123,7 +123,7 @@ function createPlayerInfoSidebar(team){
 
   const slot=currentPlayerSlot(formationTeamNumber,player.id);
   const pos=slot?.label||primaryPosition(player);
-  const rating=slot?effectiveOVR(player,pos):playerOverall(player);
+  const rating=playerOverall(player),contribution=slot?formationPlayerContribution(formationTeamNumber,player.id):null;
   const deployed=assignedIds(formationTeamNumber).has(player.id);
   const isCaptain=formationCaptainByTeam[formationTeamNumber]===player.id;
   const captainControl=`<div class="player-captain-control ${isCaptain?"active":""}">
@@ -149,7 +149,7 @@ function createPlayerInfoSidebar(team){
     </div>
     <div class="player-info-section current-position-rating">
       <div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div>
-      <div class="current-ovr-row"><strong>${pos}</strong><b>${rating} <small class="evaluation-grade">${playerStatGrade(rating)}</small></b></div>
+      <div class="current-ovr-row"><strong>${pos}</strong><b>${contribution?.effective||rating} <small class="evaluation-grade">${playerStatGrade(contribution?.effective||rating)}</small></b></div>${builderContributionMarkup(player)}
     </div>
   </aside>`;
 }
@@ -200,7 +200,7 @@ function refreshFormationSelection(anchorSelector){
     formationContent.querySelectorAll(".bench-player").forEach(card=>{const selected=Number(card.dataset.playerId)===selectedFormationPlayerId;card.classList.toggle("selected",selected);card.setAttribute("aria-pressed",String(selected));});
     const hint=formationContent.querySelector(".formation-instructions strong");
     if(hint)hint.textContent=player?`${player.name} // PRIMARY: ${primaryPosition(player)} // GAMEPLAY ROLES: ${playerPositions(player).join(" / ")}`:"SELECT A PLAYER TO HIGHLIGHT COMPATIBLE POSITIONS // DRAG OR TAP TO PLACE";
-    restoreFormationViewport(snapshot);prioritizeVisiblePortraits(formationContent);
+    restoreFormationViewport(snapshot);prioritizeVisiblePortraits(formationContent);refreshBuilderImpactPreviews();
 }
 function renderFormationBuilder({preserveScroll=true}={}){
     const snapshot=preserveScroll&&formationContent.firstElementChild?captureFormationViewport():null;
@@ -210,7 +210,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
     const pool=standalone?formationContent.querySelector(".standalone-pool-panel"):null;
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
-    const slots=FORMATIONS[activeFormation];
+    const slots=formationShape(activeFormation),contribution=formationContributionSnapshot(formationTeamNumber),contributions=new Map(contribution.members.map(m=>[m.player.id,m]));
     sanitizeFormationAssignments(formationTeamNumber);
     const used=assignedIds(formationTeamNumber);
     const bench=team.players.filter(p=>!used.has(p.id));
@@ -247,17 +247,18 @@ function renderFormationBuilder({preserveScroll=true}={}){
         <div class="formation-control-panel formation-control-v13" style="${teamVars(team)}">
           <div class="formation-identity">
             <span>${standalone?"GLOBAL TEAM // FORMATION":`FORMATION // ${esc(team.name)}`}</span>
-            <strong>${activeFormation}</strong>
+            <strong>${formationLabel(activeFormation)}</strong>
           </div>
           <div class="formation-team-metrics">
-            <div><span>TEAM OVR</span><strong>${teamOvr||"--"}</strong></div>
+            <div><span>EFFECTIVE OVR</span><strong>${teamOvr||"--"}</strong><small>${esc(replayText("Base OVR: {value}",{value:contribution.baseQuality||"—"}))}</small></div>
             <div><span>DEPLOYED</span><strong>${used.size}<small> / ${deploymentLimit}</small></strong></div>
             <div><span>RESERVES</span><strong>${bench.length}</strong></div>
             <div class="captain-metric"><span>CAPTAIN</span><strong>${captain?esc(captain.name):"UNASSIGNED"}</strong></div>
           </div>
           <details class="formation-menu">
-            <summary aria-controls="builderFormationOptions"><span>CHANGE FORMATION</span><b>${activeFormation}</b><i>⌄</i></summary>
+            <summary aria-controls="builderFormationOptions"><span>CHANGE FORMATION</span><b>${formationLabel(activeFormation)}</b><i>⌄</i></summary>
             <div id="builderFormationOptions" class="formation-menu-popover">
+              ${DAILY_FORMATIONS[activeFormation]?`<div class="formation-menu-group"><span>DAILY FORMATIONS</span>${dailyFormationNames(slots.length).map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${formationLabel(f)}</button>`).join("")}</div>`:""}
               <div class="formation-menu-group"><span>BACK FOUR</span>
                 ${["4-3-3","4-2-3-1","4-4-2","4-1-3-2","4-3-2-1"].map(f=>`<button class="${activeFormation===f?"active":""}" onclick="changeFormation('${f}')">${f}</button>`).join("")}
               </div>
@@ -302,7 +303,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
                   <span class="slot-target-label" ${fit||swap?"":"hidden"}>${swap?"SWAP":fit==="best"?"BEST FIT":fit==="good"?"GOOD FIT":""}</span>
                   <span class="slot-position">${s.label}</span>
                   ${p?`<div class="formation-player-token" draggable="false" onclick="event.stopPropagation();clickFormationPlayerToken(${p.id},${i})" onpointerdown="beginFormationPointerDrag(event,${p.id})">
-                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<div class="pitch-player-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><span class="effective-ovr" aria-label="${s.label} overall ${effectiveOVR(p,s.label)}">${effectiveOVR(p,s.label)}</span></div><strong title="${esc(p.name)}">${esc(p.name)}</strong>
+                         ${isCaptain?`<span class="captain-badge" title="Captain">C</span>`:""}<div class="pitch-player-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="eager" decoding="async" width="62" height="62"><span class="effective-ovr" aria-label="${esc(contributionExplanation(contributions.get(p.id)))}" title="${esc(contributionExplanation(contributions.get(p.id)))}">${contributions.get(p.id).effective}</span></div><strong title="${esc(p.name)}">${esc(p.name)}</strong>
                        </div>`:`<span class="empty-slot">${partialInactive?"·":"+"}</span>`}
                </button>`;
             }).join("")}
@@ -336,7 +337,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
     prioritizeVisiblePortraits(formationContent);
     applyFormationMoveFx();
     if(standalone&&typeof bindStandaloneBuilderPoolUI==="function")bindStandaloneBuilderPoolUI();
-    bindMobileBuilderPresentation();
+    bindMobileBuilderPresentation();refreshBuilderImpactPreviews();
 }
 // Shared responsive presentation only; assignments, ratings and saves use the
 // existing Builder functions. Disclosure state is deliberately not game data.
@@ -347,7 +348,7 @@ let mobileBuilderPoolReturnFocus=null;
 let mobileBuilderPoolScroll={x:0,y:0};
 function builderText(value){return window.SiteI18n?.text(value)||value;}
 function builderSlotAccessibleName(slot,player){
-    return [slot.label,player?.name,player?`${builderText("OVR")} ${effectiveOVR(player,slot.label)}`:builderText("PLACE ON PITCH")].filter(Boolean).join(" · ");
+    return [slot.label,player?.name,player?`${builderText("EFFECTIVE OVR")} ${formationPlayerContribution(formationTeamNumber,player.id)?.effective||effectiveOVR(player,slot.label)}`:builderText("PLACE ON PITCH")].filter(Boolean).join(" · ");
 }
 function clickFormationPlayerToken(id,slotIndex){
     if(mobileBuilderMedia.matches&&selectedFormationPlayerId&&selectedFormationPlayerId!==id)clickFormationSlot(slotIndex);
@@ -356,7 +357,7 @@ function clickFormationPlayerToken(id,slotIndex){
 // Empty-slot shortcut: the existing placement function owns every assignment.
 function openFormationReservePicker(slotIndex){
     if(selectedFormationPlayerId||getFormationPlayer(formationTeamNumber,slotIndex))return;
-    const teamNumber=formationTeamNumber,team=teamByNumber(teamNumber),slot=FORMATIONS[formationByTeam[teamNumber]][slotIndex];
+    const teamNumber=formationTeamNumber,team=teamByNumber(teamNumber),slot=formationShape(formationByTeam[teamNumber])[slotIndex];
     if(!slot)return;
     const used=assignedIds(teamNumber),reserves=team.players.filter(player=>!used.has(player.id)&&secretPlayerAvailable(player));
     if(teamNumber===0)reserves.sort(compareStandalonePlayers);
@@ -382,8 +383,8 @@ function mobileBuilderPlayerMarkup(team){
     const slot=currentPlayerSlot(formationTeamNumber,player.id);
     const captain=formationCaptainByTeam[formationTeamNumber]===player.id;
     return `<section class="mobile-builder-player" style="${teamVars(team)}" aria-label="SELECTED PLAYER">
-      <div class="mobile-player-identity"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="" width="52" height="58"><div><strong data-i18n-ignore>${esc(player.name)}</strong>${playerNationalityMarkup(player)}${positionBadges(player)}<div class="mobile-player-ratings"><span>BASE OVR</span> <b>${playerOverall(player)}</b>${slot?` · <span>CURRENT POSITION</span> <b>${slot.label}</b> · <span>OVR</span> <b>${effectiveOVR(player,slot.label)}</b>`:""}</div></div></div>
-      <div class="mobile-player-actions">
+      <div class="mobile-player-identity"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="" width="52" height="58"><div><strong data-i18n-ignore>${esc(player.name)}</strong>${playerNationalityMarkup(player)}${positionBadges(player)}<div class="mobile-player-ratings"><span>BASE OVR</span> <b>${playerOverall(player)}</b>${slot?` · <span>CURRENT POSITION</span> <b>${slot.label}</b> · <span>OVR</span> <b>${formationPlayerContribution(formationTeamNumber,player.id)?.effective||effectiveOVR(player,slot.label)}</b>`:""}</div></div></div>
+      ${builderContributionMarkup(player)}<div class="mobile-player-actions">
         <button type="button" id="builderPositionAction" onclick="focusMobileBuilderPitch()">${slot?"SELECT POSITION":"PLACE ON PITCH"}</button>
         ${slot?`<button type="button" id="builderBenchAction" onclick="movePlayerToBench(${player.id})">MOVE TO RESERVES</button><button type="button" id="builderCaptainAction" aria-pressed="${captain}" onclick="setFormationCaptain(${player.id})">${captain?"CURRENT CAPTAIN":"SET CAPTAIN"}</button>`:""}
         <button type="button" id="builderClearAction" onclick="clearSelectedFormationPlayer()">CLEAR SELECTION</button>
@@ -466,7 +467,7 @@ function bindMobileBuilderPresentation(){
 }
 mobileBuilderMedia.addEventListener("change",()=>{
     closeMobileBuilderPool();
-    bindMobileBuilderPresentation();
+    bindMobileBuilderPresentation();refreshBuilderImpactPreviews();
 });
 document.addEventListener("keydown",event=>{
     if(formationScreen.classList.contains("hidden")||event.key!=="Escape")return;
@@ -495,3 +496,22 @@ document.getElementById("backToResults").addEventListener("click",()=>{
     setVisibleScreen(auctionScreen);
     showAuctionComplete();
 });
+
+// Context stays beside the selected player; the pitch keeps its existing fit colours.
+let formationImpactFeedback=null;
+function builderContributionMarkup(player){
+    const part=formationPlayerContribution(formationTeamNumber,player.id);if(!part)return "";
+    return `<div class="builder-contribution"><span>${esc(replayText("BASE OVR"))}<b>${part.base}</b></span><span>${esc(replayText("POSITION IMPACT"))}<b>${signedImpact(part.position-part.base)}</b></span><span>${esc(replayText("CHEMISTRY IMPACT"))}<b>${signedImpact(part.chemistry)}</b></span><span>${esc(replayText("EFFECTIVE OVR"))}<b>${part.effective}</b></span></div>`;
+}
+function showFormationMoveImpact(before,after){formationImpactFeedback={teamNumber:formationTeamNumber,ovr:after.effectiveRaw-before.effectiveRaw,chem:after.chemistry.overall-before.chemistry.overall};}
+function refreshBuilderImpactPreviews(){
+    formationContent.querySelectorAll(".slot-impact-preview,.builder-move-impact").forEach(el=>el.remove());
+    const n=formationTeamNumber,player=teamByNumber(n).players.find(p=>p.id===selectedFormationPlayerId),before=formationContributionSnapshot(n);
+    if(player)formationContent.querySelectorAll(".formation-slot").forEach(button=>{
+        const index=Number(button.dataset.slotIndex),next=formationMoveAssignment(n,player.id,index);if(!next||next[index]===formationAssignments[n]?.[index])return;
+        if(!canonicalFit(player,formationShape(formationByTeam[n])[index].label))return;
+        const after=formationContributionSnapshot(n,next),delta=signedImpact(after.effectiveRaw-before.effectiveRaw),hint=replayText("Team OVR {current} → {next}. Chemistry {chem}.",{current:before.effectiveQuality,next:after.effectiveQuality,chem:signedImpact(after.chemistry.overall-before.chemistry.overall)});
+        const tag=document.createElement("span");tag.className="slot-impact-preview";tag.textContent=delta;tag.setAttribute("aria-hidden","true");button.appendChild(tag);button.setAttribute("title",hint);button.setAttribute("aria-label",builderSlotAccessibleName(formationShape(formationByTeam[n])[index],getFormationPlayer(n,index))+" · "+hint);
+    });
+    if(formationImpactFeedback&&formationImpactFeedback.teamNumber===n&&!player){const node=document.createElement("p");node.className="builder-move-impact";node.setAttribute("role","status");node.textContent=replayText("Move impact: effective OVR {ovr}, chemistry {chem}.",{ovr:signedImpact(formationImpactFeedback.ovr),chem:signedImpact(formationImpactFeedback.chem)});formationContent.querySelector(".formation-control-panel")?.after(node);}
+}

@@ -31,3 +31,5 @@ require('./replayability-tests.js').runReplayabilityTests();
 require('./game-modes-tests.js').runGameModeTests();
 
 require('./solo-draft-tests.js').runSoloDraftTests();
+
+require('./balance-tests.js').runBalanceTests();
