@@ -125,10 +125,12 @@ function showAuctionComplete(){
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
       <h2>${activeDraftChallenge?esc(replayText(activeDraftChallenge.id==="daily"?"DAILY REPORT":"MISSION REPORT")):"DRAFT <span>COMPLETE</span>"}</h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
-      <div class="results-actions results-actions-top result-action-toolbar">
-        <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
-        <button id="shareResultsButton" type="button">SAVE</button><button id="nativeShareResults" type="button">SHARE</button>
-        <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
+      <div class="results-actions-layout">
+        <div class="results-actions results-actions-top result-action-toolbar">
+          <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
+          <button id="shareResultsButton" type="button">SAVE</button><button id="nativeShareResults" type="button">SHARE</button>
+          <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
+        </div>
         <button id="battleSimResultsButton" type="button" class="battle-sim-cta battle-sim-results-button">Battle Sim <b aria-hidden="true">⚡</b></button>
       </div>
       ${team2CpuControlled?`<p class="cpu-status">${esc(SiteI18n.text("SINGLEPLAYER"))} · ${esc(SiteI18n.text(cpuDifficulty.toUpperCase()))}</p>`:""}
