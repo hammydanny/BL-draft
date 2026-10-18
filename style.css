@@ -1326,3 +1326,20 @@ html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pit
 .character-position-analysis li>span{min-width:0;flex:1}
 .character-position-analysis li small{display:block;color:var(--text-muted);font-size:12px;line-height:1.4}
 .canon-position-source{display:inline-block;margin-inline-end:8px;font-size:12px;color:var(--accent);text-underline-offset:3px}
+
+/* BATTLE SIM // COMING-SOON PAGE */
+.battle-sim-page{min-height:calc(100dvh - var(--header-height));}
+.battle-sim-coming-soon{
+    display:flex;min-height:min(52vh,540px);flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;margin:14px auto 24px;padding:38px 20px;text-align:center;
+    background:linear-gradient(145deg,var(--bg-panel-start),var(--bg-surface));
+    border:1px solid var(--border-subtle);border-top:3px solid #ffc928;box-shadow:var(--shadow-soft);
+}
+.battle-sim-coming-soon>span{color:var(--accent-text);font-size:12px;font-weight:900;letter-spacing:2px}
+.battle-sim-coming-soon h2{margin:0;color:var(--text-primary);font:900 italic clamp(42px,7vw,76px)/.95 "Barlow Condensed",sans-serif;letter-spacing:1px}
+.battle-sim-coming-soon p{margin:0;color:var(--text-secondary);font-size:15px;line-height:1.5}
+.results-actions-top.result-action-toolbar{
+    max-width:1120px;grid-template-columns:minmax(145px,1fr) repeat(3,minmax(90px,.78fr)) minmax(145px,1fr);align-items:stretch;
+}
+.results-actions-top.result-action-toolbar .battle-sim-results-button{width:100%;min-width:0;margin:0}
+@media(max-width:760px){.results-actions-top.result-action-toolbar{grid-template-columns:1fr}}
