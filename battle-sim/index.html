@@ -63,7 +63,7 @@
     <script defer src="js/site-runtime.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/ui/replayability-ui.js?v=0.7.2.1"></script>
     <script defer src="js/ui/solo-draft-ui.js?v=0.7.2.1"></script>
-    <script defer src="js/battle-sim.js?v=0.7.9.4" fetchpriority="high"></script>
+    <script defer src="js/battle-sim.js?v=0.7.9.5" fetchpriority="high"></script>
     <script defer src="js/app.js?v=0.7.2.1" fetchpriority="high"></script>
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
@@ -518,7 +518,7 @@
             <div class="bs-page-actions"><p id="bs-setup-help" class="bs-help-text" aria-live="polite">Your saved teams are stored only in this browser.</p></div>
         </section>
         <section id="bs-match-view" class="bs-view" aria-label="Live Battle Sim match" hidden>
-            <div class="bs-match-actions"><button id="bs-pause-match" type="button" class="bs-button bs-button--secondary">PAUSE SIM</button><button id="bs-fast-forward" type="button" class="bs-button bs-button--secondary">FAST-FORWARD TO RESULTS ⏩</button><label class="bs-feed-delay-control" for="bs-feed-delay"><input id="bs-feed-delay" type="range" min="1" max="5" step="1" value="1" aria-label="Seconds between notable events"><output id="bs-feed-delay-value" for="bs-feed-delay">1s</output></label><button id="bs-proceed-match" type="button" class="bs-button bs-button--primary" disabled>WAITING FOR STOPPAGE…</button></div>
+            <div class="bs-match-actions"><button id="bs-pause-match" type="button" class="bs-button bs-button--secondary">PAUSE SIM</button><button id="bs-fast-forward" type="button" class="bs-button bs-button--secondary">FAST-FORWARD TO RESULTS ⏩</button><label class="bs-feed-delay-control" for="bs-feed-delay"><input id="bs-feed-delay" type="range" min="0.25" max="5" step="0.25" value="1" aria-label="Seconds between notable events"><output id="bs-feed-delay-value" for="bs-feed-delay">1s</output></label><button id="bs-proceed-match" type="button" class="bs-button bs-button--primary" disabled>WAITING FOR STOPPAGE…</button></div>
             <div class="bs-match-scorebar"><div class="bs-match-clock"><strong id="bs-match-time">00:00</strong><span id="bs-match-phase">FIRST HALF</span></div>
                 <div class="bs-score-names"><strong id="bs-match-team-name-1" class="bs-result-team-name">TEAM 1</strong><strong class="bs-result-final-score"><span id="bs-score-1">0</span> — <span id="bs-score-2">0</span></strong><strong id="bs-match-team-name-2" class="bs-result-team-name">TEAM 2</strong></div>
                 <span id="bs-match-status" class="bs-match-meta">LIVE</span></div>
