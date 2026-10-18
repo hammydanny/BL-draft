@@ -1,12 +1,13 @@
 // BLUE LOCK DRAFT // MULTI-PAGE ROUTING
 // APP_ROUTE_PATHS owns the page URLs. APP_ROUTES only maps legacy hashes.
-const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder"};
-const APP_ROUTE_PATHS={menu:"",lore:"lore/",auctionSetup:"auction/setup/",auctionRoom:"auction/room/",auctionResults:"auction/results/",auctionTeamBuilder:"auction/team-builder/",standaloneTeamBuilder:"team-builder/"};
-const LEGACY_PAGE_ROUTES={"index.html":"menu","lore.html":"lore","team-builder.html":"standaloneTeamBuilder","auction/setup.html":"auctionSetup","auction/room.html":"auctionRoom","auction/results.html":"auctionResults","auction/team-builder.html":"auctionTeamBuilder"};
+const APP_ROUTES={menu:"#/",lore:"#/lore",auctionSetup:"#/auction/setup",auctionRoom:"#/auction",auctionResults:"#/auction/results",auctionTeamBuilder:"#/auction/team-builder",standaloneTeamBuilder:"#/team-builder",battleSim:"#/battle-sim"};
+const APP_ROUTE_PATHS={menu:"",lore:"lore/",auctionSetup:"auction/setup/",auctionRoom:"auction/room/",auctionResults:"auction/results/",auctionTeamBuilder:"auction/team-builder/",standaloneTeamBuilder:"team-builder/",battleSim:"battle-sim/"};
+const LEGACY_PAGE_ROUTES={"index.html":"menu","lore.html":"lore","team-builder.html":"standaloneTeamBuilder","battle-sim.html":"battleSim","auction/setup.html":"auctionSetup","auction/room.html":"auctionRoom","auction/results.html":"auctionResults","auction/team-builder.html":"auctionTeamBuilder"};
 const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([route,hash])=>[hash,route]));
 let pendingRoutePath=null;
 
 function routePath(route){return APP_ROUTE_PATHS[route]||APP_ROUTE_PATHS.menu;}
+function openBattleSimPage(){updateRoute("battleSim");}
 function appRootUrl(){
     const doc=typeof document!=="undefined"?document:null;
     const baseHref=doc?.querySelector?.("base")?.href;
@@ -78,6 +79,7 @@ function getScreenRoute(screen){
     if(screen===setupScreen)return "auctionSetup";
     if(screen===auctionScreen)return uiState?.phase==="complete"||uiState?.phase==="team-builder"?"auctionResults":"auctionRoom";
     if(screen===formationScreen)return formationTeamNumber===0?"standaloneTeamBuilder":"auctionTeamBuilder";
+    if(screen?.id==="battle-sim-screen")return "battleSim";
     if(screen?.id==="lore-menu-screen"||screen?.id==="character-lore-screen"||screen?.id==="chemistry-lore-screen")return "lore";
     return null;
 }
@@ -148,7 +150,7 @@ function setVisibleScreen(screen,options={}){
         if(route&&(appRelativePath()!==routePath(route)||(route==="lore"&&databaseView!==databaseViewFromLocation()))){updateRoute(route,{databaseView,quickDraft:options.quickDraft??null});return;}
         if(route==="auctionSetup"&&typeof options.quickDraft==="boolean")updateRoute(route,{quickDraft:options.quickDraft});
     }
-    [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("soloDraftScreen"),document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
+    [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("battle-sim-screen"),document.getElementById("soloDraftScreen"),document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");
     if(screen?.id!=="soloDraftScreen"&&document.getElementById("soloDraftScreen")&&typeof soloRestorePageTitle==="function")soloRestorePageTitle();
     updateSiteDirectory(screen);
@@ -208,6 +210,10 @@ function navigateToRoute(route,options={}){
             break;
         case "standaloneTeamBuilder":
             openStandaloneBuilder();
+            break;
+        case "battleSim":
+            uiState={screen:"battle-sim",phase:"coming-soon",turn:null};
+            setVisibleScreen(document.getElementById("battle-sim-screen"),{...options,skipHistory:true});
             break;
         case "auctionSetup":
             uiState={screen:"setup",phase:"setup",turn:null};

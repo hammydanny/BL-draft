@@ -125,10 +125,13 @@ function showAuctionComplete(){
     auctionContent.innerHTML=`<div class="complete-screen results-screen">
       <div class="complete-label">BL // FINAL SELECTION REPORT</div>
       <h2>${activeDraftChallenge?esc(replayText(activeDraftChallenge.id==="daily"?"DAILY REPORT":"MISSION REPORT")):"DRAFT <span>COMPLETE</span>"}</h2><p class="results-subtitle">FINAL SQUAD DATA // ${auctionHistory.length} TRANSFERS</p>
-      <div class="results-actions results-actions-top result-action-toolbar">
-        <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
-        <button id="shareResultsButton" type="button">SAVE</button><button id="nativeShareResults" type="button">SHARE</button>
-        <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
+      <div class="results-actions-layout">
+        <div class="results-actions results-actions-top result-action-toolbar">
+          <button id="formationBuilderButton" class="primary-button restart-button"><span>TEAM BUILDER</span><b>⚽</b></button>
+          <button id="shareResultsButton" type="button">SAVE</button><button id="nativeShareResults" type="button">SHARE</button>
+          <button id="restartAuctionButton" class="primary-button restart-button secondary-action"><span>NEW AUCTION</span><b>↻</b></button>
+        </div>
+        <button id="battleSimResultsButton" type="button" class="battle-sim-cta battle-sim-results-button">Battle Sim <b aria-hidden="true">⚡</b></button>
       </div>
       ${team2CpuControlled?`<p class="cpu-status">${esc(SiteI18n.text("SINGLEPLAYER"))} · ${esc(SiteI18n.text(cpuDifficulty.toUpperCase()))}</p>`:""}
       ${typeof modeResultsMarkup==="function"?modeResultsMarkup():""}
@@ -142,7 +145,22 @@ function showAuctionComplete(){
     document.getElementById("nativeShareResults").onclick=()=>shareResultsImageAndLink();
     document.getElementById("shareResultsButton").addEventListener("click",openShareScreen);
     document.getElementById("restartAuctionButton").addEventListener("click",restartAuction);
+    document.getElementById("battleSimResultsButton").addEventListener("click",openBattleSimFromResults);
     if(appRelativePath()!==routePath("auctionResults"))updateRoute("auctionResults");
+}
+function openBattleSimFromResults(){
+    const unready=[1,2].filter(n=>{
+        const team=teamByNumber(n),ids=new Set((team?.players||[]).map(player=>player.id));
+        if(!ids.size)return true;
+        const assigned=new Set(Object.values(formationAssignments?.[n]||{}).filter(id=>ids.has(id)));
+        const activeCount=typeof formationDeploymentLimit==="function"?formationDeploymentLimit(n):Math.min(11,ids.size);
+        return assigned.size<activeCount;
+    });
+    if(unready.length){
+        showSiteError("Build both teams in Team Builder before entering Battle Sim. Assign every active position for Team 1 and Team 2, then try again.","BATTLE SIM NOT READY");
+        return;
+    }
+    openBattleSimPage();
 }
 function shareFormationSnapshot(n){
     const team=teamByNumber(n),formation=formationByTeam[n]||"4-3-3";

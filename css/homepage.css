@@ -150,3 +150,8 @@
 
 
 html[data-theme="light"] .home-section-link:visited,html[data-theme="light"] .scout-player:visited,html[data-theme="light"] .scout-chemistry-pair a:visited{color:inherit}
+
+/* BATTLE SIM // HOMEPAGE ENTRY USES THE STANDARD MODE-CARD STYLE */
+.home-modes{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1024px){.home-modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.home-modes{grid-template-columns:1fr}}
