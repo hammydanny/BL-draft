@@ -185,4 +185,4 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 }
 .battle-sim-cta b{font-size:18px;line-height:1}
 /* Keep the Battle Sim navigation item styled like its neighboring directory links. */
-.page-context-team .battle-sim-context{min-width:130px;min-height:42px;padding:10px 20px;}
+.page-context-team .battle-sim-context{min-width:130px;min-height:40px;padding:0 11px;}
