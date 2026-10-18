@@ -258,7 +258,7 @@ function scheduleFeedEvent(){
    if(keep.has(String(event.id))&&!root.querySelector('[data-event-id="'+String(event.id)+'"]')){
     const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();
     const node=renderEvent(event,false);node.style.setProperty("--bs-pop-delay","0ms");
-    root.prepend(node);
+    const stopPanel=byId("bs-stoppage-panel");if(stopPanel&&stopPanel.parentElement===root)root.insertBefore(node,stopPanel.nextElementSibling);else root.prepend(node);
     root.querySelectorAll("[data-event-id]").forEach(el=>{if(!keep.has(el.dataset.eventId))el.remove();});
     root.scrollTop=0;
    }
