@@ -323,12 +323,12 @@ body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:
 .bs-setup-pitch-markings{position:absolute;z-index:0;left:24%;right:24%;top:2.5%;height:17%;border:1px solid #d5ffe72b;border-top:0;pointer-events:none}
 .bs-setup-pitch-markings:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #d5ffe72b}
 .bs-setup-chemistry-lines,.bs-mini-chemistry-lines{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;pointer-events:none}
-.bs-chem-line{fill:none;stroke-width:.62;stroke-linecap:round;opacity:.67;vector-effect:non-scaling-stroke}
-.bs-chem-line.chemical{stroke:#f2e56c;opacity:.9;stroke-width:1.05}
-.bs-chem-line.elite{stroke:#5ef0b1;opacity:.82}
-.bs-chem-line.strong{stroke:#4bc8ff;opacity:.75}
-.bs-chem-line.link{stroke:#d3a7ff;opacity:.6}
-.bs-chem-line.weak{stroke:#ff7c91;opacity:.47;stroke-dasharray:1.4 1.8}
+.bs-chem-line{fill:none;stroke-width:1.35;stroke-linecap:round;opacity:.94;vector-effect:non-scaling-stroke;paint-order:stroke;filter:drop-shadow(0 0 2px rgba(255,255,255,.35))}
+.bs-chem-line.chemical{stroke:#fff16a;opacity:1;stroke-width:1.8;filter:drop-shadow(0 0 2px #f2e56c) drop-shadow(0 0 5px #f2e56c)}
+.bs-chem-line.elite{stroke:#5ef0b1;opacity:1;stroke-width:1.7;filter:drop-shadow(0 0 2px #5ef0b1) drop-shadow(0 0 5px #5ef0b1)}
+.bs-chem-line.strong{stroke:#4bc8ff;opacity:.98;stroke-width:1.6;filter:drop-shadow(0 0 2px #4bc8ff) drop-shadow(0 0 5px #4bc8ff)}
+.bs-chem-line.link{stroke:#d3a7ff;opacity:.93;stroke-width:1.45;filter:drop-shadow(0 0 2px #d3a7ff) drop-shadow(0 0 4px #d3a7ff)}
+.bs-chem-line.weak{stroke:#ff8da0;opacity:.84;stroke-width:1.2;stroke-dasharray:2 1.6;filter:drop-shadow(0 0 2px #ff7c91)}
 .bs-setup-formation-player{position:absolute;z-index:2;left:var(--player-x,50%);top:var(--player-y,50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:76px;max-width:25%;min-width:0;padding:3px 2px 4px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 62%,#ffffff25);border-radius:7px;background:#03120fe0;box-shadow:0 2px 8px #00140fa3;transform:translate(-50%,-50%);text-align:center}
 .bs-setup-formation-avatar{display:block;flex:0 0 auto;width:29px;height:29px;object-fit:cover;object-position:top center;border:2px solid var(--bs-team-color,#19a7ff);border-radius:50%;background:#102b42}
 .bs-setup-formation-player>strong{display:block;width:100%;overflow:hidden;color:#f5fff9;font:800 9px/1.05 "Barlow Condensed",sans-serif;text-overflow:ellipsis;white-space:nowrap}
