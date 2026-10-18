@@ -56,6 +56,8 @@ function hydrateMatch(snapshot){if(!snapshot||!snapshot.teams||!snapshot.events)
 function storeActiveMatch(){if(!match)return;try{sessionStorage.setItem(ACTIVE_MATCH_KEY,JSON.stringify(snapshotMatch(match)));}catch(e){}}
 function readStoredMatch(key){try{let raw=sessionStorage.getItem(key);if(!raw&&key===RESULT_KEY)raw=localStorage.getItem(key);return hydrateMatch(raw?JSON.parse(raw):null);}catch(e){return null;}}
 function ratingNow(p){return Math.round(clamp(6+(p&&p.match?Number(p.match.points)||0:0),3,10)*100)/100;}
+function ratingColor(value){const ratio=clamp((Number(value)-3)/7,0,1);return "hsl("+Math.round(ratio*120)+" 78% 46%)";}
+function playerMeta(ovr,rating,cls){const meta=make("span",cls||"bs-player-subline");put(meta,make("span","","OVR "+Math.round(ovr)+" · RATING "));const score=make("strong","bs-rating-value",Number(rating).toFixed(2));score.style.color=ratingColor(rating);put(meta,score);return meta;}
 function cardLabel(p){return p.sentOff?"RED CARD":p.yellows>0?"YELLOW "+p.yellows+"/3":"NO CARDS";}
 function portraitWithStamina(parent,p,size){
  const px=size||32,stamina=clamp(Number(p.stamina)||0,0,100),ring=make("span","bs-stamina-ring");
@@ -184,7 +186,7 @@ function renderInit(){
 function addPlayerRow(parent,p,team,slotIndex){
  const row=make("div","bs-match-player-row");row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,27);
  const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",p.role||"CM"));put(copy,line);
- put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)+" · RATING "+ratingNow(p).toFixed(2)));
+ put(copy,playerMeta(p.stats.ovr,ratingNow(p)));
  if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(copy,c);}
  const track=make("div","bs-stamina-track"),fill=make("span","bs-stamina-fill");fill.style.width=clamp(p.stamina,0,100)+"%";fill.style.background="hsl("+Math.round(clamp(p.stamina,0,100)*1.2)+" 82% 48%)";put(track,fill);put(copy,track);put(row,copy);put(parent,row);
 }
@@ -194,7 +196,7 @@ function matchTeamPanel(number){
  put(aside,make("span","bs-team-possession-label",match.possession===number?"IN POSSESSION":"OUT OF POSSESSION"));put(aside,renderMiniFormation(number));
  const benchHead=make("div","bs-panel-subhead");put(benchHead,make("strong","","RESERVES"));put(benchHead,make("span","",bench(t).length));put(aside,benchHead);
  const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,24);
-  const info=make("div","bs-player-copy");put(info,make("strong","",p.name));put(info,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)+" · RATING "+ratingNow(p).toFixed(2)));
+  const info=make("div","bs-player-copy");put(info,make("strong","",p.name));put(info,playerMeta(p.stats.ovr,ratingNow(p)));
   if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(info,c);}put(row,info);
   if(match.status==="paused"&&!match.requiredSub){const sel=make("select","bs-select bs-swap-select");sel.setAttribute("data-sub-target-for",p.id);option(sel,"","Replace starter…");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const current=playerIn(t,t.assignment[k]);if(current&&current.role!=="GK")option(sel,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+current.name);});put(row,sel);button(row,"SUB IN","bs-mini-button",{"data-sub-in":p.id,"data-sub-team":number});}
   put(benchList,row);
@@ -207,7 +209,7 @@ function renderMiniFormation(number){
   const p=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!p||p.sentOff||!slot)return;
   const card=make("div","bs-formation-player");card.style.setProperty("--player-x",clamp(Number(slot.x)||50,7,93)+"%");
   card.style.setProperty("--player-y",clamp(number===1?100-(Number(slot.y)||50):(Number(slot.y)||50),7,93)+"%");card.style.setProperty("--bs-team-color",team.color);
-  portraitWithStamina(card,p,24);put(card,make("strong","bs-formation-player-name",p.name));put(card,make("span","bs-formation-player-meta","OVR "+Math.round(p.stats.ovr)+" · "+ratingNow(p).toFixed(2)));
+  portraitWithStamina(card,p,24);put(card,make("strong","bs-formation-player-name",p.name));put(card,playerMeta(p.stats.ovr,ratingNow(p),"bs-formation-player-meta"));
   if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",p.sentOff?"RED CARD":"YC "+p.yellows);c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(card,c);}
   card.title=p.name+" · OVR "+Math.round(p.stats.ovr)+" · rating "+ratingNow(p).toFixed(2)+" · stamina "+Math.round(p.stamina)+"% · "+cardLabel(p);put(pitch,card);
  });return pitch;
@@ -225,7 +227,7 @@ function renderFeed(){
  const root=byId("bs-live-feed");if(!root||!match)return;
  const all=match.events.filter(e=>e.notable),visible=all.slice(-24),keep=new Set(visible.map(e=>String(e.id)));
  const existing=new Set(Array.from(root.querySelectorAll("[data-event-id]")).map(el=>el.dataset.eventId));
- if(!all.length){if(!root.querySelector(".bs-empty-feed")){root.replaceChildren();put(root,make("p","bs-empty-feed","The players take their positions. The first notable moment will appear here."));}}
+ if(!all.length){root.querySelectorAll(".bs-feed-event").forEach(el=>el.remove());if(!root.querySelector(".bs-empty-feed"))put(root,make("p","bs-empty-feed","The players take their positions. The first notable moment will appear here."));}
  else{
   const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();
   Array.from(root.querySelectorAll("[data-event-id]")).forEach(el=>{if(!keep.has(el.dataset.eventId))el.remove();});
@@ -234,7 +236,8 @@ function renderFeed(){
  root.scrollTop=0;const count=byId("bs-event-count");if(count)count.textContent=all.length+" NOTABLE EVENTS";
 }
 function renderStoppage(){
- const root=byId("bs-stoppage-panel");root.hidden=match.status!=="paused";if(root.hidden)return;
+ const root=byId("bs-stoppage-panel");if(!root)return;root.hidden=match.status!=="paused";if(root.hidden)return;
+ const feed=byId("bs-live-feed");if(feed){if(feed.firstElementChild!==root)feed.prepend(root);feed.scrollTop=0;}
  const required=match.requiredSub;
  byId("bs-stoppage-title").textContent=match.stoppage||"PLAY PAUSED";
  byId("bs-stoppage-description").textContent=required?"A player has been sent off. Select a replacement before proceeding.":match.stoppage==="HALF TIME"?"Half-time. Adjust tactics or make substitutions before the second half.":match.stoppage==="GOAL"?"Goal confirmed. Proceed to the restart.":match.stoppage==="SAVE"?"The goalkeeper has possession. Proceed to the next sequence.":"Play is paused. Make substitutions or adjust tactics before proceeding.";
@@ -277,7 +280,7 @@ function renderMatch(){
   const feed=make("div","bs-live-feed");feed.id="bs-live-feed";feed.setAttribute("aria-live","polite");feed.setAttribute("aria-label","Notable match events");put(fp,feed);put(center,fp);
   const stop=make("section","bs-stoppage-panel");stop.id="bs-stoppage-panel";stop.hidden=true;put(stop,make("span","bs-kicker","SEQUENCE PAUSED"));
   const st=make("h2");st.id="bs-stoppage-title";put(stop,st);const sd=make("p");sd.id="bs-stoppage-description";put(stop,sd);
-  const controls=make("div","bs-set-piece-controls");controls.id="bs-set-piece-controls";put(stop,controls);put(center,stop);
+  const controls=make("div","bs-set-piece-controls");controls.id="bs-set-piece-controls";put(stop,controls);put(feed,stop);
  }else{
   const teams=root.querySelectorAll(":scope > .bs-match-team-panel");if(teams[0])root.replaceChild(matchTeamPanel(1),teams[0]);if(teams[1])root.replaceChild(matchTeamPanel(2),teams[1]);
  }
@@ -306,7 +309,7 @@ function renderRatingTable(){
    const row=make("tr"),name=make("td","bs-result-player-name"),person=make("span","bs-result-player");
    portrait(person,p,29);put(person,make("strong","",p.name));put(name,person);put(row,name);
    const cards=p.yellows+"Y"+(p.sentOff?" · RC":"");
-   [p.match.rating.toFixed(2),p.match.goals,p.match.assists,p.match.shots,p.match.passes+"/"+p.match.passesAttempted,p.match.tackles,p.match.interceptions,p.match.saves,cards,Math.round(p.stamina)+"%"].forEach((v,i)=>put(row,make("td",i===0?"bs-rating-cell":"",v)));
+   [p.match.rating.toFixed(2),p.match.goals,p.match.assists,p.match.shots,p.match.passes+"/"+p.match.passesAttempted,p.match.tackles,p.match.interceptions,p.match.saves,cards,Math.round(p.stamina)+"%"].forEach((v,i)=>{const cell=make("td",i===0?"bs-rating-cell":"",v);if(i===0)cell.style.color=ratingColor(p.match.rating);put(row,cell);});
    row.style.setProperty("--bs-team-color",t.color);put(body,row);
   });
   put(table,body);put(scroll,table);put(section,scroll);put(root,section);
