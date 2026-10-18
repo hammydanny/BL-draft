@@ -1,4 +1,15 @@
-function playerBattleBadges(player){const profile=player&&player.battleSim;if(!profile)return"";const items=[...(profile.passives||[]).map(x=>({label:"PASSIVE · "+x.name,title:x.description})),...(profile.specials||[]).map(x=>({label:"SPECIAL · "+x.name,title:x.description}))];return items.length?`<span class="player-battle-badges">${items.map(x=>`<small class="player-battle-badge" title="${esc(x.title)}">${esc(x.label)}</small>`).join("")}</span>`:"";}
+function playerBattleAbilitiesMarkup(player){
+    const profile=player?.battleSim||{};
+    const renderBox=(kind,title,abilities)=>{
+        const content=abilities.length
+            ?abilities.map(ability=>`<div class="player-battle-ability"><strong>${esc(ability.name||title)}</strong><p>${esc(ability.description||"No description available.")}</p></div>`).join("")
+            :`<p class="player-battle-empty">NO ${title} AVAILABLE</p>`;
+        return `<section class="player-battle-ability-box player-battle-${kind}"><h3>${title}</h3>${content}</section>`;
+    };
+    const passives=Array.isArray(profile.passives)?profile.passives:[];
+    const specials=Array.isArray(profile.specials)?profile.specials:[];
+    return `<div class="player-battle-ability-grid">${renderBox("passive","PASSIVE",passives)}${renderBox("special","SPECIAL MOVE",specials)}</div>`;
+}
 // BLUE LOCK DRAFT // FORMATION UI
 // Split from the former root script.js. Classic scripts share the same global scope.
 function waitForAutoBestPaint(){
@@ -132,7 +143,7 @@ function createPlayerInfoSidebar(team){
     </div>
     <div class="player-info-section player-info-abilities">
       <div class="player-info-section-title"><span>BATTLE SIM // ABILITIES</span></div>
-      ${playerBattleBadges(player)||'<span class="player-battle-empty">NO PASSIVES OR SPECIAL MOVES</span>'}
+      ${playerBattleAbilitiesMarkup(player)}
     </div>
     <div class="player-info-section current-position-rating">
       <div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div>
