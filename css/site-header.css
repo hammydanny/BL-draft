@@ -185,4 +185,15 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 }
 .battle-sim-cta b{font-size:18px;line-height:1}
 /* Keep the Battle Sim navigation item styled like its neighboring directory links. */
-.page-context-team .battle-sim-context{min-width:130px;min-height:40px;padding:0 11px;}
+.page-context-team .battle-sim-context{
+    min-width:130px;min-height:40px;padding:0 11px;
+    background:#ffd33d;color:#17202a;border:1px solid #d4aa0d;
+    font-weight:900;letter-spacing:1px;text-transform:uppercase;
+    box-shadow:none;transform:none;transition:none;
+}
+.page-context-team .battle-sim-context:hover:not(:disabled),
+.page-context-team .battle-sim-context:focus-visible,
+.page-context-team .battle-sim-context:active{
+    background:#ffd33d;color:#17202a;border-color:#d4aa0d;
+    box-shadow:none;transform:none;
+}
