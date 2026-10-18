@@ -8,7 +8,9 @@ function playerBattleAbilitiesMarkup(player){
     };
     const passives=Array.isArray(profile.passives)?profile.passives:[];
     const specials=Array.isArray(profile.specials)?profile.specials:[];
-    return `<div class="player-battle-ability-grid">${renderBox("passive","PASSIVE",passives)}${renderBox("special","SPECIAL MOVE",specials)}</div>`;
+    const ultimates=Array.isArray(profile.ultimates)?profile.ultimates:[];
+    const ultimateBox=ultimates.length?renderBox("ultimate","ULTIMATE",ultimates):"";
+    return `<div class="player-battle-ability-grid">${renderBox("passive","PASSIVE",passives)}${renderBox("special","SPECIAL MOVE",specials)}${ultimateBox}</div>`;
 }
 // BLUE LOCK DRAFT // FORMATION UI
 // Split from the former root script.js. Classic scripts share the same global scope.
