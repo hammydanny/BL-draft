@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="css/site-information.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/localization.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/mobile.css?v=0.7.2.1&auction=phase2&builder=phase3&database=phase4&final=phase5">
-    <link rel="stylesheet" href="css/battle-sim.css?v=0.7.3.1">
+    <link rel="stylesheet" href="css/battle-sim.css?v=0.7.4.0">
     <link rel="stylesheet" href="css/replayability.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/draft-modes.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/solo-draft.css?v=0.7.2.1">
@@ -62,7 +62,7 @@
     <script defer src="js/site-runtime.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/ui/replayability-ui.js?v=0.7.2.1"></script>
     <script defer src="js/ui/solo-draft-ui.js?v=0.7.2.1"></script>
-    <script defer src="js/battle-sim.js?v=0.7.3.1" fetchpriority="high"></script>
+    <script defer src="js/battle-sim.js?v=0.7.4.0" fetchpriority="high"></script>
     <script defer src="js/app.js?v=0.7.2.1" fetchpriority="high"></script>
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
@@ -521,7 +521,7 @@
                 <div class="bs-score-names"><strong id="bs-match-team-name-1" class="bs-result-team-name">TEAM 1</strong><strong class="bs-result-final-score"><span id="bs-score-1">0</span> — <span id="bs-score-2">0</span></strong><strong id="bs-match-team-name-2" class="bs-result-team-name">TEAM 2</strong></div>
                 <span id="bs-match-status" class="bs-match-meta">LIVE</span></div>
             <div id="bs-match-team-panels" class="bs-match-layout"></div>
-            <div class="bs-match-actions"><button id="bs-return-setup" type="button" class="bs-button bs-button--secondary">LINE-UP / TACTICS</button><button id="bs-proceed-match" type="button" class="bs-button bs-button--primary" disabled>SIMULATING…</button></div>
+            <div class="bs-match-actions"><button id="bs-pause-match" type="button" class="bs-button bs-button--secondary">PAUSE SIM</button><button id="bs-fast-forward" type="button" class="bs-button bs-button--secondary">FAST-FORWARD TO RESULTS ⏩</button><button id="bs-proceed-match" type="button" class="bs-button bs-button--primary" disabled>WAITING FOR STOPPAGE…</button></div>
         </section>
         <section id="bs-results-view" class="bs-view" aria-labelledby="bsResultsTitle" hidden>
             <div class="bs-result-hero"><span class="bs-kicker">03 // FINAL WHISTLE</span><h2 id="bsResultsTitle">MATCH REPORT</h2><p id="bs-result-verdict" class="bs-result-verdict">FULL TIME</p><div id="bs-result-score" class="bs-result-score"></div>
