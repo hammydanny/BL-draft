@@ -49,11 +49,11 @@
     <script defer src="js/results.js?v=0.7.2.1&auction=phase2&builder=phase3&final=phase5&share=phase4&battle=phase2" fetchpriority="high"></script>
     <script defer src="js/auction.js?v=0.7.2.1&auction=phase2" fetchpriority="high"></script>
     <script defer src="js/ui/auction-ui.js?v=0.7.8.7&auction=phase2" fetchpriority="high"></script>
-    <script defer src="js/router.js?v=0.7.2.1&battle=phase1" fetchpriority="high"></script>
+    <script defer src="js/router.js?v=0.7.9.6&battle=phase1" fetchpriority="high"></script>
     <script defer src="js/ui/site-information.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/ui/homepage.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/ui/menu.js?v=0.7.2.1" fetchpriority="high"></script>
-    <script defer src="js/ui/site-directory.js?v=0.7.2.1&auction=phase2&battle=phase2" fetchpriority="high"></script>
+    <script defer src="js/ui/site-directory.js?v=0.7.9.6&auction=phase2&battle=phase2" fetchpriority="high"></script>
     <script defer src="js/ui/setup.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/standalone-builder.js?v=0.7.8.7&builder=phase3" fetchpriority="high"></script>
     <script defer src="js/ui/formation-ui.js?v=0.7.9.5&builder=phase3&database=phase4" fetchpriority="high"></script>
@@ -99,7 +99,7 @@
                     </div>
                 </details>
                 <button class="directory-item" type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder">TEAM BUILDER</button>
-                <button class="directory-item battle-sim-nav" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/" data-directory-section="battle-sim">BATTLE SIM</button>
+                <button class="directory-item battle-sim-nav" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim">BATTLE SIM</button>
                 <details class="directory-group">
                     <summary class="directory-item" data-directory-section="database" aria-expanded="false">DATABASE <span aria-hidden="true">⌄</span></summary>
                     <div class="directory-options">
@@ -184,7 +184,7 @@
                         <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4h22v24H5Zm6 0v24M15 10h8M15 15h8M15 20h5"/></svg><span>03 // DISCOVER</span></span>
                         <strong class="home-mode-title">DATABASE</strong><span class="home-mode-description">Explore player ratings, positions, chemistry and character dossiers before your next move.</span><span class="home-mode-action">EXPLORE DATABASE <b aria-hidden="true">→</b></span>
                     </button>
-                    <button id="menuBattleSim" class="home-mode home-mode--battle-sim" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/" data-directory-section="battle-sim" onclick="openBattleSimPage()">
+                    <button id="menuBattleSim" class="home-mode home-mode--battle-sim" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim" onclick="openBattleSimPage()">
                         <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M18 2 7 17h7l-1 13 12-18h-7Z"/></svg><span>04 // COMPETE</span></span>
                         <strong class="home-mode-title">BATTLE SIM</strong><span class="home-mode-description">Simulate a battle between two custom made squads.</span><span class="home-mode-action">ENTER BATTLE SIM <b aria-hidden="true">→</b></span>
                     </button>

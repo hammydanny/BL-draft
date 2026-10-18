@@ -7,7 +7,7 @@ const LEGACY_HASH_ROUTES=Object.fromEntries(Object.entries(APP_ROUTES).map(([rou
 let pendingRoutePath=null;
 
 function routePath(route){return APP_ROUTE_PATHS[route]||APP_ROUTE_PATHS.menu;}
-function openBattleSimPage(){updateRoute("battleSimInitializer");}
+function openBattleSimPage(){if(historyOnlyNavigation()){updateRoute("battleSimInitializer");return;}assignLocation(new URL("battle-sim-disabled/",appRootUrl()),"battleSimDisabled");}
 function appRootUrl(){
     const doc=typeof document!=="undefined"?document:null;
     const baseHref=doc?.querySelector?.("base")?.href;

@@ -8,8 +8,9 @@ function refreshDirectoryResume(){
 function updateSiteDirectory(screen){
     const informationPage=document.body.dataset.sitePage;
     if(informationPage){
-        setMobilePageContext(({privacy:"PRIVACY",legal:"LEGAL",changelog:"CHANGELOG","404":"PAGE NOT FOUND"})[informationPage]||"HOME");
-        document.getElementById("siteBreadcrumb").textContent=`HOME / ${informationPage.toUpperCase()}`;
+        const pageLabel=({privacy:"PRIVACY",legal:"LEGAL",changelog:"CHANGELOG","404":"PAGE NOT FOUND","battle-sim-disabled":"BATTLE SIM DISABLED"})[informationPage]||informationPage.toUpperCase();
+        setMobilePageContext(pageLabel||"HOME");
+        document.getElementById("siteBreadcrumb").textContent=`HOME / ${pageLabel}`;
         document.querySelectorAll(".footer-links a").forEach(link=>{
             if(new URL(link.href).pathname.endsWith(`/${informationPage}/`))link.setAttribute("aria-current","page");
         });
@@ -127,7 +128,7 @@ function initSiteDirectory(){
             <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
             <button type="button" data-directory-action="challenges" data-directory-href="./?challenge=all" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>CHALLENGES</strong></button>
             <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>04</span><strong>TEAM BUILDER</strong></button>
-            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>05</span><strong>BATTLE SIM</strong></button>
+            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>05</span><strong>BATTLE SIM</strong></button>
             <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></button>
           </div>
           <div class="mobile-secondary-links">
