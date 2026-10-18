@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Shizuka Haiji (ID 71).
+const PLAYER_71_REFERENCE = {"overview":"A Japanese forward who survived the Second Selection with Nanase, Hiiragi and Tsunzaki. He played on Third Selection Team A3 and joined FC Barcha during the NEL. A distinctive weapon is not specifically demonstrated. His selection jersey number was 19.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Small-sided appearance and NEL bid do not establish a deployed eleven-a-side position."}};

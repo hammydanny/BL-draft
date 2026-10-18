@@ -61,7 +61,7 @@ function createPlayerCard(){
         <div class="player-card-identity">
           <div class="auction-player-heading"><div>
           <div class="player-card-label">AUCTION ${String(auctionNumber).padStart(2,"0")}</div>
-          <div class="player-card-name">${esc(currentPlayer.name)}</div>${playerNationalityMarkup(currentPlayer)}${positionBadges(currentPlayer)}
+          <div class="player-card-name">${esc(currentPlayer.name)}</div>${playerNationalityMarkup(currentPlayer)}${positionBadges(currentPlayer)}${playerBattleBadges(currentPlayer)}
           <div class="mobile-evaluation-score"><span>OVR</span><strong>${playerOverall(currentPlayer)}</strong><b>${playerStatGrade(playerOverall(currentPlayer))}</b></div>
           </div></div>
         </div>
@@ -83,7 +83,7 @@ function createTeamTracker(team,number){
     const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
       <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
-        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small></span>
+        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small>${playerBattleBadges(p)}</span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
     const warnings=[];
     if(full)warnings.push("ROSTER FULL");

@@ -1,0 +1,466 @@
+/* BATTLE SIM // MATCH INTERFACE */
+.battle-sim-page{max-width:1640px;margin:0 auto;padding:clamp(14px,2.2vw,30px);color:var(--text-primary,#eaf2ff)}
+.battle-sim-page [hidden]{display:none!important}
+.bs-view{width:100%;min-width:0}
+.bs-intro-row,.bs-page-actions,.bs-panel-topline,.bs-match-scorebar,.bs-result-actions{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.bs-intro-row{align-items:flex-start;margin-bottom:22px}
+.bs-kicker{display:block;color:var(--bs-team-color,#65c4ff);font:800 12px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.bs-intro-copy h2,.bs-result-hero h2{margin:7px 0 5px;font:900 italic clamp(28px,4vw,46px)/1 "Barlow Condensed",sans-serif;letter-spacing:.025em}
+.bs-intro-copy p,.bs-result-hero p{margin:7px 0 0;color:var(--text-secondary,#9bb2c9);max-width:70ch}
+.bs-status-chip{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--border-subtle,#25435d);border-radius:999px;padding:8px 12px;color:var(--text-secondary,#9bb2c9);font-size:11px;font-weight:800;letter-spacing:.08em}
+.bs-status-chip:before{content:"";width:7px;height:7px;border-radius:50%;background:#60d7ab;box-shadow:0 0 12px #60d7ab70}
+.bs-button,.bs-mini-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border-subtle,#2d4c68);border-radius:7px;padding:11px 15px;background:var(--bg-surface-raised,#0b1826);color:var(--text-primary,#eaf2ff);font:800 12px/1.1 "Barlow Condensed",sans-serif;letter-spacing:.1em;cursor:pointer;transition:transform .15s ease,border-color .15s ease}
+.bs-button:hover,.bs-mini-button:hover{border-color:#65c4ff;transform:translateY(-1px)}
+.bs-button:disabled,.bs-mini-button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.bs-button--primary{background:linear-gradient(110deg,#0876bc,#14a7ea);border-color:#2bb9ff;color:#fff;padding:14px 22px}
+.bs-button--secondary{background:transparent}
+.bs-mini-button{padding:7px 9px;font-size:10px;letter-spacing:.06em;white-space:nowrap}
+.bs-team-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.bs-team-card,.bs-match-team-panel,.bs-pitch-panel,.bs-live-feed-panel,.bs-result-team-card,.bs-ratings-team,.bs-stoppage-panel,.bs-archive-panel{background:var(--bg-surface,#07111c);border:1px solid var(--border-subtle,#203b54);border-radius:12px;min-width:0;overflow:hidden}
+.bs-team-card{padding:18px;box-shadow:inset 0 2px 0 var(--bs-team-color,#19a7ff)}
+.bs-team-card-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.bs-team-card-heading h2{font:900 italic clamp(20px,2.5vw,29px)/1 "Barlow Condensed",sans-serif;margin:0;color:var(--text-primary,#eaf2ff);overflow-wrap:anywhere}
+.bs-team-identity{display:grid;grid-template-columns:minmax(0,1fr) 80px;gap:10px;margin-bottom:15px}
+.bs-field{display:flex;flex-direction:column;gap:6px;min-width:0;color:var(--text-secondary,#9bb2c9);font-size:10px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+.bs-field-label{display:block}
+.bs-name-input,.bs-select,.bs-color-input{width:100%;min-width:0;border:1px solid var(--border-subtle,#29455d);border-radius:6px;background:var(--bg-input,#040b13);color:var(--text-primary,#eaf2ff);padding:10px;font:600 13px "Rajdhani",sans-serif;letter-spacing:normal}
+.bs-color-input{height:39px;padding:3px;cursor:pointer}
+.bs-source-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:0 0 17px}
+.bs-roster-section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 9px;padding-bottom:7px;border-bottom:1px solid var(--border-subtle,#203b54)}
+.bs-roster-section-heading h3,.bs-panel-subhead strong{margin:0;color:var(--text-primary,#eaf2ff);font:800 13px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-roster-section-heading>span,.bs-panel-subhead>span{color:var(--text-secondary,#91a7bd);font-size:10px;font-weight:800;letter-spacing:.08em}
+.bs-starter-list,.bs-reserve-list{display:grid;gap:5px}
+.bs-player-row,.bs-reserve-row,.bs-match-player-row,.bs-bench-player{display:flex;align-items:center;gap:9px;min-width:0;padding:7px;border-radius:7px;background:color-mix(in srgb,var(--bg-surface-raised,#0b1826) 88%,var(--bs-team-color,#19a7ff) 12%);border:1px solid transparent}
+.bs-player-row:hover,.bs-reserve-row:hover{border-color:color-mix(in srgb,var(--bs-team-color,#19a7ff) 48%,transparent)}
+.bs-portrait{display:block;flex:0 0 auto;object-fit:cover;object-position:top center;border-radius:5px;background:#102b42;border:1px solid #42627a35}
+.bs-player-copy{display:flex;flex:1;flex-direction:column;min-width:0;gap:3px}
+.bs-player-name-line{display:flex;align-items:center;justify-content:space-between;gap:7px;min-width:0}
+.bs-player-name-line strong,.bs-player-copy>strong{font-size:12px;color:var(--text-primary,#eaf2ff);overflow-wrap:anywhere}
+.bs-player-subline{display:block;color:var(--text-secondary,#9bb2c9);font-size:10px;letter-spacing:.025em}
+.bs-role-badge{display:inline-flex;align-items:center;justify-content:center;min-width:28px;flex-shrink:0;padding:3px 5px;border-radius:4px;border:1px solid var(--bs-team-color,#19a7ff);color:var(--bs-team-color,#65c4ff);font:800 10px "Barlow Condensed",sans-serif}
+.bs-reserve-row{flex-wrap:wrap}
+.bs-reserve-row .bs-player-copy{flex-basis:70px}
+.bs-swap-select{flex:1;min-width:115px;max-width:180px;padding:7px;font-size:11px}
+.bs-empty-note{margin:6px 0;color:var(--text-secondary,#91a7bd);font-size:12px}
+.bs-strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.bs-strategy-grid--compact{grid-template-columns:1fr;gap:7px;margin-top:10px}
+.bs-strategy-control{display:flex;flex-direction:column;min-width:0;gap:6px}
+.bs-strategy-heading,.bs-strategy-ends{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bs-strategy-heading strong{color:var(--text-primary,#eaf2ff);font-size:11px;font-weight:800}
+.bs-strategy-value{color:var(--bs-team-color,#65c4ff);font-size:11px;font-weight:900;font-variant-numeric:tabular-nums}
+.bs-range{display:block;accent-color:var(--bs-team-color,#19a7ff);width:100%;margin:0;cursor:pointer}
+.bs-strategy-ends{color:var(--text-secondary,#8299ae);font-size:9px}
+.bs-save-team-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-help-text{margin:12px 0 0;color:var(--text-secondary,#9bb2c9);font-size:12px}
+.bs-match-scorebar{position:sticky;top:8px;z-index:4;margin-bottom:14px;padding:15px 18px;background:var(--bg-surface-raised,#0b1826);border:1px solid var(--border-subtle,#25435d);border-radius:12px;box-shadow:0 8px 30px #0002}
+.bs-score-names{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:clamp(8px,2vw,28px);width:100%;max-width:850px;margin:auto;text-align:center}
+.bs-score-names .bs-result-final-score{font:900 clamp(28px,4vw,48px)/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bs-score-names .bs-result-team-name{font:800 clamp(13px,1.5vw,21px)/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.bs-match-clock{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:95px}
+.bs-match-clock strong{font:900 25px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;color:var(--text-primary,#eaf2ff)}
+.bs-match-clock span,.bs-match-meta{color:var(--text-secondary,#9bb2c9);font-size:10px;font-weight:800;letter-spacing:.1em}
+.bs-match-layout{display:grid;grid-template-columns:minmax(205px,.9fr) minmax(330px,1.55fr) minmax(205px,.9fr);gap:12px;align-items:start}
+.bs-match-team-panel{padding:12px;border-top:3px solid var(--bs-team-color,#19a7ff)}
+.bs-match-team-panel h2{font:900 italic 21px/1.05 "Barlow Condensed",sans-serif;margin:6px 0;color:var(--text-primary,#eaf2ff);overflow-wrap:anywhere}
+.bs-team-possession-label{display:inline-block;color:var(--bs-team-color,#65c4ff);font-size:9px;font-weight:900;letter-spacing:.08em}
+.bs-panel-subhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:15px 0 8px}
+.bs-match-player-list,.bs-match-bench{display:grid;gap:5px}
+.bs-match-player-row,.bs-bench-player{padding:6px;gap:7px}
+.bs-match-player-row .bs-player-name-line strong,.bs-bench-player .bs-player-copy>strong{font-size:11px}
+.bs-match-player-row .bs-portrait,.bs-bench-player .bs-portrait{width:29px;height:34px}
+.bs-stamina-track{height:3px;width:100%;border-radius:99px;overflow:hidden;background:#1a2c3b;margin-top:2px}
+.bs-stamina-fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#f6bf53,#5bdaa8)}
+.bs-bench-player{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 4px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-bench-player .bs-player-copy{flex-basis:70px}
+.bs-sub-target{min-width:110px;flex:1;font-size:10px;padding:7px}
+.bs-match-tactics{margin-top:14px;padding-top:10px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-match-tactics summary{cursor:pointer;color:var(--text-secondary,#a4b8cb);font:800 11px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-center-stage{min-width:0;display:grid;gap:12px}
+.bs-pitch-panel{padding:12px;background:#062b28;border-color:#27685b}
+.bs-pitch-panel .bs-kicker{color:#a1e7c5}
+.bs-panel-topline{gap:10px;margin-bottom:10px}
+.bs-panel-topline h2{margin:0;font:900 17px "Barlow Condensed",sans-serif;color:var(--text-primary,#eaf2ff);letter-spacing:.06em}
+.bs-event-count,.bs-possession-status{color:#9fe1ca;font-size:9px;font-weight:900;letter-spacing:.08em}
+.bs-possession-footnote{margin:8px 0 0;color:#a5d8c5;font-size:10px;font-weight:800;text-align:center;letter-spacing:.07em}
+.bs-pitch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(6,minmax(36px,1fr));gap:3px;min-height:290px;padding:5px;border:1px solid #6fc6aa4a;border-radius:6px;background:linear-gradient(90deg,#0c5141,#0b473b)}
+.bs-zone{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:36px;border:1px solid #a0e6ca32;background:#1a6a4a4d;border-radius:3px;overflow:hidden}
+.bs-zone:after{content:attr(aria-label);position:absolute;top:3px;left:4px;color:#d6ffe431;font-size:8px}
+.bs-zone--box{background:#a6dcca2d;border-color:#b3ffe67a}
+.bs-zone--ball{box-shadow:inset 0 0 0 2px #f8d976}
+.bs-zone-markers{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:2px;align-items:center;justify-content:center;padding:9px 2px 2px}
+.bs-zone-player{display:flex;align-items:center;justify-content:center;min-width:19px;height:19px;border:1px solid var(--bs-team-color,#19a7ff);border-radius:50%;background:#07111ced;color:#fff;font:900 7px "Barlow Condensed",sans-serif}
+.bs-ball{position:absolute;z-index:2;top:3px;right:4px;color:#ffe28b;font-size:11px;text-shadow:0 0 8px #ffe28b}
+.bs-live-feed-panel{display:flex;flex-direction:column;min-height:330px;max-height:580px}
+.bs-live-feed-panel>.bs-panel-topline{padding:12px 13px 9px;margin:0;border-bottom:1px solid var(--border-subtle,#203b54)}
+.bs-live-feed{display:flex;flex-direction:column;gap:8px;overflow-y:auto;overscroll-behavior:contain;padding:10px;min-height:250px;max-height:500px;scroll-behavior:smooth}
+.bs-feed-event{flex:0 0 auto;padding:10px;border-radius:7px;border:1px solid var(--border-subtle,#223d54);background:var(--bg-surface-raised,#0b1826);border-left:3px solid #5b7a91}
+.bs-feed-event.is-notable{border-left-color:#65c4ff}
+.bs-feed-event--goal{background:color-mix(in srgb,#0876bc 16%,var(--bg-surface-raised,#0b1826));border-color:#269bd1}
+.bs-feed-event--save{border-left-color:#f5cf66}
+.bs-feed-event--interception,.bs-feed-event--turnover{border-left-color:#f49b66}
+.bs-feed-event-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.bs-event-time{color:#72cbff;font:900 14px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.bs-event-type{font:800 9px "Barlow Condensed",sans-serif;letter-spacing:.1em;color:var(--text-secondary,#8fa9bf)}
+.bs-event-description{margin:0;color:var(--text-primary,#eaf2ff);font-size:12px;line-height:1.45}
+.bs-event-actors{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
+.bs-event-actor{display:flex;align-items:center;gap:6px;min-width:0;color:var(--text-secondary,#aec0d1);font-size:10px;font-weight:800}
+.bs-event-portrait{width:27px;height:31px;border-radius:4px;object-fit:cover;object-position:top center;background:#102b42}
+.bs-event-dialogue{margin-top:8px;padding-left:9px;border-left:2px solid #65c4ff66}
+.bs-event-dialogue p{margin:3px 0;color:#a9dfff;font-size:11px;font-style:italic;line-height:1.4}
+.bs-routine-tag{display:inline-block;margin-top:7px;color:#778ca0;font-size:9px;letter-spacing:.07em}
+.bs-empty-feed{margin:auto;padding:30px 12px;color:var(--text-secondary,#8da3b8);text-align:center;font-size:12px}
+.bs-stoppage-panel{padding:14px;border-color:#d1a95170;background:color-mix(in srgb,#72531c 15%,var(--bg-surface,#07111c))}
+.bs-stoppage-panel h2{margin:5px 0;color:#f6d87b;font:900 22px "Barlow Condensed",sans-serif}
+.bs-stoppage-panel p{margin:6px 0 12px;color:var(--text-secondary,#c3ccce);font-size:12px;line-height:1.5}
+.bs-set-piece-controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.bs-set-piece-controls:empty{display:none}
+.bs-match-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:14px}
+.bs-result-hero{padding:clamp(18px,3vw,34px);border-radius:12px;border:1px solid var(--border-subtle,#23435d);background:linear-gradient(120deg,var(--bg-surface-raised,#0b1826),var(--bg-surface,#07111c));margin-bottom:16px}
+.bs-result-verdict{color:#78d7b0!important;font:900 13px "Barlow Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.bs-result-score{display:flex;align-items:center;justify-content:center;gap:clamp(12px,4vw,50px);margin:20px 0;text-align:center}
+.bs-result-team-name{max-width:30%;color:var(--bs-team-color,#eaf2ff);font:900 clamp(17px,2.4vw,30px)/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.bs-result-final-score{font:900 clamp(36px,6vw,72px)/.95 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;color:var(--text-primary,#eaf2ff);white-space:nowrap}
+.bs-result-team-summaries{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.bs-result-team-card{padding:16px;border-top:3px solid var(--bs-team-color,#19a7ff)}
+.bs-result-team-card h3{margin:6px 0 14px;font:900 21px "Barlow Condensed",sans-serif}
+.bs-result-team-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bs-result-metric{padding:9px 8px;background:var(--bg-surface-raised,#0b1826);border-radius:6px;min-width:0}
+.bs-result-metric span{display:block;font-size:10px;color:var(--text-secondary,#9bb2c9)}
+.bs-result-metric strong{display:block;margin-top:3px;font:900 19px "Barlow Condensed",sans-serif;color:var(--text-primary,#eaf2ff)}
+.bs-result-section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 0 12px}
+.bs-result-section-heading h2{margin:0;font:900 24px "Barlow Condensed",sans-serif;letter-spacing:.04em}
+.bs-ratings-team{margin-bottom:14px;padding:14px}
+.bs-ratings-team h3{margin:0 0 10px;font:900 18px "Barlow Condensed",sans-serif}
+.bs-table-scroll{overflow-x:auto}
+.bs-ratings-table{width:100%;border-collapse:collapse;min-width:780px;font-size:11px}
+.bs-ratings-table th,.bs-ratings-table td{padding:9px 8px;border-bottom:1px solid var(--border-subtle,#203b54);text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bs-ratings-table th{color:var(--text-secondary,#9bb2c9);font-size:9px;letter-spacing:.07em;text-transform:uppercase;background:var(--bg-surface-raised,#0b1826)}
+.bs-ratings-table td:first-child,.bs-ratings-table th:first-child{text-align:left}
+.bs-result-player{display:flex;align-items:center;gap:8px;min-width:130px}
+.bs-result-player strong{font-size:11px;white-space:normal;text-align:left;color:var(--text-primary,#eaf2ff)}
+.bs-rating-cell{font-weight:900;color:var(--bs-rating-color,#78d7b0)}
+.bs-archive-panel{margin-top:22px}
+.bs-archive-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;border-bottom:1px solid var(--border-subtle,#203b54)}
+.bs-archive-heading h2{margin:0;font:900 23px "Barlow Condensed",sans-serif}
+.bs-event-archive{display:flex;flex-direction:column;gap:7px;max-height:900px;overflow:auto;padding:12px}
+.bs-event-archive .bs-feed-event{background:var(--bg-surface-raised,#0b1826)}
+@media(max-width:1180px){.bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}.bs-match-layout>.bs-match-team-panel:last-child{grid-column:1/-1}.bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.battle-sim-page{padding:12px}.bs-team-grid,.bs-result-team-summaries{grid-template-columns:1fr}.bs-intro-row{flex-direction:column}.bs-match-layout{grid-template-columns:minmax(0,1fr)}.bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}.bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:1fr}.bs-match-scorebar{position:static;gap:7px;align-items:stretch;flex-direction:column}.bs-score-names{max-width:100%;gap:8px}.bs-match-clock{flex-direction:row;justify-content:center}.bs-pitch-grid{min-height:250px;grid-template-rows:repeat(6,minmax(31px,1fr))}.bs-set-piece-controls{grid-template-columns:1fr}.bs-team-identity{grid-template-columns:minmax(0,1fr) 72px}.bs-source-row{grid-template-columns:1fr}.bs-save-team-row{grid-template-columns:1fr}.bs-result-score{gap:7px}.bs-result-team-name{max-width:34%;font-size:15px}.bs-result-final-score{font-size:34px}.bs-result-team-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.bs-page-actions .bs-button{flex:1}}
+@media(prefers-reduced-motion:reduce){.bs-button,.bs-mini-button,.bs-live-feed{transition:none;scroll-behavior:auto}}
+
+/* Disciplinary stoppages must be unmistakable and usable on small screens. */
+.bs-required-substitution{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;grid-column:1/-1;padding:12px;border:1px solid color-mix(in srgb,#ff315d 55%,var(--border-subtle,#203b54));border-left:3px solid #ff315d;border-radius:8px;background:color-mix(in srgb,#ff315d 7%,var(--bg-surface,#07111c))}
+.bs-required-substitution>strong{color:#ff8199;font:900 13px/1.2 "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-required-substitution .bs-help-text{margin:0}
+.bs-required-substitution .bs-select,.bs-required-substitution .bs-button{width:100%}
+
+
+/* BATTLE SIM V0.7.4 // FEED-FIRST MATCH LAYOUT */
+.battle-sim-page{max-width:1920px;padding:clamp(8px,1vw,18px)}
+.bs-match-layout{grid-template-columns:minmax(190px,.68fr) minmax(510px,2.55fr) minmax(190px,.68fr);gap:10px;align-items:start}
+.bs-match-team-panel{padding:9px;overflow:visible}.bs-match-team-panel h2{font-size:clamp(17px,1.45vw,23px);margin:5px 0 7px}.bs-center-stage{gap:10px;min-width:0}
+.bs-live-feed-panel{position:relative;min-height:480px;max-height:none;border-top:4px solid var(--bs-possession-color,#19a7ff);transition:border-color .25s ease}.bs-live-feed-panel>.bs-panel-topline{padding:14px 16px 11px}.bs-live-feed{min-height:380px;max-height:680px;padding:13px;gap:9px;scroll-behavior:auto}
+.bs-feed-event{animation:bs-event-pop .42s cubic-bezier(.18,.75,.25,1) both;animation-delay:var(--bs-pop-delay,0ms);transform-origin:top center}.bs-feed-event.is-notable{border-left-color:var(--bs-event-team-color,#65c4ff)}.bs-live-feed-panel .bs-event-type{color:var(--text-secondary,#8fa9bf)}
+@keyframes bs-event-pop{0%{opacity:0;transform:translateY(-12px) scale(.985);filter:blur(2px)}70%{opacity:1;transform:translateY(1px) scale(1.005);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1);filter:none}}
+.bs-mini-pitch{position:relative;isolation:isolate;min-height:400px;margin:10px 0 14px;overflow:hidden;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 38%,#31506a);border-radius:7px;background:linear-gradient(90deg,transparent 49.5%,#ffffff18 49.5%,#ffffff18 50.5%,transparent 50.5%),linear-gradient(180deg,#0d5343,#0a4136);box-shadow:inset 0 0 0 5px #ffffff07}
+.bs-mini-pitch:before{content:"";position:absolute;inset:5px;border:1px solid #d1fff12c;border-radius:3px;pointer-events:none}.bs-mini-pitch-markings{position:absolute;left:25%;right:25%;top:5px;height:35px;border:1px solid #d1fff12c;border-top:0;pointer-events:none}
+.bs-mini-pitch-markings:before{content:"";position:absolute;left:0;right:0;bottom:-1px;border-top:1px solid #d1fff12c}.bs-mini-pitch-markings:after{content:"";position:absolute;left:50%;top:100%;width:54px;height:54px;border:1px solid #d1fff12c;border-radius:50%;transform:translate(-50%,-50%)}
+.bs-formation-player{position:absolute;z-index:1;left:var(--player-x,50%);top:var(--player-y,50%);display:flex;align-items:center;flex-direction:column;gap:2px;width:56px;min-width:0;transform:translate(-50%,-50%);padding:3px 2px;border-radius:6px;background:color-mix(in srgb,#06111c 85%,var(--bs-team-color,#19a7ff) 15%);border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 38%,transparent);box-shadow:0 2px 6px #0005;text-align:center}
+.bs-formation-player-name{max-width:100%;font-size:8px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f4f8ff}.bs-formation-player-meta{font-size:7px;line-height:1;color:#d2e0ee;white-space:nowrap;font-weight:800}
+.bs-stamina-ring{--stamina:100%;--stamina-hue:120;position:relative;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px;border-radius:50%;background:conic-gradient(hsl(var(--stamina-hue) 84% 46%) var(--stamina),#4e5d66 var(--stamina));box-shadow:0 0 0 1px #02080f90;vertical-align:middle}
+.bs-stamina-ring:before{content:"";position:absolute;inset:2px;border-radius:50%;background:#07111c;z-index:0}.bs-stamina-portrait{position:relative;z-index:1;display:block;width:var(--portrait-size,34px);height:var(--portrait-size,34px);max-width:100%;object-fit:cover;object-position:top center;border-radius:50%;border:1px solid #b8d5e555;background:#102b42}
+.bs-formation-player .bs-stamina-ring{--portrait-size:24px;width:30px;height:30px;padding:3px}.bs-player-card-state{display:inline-flex;align-items:center;max-width:100%;padding:2px 4px;border-radius:3px;font:900 8px/1.1 "Barlow Condensed",sans-serif;letter-spacing:.04em;white-space:nowrap;background:#334352;color:#e5edf4}.bs-player-card-state.is-yellow-card{background:#f2ca53;color:#251b00}.bs-player-card-state.is-red-card{background:#e64b63;color:#fff}
+.bs-match-player-row .bs-stamina-ring{--portrait-size:27px;width:33px;height:33px;padding:3px}.bs-bench-player .bs-stamina-ring{--portrait-size:24px;width:30px;height:30px;padding:3px}.bs-match-bench{display:grid;gap:5px;grid-template-columns:minmax(0,1fr)}.bs-bench-player{padding:5px;gap:6px;flex-wrap:wrap}.bs-bench-player .bs-player-copy{flex-basis:70px}
+.bs-match-actions{justify-content:center;flex-wrap:wrap;gap:8px;margin-top:13px}.bs-match-actions .bs-button{min-width:130px}.bs-match-actions .bs-button--primary{min-width:235px}.bs-match-actions button:disabled{opacity:.42}.bs-required-substitution{margin-top:8px}
+.bs-match-team-panel .bs-team-possession-label{display:block;margin:2px 0 8px;color:var(--bs-team-color,#65c4ff);font:800 9px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+@media(max-width:1450px){.bs-match-layout{grid-template-columns:minmax(168px,.66fr) minmax(440px,2.4fr) minmax(168px,.66fr)}.bs-mini-pitch{min-height:365px}.bs-formation-player{width:48px}.bs-formation-player .bs-stamina-ring{--portrait-size:23px;width:29px;height:29px}.bs-formation-player-name{font-size:7px}}
+@media(max-width:1080px){.bs-match-layout{grid-template-columns:minmax(160px,.75fr) minmax(0,2fr)}.bs-match-layout>.bs-match-team-panel:last-child{grid-column:1/-1}.bs-match-layout>.bs-match-team-panel:last-child .bs-mini-pitch{min-height:280px}.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.bs-match-layout{grid-template-columns:minmax(0,1fr)}.bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}.bs-mini-pitch{min-height:340px}.bs-formation-player{width:58px}.bs-formation-player-name{font-size:8px}.bs-live-feed-panel{min-height:350px}.bs-live-feed{min-height:280px;max-height:500px}.bs-match-actions .bs-button,.bs-match-actions .bs-button--primary{flex:1;min-width:100%;width:100%}}
+@media(prefers-reduced-motion:reduce){.bs-feed-event{animation:none!important}}
+
+
+/* BATTLE SIM V0.7.6 // gameplay-only responsive sizing and paced event feed */
+body.bs-game-route .battle-sim-page{width:100%;max-width:none;padding:clamp(6px,.65vw,12px)}
+body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1.15fr) minmax(360px,1.4fr) minmax(0,1.15fr);gap:clamp(6px,.5vw,10px);align-items:start}
+body.bs-game-route .bs-match-team-panel{padding:clamp(8px,.85vw,16px)}
+body.bs-game-route .bs-match-team-panel h2{font-size:clamp(19px,1.65vw,31px);margin:6px 0 8px}
+body.bs-game-route .bs-match-player-row .bs-player-name-line strong,body.bs-game-route .bs-bench-player .bs-player-copy>strong{font-size:clamp(11px,.8vw,14px)}
+body.bs-game-route .bs-mini-pitch{min-height:clamp(360px,29vw,560px);margin:10px 0 14px}
+body.bs-game-route .bs-formation-player{width:clamp(48px,3.6vw,72px);gap:clamp(2px,.2vw,4px);padding:3px 2px}
+body.bs-game-route .bs-formation-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-formation-player-name{font-size:clamp(7px,.55vw,10px)}
+body.bs-game-route .bs-formation-player-meta{font-size:clamp(6px,.45vw,9px)}
+.bs-live-feed>.bs-stoppage-panel{width:100%;box-sizing:border-box;flex:0 0 auto}
+body.bs-game-route .bs-match-actions{margin:0 0 12px;justify-content:center;flex-wrap:wrap;gap:8px}
+body.bs-game-route .bs-feed-event{animation-delay:var(--bs-pop-delay,0ms)}
+@media(max-width:1350px){
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(300px,1.05fr) minmax(0,1fr);gap:8px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-mini-pitch{min-height:clamp(300px,30vw,410px)}
+ body.bs-game-route .bs-formation-player{width:50px}
+}
+@media(max-width:1050px){
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:1/-1}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-mini-pitch{min-height:300px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-mini-pitch{min-height:340px}
+ body.bs-game-route .bs-formation-player{width:58px}
+ body.bs-game-route .bs-match-team-panel{padding:10px}
+}
+
+/* Match archive accent uses the team recorded in possession for each individual event. */
+.bs-event-archive .bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
+
+
+/* BATTLE SIM V0.7.7 // analysis-rich event cards, live flow meters, centered scoreboard, message pacing controls */
+body.bs-game-route .bs-match-scorebar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.5fr) minmax(0,1fr);align-items:center;gap:clamp(8px,1vw,16px)}
+body.bs-game-route .bs-match-clock{grid-column:1;justify-self:start}
+body.bs-game-route .bs-score-names{grid-column:2;justify-self:stretch;width:100%;max-width:none;margin:0;gap:clamp(8px,1.25vw,24px)}
+body.bs-game-route .bs-match-meta{grid-column:3;justify-self:end;text-align:right}
+body.bs-game-route .bs-match-actions{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:0 0 12px;padding:10px;box-sizing:border-box;border:1px solid var(--border-subtle,#203b54);border-radius:10px;background:color-mix(in srgb,var(--bg-surface,#07111c) 88%,var(--bs-possession-color,#19a7ff) 12%);flex-wrap:wrap}
+.bs-feed-delay-control{display:grid;grid-template-columns:auto minmax(86px,clamp(86px,8vw,130px)) auto;align-items:center;gap:7px;min-width:0;padding:4px 8px;border:1px solid var(--border-subtle,#25435d);border-radius:7px;background:var(--bg-surface-raised,#0b1826);font-size:9px;font-weight:900;letter-spacing:.07em;color:var(--text-secondary,#a9bbcb);white-space:nowrap}
+.bs-feed-delay-control input{width:100%;min-width:0;accent-color:var(--bs-possession-color,#65c4ff);cursor:pointer}
+.bs-feed-delay-control output{color:var(--text-primary,#eaf2ff);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
+.bs-feed-event.is-notable{border-left-color:var(--bs-event-team-color,#65c4ff)}
+.bs-event-analysis{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-event-stat-comparison,.bs-event-success{display:inline-flex;align-items:center;justify-content:center;padding:5px 8px;border:1px solid var(--border-subtle,#2a4a64);border-radius:5px;background:color-mix(in srgb,var(--bg-surface,#07111c) 70%,var(--bs-event-team-color,#65c4ff) 30%);font-size:11px;font-weight:900;letter-spacing:.035em;color:var(--text-primary,#eaf2ff);font-variant-numeric:tabular-nums}
+.bs-event-success{border-color:color-mix(in srgb,#80dab3 45%,var(--border-subtle,#2a4a64));color:#a6f3c9}
+.bs-flow-meter{position:relative;display:inline-flex;align-self:center;flex:0 0 5px;width:5px;height:46px;margin:0 2px;overflow:hidden;border-radius:999px;background:#394959;box-shadow:inset 0 0 0 1px #ffffff12;vertical-align:middle}
+.bs-flow-meter-fill{position:absolute;left:0;bottom:0;display:block;width:100%;height:var(--flow,50%);border-radius:inherit;background:linear-gradient(0deg,#f34d5d 0%,#f4cb59 53%,#56dda0 100%);box-shadow:0 0 7px #80d8ab35;transition:height .25s ease}
+.bs-formation-avatar{display:flex;align-items:center;justify-content:center;gap:4px;min-height:30px}
+.bs-formation-avatar .bs-flow-meter{height:32px;width:4px;flex-basis:4px}
+body.bs-game-route .bs-match-player-row,body.bs-game-route .bs-bench-player{gap:9px}
+body.bs-game-route .bs-match-player-row .bs-stamina-ring,body.bs-game-route .bs-bench-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-match-player-row .bs-flow-meter{height:47px}
+body.bs-game-route .bs-bench-player .bs-flow-meter{height:42px}
+body.bs-game-route .bs-mini-pitch .bs-formation-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-live-feed .bs-feed-event{padding:clamp(14px,1.1vw,20px);border-radius:9px}
+body.bs-game-route .bs-live-feed .bs-event-description{font-size:clamp(13px,.9vw,15px);line-height:1.55}
+body.bs-game-route .bs-live-feed .bs-event-actors{gap:10px;margin-top:12px}
+body.bs-game-route .bs-live-feed .bs-event-actor{gap:8px;min-width:0;max-width:100%;padding:6px 9px;border:1px solid var(--border-subtle,#25435d);border-radius:8px;background:color-mix(in srgb,var(--bg-surface-raised,#0b1826) 91%,var(--bs-event-team-color,#19a7ff) 9%);font-size:11px}
+body.bs-game-route .bs-live-feed .bs-event-portrait{width:44px;height:50px;flex:0 0 auto;border-radius:6px}
+body.bs-game-route .bs-live-feed .bs-event-actor .bs-flow-meter{height:50px}
+body.bs-game-route .bs-live-feed .bs-event-actor-name{min-width:0;overflow-wrap:anywhere}
+body.bs-game-route .bs-live-feed .bs-event-analysis{justify-content:space-between}
+body.bs-game-route .bs-event-stat-comparison,body.bs-game-route .bs-event-success{font-size:12px;padding:6px 10px}
+@media(max-width:1050px){
+ body.bs-game-route .bs-match-scorebar{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);padding:10px}
+ body.bs-game-route .bs-match-actions .bs-button{min-width:120px}
+}
+@media(max-width:700px){
+ body.bs-game-route .bs-match-scorebar{grid-template-columns:minmax(0,1fr);justify-items:stretch}
+ body.bs-game-route .bs-match-clock,body.bs-game-route .bs-match-meta{grid-column:1;justify-self:center;text-align:center}
+ body.bs-game-route .bs-score-names{grid-column:1;width:100%;gap:6px}
+ body.bs-game-route .bs-match-actions{padding:8px}
+ body.bs-game-route .bs-match-actions .bs-button,body.bs-game-route .bs-match-actions .bs-button--primary{width:100%;min-width:0;flex:1 1 100%}
+ .bs-feed-delay-control{width:100%;box-sizing:border-box;grid-template-columns:auto minmax(0,1fr) auto}
+ body.bs-game-route .bs-live-feed .bs-event-actors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.bs-game-route .bs-live-feed .bs-event-actor{padding:5px}
+ body.bs-game-route .bs-live-feed .bs-event-portrait{width:38px;height:44px}
+}
+
+
+/* BATTLE SIM V0.7.8 // stoppage sequencing, drag substitutions, expanded portraits and event-speed control */
+.bs-stoppage-panel.bs-stoppage-pop{animation:bs-event-pop .42s cubic-bezier(.18,.75,.25,1) both;animation-delay:0ms;transform-origin:top center}
+body.bs-game-route .bs-match-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;justify-content:stretch;gap:8px;width:100%;margin:0 0 12px;padding:10px;box-sizing:border-box;border:1px solid var(--border-subtle,#203b54);border-radius:10px;background:color-mix(in srgb,var(--bg-surface,#07111c) 88%,var(--bs-possession-color,#19a7ff) 12%)}
+body.bs-game-route .bs-match-actions>.bs-button{width:100%;min-width:0;max-width:none;height:44px;min-height:44px;padding:6px 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;white-space:normal;text-align:center;font-size:clamp(9px,.7vw,12px)}
+body.bs-game-route .bs-feed-delay-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;align-self:stretch;gap:6px;width:100%;min-width:0;height:44px;min-height:44px;margin:0;padding:0 9px;box-sizing:border-box;border:1px solid var(--border-subtle,#25435d);border-radius:7px;background:var(--bg-surface-raised,#0b1826);font-size:10px;font-weight:900;color:var(--text-secondary,#a9bbcb);white-space:nowrap}
+body.bs-game-route .bs-feed-delay-control input{grid-column:1;grid-row:1;width:100%;min-width:0;height:24px;margin:0;accent-color:var(--bs-possession-color,#65c4ff);cursor:pointer}
+body.bs-game-route .bs-feed-delay-control output{grid-column:2;grid-row:1;min-width:32px;color:var(--text-primary,#eaf2ff);font-size:12px;font-variant-numeric:tabular-nums;text-align:right}
+body.bs-game-route .bs-score-names>.bs-result-team-name:first-child{justify-self:center;text-align:center;width:100%;max-width:none;margin:0}
+body.bs-game-route .bs-score-names>.bs-result-team-name:last-child{justify-self:center;text-align:center;width:100%;max-width:none;margin:0}
+body.bs-game-route .bs-formation-player{width:clamp(60px,4.1vw,78px)}
+body.bs-game-route .bs-formation-avatar .bs-stamina-ring{--portrait-size:40px;width:46px;height:46px;padding:3px}
+body.bs-game-route .bs-formation-avatar .bs-flow-meter{width:5px;flex-basis:5px;height:42px}
+body.bs-game-route .bs-formation-player-name{font-size:clamp(7px,.58vw,10px)}
+body.bs-game-route .bs-match-player-row .bs-stamina-ring,body.bs-game-route .bs-bench-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-bench-player .bs-flow-meter{height:46px}
+.bs-event-actor{border:1px solid color-mix(in srgb,var(--bs-actor-color,#52667a) 65%,transparent);border-radius:7px;background:color-mix(in srgb,var(--bs-actor-color,#52667a) 16%,var(--bg-surface-raised,#0b1826))}
+.bs-event-portrait{border:2px solid var(--bs-actor-color,#52667a);box-shadow:0 0 0 1px color-mix(in srgb,var(--bs-actor-color,#52667a) 40%,transparent)}
+body.bs-game-route .bs-live-feed .bs-event-portrait{width:50px;height:58px}
+body.bs-game-route .bs-live-feed .bs-event-actor{padding:7px 10px;gap:9px;font-size:12px}
+body.bs-game-route .bs-live-feed .bs-event-actor .bs-flow-meter{height:56px}
+body.bs-game-route .bs-live-feed .bs-event-dialogue{margin-top:12px;padding:8px 14px;border-left-width:3px;border-radius:0 7px 7px 0;background:color-mix(in srgb,var(--bg-surface,#07111c) 87%,var(--bs-event-team-color,#65c4ff) 13%)}
+body.bs-game-route .bs-live-feed .bs-event-dialogue p{font-size:clamp(14px,1vw,16px);line-height:1.55;margin:5px 0}
+body.bs-game-route .bs-formation-player[data-swap-slot]{cursor:copy;transition:box-shadow .15s ease,border-color .15s ease}
+body.bs-game-route .bs-formation-player[data-swap-slot]:after{content:"DROP RESERVE";position:absolute;inset:auto 2px -7px;display:none;padding:2px 3px;border-radius:3px;background:#06111ced;color:#fff;font-size:7px;font-weight:900;letter-spacing:.04em}
+body.bs-game-route .bs-match-team-panel:has(.bs-bench-player[draggable="true"]) .bs-formation-player[data-swap-slot]:hover:after,body.bs-game-route .bs-formation-player[data-swap-slot].is-drop-target:after{display:block}
+body.bs-game-route .bs-formation-player.is-drop-target{z-index:3;border-color:#a6f3c9;box-shadow:0 0 0 2px #a6f3c980,0 0 18px #6de4ad65;background:#154633}
+body.bs-game-route .bs-bench-player[draggable="true"]{cursor:grab;outline:1px dashed color-mix(in srgb,var(--bs-team-color,#65c4ff) 60%,transparent);outline-offset:-2px}
+body.bs-game-route .bs-bench-player[draggable="true"]:active{cursor:grabbing}
+body.bs-game-route .bs-formation-player--vacant{border:2px dashed var(--bs-team-color,#65c4ff);background:color-mix(in srgb,var(--bs-team-color,#65c4ff) 22%,#07111c);box-shadow:0 0 0 2px color-mix(in srgb,var(--bs-team-color,#65c4ff) 30%,transparent);justify-content:center;min-height:64px}
+body.bs-game-route .bs-formation-player--vacant .bs-formation-player-name{white-space:normal;overflow-wrap:anywhere;color:#fff;font-size:clamp(8px,.65vw,11px)}
+body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:#bcf8dd}
+@media(max-width:1350px){
+ body.bs-game-route .bs-formation-player{width:clamp(58px,5vw,70px)}
+}
+@media(max-width:780px){
+ body.bs-game-route .bs-match-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px}
+ body.bs-game-route .bs-match-actions>.bs-button{height:44px;min-height:44px;font-size:11px}
+ body.bs-game-route .bs-feed-delay-control{height:44px;min-height:44px}
+ body.bs-game-route .bs-formation-player{width:60px}
+ body.bs-game-route .bs-formation-avatar .bs-stamina-ring{--portrait-size:34px;width:40px;height:40px}
+ body.bs-game-route .bs-formation-avatar .bs-flow-meter{height:36px}
+}
+@media(prefers-reduced-motion:reduce){.bs-stoppage-panel.bs-stoppage-pop{animation:none!important}}
+
+
+/* BATTLE SIM V0.7.9 // setup formation previews and chemistry readouts */
+.bs-setup-formation-panel{margin:15px 0 10px;min-width:0}
+.bs-setup-preview-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;color:var(--text-secondary,#9bb2c9);font:900 11px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-setup-preview-head strong{color:var(--text-primary,#eaf2ff);font-size:13px}
+.bs-setup-formation-pitch{position:relative;isolation:isolate;overflow:hidden;min-height:0;height:clamp(345px,33vw,455px);border:2px solid var(--pitch-line-strong,#9cd7ad);border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--pitch-stripe,#1a704b) 35%,transparent) 50%,transparent 50%),linear-gradient(180deg,var(--pitch-legacy-start,#0d5a45),var(--pitch-legacy-end,#084331));background-size:22% 100%,100% 100%;box-shadow:inset 0 0 70px color-mix(in srgb,var(--pitch-line,#b7f0ce),transparent 80%),0 20px 60px rgba(0,0,0,.18)}
+.bs-setup-formation-pitch:before{content:"";position:absolute;inset:2.5%;z-index:0;border:1px solid #d5ffe735;pointer-events:none}
+.bs-setup-formation-pitch:after{content:"";position:absolute;inset:2.5%;z-index:0;border:1px solid var(--pitch-line,#d5ffe75c);pointer-events:none}
+.bs-setup-pitch-markings{position:absolute;z-index:0;left:24%;right:24%;top:2.5%;height:17%;border:1px solid #d5ffe72b;border-top:0;pointer-events:none}
+.bs-setup-pitch-markings:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #d5ffe72b}
+.bs-setup-chemistry-lines,.bs-mini-chemistry-lines{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;pointer-events:none}
+.bs-chem-line{fill:none;stroke-width:1.35;stroke-linecap:round;opacity:.94;vector-effect:non-scaling-stroke;paint-order:stroke;filter:drop-shadow(0 0 2px rgba(255,255,255,.35))}
+.bs-chem-line.chemical{stroke:#fff16a;opacity:1;stroke-width:1.8;filter:drop-shadow(0 0 2px #f2e56c) drop-shadow(0 0 5px #f2e56c)}
+.bs-chem-line.elite{stroke:#5ef0b1;opacity:1;stroke-width:1.7;filter:drop-shadow(0 0 2px #5ef0b1) drop-shadow(0 0 5px #5ef0b1)}
+.bs-chem-line.strong{stroke:#4bc8ff;opacity:.98;stroke-width:1.6;filter:drop-shadow(0 0 2px #4bc8ff) drop-shadow(0 0 5px #4bc8ff)}
+.bs-chem-line.link{stroke:#d3a7ff;opacity:.93;stroke-width:1.45;filter:drop-shadow(0 0 2px #d3a7ff) drop-shadow(0 0 4px #d3a7ff)}
+.bs-chem-line.weak{stroke:#ff8da0;opacity:.84;stroke-width:1.2;stroke-dasharray:2 1.6;filter:drop-shadow(0 0 2px #ff7c91)}
+.bs-setup-formation-player{position:absolute;z-index:2;left:var(--player-x,50%);top:var(--player-y,50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:82px;max-width:25%;min-width:0;padding:3px 2px 4px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 72%,#ffffff35);border-radius:7px;background:#03120fe8;box-shadow:0 2px 8px #00140fa3;transform:translate(-50%,-50%);text-align:center}
+.bs-setup-formation-portrait{position:relative;display:block;flex:0 0 44px;width:44px;height:44px;margin:0 auto}.bs-setup-formation-avatar{display:block;flex:0 0 auto;width:44px;height:44px;object-fit:cover;object-position:top center;border:3px solid var(--bs-team-color,#19a7ff);border-radius:50%;background:#102b42;box-shadow:0 0 16px color-mix(in srgb,var(--bs-team-color,#19a7ff) 45%,transparent)}.bs-setup-formation-ovr{position:absolute;right:-6px;bottom:-3px;display:grid;place-items:center;min-width:22px;height:20px;padding:0 3px;border:1px solid var(--bs-team-color,#19a7ff);border-radius:4px;background:#030b13;color:#fff;font:900 13px/1 "Barlow Condensed",sans-serif;box-shadow:0 0 8px color-mix(in srgb,var(--bs-team-color,#19a7ff) 36%,transparent);pointer-events:none}
+.bs-setup-formation-player>strong{display:block;width:100%;overflow:hidden;color:#f5fff9;font:800 9px/1.05 "Barlow Condensed",sans-serif;text-overflow:ellipsis;white-space:nowrap}
+.bs-setup-formation-role{color:var(--bs-team-color,#8edbff);font:900 8px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em}
+.bs-setup-chemistry-panel{margin:10px 0 16px;padding:11px;border:1px solid var(--border-subtle,#203b54);border-left:3px solid var(--bs-team-color,#19a7ff);border-radius:8px;background:linear-gradient(105deg,color-mix(in srgb,var(--bs-team-color,#19a7ff) 8%,var(--bg-surface-raised,#0b1826)),var(--bg-surface,#07111c))}
+.bs-setup-chemistry-main{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;align-items:stretch}
+.bs-setup-chemistry-score{display:flex;flex-direction:column;justify-content:center;gap:4px}
+.bs-setup-chemistry-score>span,.bs-setup-chemistry-metric>span,.bs-setup-chemistry-featured>div>span{color:var(--text-secondary,#9bb2c9);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-setup-chemistry-score>strong{color:var(--bs-team-color,#eaf2ff);font:900 37px/.9 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.bs-setup-chemistry-score>small{font-size:7px;color:var(--text-secondary,#8da3b8);letter-spacing:.045em}
+.bs-setup-chemistry-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.bs-setup-chemistry-metric{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;padding:7px;border-radius:5px;background:#020a1280}
+.bs-setup-chemistry-metric>strong{color:var(--text-primary,#eaf2ff);font:900 16px/1 "Barlow Condensed",sans-serif}
+.bs-setup-chemistry-featured{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}
+.bs-setup-chemistry-featured>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;min-width:0;padding:7px;border:1px solid var(--border-subtle,#203b54);border-radius:5px;background:#030b12a3}
+.bs-setup-chemistry-featured>div>span{grid-column:1/-1}
+.bs-setup-chemistry-featured strong{min-width:0;overflow:hidden;color:var(--text-primary,#eaf2ff);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.bs-setup-chemistry-featured b{font:900 13px "Barlow Condensed",sans-serif}
+.bs-setup-chemistry-featured b.chemical{color:#f2e56c}.bs-setup-chemistry-featured b.elite{color:#5ef0b1}.bs-setup-chemistry-featured b.strong{color:#4bc8ff}.bs-setup-chemistry-featured b.link{color:#d3a7ff}.bs-setup-chemistry-featured b.weak{color:#ff7c91}
+.bs-setup-chemistry-key{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;color:var(--text-secondary,#9bb2c9);font-size:9px}
+.bs-setup-chemistry-key>b{color:var(--text-primary,#eaf2ff);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-setup-chemistry-key>span{display:inline-flex;align-items:center;gap:4px}
+.bs-setup-chemistry-key i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff7c91}
+.bs-setup-chemistry-key i.chemical{background:#f2e56c}.bs-setup-chemistry-key i.elite{background:#5ef0b1}.bs-setup-chemistry-key i.strong{background:#4bc8ff}.bs-setup-chemistry-key i.link{background:#d3a7ff}
+.bs-match-chemistry{margin:8px 0 12px;padding:8px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 32%,var(--border-subtle,#203b54));border-radius:7px;background:color-mix(in srgb,var(--bs-team-color,#19a7ff) 7%,var(--bg-surface-raised,#0b1826))}
+.bs-match-chemistry-head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text-secondary,#9bb2c9);font:900 10px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-match-chemistry-head strong{color:var(--bs-team-color,#eaf2ff);font:900 24px/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.bs-match-chemistry-track{height:4px;margin:6px 0;background:#253848;border-radius:10px;overflow:hidden}
+.bs-match-chemistry-fill{display:block;height:100%;border-radius:10px;background:var(--bs-team-color,#19a7ff);box-shadow:0 0 8px color-mix(in srgb,var(--bs-team-color,#19a7ff) 65%,transparent)}
+.bs-match-chemistry-metrics,.bs-match-chemistry-featured{margin:5px 0 0;color:var(--text-secondary,#9bb2c9);font-size:9px;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
+.bs-match-chemistry-featured{color:var(--text-primary,#d6e5f3)}
+.bs-mini-chemistry-lines{z-index:0}
+.bs-mini-pitch .bs-formation-player{z-index:2}
+@media(max-width:780px){
+ .bs-setup-formation-pitch{min-height:0;height:clamp(345px,95vw,450px)}
+ .bs-setup-chemistry-main{grid-template-columns:88px minmax(0,1fr)}
+ .bs-setup-chemistry-score>strong{font-size:32px}
+ .bs-setup-chemistry-featured{grid-template-columns:minmax(0,1fr)}
+ .bs-setup-chemistry-key{gap:7px}
+}
+
+
+/* Squarer Battle Sim UI: match the crisp, angular styling used elsewhere. */
+.bs-button,
+.bs-mini-button,
+.bs-name-input,
+.bs-select,
+.bs-color-input,
+.bs-status-chip,
+.bs-feed-delay-control,
+.bs-event-stat-comparison,
+.bs-event-success,
+.bs-player-card-state,
+.bs-role-badge,
+.bs-result-metric,
+.bs-setup-chemistry-metric,
+.bs-setup-chemistry-featured>div,
+.bs-setup-chemistry-panel,
+.bs-match-chemistry,
+.bs-required-substitution,
+.bs-result-hero,
+.bs-result-team-card,
+.bs-ratings-team,
+.bs-team-card,
+.bs-match-team-panel,
+.bs-pitch-panel,
+.bs-live-feed-panel,
+.bs-stoppage-panel,
+.bs-archive-panel,
+.bs-match-scorebar,
+.bs-match-actions,
+.bs-setup-formation-pitch,
+.bs-mini-pitch,
+.bs-pitch-grid,
+.bs-zone,
+.bs-feed-event,
+.bs-event-actor,
+.bs-player-row,
+.bs-reserve-row,
+.bs-match-player-row,
+.bs-bench-player,
+.bs-formation-player {
+  border-radius: 3px;
+}
+
+.bs-button,
+.bs-mini-button,
+.bs-name-input,
+.bs-select,
+.bs-color-input,
+.bs-feed-delay-control {
+  border-radius: 2px;
+}
+
+.bs-status-chip {
+  border-radius: 2px;
+}
+
+body.bs-game-route .bs-live-feed .bs-feed-event {
+  border-radius: 3px;
+}
+
+body.bs-game-route .bs-live-feed .bs-event-actor {
+  border-radius: 3px;
+}
+
+/* Keep genuinely circular artwork and indicators circular. */
+.bs-portrait,
+.bs-event-portrait,
+.bs-setup-formation-avatar,
+.bs-stamina-portrait,
+.bs-stamina-ring,
+.bs-flow-meter,
+.bs-zone-player,
+.bs-setup-chemistry-key i,
+.bs-match-chemistry-track,
+.bs-match-chemistry-fill {
+  border-radius: initial;
+}
+.bs-setup-formation-avatar,
+.bs-stamina-portrait,
+.bs-zone-player {
+  border-radius: 50%;
+}
+.bs-flow-meter,
+.bs-stamina-ring,
+.bs-match-chemistry-track,
+.bs-match-chemistry-fill,
+.bs-setup-chemistry-key i {
+  border-radius: 999px;
+}
+.bs-portrait,
+.bs-event-portrait {
+  border-radius: 2px;
+}

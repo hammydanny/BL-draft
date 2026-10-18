@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Reiji Hiiragi (ID 72).
+const PLAYER_72_REFERENCE = {"overview":"A Japanese forward whose trapping and prediction are explored in Episode Nagi. He teamed with Niko and Zantetsu, cleared the Second Selection with Nanase’s group and played for Manshine City before entering Side-B. His selection number was 22; Manshine number 17.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Episode Nagi appearance and NEL bid do not establish a deployed specialist position."}};

@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Yudai Imamura (ID 13).
+const PLAYER_13_REFERENCE = {"overview":"A Team Z attacker whose speed and forward instincts gave him value in transition, though he never developed a defining weapon strong enough to survive deeper Blue Lock stages.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"First Selection participation verified; exact rotating assignments not sufficiently documented in the checked sources."}};

@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Keisuke Wanima (ID 19).
+const PLAYER_19_REFERENCE = {"overview":"One half of the Wanima partnership, relying on coordinated timing, shared reads and rehearsed attacking movement with his brother. After his First Selection elimination, he later enters Side-B.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Team W participation verified; exact position not established by the checked deployment evidence."}};

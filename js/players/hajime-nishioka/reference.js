@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Hajime Nishioka (ID 70).
+const PLAYER_70_REFERENCE = {"overview":"The Japanese forward known as Aomori’s Messi. He teamed with Baro and Naruhaya, cleared the Second Selection with Niko and Hiori, joined Manshine City in the NEL and later entered Side-B. His distinctive football weapon is not specifically demonstrated.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Participation and Aomori’s Messi title do not establish a deployed specialist position."}};

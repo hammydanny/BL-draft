@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Aiki Himizu (ID 79).
+const PLAYER_79_REFERENCE = {"overview":"A Japanese forward whose feints, reading of deceptive movements and pressing are demonstrated in Episode Nagi. He cleared the Second Selection in Karasu’s group, played on Third Selection Team C2, joined FC Barcha and later entered Side-B. His selection number was 77.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Episode Nagi pressing and feints establish actions, not a precise deployed position."}};

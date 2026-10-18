@@ -1,0 +1,2 @@
+// Per-character profile/reference metadata: Asahi Naruhaya (ID 10).
+const PLAYER_10_REFERENCE = {"overview":"A quick forward whose best weapon is off-the-ball movement, using blind spots and sharp runs to appear in finishing spaces despite limited individual power.","classification":"PROJECT_REFERENCE","positionAudit":{"throughChapter":364,"status":"unresolved","note":"Second Selection match is shown, but no precise deployed position is explicitly established by the checked evidence."}};
