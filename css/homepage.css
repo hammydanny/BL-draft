@@ -151,15 +151,7 @@
 
 html[data-theme="light"] .home-section-link:visited,html[data-theme="light"] .scout-player:visited,html[data-theme="light"] .scout-chemistry-pair a:visited{color:inherit}
 
-/* BATTLE SIM // FEATURED HOMEPAGE ENTRY */
+/* BATTLE SIM // HOMEPAGE ENTRY USES THE STANDARD MODE-CARD STYLE */
 .home-modes{grid-template-columns:repeat(4,minmax(0,1fr))}
-.home-mode--battle-sim{
-    color:#15202a;background:linear-gradient(135deg,#ffe979 0%,#ffc928 100%);
-    border-color:#dca900;box-shadow:0 8px 22px rgba(255,195,0,.18);
-}
-.home-mode--battle-sim .home-mode-top,.home-mode--battle-sim .home-mode-title{color:#15202a}
-.home-mode--battle-sim .home-mode-top>span,.home-mode--battle-sim .home-mode-description{color:#29323d}
-.home-mode--battle-sim .home-mode-action{color:#15202a;border-color:rgba(21,32,42,.23)}
-.home-mode--battle-sim:hover{background:linear-gradient(135deg,#fff19a 0%,#ffd64b 100%);border-color:#ffe783}
 @media(max-width:1024px){.home-modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.home-modes{grid-template-columns:1fr}}
