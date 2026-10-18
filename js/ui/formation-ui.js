@@ -130,6 +130,10 @@ function createPlayerInfoSidebar(team){
       <div class="player-info-section-title"><span>CORE ATTRIBUTES</span></div>
       ${playerStatsRadar(player,"sidebar")}
     </div>
+    <div class="player-info-section player-info-abilities">
+      <div class="player-info-section-title"><span>BATTLE SIM // ABILITIES</span></div>
+      ${playerBattleBadges(player)||'<span class="player-battle-empty">NO PASSIVES OR SPECIAL MOVES</span>'}
+    </div>
     <div class="player-info-section current-position-rating">
       <div class="player-info-section-title"><span>${slot?"CURRENT POSITION":"RESERVE // NATURAL POSITION"}</span></div>
       <div class="current-ovr-row"><strong>${pos}</strong><b>${rating} <small class="evaluation-grade">${playerStatGrade(rating)}</small></b></div>
@@ -306,7 +310,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
                     onclick="selectBenchPlayer(${p.id})" draggable="false"
                     onpointerdown="beginFormationPointerDrag(event,${p.id})" aria-pressed="${p.id===selectedFormationPlayerId}">
                     <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="44" height="52">
-                    <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small>${playerBattleBadges(p)}</span>
+                    <span class="bench-player-copy"><strong>${esc(p.name)}</strong>${positionBadges(p,true)}<small>OVR ${playerOverall(p)} // ${primaryPosition(p)}</small></span>
                     <b>DRAG</b>
                   </button>`).join(""):`<div class="history-empty">NO SUBSTITUTES</div>`}
             </div>
