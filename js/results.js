@@ -149,17 +149,21 @@ function showAuctionComplete(){
     if(appRelativePath()!==routePath("auctionResults"))updateRoute("auctionResults");
 }
 function openBattleSimFromResults(){
-    const unready=[1,2].filter(n=>{
-        const team=teamByNumber(n),ids=new Set((team?.players||[]).map(player=>player.id));
-        if(!ids.size)return true;
-        const assigned=new Set(Object.values(formationAssignments?.[n]||{}).filter(id=>ids.has(id)));
-        const activeCount=typeof formationDeploymentLimit==="function"?formationDeploymentLimit(n):Math.min(11,ids.size);
-        return assigned.size<activeCount;
-    });
-    if(unready.length){
-        showSiteError("Build both teams in Team Builder before entering Battle Sim. Assign every active position for Team 1 and Team 2, then try again.","BATTLE SIM NOT READY");
-        return;
-    }
+    const snapshot={
+        source:"auction-results",timestamp:Date.now(),
+        team1:{name:team1.name,color:team1.color,players:team1.players.map(function(p){return {
+            id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
+            positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
+        };})},
+        team2:{name:team2.name,color:team2.color,players:team2.players.map(function(p){return {
+            id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
+            positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
+        };})},
+        formations:{1:formationByTeam[1]||"4-3-3",2:formationByTeam[2]||"4-3-3"},
+        assignments:{1:Object.assign({},formationAssignments[1]||{}),2:Object.assign({},formationAssignments[2]||{})}
+    };
+    try{sessionStorage.setItem("blBattleSimLaunchV1",JSON.stringify(snapshot));}
+    catch(error){showSiteError("This browser could not transfer the drafted squads. Battle Sim will open with new teams.","BATTLE SIM HANDOFF");}
     openBattleSimPage();
 }
 function shareFormationSnapshot(n){

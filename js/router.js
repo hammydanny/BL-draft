@@ -212,7 +212,7 @@ function navigateToRoute(route,options={}){
             openStandaloneBuilder();
             break;
         case "battleSim":
-            uiState={screen:"battle-sim",phase:"coming-soon",turn:null};
+            uiState={screen:"battle-sim",phase:"setup",turn:null};
             setVisibleScreen(document.getElementById("battle-sim-screen"),{...options,skipHistory:true});
             break;
         case "auctionSetup":

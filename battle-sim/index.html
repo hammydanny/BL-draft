@@ -9,8 +9,8 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Blue Lock Draft">
     <meta property="og:title" content="Blue Lock Draft — Battle Sim">
-    <meta property="og:description" content="Battle Sim is coming soon. An unofficial Blue Lock-inspired football draft and squad-building project.">
-    <meta name="description" content="Battle Sim is coming soon. An unofficial Blue Lock-inspired football draft and squad-building project.">
+    <meta property="og:description" content="Configure squads, manage tactics and simulate text-based football matches in Battle Sim.">
+    <meta name="description" content="Configure squads, manage tactics and simulate text-based football matches in Battle Sim.">
 
     <link id="siteFavicon" rel="icon" type="image/svg+xml" href="images/bld-favicon-dark.svg?v=0.7.2.1">
     <script src="js/site-preferences.js?v=0.7.2.1&auction=phase2"></script>
@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="css/site-information.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/localization.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/mobile.css?v=0.7.2.1&auction=phase2&builder=phase3&database=phase4&final=phase5">
+    <link rel="stylesheet" href="css/battle-sim.css?v=0.7.3.0">
     <link rel="stylesheet" href="css/replayability.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/draft-modes.css?v=0.7.2.1">
     <link rel="stylesheet" href="css/solo-draft.css?v=0.7.2.1">
@@ -61,6 +62,7 @@
     <script defer src="js/site-runtime.js?v=0.7.2.1" fetchpriority="high"></script>
     <script defer src="js/ui/replayability-ui.js?v=0.7.2.1"></script>
     <script defer src="js/ui/solo-draft-ui.js?v=0.7.2.1"></script>
+    <script defer src="js/battle-sim.js?v=0.7.3.0" fetchpriority="high"></script>
     <script defer src="js/app.js?v=0.7.2.1" fetchpriority="high"></script>
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
@@ -496,24 +498,43 @@
     </section>
 
     <section id="battle-sim-screen" class="hidden" aria-labelledby="battleSimHeading">
-        <header class="page-context">
-            <div class="page-context-copy">
-                <div class="page-context-code">BL // MATCH SIMULATION</div>
-                <h1 id="battleSimHeading">BATTLE <span>SIM</span></h1>
-                <div class="page-context-status"><i></i> MATCH ENGINE IN DEVELOPMENT</div>
-            </div>
-            <div class="page-context-tools"></div>
-        </header>
-        <div class="lore-content-shell battle-sim-page">
-            <section class="battle-sim-coming-soon" aria-labelledby="battleSimComingSoon">
-                <span>BL // TACTICAL MATCH ENGINE</span>
-                <h2 id="battleSimComingSoon">COMING SOON</h2>
-                <p>Battle Sim is in development.</p>
-            </section>
+    <header class="page-context">
+        <div class="page-context-copy">
+            <div class="page-context-code">BL // MATCH SIMULATION</div>
+            <h1 id="battleSimHeading">BATTLE <span>SIM</span></h1>
+            <div class="page-context-status"><i></i> TEXT-BASED MATCH ENGINE</div>
         </div>
-    </section>
-
-    </main>
+        <div class="page-context-tools"></div>
+    </header>
+    <div class="lore-content-shell battle-sim-page">
+        <section id="bs-setup-view" class="bs-view" aria-labelledby="bsSetupTitle">
+            <div class="bs-intro-row"><div class="bs-intro-copy">
+                <span class="bs-kicker">01 // MATCH CONFIGURATION</span><h2 id="bsSetupTitle">SELECT YOUR SQUADS</h2>
+                <p>Set your starting line-ups, review your reserves, and tune each team's strategy before kick-off.</p>
+                <p id="bs-source-status" class="bs-status-chip">CHOOSE YOUR SQUADS</p>
+            </div><button id="bs-back-home" type="button" class="bs-button">← BACK TO HOME</button></div>
+            <div id="bs-team-grid" class="bs-team-grid"></div>
+            <div class="bs-page-actions"><p id="bs-setup-help" class="bs-help-text" aria-live="polite">Your saved teams are stored only in this browser.</p><button id="bs-start-match" type="button" class="bs-button bs-button--primary">PROCEED TO MATCH →</button></div>
+        </section>
+        <section id="bs-match-view" class="bs-view" aria-label="Live Battle Sim match" hidden>
+            <div class="bs-match-scorebar"><div class="bs-match-clock"><strong id="bs-match-time">00:00</strong><span id="bs-match-phase">FIRST HALF</span></div>
+                <div class="bs-score-names"><strong id="bs-match-team-name-1" class="bs-result-team-name">TEAM 1</strong><strong class="bs-result-final-score"><span id="bs-score-1">0</span> — <span id="bs-score-2">0</span></strong><strong id="bs-match-team-name-2" class="bs-result-team-name">TEAM 2</strong></div>
+                <span id="bs-match-status" class="bs-match-meta">LIVE</span></div>
+            <div id="bs-match-team-panels" class="bs-match-layout"></div>
+            <div class="bs-match-actions"><button id="bs-return-setup" type="button" class="bs-button bs-button--secondary">LINE-UP / TACTICS</button><button id="bs-proceed-match" type="button" class="bs-button bs-button--primary" disabled>SIMULATING…</button></div>
+        </section>
+        <section id="bs-results-view" class="bs-view" aria-labelledby="bsResultsTitle" hidden>
+            <div class="bs-result-hero"><span class="bs-kicker">03 // FINAL WHISTLE</span><h2 id="bsResultsTitle">MATCH REPORT</h2><p id="bs-result-verdict" class="bs-result-verdict">FULL TIME</p><div id="bs-result-score" class="bs-result-score"></div>
+                <div class="bs-result-actions"><button id="bs-return-setup-results" type="button" class="bs-button bs-button--secondary">EDIT SQUADS</button><button id="bs-rematch" type="button" class="bs-button bs-button--primary">REMATCH →</button></div></div>
+            <div id="bs-result-team-summaries" class="bs-result-team-summaries"></div>
+            <section aria-labelledby="bsRatingsTitle"><div class="bs-result-section-heading"><h2 id="bsRatingsTitle">PLAYER RATINGS</h2><span class="bs-kicker">MATCH PERFORMANCE</span></div><div id="bs-player-ratings"></div></section>
+            <section class="bs-archive-panel" aria-labelledby="bsArchiveTitle"><div class="bs-archive-heading"><div><span class="bs-kicker">COMPLETE MATCH RECORD</span><h2 id="bsArchiveTitle">EVENT ARCHIVE</h2></div>
+                <label class="bs-field"><span class="bs-field-label">EVENT FILTER</span><select id="bs-archive-filter" class="bs-select"><option value="all">All events</option><option value="notable">Notable only</option></select></label><span id="bs-archive-count" class="bs-kicker">0 EVENTS</span></div>
+                <div id="bs-event-archive" class="bs-event-archive"></div></section>
+        </section>
+    </div>
+</section>
+</main>
 
     <div id="game-overlay" class="game-overlay hidden">
         <div class="overlay-scanline"></div>
