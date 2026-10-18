@@ -213,3 +213,6 @@
  .bs-formation-player{width:58px}
  .bs-match-team-panel{padding:10px}
 }
+
+/* Match archive accent uses the team recorded in possession for each individual event. */
+.bs-event-archive .bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
