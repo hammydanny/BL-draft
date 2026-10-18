@@ -213,6 +213,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
           </div>
           <div class="formation-actions">
             <button class="formation-auto" onclick="${standalone&&typeof autoBestStandaloneTeam==='function'?'autoBestStandaloneTeam()':'autoBestXI()'}">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
+            <button type="button" data-replay-save="${formationTeamNumber}">SAVE SQUAD</button><button type="button" data-replay-import>IMPORT SQUAD</button><button type="button" data-saved-squads>SAVED SQUADS</button>
             <details class="builder-more"><summary aria-controls="builderMoreActions">MORE ACTIONS <span aria-hidden="true">⋯</span></summary><div id="builderMoreActions" class="builder-more-actions">
             ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ TEAM REPORT</button>`:""}
 
