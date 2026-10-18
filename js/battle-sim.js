@@ -2,7 +2,7 @@
 (function () {
 "use strict";
 const SAVE_KEY="blBattleSimSavedTeamsV1", LAUNCH_KEY="blBattleSimLaunchV1", RESULT_KEY="blBattleSimLastResultV1", ACTIVE_MATCH_KEY="blBattleSimActiveMatchV1", SETUP_RETURN_KEY="blBattleSimSetupReturnV1";
-const HALF=2700,FULL=5400,TICK=10,TICK_DELAY=85,MAX_SEQUENCE=10000,BLUE="#19a7ff",RED="#ff315d";
+const HALF=2700,FULL=5400,TICK=10,TICK_DELAY=45,MAX_SEQUENCE=10000,BLUE="#19a7ff",RED="#ff315d";
 const GRID=[[0,2,1],[3,4,5],[6,7,8],[9,10,11],[12,13,14],[15,17,16]];
 const ZONES={};
 GRID.forEach((r,y)=>r.forEach((id,x)=>ZONES[id]={x:x,y:y,id:id}));
@@ -18,7 +18,7 @@ const STRATEGIES=[
 {key:"width",label:"Width",low:"Compact",high:"Wide"}
 ];
 const DEFAULT_STRATEGY={tempo:52,directness:48,pressing:48,line:45,width:55};
-let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false,feedTimer=null,feedQueue=[],feedQueueIds=new Set(),feedDelayMs=1000,stoppageTimer=null,draggedReserve=null;
+let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false,feedTimer=null,feedQueue=[],feedQueueIds=new Set(),feedDelayMs=500,stoppageTimer=null,draggedReserve=null;
 const byId=id=>document.getElementById(id);
 function make(tag,cls,label){const e=document.createElement(tag);if(cls)e.className=cls;if(label!==undefined&&label!==null)e.textContent=String(label);return e;}
 function put(parent,child){if(parent&&child)parent.appendChild(child);return child;}
@@ -81,7 +81,7 @@ function playerIn(team,id){return team.roster.find(p=>idOf(p.id)===idOf(id))||nu
 function effective(p,k){return(Number(p.stats[k])||1)*(.7+.3*clamp(p.stamina,0,100)/100);}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*24),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
 function drain(p,success,action){const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
-function addEvent(state,options){const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:options.type||"play",description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:!!options.notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:(options.dialogue||[]).map(d=>({playerId:idOf(d.playerId),text:String(d.text||"")}))};state.events.push(event);return event;}
+function addEvent(state,options){const type=options.type||"play",important=new Set(["kickoff","goal","half-time","full-time","foul","yellow-card","red-card","set-piece","substitution","flow-activation"]);let notable=!!options.notable;if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:(options.dialogue||[]).map(d=>({playerId:idOf(d.playerId),text:String(d.text||"")}))};state.events.push(event);return event;}
 function pause(state,reason){state.status="paused";state.stoppage=reason||"PLAY PAUSED";}
 function dialogue(state,p,kind,good){const lines={pass:good?["Here!","One touch!","Play it forward!"]:["Too slow!","I should have seen that!"],receive:good?["Got it!","I'm on it!","Keep moving!"]:["That was difficult to reach!"],dribble:good?["There's the gap!","Past you!","Can't catch me!"]:["They closed the lane!","I lost control!"],shot:good?["It's in!","Yes!","What a finish!"]:["Not enough!","I need to do better!"],defend:good?["Won it back!","Read that!","Not today!"]:["They got away!"],save:good?["I've got it!","Safe hands!","Not past me!"]:["Rebound!"]};const line=randomPick(lines[kind]||lines.pass,state.random);return{playerId:p.id,text:p.name+': "'+line+'"'};}
 function opposing(state,number){return active(state.teams[number===1?2:1]);}
@@ -183,7 +183,95 @@ function runSequence(state){
 function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});return s;}
 function portrait(parent,p,size){if(!p)return;const img=make("img","bs-portrait");img.src=p.image||(typeof PLAYER_IMAGE_FALLBACK!=="undefined"?PLAYER_IMAGE_FALLBACK:"");img.alt=p.name||"Player";img.width=size||40;img.height=Math.round((size||40)*1.12);img.loading="lazy";img.onerror=function(){img.onerror=null;if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")img.src=PLAYER_IMAGE_FALLBACK;else img.remove();};put(parent,img);}
 function stratControls(number,team,compact){const wrap=make("div",compact?"bs-strategy-grid bs-strategy-grid--compact":"bs-strategy-grid");STRATEGIES.forEach(d=>{const l=make("label","bs-strategy-control"),head=make("span","bs-strategy-heading");put(head,make("strong","",d.label));put(head,make("output","bs-strategy-value",team.strategy[d.key]));put(l,head);const range=make("input","bs-range");range.type="range";range.min="0";range.max="100";range.value=team.strategy[d.key];range.setAttribute("data-team-strategy",number);range.setAttribute("data-strategy-key",d.key);put(l,range);const ends=make("span","bs-strategy-ends");put(ends,make("span","",d.low));put(ends,make("span","",d.high));put(l,ends);put(wrap,l);});return wrap;}
-function renderTeamCard(number){const t=setupTeams[number-1],card=make("section","bs-team-card");card.style.setProperty("--bs-team-color",t.color);card.setAttribute("data-team-card",number);const head=make("div","bs-team-card-heading");put(head,make("span","bs-kicker","TEAM 0"+number+" // MATCH SQUAD"));put(head,make("h2","",t.name));put(card,head);const identity=make("div","bs-team-identity"),name=make("input","bs-name-input");name.type="text";name.maxLength=32;name.value=t.name;name.setAttribute("data-team-name",number);labelField(identity,"Team name",name);const color=make("input","bs-color-input");color.type="color";color.value=t.color;color.setAttribute("data-team-color",number);labelField(identity,"Colour",color);put(card,identity);const source=make("div","bs-source-row"),sourceSelect=make("select","bs-select");sourceSelect.setAttribute("data-team-source",number);option(sourceSelect,"auction","Use drafted auction team",!launchSnapshot);option(sourceSelect,"saved","Use a saved team",!savedTeams.length);option(sourceSelect,"random","Generate a random team",false);sourceSelect.value=t.source==="auction"&&launchSnapshot?"auction":t.source==="saved"&&savedTeams.length?"saved":"random";labelField(source,"Squad source",sourceSelect);const saved=make("select","bs-select");saved.setAttribute("data-saved-team",number);option(saved,"",savedTeams.length?"Choose saved team…":"No saved teams yet",!savedTeams.length);savedTeams.forEach(item=>option(saved,item.id,item.name));saved.value=t.savedId||"";const savedLabel=labelField(source,"Saved team",saved);savedLabel.hidden=sourceSelect.value!=="saved";put(card,source);
+
+function teamChemistrySnapshot(team){
+ if(!team)return{overall:0,links:[],counts:{chemical:0,elite:0,strong:0,link:0,weak:0},activeLinks:0,possibleLinks:0,top:null,weakest:null};
+ const assignment=team.assignment||{},formation=team.formation||"4-3-3";
+ const signature=formation+"|"+Object.keys(assignment).sort((a,b)=>Number(a)-Number(b)).map(k=>k+":"+idOf(assignment[k])).join(",");
+ if(team._bsChemistrySignature===signature&&team._bsChemistryCache)return team._bsChemistryCache;
+ const edgeMap=typeof FORMATION_CHEMISTRY_EDGES!=="undefined"?FORMATION_CHEMISTRY_EDGES:{};
+ const edgePairs=edgeMap[formation]||edgeMap["4-3-3"]||[];
+ const slots=team.slots||[],eligible=edgePairs.filter(([a,b])=>slots[a]&&slots[b]);
+ const relationFor=(a,b)=>typeof chemistryRelation==="function"?chemistryRelation(a,b):{score:55,label:"UNPROVEN LINK",reason:"No chemistry model is available.",contexts:[]};
+ const links=eligible.map(([ai,bi])=>{
+  const aId=assignment[String(ai)],bId=assignment[String(bi)];
+  if(!aId||!bId)return null;
+  const a=playerIn(team,aId),b=playerIn(team,bId);if(!a||!b)return null;
+  const relation=relationFor(a,b);
+  return{a:{index:ai,slot:slots[ai],p:a},b:{index:bi,slot:slots[bi],p:b},value:relation.score,relation};
+ }).filter(Boolean);
+ const deployed=Object.keys(assignment).map(k=>playerIn(team,assignment[k])).filter(Boolean),knownPairs=[];
+ for(let i=0;i<deployed.length;i++)for(let j=i+1;j<deployed.length;j++){
+  const a=deployed[i],b=deployed[j],relation=relationFor(a,b);
+  const key=typeof chemistryKey==="function"?chemistryKey(a,b):[a.name,b.name].sort().join("|");
+  const special=typeof CHEMISTRY_SPECIAL!=="undefined"&&Object.prototype.hasOwnProperty.call(CHEMISTRY_SPECIAL,key);
+  if((relation.contexts&&relation.contexts.length)||special)knownPairs.push(relation.score);
+ }
+ const values=links.map(l=>l.value);
+ const overall=typeof chemistryNetworkScore==="function"?chemistryNetworkScore(values,knownPairs,eligible.length):(values.length?Math.round(values.reduce((a,b)=>a+b,0)/values.length):0);
+ const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
+ links.forEach(l=>{const tier=typeof chemistryTier==="function"?chemistryTier(l.value):(l.value>=82?"strong":l.value>=70?"link":"weak");counts[tier]=(counts[tier]||0)+1;});
+ const sorted=links.slice().sort((a,b)=>b.value-a.value);
+ const result={overall,links,counts,activeLinks:links.length,possibleLinks:eligible.length,knownPairs:knownPairs.length,deployedCount:deployed.length,coverage:eligible.length?Math.round(links.length/eligible.length*100):0,top:sorted[0]||null,weakest:sorted.length?sorted[sorted.length-1]:null};
+ team._bsChemistrySignature=signature;team._bsChemistryCache=result;return result;
+}
+function appendFormationChemistryLines(pitch,team,flipY,className){
+ const chemistry=teamChemistrySnapshot(team),ns="http://www.w3.org/2000/svg",svg=document.createElementNS(ns,"svg");
+ svg.setAttribute("class",className||"bs-setup-chemistry-lines");svg.setAttribute("viewBox","0 0 100 100");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-label","Formation player chemistry links");
+ chemistry.links.forEach(link=>{
+  const line=document.createElementNS(ns,"line"),x1=Number(link.a.slot.x)||50,x2=Number(link.b.slot.x)||50;
+  const rawY1=Number(link.a.slot.y)||50,rawY2=Number(link.b.slot.y)||50,y1=flipY?100-rawY1:rawY1,y2=flipY?100-rawY2:rawY2;
+  const tier=typeof chemistryTier==="function"?chemistryTier(link.value):"weak";
+  line.setAttribute("x1",String(x1));line.setAttribute("y1",String(y1));line.setAttribute("x2",String(x2));line.setAttribute("y2",String(y2));
+  line.setAttribute("class","bs-chem-line "+tier);line.setAttribute("data-chemistry",String(link.value));
+  line.setAttribute("aria-label",link.a.p.name+" and "+link.b.p.name+" chemistry "+link.value);
+  line.setAttribute("title",link.a.p.name+" × "+link.b.p.name+" · "+link.value+" · "+(link.relation.label||"CHEMISTRY"));
+  svg.appendChild(line);
+ });
+ pitch.appendChild(svg);return svg;
+}
+function renderSetupFormation(team){
+ const section=make("section","bs-setup-formation-panel"),head=make("div","bs-setup-preview-head");
+ put(head,make("strong","","TACTICAL BOARD"));put(head,make("span","",String(team.formation||"4-3-3").toUpperCase()+" FORMATION"));put(section,head);
+ const pitch=make("div","bs-setup-formation-pitch");pitch.setAttribute("role","img");pitch.setAttribute("aria-label",team.name+" starting formation, "+(team.formation||"4-3-3"));
+ put(pitch,make("div","bs-setup-pitch-markings"));
+ appendFormationChemistryLines(pitch,team,false,"bs-setup-chemistry-lines");
+ Object.keys(team.assignment||{}).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{
+  const player=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!player||!slot)return;
+  const marker=make("div","bs-setup-formation-player");marker.style.setProperty("--player-x",clamp(Number(slot.x)||50,7,93)+"%");marker.style.setProperty("--player-y",clamp(Number(slot.y)||50,9,91)+"%");
+  marker.style.setProperty("--bs-team-color",team.color||BLUE);marker.title=player.name+" · "+slot.label;
+  const role=make("span","bs-setup-formation-role",slot.label),img=make("img","bs-setup-formation-avatar");
+  img.src=player.image||(typeof PLAYER_IMAGE_FALLBACK!=="undefined"?PLAYER_IMAGE_FALLBACK:"");img.alt=player.name;img.loading="lazy";img.onerror=function(){img.onerror=null;if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")img.src=PLAYER_IMAGE_FALLBACK;else img.remove();};
+  put(marker,role);put(marker,img);put(marker,make("strong","",player.name));put(pitch,marker);
+ });
+ put(section,pitch);return section;
+}
+function renderSetupChemistry(team){
+ const c=teamChemistrySnapshot(team),section=make("section","bs-setup-chemistry-panel"),main=make("div","bs-setup-chemistry-main"),score=make("div","bs-setup-chemistry-score");
+ put(score,make("span","","TEAM CHEMISTRY"));put(score,make("strong","",c.overall||"--"));put(score,make("small","","FORMATION-LINK MODEL"));
+ const metrics=make("div","bs-setup-chemistry-metrics");
+ [["TACTICAL LINKS",c.activeLinks+" / "+c.possibleLinks],["CHEMICAL",c.counts.chemical],["ELITE",c.counts.elite],["STRONG",c.counts.strong]].forEach(item=>{const cell=make("div","bs-setup-chemistry-metric");put(cell,make("span","",item[0]));put(cell,make("strong","",item[1]));put(metrics,cell);});
+ put(main,score);put(main,metrics);put(section,main);
+ const featured=make("div","bs-setup-chemistry-featured");
+ [[ "BEST ACTIVE LINK",c.top,true ],[ "LOWEST ACTIVE LINK",c.weakest,false ]].forEach(item=>{
+  const cell=make("div",item[2]?"best":"risk"),link=item[1],label=make("span","",item[0]),name=make("strong","",link?(typeof chemistryLinkName==="function"?chemistryLinkName(link):link.a.p.name+" × "+link.b.p.name):"ADD STARTERS"),value=make("b",link&&typeof chemistryTier==="function"?chemistryTier(link.value):"",link?link.value:"--");
+  put(cell,label);put(cell,name);put(cell,value);put(featured,cell);
+ });
+ put(section,featured);
+ const key=make("div","bs-setup-chemistry-key");put(key,make("b","","LINK KEY"));
+ [["chemical","95+"],["elite","90+"],["strong","82+"],["link","70+"],["weak","<70"]].forEach(item=>{const part=make("span","");put(part,make("i",item[0]));put(part,make("span","",item[1]));put(key,part);});
+ put(section,key);return section;
+}
+function renderMatchChemistry(team){
+ const c=teamChemistrySnapshot(team),panel=make("section","bs-match-chemistry"),head=make("div","bs-match-chemistry-head");
+ put(head,make("span","","TEAM CHEMISTRY"));put(head,make("strong","",String(c.overall||0)));put(panel,head);
+ const track=make("div","bs-match-chemistry-track"),fill=make("span","bs-match-chemistry-fill");fill.style.width=clamp(c.overall,0,100)+"%";put(track,fill);put(panel,track);
+ const metrics=make("p","bs-match-chemistry-metrics","LINKS "+c.activeLinks+"/"+c.possibleLinks+"  ·  CHEMICAL "+c.counts.chemical+"  ·  ELITE "+c.counts.elite+"  ·  STRONG "+c.counts.strong);put(panel,metrics);
+ const pair=c.top?make("p","bs-match-chemistry-featured","BEST LINK · "+(typeof chemistryLinkName==="function"?chemistryLinkName(c.top):c.top.a.p.name+" × "+c.top.b.p.name)+" ("+c.top.value+")"):null;
+ if(pair)put(panel,pair);return panel;
+}
+
+function renderTeamCard(number){const t=setupTeams[number-1],card=make("section","bs-team-card");card.style.setProperty("--bs-team-color",t.color);card.setAttribute("data-team-card",number);const head=make("div","bs-team-card-heading");put(head,make("span","bs-kicker","TEAM 0"+number+" // MATCH SQUAD"));put(head,make("h2","",t.name));put(card,head);const identity=make("div","bs-team-identity"),name=make("input","bs-name-input");name.type="text";name.maxLength=32;name.value=t.name;name.setAttribute("data-team-name",number);labelField(identity,"Team name",name);const color=make("input","bs-color-input");color.type="color";color.value=t.color;color.setAttribute("data-team-color",number);labelField(identity,"Colour",color);put(card,identity);const source=make("div","bs-source-row"),sourceSelect=make("select","bs-select");sourceSelect.setAttribute("data-team-source",number);option(sourceSelect,"auction","Use drafted auction team",!launchSnapshot);option(sourceSelect,"saved","Use a saved team",!savedTeams.length);option(sourceSelect,"random","Generate a random team",false);sourceSelect.value=t.source==="auction"&&launchSnapshot?"auction":t.source==="saved"&&savedTeams.length?"saved":"random";labelField(source,"Squad source",sourceSelect);const saved=make("select","bs-select");saved.setAttribute("data-saved-team",number);option(saved,"",savedTeams.length?"Choose saved team…":"No saved teams yet",!savedTeams.length);savedTeams.forEach(item=>option(saved,item.id,item.name));saved.value=t.savedId||"";const savedLabel=labelField(source,"Saved team",saved);savedLabel.hidden=sourceSelect.value!=="saved";put(card,source);put(card,renderSetupFormation(t));put(card,renderSetupChemistry(t));
 const lineupHead=make("div","bs-roster-section-heading");put(lineupHead,make("h3","","STARTING LINE-UP"));put(lineupHead,make("span","",Object.keys(t.assignment).length+" STARTERS"));put(card,lineupHead);const starters=make("div","bs-starter-list");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const p=playerIn(t,t.assignment[k]),slot=t.slots[Number(k)];if(!p||!slot)return;const row=make("div","bs-player-row");portrait(row,p,38);const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",slot.label));put(copy,line);put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)+" · SPD "+Math.round(p.stats.spd)));put(row,copy);put(starters,row);});put(card,starters);
 const reservePlayers=t.roster.filter(p=>!Object.values(t.assignment).map(idOf).includes(idOf(p.id))),reserveHead=make("div","bs-roster-section-heading");put(reserveHead,make("h3","","RESERVES"));put(reserveHead,make("span","",reservePlayers.length+" AVAILABLE"));put(card,reserveHead);const reserveList=make("div","bs-reserve-list");if(!reservePlayers.length)put(reserveList,make("p","bs-empty-note","No reserves on this roster."));reservePlayers.forEach(p=>{const row=make("div","bs-reserve-row");portrait(row,p,32);const copy=make("div","bs-player-copy");put(copy,make("strong","",p.name));put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)));put(row,copy);const select=make("select","bs-select bs-swap-select");select.setAttribute("data-reserve-slot",number);select.setAttribute("data-reserve-player",p.id);option(select,"","Swap for…",false);Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const starter=playerIn(t,t.assignment[k]);option(select,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+(starter?starter.name:"Empty"));});put(row,select);button(row,"SWAP","bs-mini-button",{"data-swap-player":p.id,"data-swap-team":number});put(reserveList,row);});put(card,reserveList);
 const tactic=make("div","bs-roster-section-heading");put(tactic,make("h3","","TEAM STRATEGY"));put(tactic,make("span","","0–100"));put(card,tactic);put(card,stratControls(number,t,false));const save=make("div","bs-save-team-row"),saveName=make("input","bs-name-input");saveName.type="text";saveName.maxLength=32;saveName.value=t.name;saveName.setAttribute("data-save-name",number);saveName.placeholder="Name this saved team";put(save,saveName);button(save,"SAVE TEAM","bs-button bs-button--secondary",{"data-save-team":number});put(card,save);return card;}
@@ -205,7 +293,7 @@ function addPlayerRow(parent,p,team,slotIndex){
 function matchTeamPanel(number){
  const t=match.teams[number],aside=make("aside","bs-match-team-panel");aside.style.setProperty("--bs-team-color",t.color);
  put(aside,make("span","bs-kicker","TEAM 0"+number));put(aside,make("h2","",t.name));
- put(aside,make("span","bs-team-possession-label",match.possession===number?"IN POSSESSION":"OUT OF POSSESSION"));put(aside,renderMiniFormation(number));
+ put(aside,make("span","bs-team-possession-label",match.possession===number?"IN POSSESSION":"OUT OF POSSESSION"));put(aside,renderMiniFormation(number));put(aside,renderMatchChemistry(t));
  const benchHead=make("div","bs-panel-subhead");put(benchHead,make("strong","","RESERVES"));put(benchHead,make("span","",bench(t).length));put(aside,benchHead);
  const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,38);put(row,flowMeter(p.flow,p.name));if(match.status==="paused"){row.draggable=true;row.setAttribute("data-drag-reserve",p.id);row.setAttribute("data-drag-team",number);row.title="Drag onto a player on the pitch to substitute";}
   const info=make("div","bs-player-copy");put(info,make("strong","",p.name));put(info,playerMeta(p.stats.ovr,ratingNow(p)));
@@ -216,7 +304,7 @@ function matchTeamPanel(number){
  const tactics=make("details","bs-match-tactics");put(tactics,make("summary","","ADJUST TACTICS"));put(tactics,stratControls(number,t,true));put(aside,tactics);return aside;
 }
 function renderMiniFormation(number){
- const team=match.teams[number],pitch=make("div","bs-mini-pitch");pitch.setAttribute("aria-label",team.name+" formation");put(pitch,make("div","bs-mini-pitch-markings"));
+ const team=match.teams[number],pitch=make("div","bs-mini-pitch");pitch.setAttribute("aria-label",team.name+" formation");put(pitch,make("div","bs-mini-pitch-markings"));appendFormationChemistryLines(pitch,team,number===2,"bs-mini-chemistry-lines");
  Object.keys(team.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{
   const p=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!slot)return;
   if(!p||(p&&p.sentOff)){
@@ -324,7 +412,7 @@ function renderMatch(){
   const pp=make("section","bs-pitch-panel"),ph=make("div","bs-panel-topline");put(ph,make("span","bs-kicker","3 × 6 VIRTUAL PITCH"));put(ph,make("span","bs-possession-status",""));put(pp,ph);
   const pitch=make("div","bs-pitch-grid");pitch.id="bs-pitch";pitch.setAttribute("role","grid");put(pp,pitch);
   const pos=make("p","bs-possession-footnote");pos.id="bs-possession-status";put(pp,pos);put(center,pp);
-  const actions=byId("bs-match-view").querySelector(".bs-match-actions");if(actions){put(center,actions);const delay=byId("bs-feed-delay");if(delay)delay.value=String(feedDelayMs/1000);const output=byId("bs-feed-delay-value");if(output)output.textContent=(feedDelayMs/1000).toFixed(2).replace(/\.?0+$/,"")+"s";}
+  const actions=byId("bs-match-view").querySelector(".bs-match-actions");if(actions){put(center,actions);const delay=byId("bs-feed-delay");if(delay)delay.value=String(feedDelayMs/1000);const output=byId("bs-feed-delay-value");if(output)output.textContent=(feedDelayMs/1000).toFixed(2).replace(/\.?0+$/,"")+"x";}
   const fp=make("section","bs-live-feed-panel");fp.style.setProperty("--bs-possession-color",match.teams[match.possession].color);
   const fh=make("div","bs-panel-topline");put(fh,make("h2","","MATCH FEED"));const count=make("span","bs-event-count");count.id="bs-event-count";put(fh,count);put(fp,fh);
   const feed=make("div","bs-live-feed");feed.id="bs-live-feed";feed.setAttribute("aria-live","polite");feed.setAttribute("aria-label","Notable match events");put(fp,feed);put(center,fp);
@@ -450,7 +538,7 @@ function handleClick(event){
  else if(b.hasAttribute("data-sub-in")){const n=Number(b.getAttribute("data-sub-team")),rid=b.getAttribute("data-sub-in"),team=match&&match.teams[n],row=b.closest(".bs-bench-player"),sel=row&&row.querySelector("[data-sub-target-for]");if(!team||match.status!=="paused")return;let slot=sel&&sel.value;if(slot==="")slot=Object.keys(team.assignment).find(k=>{const p=playerIn(team,team.assignment[k]);return p&&p.role!=="GK";});if(slot!=null&&substitute(team,slot,rid))renderMatch();}
 }
 function handleChange(event){const t=event.target;if(t.matches("[data-team-source]")){const n=Number(t.getAttribute("data-team-source")),source=t.value;if(source==="auction"&&launchSnapshot){setupTeams[n-1]=snapshotTeam(n===1?launchSnapshot.team1:launchSnapshot.team2,n,launchSnapshot);}else if(source==="random")setupTeams[n-1]=randomTeam(n,setupTeams[n-1]);else if(source==="saved"&&savedTeams.length){const saved=savedTeams[0];setupTeams[n-1]=normalizeTeam(saved.team,n);setupTeams[n-1].source="saved";setupTeams[n-1].savedId=saved.id;}renderInit();}else if(t.matches("[data-saved-team]")){const n=Number(t.getAttribute("data-saved-team")),saved=savedTeams.find(x=>x.id===t.value);if(saved){setupTeams[n-1]=normalizeTeam(saved.team,n);setupTeams[n-1].source="saved";setupTeams[n-1].savedId=saved.id;renderInit();}}else if(t.matches("[data-archive-filter]")||t.id==="bs-archive-filter")renderArchive();else if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
-function handleInput(event){const t=event.target;if(t&&t.id==="bs-feed-delay"){feedDelayMs=clamp(Number(t.value)||1,.25,5)*1000;const out=byId("bs-feed-delay-value");if(out)out.textContent=(feedDelayMs/1000).toFixed(2).replace(/\.?0+$/,"")+"s";if(feedTimer!==null){clearTimeout(feedTimer);feedTimer=null;scheduleFeedEvent();}return;}if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
+function handleInput(event){const t=event.target;if(t&&t.id==="bs-feed-delay"){feedDelayMs=clamp(Number(t.value)||1,.25,5)*1000;const out=byId("bs-feed-delay-value");if(out)out.textContent=(feedDelayMs/1000).toFixed(2).replace(/\.?0+$/,"")+"x";if(feedTimer!==null){clearTimeout(feedTimer);feedTimer=null;scheduleFeedEvent();}return;}if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
 function init(){
  if(initialized||!byId("battle-sim-screen"))return;initialized=true;savedTeams=loadSavedTeams();
  try{launchSnapshot=JSON.parse(sessionStorage.getItem(LAUNCH_KEY)||"null");}catch(e){launchSnapshot=null;}

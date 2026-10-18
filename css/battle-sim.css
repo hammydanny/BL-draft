@@ -311,3 +311,61 @@ body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:
  body.bs-game-route .bs-formation-avatar .bs-flow-meter{height:36px}
 }
 @media(prefers-reduced-motion:reduce){.bs-stoppage-panel.bs-stoppage-pop{animation:none!important}}
+
+
+/* BATTLE SIM V0.7.9 // setup formation previews and chemistry readouts */
+.bs-setup-formation-panel{margin:15px 0 10px;min-width:0}
+.bs-setup-preview-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;color:var(--text-secondary,#9bb2c9);font:900 11px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-setup-preview-head strong{color:var(--text-primary,#eaf2ff);font-size:13px}
+.bs-setup-formation-pitch{position:relative;isolation:isolate;overflow:hidden;height:clamp(345px,33vw,455px);border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 45%,#386454);border-radius:8px;background:linear-gradient(180deg,#0d5a45,#084331);box-shadow:inset 0 0 0 5px #ffffff08,inset 0 0 35px #00140f48}
+.bs-setup-formation-pitch:before{content:"";position:absolute;inset:2.5%;z-index:0;border:1px solid #d5ffe735;pointer-events:none}
+.bs-setup-formation-pitch:after{content:"";position:absolute;z-index:0;left:50%;top:50%;width:70px;height:70px;border:1px solid #d5ffe735;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.bs-setup-pitch-markings{position:absolute;z-index:0;left:24%;right:24%;top:2.5%;height:17%;border:1px solid #d5ffe72b;border-top:0;pointer-events:none}
+.bs-setup-pitch-markings:after{content:"";position:absolute;left:0;right:0;top:50%;border-top:1px solid #d5ffe72b}
+.bs-setup-chemistry-lines,.bs-mini-chemistry-lines{position:absolute;inset:0;z-index:1;width:100%;height:100%;overflow:visible;pointer-events:none}
+.bs-chem-line{fill:none;stroke-width:.62;stroke-linecap:round;opacity:.67;vector-effect:non-scaling-stroke}
+.bs-chem-line.chemical{stroke:#f2e56c;opacity:.9;stroke-width:1.05}
+.bs-chem-line.elite{stroke:#5ef0b1;opacity:.82}
+.bs-chem-line.strong{stroke:#4bc8ff;opacity:.75}
+.bs-chem-line.link{stroke:#d3a7ff;opacity:.6}
+.bs-chem-line.weak{stroke:#ff7c91;opacity:.47;stroke-dasharray:1.4 1.8}
+.bs-setup-formation-player{position:absolute;z-index:2;left:var(--player-x,50%);top:var(--player-y,50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:76px;max-width:25%;min-width:0;padding:3px 2px 4px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 62%,#ffffff25);border-radius:7px;background:#03120fe0;box-shadow:0 2px 8px #00140fa3;transform:translate(-50%,-50%);text-align:center}
+.bs-setup-formation-avatar{display:block;flex:0 0 auto;width:29px;height:29px;object-fit:cover;object-position:top center;border:2px solid var(--bs-team-color,#19a7ff);border-radius:50%;background:#102b42}
+.bs-setup-formation-player>strong{display:block;width:100%;overflow:hidden;color:#f5fff9;font:800 9px/1.05 "Barlow Condensed",sans-serif;text-overflow:ellipsis;white-space:nowrap}
+.bs-setup-formation-role{color:var(--bs-team-color,#8edbff);font:900 8px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em}
+.bs-setup-chemistry-panel{margin:10px 0 16px;padding:11px;border:1px solid var(--border-subtle,#203b54);border-left:3px solid var(--bs-team-color,#19a7ff);border-radius:8px;background:linear-gradient(105deg,color-mix(in srgb,var(--bs-team-color,#19a7ff) 8%,var(--bg-surface-raised,#0b1826)),var(--bg-surface,#07111c))}
+.bs-setup-chemistry-main{display:grid;grid-template-columns:104px minmax(0,1fr);gap:10px;align-items:stretch}
+.bs-setup-chemistry-score{display:flex;flex-direction:column;justify-content:center;gap:4px}
+.bs-setup-chemistry-score>span,.bs-setup-chemistry-metric>span,.bs-setup-chemistry-featured>div>span{color:var(--text-secondary,#9bb2c9);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-setup-chemistry-score>strong{color:var(--bs-team-color,#eaf2ff);font:900 37px/.9 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.bs-setup-chemistry-score>small{font-size:7px;color:var(--text-secondary,#8da3b8);letter-spacing:.045em}
+.bs-setup-chemistry-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.bs-setup-chemistry-metric{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;padding:7px;border-radius:5px;background:#020a1280}
+.bs-setup-chemistry-metric>strong{color:var(--text-primary,#eaf2ff);font:900 16px/1 "Barlow Condensed",sans-serif}
+.bs-setup-chemistry-featured{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}
+.bs-setup-chemistry-featured>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;min-width:0;padding:7px;border:1px solid var(--border-subtle,#203b54);border-radius:5px;background:#030b12a3}
+.bs-setup-chemistry-featured>div>span{grid-column:1/-1}
+.bs-setup-chemistry-featured strong{min-width:0;overflow:hidden;color:var(--text-primary,#eaf2ff);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+.bs-setup-chemistry-featured b{font:900 13px "Barlow Condensed",sans-serif}
+.bs-setup-chemistry-featured b.chemical{color:#f2e56c}.bs-setup-chemistry-featured b.elite{color:#5ef0b1}.bs-setup-chemistry-featured b.strong{color:#4bc8ff}.bs-setup-chemistry-featured b.link{color:#d3a7ff}.bs-setup-chemistry-featured b.weak{color:#ff7c91}
+.bs-setup-chemistry-key{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;color:var(--text-secondary,#9bb2c9);font-size:9px}
+.bs-setup-chemistry-key>b{color:var(--text-primary,#eaf2ff);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-setup-chemistry-key>span{display:inline-flex;align-items:center;gap:4px}
+.bs-setup-chemistry-key i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ff7c91}
+.bs-setup-chemistry-key i.chemical{background:#f2e56c}.bs-setup-chemistry-key i.elite{background:#5ef0b1}.bs-setup-chemistry-key i.strong{background:#4bc8ff}.bs-setup-chemistry-key i.link{background:#d3a7ff}
+.bs-match-chemistry{margin:8px 0 12px;padding:8px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 32%,var(--border-subtle,#203b54));border-radius:7px;background:color-mix(in srgb,var(--bs-team-color,#19a7ff) 7%,var(--bg-surface-raised,#0b1826))}
+.bs-match-chemistry-head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text-secondary,#9bb2c9);font:900 10px "Barlow Condensed",sans-serif;letter-spacing:.08em}
+.bs-match-chemistry-head strong{color:var(--bs-team-color,#eaf2ff);font:900 24px/1 "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums}
+.bs-match-chemistry-track{height:4px;margin:6px 0;background:#253848;border-radius:10px;overflow:hidden}
+.bs-match-chemistry-fill{display:block;height:100%;border-radius:10px;background:var(--bs-team-color,#19a7ff);box-shadow:0 0 8px color-mix(in srgb,var(--bs-team-color,#19a7ff) 65%,transparent)}
+.bs-match-chemistry-metrics,.bs-match-chemistry-featured{margin:5px 0 0;color:var(--text-secondary,#9bb2c9);font-size:9px;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
+.bs-match-chemistry-featured{color:var(--text-primary,#d6e5f3)}
+.bs-mini-chemistry-lines{z-index:0}
+.bs-mini-pitch .bs-formation-player{z-index:2}
+@media(max-width:780px){
+ .bs-setup-formation-pitch{height:clamp(345px,95vw,450px)}
+ .bs-setup-chemistry-main{grid-template-columns:88px minmax(0,1fr)}
+ .bs-setup-chemistry-score>strong{font-size:32px}
+ .bs-setup-chemistry-featured{grid-template-columns:minmax(0,1fr)}
+ .bs-setup-chemistry-key{gap:7px}
+}
