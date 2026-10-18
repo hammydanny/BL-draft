@@ -184,12 +184,5 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
     border-color:#ffe783;box-shadow:0 6px 20px rgba(255,195,0,.28);transform:translateY(-1px);
 }
 .battle-sim-cta b{font-size:18px;line-height:1}
-.directory-item.battle-sim-nav{
-    color:#18202a;background:linear-gradient(135deg,#ffe979 0%,#ffc928 100%);
-    border-color:#dca900;font-weight:900;
-}
-.directory-item.battle-sim-nav:hover,.directory-item.battle-sim-nav[aria-current="page"]{
-    color:#101820;background:linear-gradient(135deg,#fff19a 0%,#ffd64b 100%);
-    border-color:#ffe783;box-shadow:0 4px 14px rgba(255,195,0,.2);
-}
+/* Keep the Battle Sim navigation item styled like its neighboring directory links. */
 .page-context-team .battle-sim-context{min-width:130px;min-height:42px;padding:10px 20px;}
