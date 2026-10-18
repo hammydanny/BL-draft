@@ -30,8 +30,8 @@ function updateSiteDirectory(screen){
         refreshDirectoryResume();return;
     }
     const route=getRouteFromLocation();
-    const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":"home";
-    setMobilePageContext(({play:"AUCTION",builder:"TEAM BUILDER",database:"DATABASE",home:"HOME"})[section]);
+    const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":route==="battleSim"?"battle-sim":"home";
+    setMobilePageContext(({play:"AUCTION",builder:"TEAM BUILDER",database:"DATABASE","battle-sim":"BATTLE SIM",home:"HOME"})[section]);
     document.querySelectorAll("[data-directory-section]").forEach(item=>{
         if(item.dataset.directorySection===section)item.setAttribute("aria-current","page");
         else item.removeAttribute("aria-current");
@@ -40,7 +40,7 @@ function updateSiteDirectory(screen){
     const paths={
         menu:[home],auctionSetup:[home,auction,{text:"SETUP"}],auctionRoom:[home,auction,{text:"ROOM"}],
         auctionResults:[home,auction,{text:"RESULTS"}],auctionTeamBuilder:[home,auction,{text:"TEAM BUILDER"}],
-        standaloneTeamBuilder:[home,{text:"TEAM BUILDER"}],lore:[home,database]
+        standaloneTeamBuilder:[home,{text:"TEAM BUILDER"}],battleSim:[home,{text:"BATTLE SIM"}],lore:[home,database]
     };
     const crumbs=[...(paths[route]||paths.menu)];
     const quick=route==="auctionSetup"&&new URL(window.location.href).searchParams.get("draft")==="quick";
@@ -69,7 +69,7 @@ function setMobilePageContext(label){
     const context=document.getElementById("mobilePageContext");
     if(context)context.textContent=label;
     document.querySelectorAll(".mobile-directory [data-directory-section]").forEach(item=>{
-        const active=item.dataset.directorySection===({AUCTION:"play","VS CPU":"play",CHALLENGES:"challenges","DAILY EGO DRAFT":"challenges","TEAM BUILDER":"builder",DATABASE:"database",HOME:"home"})[label];
+        const active=item.dataset.directorySection===({AUCTION:"play","VS CPU":"play",CHALLENGES:"challenges","DAILY EGO DRAFT":"challenges","TEAM BUILDER":"builder","BATTLE SIM":"battle-sim",DATABASE:"database",HOME:"home"})[label];
         if(active)item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");
     });
 }
@@ -78,7 +78,9 @@ function configureTeamBuilderHeader(standalone){
     document.getElementById("formationHeaderTitle").innerHTML=standalone?'TEAM <span>BUILDER</span>':'FORMATION <span>BUILDER</span>';
     document.getElementById("formationHeaderStatus").innerHTML=standalone?"<i></i> STANDALONE MODE":"<i></i> TACTICAL MODE";
     document.getElementById("backToResults").hidden=standalone;
-    document.getElementById("formationTeamContext").textContent=standalone?"GLOBAL XI":teamByNumber(formationTeamNumber).name;
+    const teamContext=document.getElementById("formationTeamContext");
+    if(standalone)teamContext.innerHTML='<button type="button" class="battle-sim-cta battle-sim-context" onclick="openBattleSimPage()">Battle Sim</button>';
+    else teamContext.textContent=teamByNumber(formationTeamNumber).name;
     updateSiteDirectory(formationScreen);
 }
 function runDirectoryAction(action){
@@ -100,6 +102,7 @@ function runDirectoryAction(action){
         case "quick-draft":openQuickDraft();break;
         case "resume":resumeSavedAuction(loadSavedData());break;
         case "builder":openStandaloneBuilder();break;
+        case "battle-sim":openBattleSimPage();break;
         case "lore":case "characters":case "chemistry":updateRoute("lore",{databaseView:action});break;
     }
 }
@@ -124,7 +127,8 @@ function initSiteDirectory(){
             <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
             <button type="button" data-directory-action="challenges" data-directory-href="./?challenge=all" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>CHALLENGES</strong></button>
             <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>04</span><strong>TEAM BUILDER</strong></button>
-            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>05</span><strong>DATABASE</strong></button>
+            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>05</span><strong>BATTLE SIM</strong></button>
+            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></button>
           </div>
           <div class="mobile-secondary-links">
             <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT</button>
