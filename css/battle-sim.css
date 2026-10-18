@@ -194,6 +194,8 @@
 .bs-feed-event{animation-delay:calc(1000ms + var(--bs-pop-delay,0ms))}
 @media(max-width:1350px){
  .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(300px,1.05fr) minmax(0,1fr);gap:8px}
+ .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
+ .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
  .bs-mini-pitch{min-height:clamp(300px,30vw,410px)}
  .bs-formation-player{width:50px}
 }
