@@ -205,19 +205,19 @@ function createShareTeam(team,n){
     </article>`;
 }
 function openShareScreen(){return openExportPreview();}
-function openExportPreview(teamNumber=null){
+function openExportPreview(teamNumber=null,reportContext=null){
     const previous=document.getElementById("shareScreen");if(previous){setSiteDialogState(previous,false);previous.remove();}
     const previousFocus=document.activeElement,screen=document.createElement("section");let imageUrl=null,preparedBlob=null;
     screen.id="shareScreen";screen.className="share-screen export-preview";screen.setAttribute("role","dialog");screen.setAttribute("aria-modal","true");screen.setAttribute("aria-label","SAVE PREVIEW");
-    screen.innerHTML=`<div class="export-preview-shell"><div class="share-toolbar"><button id="closeShareScreen" type="button">BACK</button><h2>SAVE PREVIEW</h2><div><button id="saveReportImage" type="button" disabled>SAVE IMAGE</button><button id="printShareResult" type="button" disabled>PRINT</button>${teamNumber===0?'<button id="copyStandaloneShare" type="button">COPY SUMMARY</button>':'<button id="shareTeamsAndLink" type="button" disabled>SHARE</button>'}</div></div><p id="exportPreviewStatus" role="status">PREPARING IMAGE…</p><div id="shareCard" class="export-preview-image"><img id="exportPreviewImage" alt="Result image preview" hidden></div>${teamNumber===0?`<div class="standalone-report-actions">${resultTeamActions(0)}<button type="button" data-saved-squads>SAVED SQUADS</button><button type="button" data-replay-import>IMPORT SQUAD</button></div>`:""}</div>`;
+    screen.innerHTML=`<div class="export-preview-shell"><div class="share-toolbar"><button id="closeShareScreen" type="button">BACK</button><h2>SAVE PREVIEW</h2><div><button id="saveReportImage" type="button" disabled>SAVE IMAGE</button><button id="printShareResult" type="button" disabled>PRINT</button>${reportContext?"":teamNumber===0?'<button id="copyStandaloneShare" type="button">COPY SUMMARY</button>':'<button id="shareTeamsAndLink" type="button" disabled>SHARE</button>'}</div></div><p id="exportPreviewStatus" role="status">PREPARING IMAGE…</p><div id="shareCard" class="export-preview-image"><img id="exportPreviewImage" alt="Result image preview" hidden></div>${teamNumber===0&&!reportContext?`<div class="standalone-report-actions">${resultTeamActions(0)}<button type="button" data-saved-squads>SAVED SQUADS</button><button type="button" data-replay-import>IMPORT SQUAD</button></div>`:""}</div>`;
     document.body.appendChild(screen);setSiteDialogState(screen,true);SiteI18n.apply(screen);
     const close=()=>{setSiteDialogState(screen,false);screen.remove();if(imageUrl)URL.revokeObjectURL(imageUrl);if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});};
     document.getElementById("closeShareScreen").onclick=close;document.getElementById("closeShareScreen").focus();
     screen.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();close();}else trapSiteDialogFocus(event);});
     document.getElementById("saveReportImage").onclick=()=>{if(preparedBlob)saveDraftImage(teamNumber,preparedBlob);};document.getElementById("printShareResult").onclick=()=>{if(preparedBlob)window.print();};
-    if(teamNumber===0)document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
-    else document.getElementById("shareTeamsAndLink").onclick=()=>shareResultsImageAndLink(preparedBlob);
-    requestAnimationFrame(async()=>{try{const blob=await createAuctionShareImageBlob(teamNumber);if(!screen.isConnected)return;preparedBlob=blob;imageUrl=URL.createObjectURL(blob);const image=document.getElementById("exportPreviewImage");image.src=imageUrl;await image.decode();if(!screen.isConnected)return;image.hidden=false;document.getElementById("exportPreviewStatus").textContent=replayText("This is the exact image that will be saved.");for(const id of ["saveReportImage","printShareResult","shareTeamsAndLink"]){const button=document.getElementById(id);if(button)button.disabled=false;}}
+    if(!reportContext){if(teamNumber===0)document.getElementById("copyStandaloneShare").onclick=copyStandaloneShareSummary;
+    else document.getElementById("shareTeamsAndLink").onclick=()=>shareResultsImageAndLink(preparedBlob);}
+    requestAnimationFrame(async()=>{try{const blob=await createAuctionShareImageBlob(teamNumber,reportContext?.entries,reportContext?.report);if(!screen.isConnected)return;preparedBlob=blob;imageUrl=URL.createObjectURL(blob);const image=document.getElementById("exportPreviewImage");image.src=imageUrl;await image.decode();if(!screen.isConnected)return;image.hidden=false;document.getElementById("exportPreviewStatus").textContent=replayText("This is the exact image that will be saved.");for(const id of ["saveReportImage","printShareResult","shareTeamsAndLink"]){const button=document.getElementById(id);if(button)button.disabled=false;}}
         catch(error){if(screen.isConnected)document.getElementById("exportPreviewStatus").textContent=replayText(error.message==="Some portraits are not ready. Try again."?error.message:"Image export is unavailable.");}});
     return screen;
 }
@@ -249,6 +249,10 @@ function shareImageText(ctx,value,x,y,maxWidth,font,color,align="left"){
     let label=String(value??"");ctx.font=font;ctx.fillStyle=color;ctx.direction=/[\u0600-\u06ff]/.test(label)?"rtl":"ltr";ctx.textAlign=align;
     while(label.length>2&&ctx.measureText(label).width>maxWidth)label=label.slice(0,-2)+"…";
     ctx.fillText(label,x,y);ctx.textAlign="left";
+}
+function drawReportPortrait(ctx,image,x,y,width,height){
+    const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height;if(!iw||!ih)return;
+    const scale=Math.max(width/iw,height/ih),sw=width/scale,sh=height/scale;ctx.drawImage(image,(iw-sw)/2,0,sw,sh,x,y,width,height);
 }
 function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     const {x,y,width,height,portraits}=layout,accent=/^#[0-9a-f]{3,8}$/i.test(String(team.color||""))?team.color:"#25a9ff";
@@ -294,24 +298,25 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
         shareImageRoundRect(ctx,markerX,markerY,markerW,markerH,6,"#0c3456",isCaptain?"#ffd36e":accent);
         shareImageText(ctx,slot.label+(isCaptain?" · C":""),markerX+8,markerY+15,markerW-40,'800 11px "Barlow Condensed", sans-serif',isCaptain?"#ffdc83":"#70c6ff");
         shareImageText(ctx,String(playerOverall(player)),markerX+markerW-8,markerY+15,27,'900 12px "Barlow Condensed", sans-serif',"#eaf6ff","right");
-        if(portraits?.get(player.id))ctx.drawImage(portraits.get(player.id),markerX+5,markerY+18,24,26);
+        if(portraits?.get(player.id))drawReportPortrait(ctx,portraits.get(player.id),markerX+5,markerY+18,24,26);
         shareImageText(ctx,player.name,markerX+33,markerY+35,markerW-38,'800 13px "Barlow Condensed", sans-serif',"#f5faff","left");
     });
-    shareImageText(ctx,n?translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString():translate("DEPLOYED")+"  "+snap.deployedCount+"     //     "+translate("RESERVES")+"  "+snap.reserves.length,x+25,y+571,width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
-    shareImageText(ctx,translate("SQUAD ROSTER"),x+25,y+600,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
-    const listX=x+24,listY=y+625,rowH=29,listW=width-48;
+    shareImageText(ctx,n?translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString():translate("DEPLOYED")+"  "+snap.deployedCount+"     //     "+translate("RESERVES")+"  "+snap.reserves.length,x+25,y+(snap.reserves.length?616+snap.reserves.length*29:571),width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
+    if(!snap.reserves.length)return;
+    shareImageText(ctx,translate("RESERVES"),x+25,y+575,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
+    const listX=x+24,listY=y+600,rowH=29,listW=width-48;
     shareImageText(ctx,translate("PLAYER"),listX+12,listY-5,390,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("POSITION"),listX+435,listY-5,85,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("ROLE"),listX+540,listY-5,75,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,"OVR",listX+685,listY-5,42,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
     if(n)shareImageText(ctx,translate("FEE"),listX+listW-10,listY-5,73,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe","right");
-    team.players.forEach((player,index)=>{
+    snap.reserves.forEach((player,index)=>{
         const ry=listY+index*rowH;ctx.fillStyle=index%2===0?"#0c2742":"#0a2139";ctx.fillRect(listX,ry,listW,rowH-2);
         const signing=getTeamHistory(n).find(record=>record.player?.id===player.id),fee=signing?.price??0;
         let position="—";try{position=typeof primaryPosition==="function"?primaryPosition(player):(player.position||player.positions?.[0]||"—");}catch(e){}
         if(Array.isArray(position))position=position[0]||"—";
         const starter=usedIds.has(String(player.id)),status=starter?translate("STARTER"):translate("RESERVE");
-        if(portraits?.get(player.id))ctx.drawImage(portraits.get(player.id),listX+7,ry+1,23,25);
+        if(portraits?.get(player.id))drawReportPortrait(ctx,portraits.get(player.id),listX+7,ry+1,23,25);
         shareImageText(ctx,player.name,listX+38,ry+19,380,'700 14px "Barlow Condensed", sans-serif',"#e3eef8");
         shareImageText(ctx,String(position),listX+435,ry+19,85,'700 13px "Barlow Condensed", sans-serif',"#9bc0dc");
         shareImageText(ctx,status,listX+540,ry+19,82,'800 12px "Barlow Condensed", sans-serif',starter?"#72c4ff":"#7e9bb6");
@@ -319,10 +324,10 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
         if(n)shareImageText(ctx,fee===0?translate("FREE"):"$"+fee.toLocaleString(),listX+listW-10,ry+19,73,'800 13px "Barlow Condensed", sans-serif',"#b3d4ec","right");
     });
 }
-async function createAuctionShareImageBlob(teamNumber=null){
+async function createAuctionShareImageBlob(teamNumber=null,reportEntries=null,reportOverride=null){
     const numbers=teamNumber===0?[0]:[1,2];
-    const entries=numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
-    const modeReport=teamNumber===0?null:exportModeReport();
+    const entries=reportEntries||numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
+    const modeReport=reportOverride||(teamNumber===0?null:exportModeReport());
     await document.fonts?.ready;
     const text=["TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
     if(document.fonts?.load)await Promise.all([document.fonts.load('800 18px "Barlow Condensed"',text),document.fonts.load('700 14px "Rajdhani"',text)]);
@@ -333,8 +338,8 @@ async function createAuctionShareImageBlob(teamNumber=null){
         portraits.set(player.id,ready.image);
     }));
     const reportHeight=modeReport?125+Math.max(modeReport.left.length,modeReport.right.length)*27:0;
-    const maxRoster=Math.max(...entries.map(entry=>entry.team.players.length),1),panelY=210+reportHeight,panelHeight=665+maxRoster*29;
-    const canvas=document.createElement("canvas");canvas.width=entries.length===1?1100:1800;canvas.height=panelY+panelHeight+100;
+    const maxReserves=Math.max(...entries.map(entry=>entry.snap.reserves.length),0),panelY=175,panelHeight=maxReserves?645+maxReserves*29:610;
+    const canvas=document.createElement("canvas");canvas.width=entries.length===1?1100:1800;canvas.height=panelY+panelHeight+reportHeight+90;
     const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Image export is unavailable.");
     const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
     ctx.fillStyle=backdrop;ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -342,10 +347,11 @@ async function createAuctionShareImageBlob(teamNumber=null){
     shareImageText(ctx,SiteI18n.text(teamNumber===0?"SQUAD REPORT":"FINAL RESULT"),58,120,canvas.width-108,'800 22px "Barlow Condensed", sans-serif',"#5abaff");
     ctx.fillStyle="#2caeff";ctx.fillRect(54,143,canvas.width-108,3);
     if(modeReport){
-        shareImageRoundRect(ctx,48,168,canvas.width-96,reportHeight-12,12,"#102b46","#2c5774");
-        shareImageText(ctx,modeReport.title,72,201,canvas.width-144,'900 28px "Barlow Condensed", sans-serif',"#f4d17d");
-        shareImageText(ctx,modeReport.subtitle,72,230,canvas.width-144,'800 20px "Barlow Condensed", sans-serif',"#d5eaff");
-        for(const [column,lines]of [modeReport.left,modeReport.right].entries())for(const [row,line]of lines.entries())shareImageText(ctx,line,72+column*(canvas.width-144)/2,263+row*27,(canvas.width-170)/2,'700 17px "Rajdhani", sans-serif',"#bcd4e9");
+        const reportY=panelY+panelHeight+18;
+        shareImageRoundRect(ctx,48,reportY,canvas.width-96,reportHeight-12,12,"#102b46","#2c5774");
+        shareImageText(ctx,modeReport.title,72,reportY+33,canvas.width-144,'900 28px "Barlow Condensed", sans-serif',"#f4d17d");
+        shareImageText(ctx,modeReport.subtitle,72,reportY+62,canvas.width-144,'800 20px "Barlow Condensed", sans-serif',"#d5eaff");
+        for(const [column,lines]of [modeReport.left,modeReport.right].entries())for(const [row,line]of lines.entries())shareImageText(ctx,line,72+column*(canvas.width-144)/2,reportY+95+row*27,(canvas.width-170)/2,'700 17px "Rajdhani", sans-serif',"#bcd4e9");
     }
     const margin=48,gap=24,panelW=(canvas.width-margin*2-gap*(entries.length-1))/entries.length;
     entries.forEach((entry,i)=>drawAuctionShareImageTeam(ctx,entry.team,entry.n,entry.snap,{x:margin+i*(panelW+gap),y:panelY,width:panelW,height:panelHeight,portraits}));

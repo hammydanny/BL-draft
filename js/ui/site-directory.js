@@ -20,6 +20,15 @@ function updateSiteDirectory(screen){
         refreshDirectoryResume();
         return;
     }
+    const soloScreen=document.getElementById("soloDraftScreen");
+    if(soloScreen&&!soloScreen.classList.contains("hidden")){
+        const label=soloScreen.dataset.soloKind==="daily"?"DAILY EGO DRAFT":"DRAFT CHALLENGES";
+        setMobilePageContext(label);
+        document.querySelectorAll("[data-directory-section]").forEach(item=>{if(item.dataset.directorySection==="challenges")item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");});
+        document.getElementById("siteBreadcrumb").innerHTML=`<button type="button" data-directory-action="home">HOME</button><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
+        if(typeof SiteI18n!=="undefined")SiteI18n.apply(document.getElementById("siteBreadcrumb"));
+        refreshDirectoryResume();return;
+    }
     const route=getRouteFromLocation();
     const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":"home";
     setMobilePageContext(({play:"AUCTION",builder:"TEAM BUILDER",database:"DATABASE",home:"HOME"})[section]);

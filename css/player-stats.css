@@ -50,8 +50,8 @@
 /* Current target: identity rail beside the main attribute evaluation. */
 .auction-command-center .current-player{position:relative;display:grid;grid-template-columns:136px minmax(0,1fr);align-items:start;width:100%;max-width:720px;margin:0 auto 6px;padding:8px;gap:12px;background:linear-gradient(135deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);box-shadow:var(--shadow-strong);animation:playerIn .4s ease}
 .auction-identity-rail{min-width:0}
-.auction-command-center .player-image-container{position:relative;width:136px;height:154.55px;overflow:hidden;background:var(--bg-inset);border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
-.auction-command-center .player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
+.auction-command-center .player-image-container,.draft-portrait{position:relative;width:136px;height:154.55px;overflow:hidden;background:var(--bg-inset);border:1px solid var(--border-strong);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%)}
+.auction-command-center .player-image,.draft-portrait>.player-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
 .player-card-identity{margin-top:6px;min-width:0;text-align:left}
 .auction-player-heading{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
 .player-card-label{color:var(--accent-text);font-size:12px;font-weight:800;letter-spacing:1.1px}

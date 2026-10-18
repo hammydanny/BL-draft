@@ -29,3 +29,5 @@ console.log(`PASS localization source coverage (${coverage.catalogSize} catalog 
 require('./replayability-tests.js').runReplayabilityTests();
 
 require('./game-modes-tests.js').runGameModeTests();
+
+require('./solo-draft-tests.js').runSoloDraftTests();

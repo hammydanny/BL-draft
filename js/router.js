@@ -30,6 +30,7 @@ function databaseViewForScreen(screen){
 function canonicalRouteUrl(route,{databaseView=null,quickDraft=null}={}){
     const url=new URL(routePath(route),appRootUrl());
     const challenge=new URL(window.location.href).searchParams.get("challenge");
+    if(route==="menu"&&new URL(window.location.href).searchParams.get("solo")==="run")url.searchParams.set("solo","run");
     if(route==="menu"&&["daily","draft","all","cpu"].includes(challenge))url.searchParams.set("challenge",challenge);
     if(route==="lore"&&(databaseView==="characters"||databaseView==="chemistry"))url.searchParams.set("view",databaseView);
     if(route==="auctionSetup"&&(quickDraft===true||(quickDraft===null&&new URL(window.location.href).searchParams.get("draft")==="quick")))url.searchParams.set("draft","quick");
@@ -147,8 +148,9 @@ function setVisibleScreen(screen,options={}){
         if(route&&(appRelativePath()!==routePath(route)||(route==="lore"&&databaseView!==databaseViewFromLocation()))){updateRoute(route,{databaseView,quickDraft:options.quickDraft??null});return;}
         if(route==="auctionSetup"&&typeof options.quickDraft==="boolean")updateRoute(route,{quickDraft:options.quickDraft});
     }
-    [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
+    [menuScreen,setupScreen,auctionScreen,formationScreen,document.getElementById("soloDraftScreen"),document.getElementById("lore-menu-screen"),document.getElementById("character-lore-screen"),document.getElementById("chemistry-lore-screen")].forEach(el=>el&&el.classList.add("hidden"));
     if(screen)screen.classList.remove("hidden");
+    if(screen?.id!=="soloDraftScreen"&&document.getElementById("soloDraftScreen")&&typeof soloRestorePageTitle==="function")soloRestorePageTitle();
     updateSiteDirectory(screen);
     window.scrollTo({top:0,behavior:"instant"});
 }
@@ -197,6 +199,7 @@ function navigateToRoute(route,options={}){
     switch(route){
         case "menu":
             goToMainMenu({...options,skipHistory:true});
+            if(new URL(window.location.href).searchParams.get("solo")==="run"&&typeof resumeSoloDraft==="function")resumeSoloDraft();
             break;
         case "lore":
             if(databaseViewFromLocation()==="characters")openCharacterLore({...options,skipHistory:true});
