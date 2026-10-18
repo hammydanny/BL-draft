@@ -18,7 +18,7 @@ const STRATEGIES=[
 {key:"width",label:"Width",low:"Compact",high:"Wide"}
 ];
 const DEFAULT_STRATEGY={tempo:52,directness:48,pressing:48,line:45,width:55};
-let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false;
+let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false,feedTimer=null,feedQueue=[],feedQueueIds=new Set();
 const byId=id=>document.getElementById(id);
 function make(tag,cls,label){const e=document.createElement(tag);if(cls)e.className=cls;if(label!==undefined&&label!==null)e.textContent=String(label);return e;}
 function put(parent,child){if(parent&&child)parent.appendChild(child);return child;}
@@ -162,6 +162,7 @@ function runSequence(state){
   if(!match||match!==state||state.status==="finished"){state.runnerActive=false;runnerTimer=null;return;}
   if(state.manualPaused){state.runnerActive=false;runnerTimer=null;storeActiveMatch();renderMatch();return;}
   if(state.status==="paused"){state.runnerActive=false;runnerTimer=null;storeActiveMatch();renderMatch();return;}
+  if(feedQueue.length){runnerTimer=setTimeout(step,100);return;}
   if(state.phase==="firstHalf"&&state.timeSeconds>=HALF){state.phase="halfTime";state.pending={type:"half-time",teamNumber:2,zone:7};addEvent(state,{type:"half-time",notable:true,description:"HALF TIME. The teams return to the touchline.",actors:[]});pause(state,"HALF TIME");state.runnerActive=false;runnerTimer=null;storeActiveMatch();renderMatch();return;}
   if(state.timeSeconds>=FULL){state.runnerActive=false;runnerTimer=null;finish(state);return;}
   playerTick(state);if(state.tick%6===0||state.status!=="playing")storeActiveMatch();renderMatch();
@@ -177,6 +178,7 @@ const lineupHead=make("div","bs-roster-section-heading");put(lineupHead,make("h3
 const reservePlayers=t.roster.filter(p=>!Object.values(t.assignment).map(idOf).includes(idOf(p.id))),reserveHead=make("div","bs-roster-section-heading");put(reserveHead,make("h3","","RESERVES"));put(reserveHead,make("span","",reservePlayers.length+" AVAILABLE"));put(card,reserveHead);const reserveList=make("div","bs-reserve-list");if(!reservePlayers.length)put(reserveList,make("p","bs-empty-note","No reserves on this roster."));reservePlayers.forEach(p=>{const row=make("div","bs-reserve-row");portrait(row,p,32);const copy=make("div","bs-player-copy");put(copy,make("strong","",p.name));put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)));put(row,copy);const select=make("select","bs-select bs-swap-select");select.setAttribute("data-reserve-slot",number);select.setAttribute("data-reserve-player",p.id);option(select,"","Swap for…",false);Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const starter=playerIn(t,t.assignment[k]);option(select,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+(starter?starter.name:"Empty"));});put(row,select);button(row,"SWAP","bs-mini-button",{"data-swap-player":p.id,"data-swap-team":number});put(reserveList,row);});put(card,reserveList);
 const tactic=make("div","bs-roster-section-heading");put(tactic,make("h3","","TEAM STRATEGY"));put(tactic,make("span","","0–100"));put(card,tactic);put(card,stratControls(number,t,false));const save=make("div","bs-save-team-row"),saveName=make("input","bs-name-input");saveName.type="text";saveName.maxLength=32;saveName.value=t.name;saveName.setAttribute("data-save-name",number);saveName.placeholder="Name this saved team";put(save,saveName);button(save,"SAVE TEAM","bs-button bs-button--secondary",{"data-save-team":number});put(card,save);return card;}
 function renderInit(){
+ document.body.classList.remove("bs-game-route");clearFeedQueue();
  byId("bs-setup-view").hidden=false;byId("bs-match-view").hidden=true;byId("bs-results-view").hidden=true;
  const root=byId("bs-team-grid");root.replaceChildren();setupTeams.forEach((t,i)=>put(root,renderTeamCard(i+1)));
  const labels={auction:"AUCTION DRAFT",saved:"SAVED TEAM",random:"RANDOM TEAM"};
@@ -224,15 +226,36 @@ function renderEvent(event,archive){
  if(event.dialogue&&event.dialogue.length){const q=make("div","bs-event-dialogue");event.dialogue.forEach(d=>put(q,make("p","",d.text)));put(item,q);}
  if(archive&&!event.notable)put(item,make("span","bs-routine-tag","ROUTINE EVENT"));return item;
 }
+function clearFeedQueue(){if(feedTimer!==null)clearTimeout(feedTimer);feedTimer=null;feedQueue=[];feedQueueIds.clear();}
+function scheduleFeedEvent(){
+ if(feedTimer!==null||!feedQueue.length)return;
+ feedTimer=setTimeout(function(){
+  feedTimer=null;
+  const event=feedQueue.shift();if(event)feedQueueIds.delete(String(event.id));
+  const root=byId("bs-live-feed");
+  if(event&&root&&match&&match.status!=="finished"){
+   const keep=new Set(match.events.filter(e=>e.notable).slice(-24).map(e=>String(e.id)));
+   if(keep.has(String(event.id))&&!root.querySelector('[data-event-id="'+String(event.id)+'"]')){
+    const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();
+    const node=renderEvent(event,false);node.style.setProperty("--bs-pop-delay","0ms");
+    if(root.firstElementChild&&root.firstElementChild.id==="bs-stoppage-panel")root.insertBefore(node,root.children[1]||null);else root.prepend(node);
+    root.querySelectorAll("[data-event-id]").forEach(el=>{if(!keep.has(el.dataset.eventId))el.remove();});
+    root.scrollTop=0;
+   }
+  }
+  if(feedQueue.length)scheduleFeedEvent();
+ },1000);
+}
 function renderFeed(){
  const root=byId("bs-live-feed");if(!root||!match)return;
  const all=match.events.filter(e=>e.notable),visible=all.slice(-24),keep=new Set(visible.map(e=>String(e.id)));
- const existing=new Set(Array.from(root.querySelectorAll("[data-event-id]")).map(el=>el.dataset.eventId));
+ Array.from(root.querySelectorAll("[data-event-id]")).forEach(el=>{if(!keep.has(el.dataset.eventId))el.remove();});
+ feedQueue=feedQueue.filter(e=>keep.has(String(e.id)));feedQueueIds=new Set(feedQueue.map(e=>String(e.id)));
  if(!all.length){root.querySelectorAll(".bs-feed-event").forEach(el=>el.remove());if(!root.querySelector(".bs-empty-feed"))put(root,make("p","bs-empty-feed","The players take their positions. The first notable moment will appear here."));}
  else{
-  const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();
-  Array.from(root.querySelectorAll("[data-event-id]")).forEach(el=>{if(!keep.has(el.dataset.eventId))el.remove();});
-  visible.filter(e=>!existing.has(String(e.id))).sort((a,b)=>a.id-b.id).forEach((e,i)=>{const node=renderEvent(e,false);node.style.setProperty("--bs-pop-delay",Math.min(i*75,375)+"ms");root.prepend(node);});
+  visible.filter(e=>!root.querySelector('[data-event-id="'+String(e.id)+'"]')&&!feedQueueIds.has(String(e.id))).sort((a,b)=>a.id-b.id).forEach(e=>{feedQueue.push(e);feedQueueIds.add(String(e.id));});
+  const empty=root.querySelector(".bs-empty-feed");if(empty&&root.querySelector("[data-event-id]"))empty.remove();
+  scheduleFeedEvent();
  }
  root.scrollTop=0;const count=byId("bs-event-count");if(count)count.textContent=all.length+" NOTABLE EVENTS";
 }
@@ -265,6 +288,7 @@ function renderStoppage(){
 }
 function renderMatch(){
  if(!match||match.status==="finished")return;
+ document.body.classList.add("bs-game-route");
  byId("bs-setup-view").hidden=true;byId("bs-match-view").hidden=false;byId("bs-results-view").hidden=true;
  byId("bs-match-time").textContent=timeLabel(match.timeSeconds);byId("bs-score-1").textContent=match.score[1];byId("bs-score-2").textContent=match.score[2];
  byId("bs-match-team-name-1").textContent=match.teams[1].name;byId("bs-match-team-name-2").textContent=match.teams[2].name;
@@ -321,7 +345,7 @@ function renderArchive(){
  const filter=byId("bs-archive-filter").value,list=match.events.filter(e=>filter!=="notable"||e.notable).slice().reverse();
  byId("bs-archive-count").textContent=list.length+" EVENTS · LATEST FIRST";list.forEach(e=>put(root,renderEvent(e,true)));
 }
-function showResults(){byId("bs-setup-view").hidden=true;byId("bs-match-view").hidden=true;byId("bs-results-view").hidden=false;const score=byId("bs-result-score");score.replaceChildren();const a=make("strong","bs-result-team-name",match.teams[1].name),middle=make("strong","bs-result-final-score",match.score[1]+" — "+match.score[2]),b=make("strong","bs-result-team-name",match.teams[2].name);a.style.setProperty("--bs-team-color",match.teams[1].color);b.style.setProperty("--bs-team-color",match.teams[2].color);put(score,a);put(score,middle);put(score,b);const verdict=match.score[1]===match.score[2]?"DRAW":match.score[1]>match.score[2]?match.teams[1].name+" WIN":match.teams[2].name+" WIN";byId("bs-result-verdict").textContent=verdict+" · FULL TIME · "+timeLabel(match.timeSeconds);const summaries=byId("bs-result-team-summaries");summaries.replaceChildren();put(summaries,teamSummary(1));put(summaries,teamSummary(2));renderRatingTable();renderArchive();try{localStorage.setItem(RESULT_KEY,JSON.stringify({date:new Date().toISOString(),score:match.score,events:match.events,timeSeconds:match.timeSeconds}));}catch(e){}window.scrollTo({top:0,behavior:"instant"});}
+function showResults(){document.body.classList.remove("bs-game-route");clearFeedQueue();byId("bs-setup-view").hidden=true;byId("bs-match-view").hidden=true;byId("bs-results-view").hidden=false;const score=byId("bs-result-score");score.replaceChildren();const a=make("strong","bs-result-team-name",match.teams[1].name),middle=make("strong","bs-result-final-score",match.score[1]+" — "+match.score[2]),b=make("strong","bs-result-team-name",match.teams[2].name);a.style.setProperty("--bs-team-color",match.teams[1].color);b.style.setProperty("--bs-team-color",match.teams[2].color);put(score,a);put(score,middle);put(score,b);const verdict=match.score[1]===match.score[2]?"DRAW":match.score[1]>match.score[2]?match.teams[1].name+" WIN":match.teams[2].name+" WIN";byId("bs-result-verdict").textContent=verdict+" · FULL TIME · "+timeLabel(match.timeSeconds);const summaries=byId("bs-result-team-summaries");summaries.replaceChildren();put(summaries,teamSummary(1));put(summaries,teamSummary(2));renderRatingTable();renderArchive();try{localStorage.setItem(RESULT_KEY,JSON.stringify({date:new Date().toISOString(),score:match.score,events:match.events,timeSeconds:match.timeSeconds}));}catch(e){}window.scrollTo({top:0,behavior:"instant"});}
 function startMatch(){
  setupTeams=[normalizeTeam(setupTeams[0],1),normalizeTeam(setupTeams[1],2)];match=createMatch();match.manualPaused=false;matchViewBuilt=false;
  try{sessionStorage.removeItem(LAUNCH_KEY);sessionStorage.removeItem(SETUP_RETURN_KEY);sessionStorage.setItem(ACTIVE_MATCH_KEY,JSON.stringify(snapshotMatch(match)));}catch(e){}
@@ -343,7 +367,7 @@ function toggleManualPause(){
  else{storeActiveMatch();renderMatch();runSequence(match);}
 }
 function fastForwardMatch(){
- if(!match||match.status==="finished")return;if(runnerTimer)clearTimeout(runnerTimer);runnerTimer=null;match.runnerActive=false;match.manualPaused=false;let guard=0;
+ if(!match||match.status==="finished")return;clearFeedQueue();if(runnerTimer)clearTimeout(runnerTimer);runnerTimer=null;match.runnerActive=false;match.manualPaused=false;let guard=0;
  while(match.status!=="finished"&&guard<2000){guard++;
   if(match.status==="paused"){
    if(match.requiredSub){const req=match.requiredSub,team=match.teams[req.teamNumber],reserve=bench(team)[0];if(reserve)substitute(team,req.slot,reserve.id);else match.requiredSub=null;}

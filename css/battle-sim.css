@@ -179,39 +179,40 @@
 @media(prefers-reduced-motion:reduce){.bs-feed-event{animation:none!important}}
 
 
-/* BATTLE SIM V0.7.5 // wider, viewport-aware team panels; top-pinned stoppages; delayed event reveal */
-.battle-sim-page{width:100%;max-width:none;padding:clamp(6px,.65vw,12px)}
-.bs-match-layout{grid-template-columns:minmax(0,1.15fr) minmax(360px,1.4fr) minmax(0,1.15fr);gap:clamp(6px,.5vw,10px);align-items:start}
-.bs-match-team-panel{padding:clamp(8px,.85vw,16px)}
-.bs-match-team-panel h2{font-size:clamp(19px,1.65vw,31px);margin:6px 0 8px}
-.bs-match-player-row .bs-player-name-line strong,.bs-bench-player .bs-player-copy>strong{font-size:clamp(11px,.8vw,14px)}
-.bs-mini-pitch{min-height:clamp(360px,29vw,560px);margin:10px 0 14px}
-.bs-formation-player{width:clamp(48px,3.6vw,72px);gap:clamp(2px,.2vw,4px);padding:3px 2px}
-.bs-formation-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
-.bs-formation-player-name{font-size:clamp(7px,.55vw,10px)}
-.bs-formation-player-meta{font-size:clamp(6px,.45vw,9px)}
+/* BATTLE SIM V0.7.6 // gameplay-only responsive sizing and paced event feed */
+body.bs-game-route .battle-sim-page{width:100%;max-width:none;padding:clamp(6px,.65vw,12px)}
+body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1.15fr) minmax(360px,1.4fr) minmax(0,1.15fr);gap:clamp(6px,.5vw,10px);align-items:start}
+body.bs-game-route .bs-match-team-panel{padding:clamp(8px,.85vw,16px)}
+body.bs-game-route .bs-match-team-panel h2{font-size:clamp(19px,1.65vw,31px);margin:6px 0 8px}
+body.bs-game-route .bs-match-player-row .bs-player-name-line strong,body.bs-game-route .bs-bench-player .bs-player-copy>strong{font-size:clamp(11px,.8vw,14px)}
+body.bs-game-route .bs-mini-pitch{min-height:clamp(360px,29vw,560px);margin:10px 0 14px}
+body.bs-game-route .bs-formation-player{width:clamp(48px,3.6vw,72px);gap:clamp(2px,.2vw,4px);padding:3px 2px}
+body.bs-game-route .bs-formation-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-formation-player-name{font-size:clamp(7px,.55vw,10px)}
+body.bs-game-route .bs-formation-player-meta{font-size:clamp(6px,.45vw,9px)}
 .bs-live-feed>.bs-stoppage-panel{width:100%;box-sizing:border-box;flex:0 0 auto}
-.bs-feed-event{animation-delay:calc(1000ms + var(--bs-pop-delay,0ms))}
+body.bs-game-route .bs-match-actions{margin:0 0 12px;justify-content:center;flex-wrap:wrap;gap:8px}
+body.bs-game-route .bs-feed-event{animation-delay:var(--bs-pop-delay,0ms)}
 @media(max-width:1350px){
- .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(300px,1.05fr) minmax(0,1fr);gap:8px}
- .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
- .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
- .bs-mini-pitch{min-height:clamp(300px,30vw,410px)}
- .bs-formation-player{width:50px}
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(300px,1.05fr) minmax(0,1fr);gap:8px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-mini-pitch{min-height:clamp(300px,30vw,410px)}
+ body.bs-game-route .bs-formation-player{width:50px}
 }
 @media(max-width:1050px){
- .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px}
- .bs-match-layout>.bs-match-team-panel:last-child{grid-column:1/-1}
- .bs-match-layout>.bs-match-team-panel:last-child .bs-mini-pitch{min-height:300px}
- .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:10px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:1/-1}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-mini-pitch{min-height:300px}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:700px){
- .bs-match-layout{grid-template-columns:minmax(0,1fr)}
- .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
- .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,.bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
- .bs-mini-pitch{min-height:340px}
- .bs-formation-player{width:58px}
- .bs-match-team-panel{padding:10px}
+ body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:auto}
+ body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-player-list,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-match-bench{grid-template-columns:minmax(0,1fr)}
+ body.bs-game-route .bs-mini-pitch{min-height:340px}
+ body.bs-game-route .bs-formation-player{width:58px}
+ body.bs-game-route .bs-match-team-panel{padding:10px}
 }
 
 /* Match archive accent uses the team recorded in possession for each individual event. */
