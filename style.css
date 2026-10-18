@@ -1346,7 +1346,8 @@ html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pit
     grid-template-columns:minmax(145px,1fr) repeat(3,minmax(90px,.78fr));align-items:stretch;
 }
 .results-actions-layout .battle-sim-results-button{
-    flex:0 0 170px;min-width:170px;width:170px;margin:0;
+    flex:0 0 170px;min-width:170px;width:170px;height:44px;min-height:44px;
+    align-self:center;box-sizing:border-box;padding:0 16px;margin:0;
     background:#ffd33d;background-image:none;color:#17202a;border:1px solid #d4aa0d;
     box-shadow:none;transform:none;transition:none;
 }
@@ -1359,5 +1360,5 @@ html[data-theme="light"] .formation-slot.selected:not([data-target-action]) .pit
 @media(max-width:760px){
     .results-actions-layout{flex-direction:column}
     .results-actions-top.result-action-toolbar{grid-template-columns:1fr}
-    .results-actions-layout .battle-sim-results-button{flex:0 0 auto;width:100%;min-width:0}
+    .results-actions-layout .battle-sim-results-button{flex:0 0 auto;align-self:stretch;width:100%;min-width:0}
 }
