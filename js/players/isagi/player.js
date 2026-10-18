@@ -1,10 +1,10 @@
-// Yoichi Isagi // player-specific stats, weapons, descriptions, dialogue and Battle Sim behaviour.
+// Yoichi Isagi // player-specific stats, weapons, descriptions, dialogue and Battle Sim abilities.
 const ISAGI_PLAYER_DATA = {
         id: 1, name: "Yoichi Isagi", debutChapter: 1, appearanceOrder: 1, image: "images/yoichi-isagi.jpg", primaryPosition: "CF", positions: ["CF", "AM"],
         stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 },
         nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}},
         weapons: [
-            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Battle Sim: modestly improves Isagi’s read of nearby pressure and passing/shot selection when defenders crowd his zone.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Battle Sim: modestly improves Isagi’s short passing and shot chance when defenders are close.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"awareness","name":"Awareness","description":"Notices shifts in player positions, open lanes, danger and passing options before they become obvious.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"adaptability","name":"Adaptability","description":"Revises his plan as new information exposes an opponent’s habits, then combines available skills to exploit the changed situation.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"off-the-ball-movements","name":"Off-the-Ball Movements","description":"Times sharp runs into blind spots and open space to arrive where defenders lose track of him.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
@@ -19,7 +19,7 @@ const ISAGI_PLAYER_DATA = {
         {
             "id": "metavision",
             "name": "Metavision",
-            "description": "Scans nearby pressure and passing lanes; +3 percentage points to pass success in crowded zones and a small shot-selection nudge."
+            "description": "Scans nearby pressure and passing lanes; modestly improves short-pass success and goal chance when defenders are close."
         }
     ],
     "specials": [
@@ -31,9 +31,6 @@ const ISAGI_PLAYER_DATA = {
         }
     ],
     "ultimates": [],
-    "behavior": {
-        "baseline": "Balanced baseline; intelligent progression, with a small shot-selection nudge when space opens."
-    },
     "dialogue": {
         "pass": [
             "I can see the whole field… now move!",
