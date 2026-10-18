@@ -369,3 +369,98 @@ body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:
  .bs-setup-chemistry-featured{grid-template-columns:minmax(0,1fr)}
  .bs-setup-chemistry-key{gap:7px}
 }
+
+
+/* Squarer Battle Sim UI: match the crisp, angular styling used elsewhere. */
+.bs-button,
+.bs-mini-button,
+.bs-name-input,
+.bs-select,
+.bs-color-input,
+.bs-status-chip,
+.bs-feed-delay-control,
+.bs-event-stat-comparison,
+.bs-event-success,
+.bs-player-card-state,
+.bs-role-badge,
+.bs-result-metric,
+.bs-setup-chemistry-metric,
+.bs-setup-chemistry-featured>div,
+.bs-setup-chemistry-panel,
+.bs-match-chemistry,
+.bs-required-substitution,
+.bs-result-hero,
+.bs-result-team-card,
+.bs-ratings-team,
+.bs-team-card,
+.bs-match-team-panel,
+.bs-pitch-panel,
+.bs-live-feed-panel,
+.bs-stoppage-panel,
+.bs-archive-panel,
+.bs-match-scorebar,
+.bs-match-actions,
+.bs-setup-formation-pitch,
+.bs-mini-pitch,
+.bs-pitch-grid,
+.bs-zone,
+.bs-feed-event,
+.bs-event-actor,
+.bs-player-row,
+.bs-reserve-row,
+.bs-match-player-row,
+.bs-bench-player,
+.bs-formation-player {
+  border-radius: 3px;
+}
+
+.bs-button,
+.bs-mini-button,
+.bs-name-input,
+.bs-select,
+.bs-color-input,
+.bs-feed-delay-control {
+  border-radius: 2px;
+}
+
+.bs-status-chip {
+  border-radius: 2px;
+}
+
+body.bs-game-route .bs-live-feed .bs-feed-event {
+  border-radius: 3px;
+}
+
+body.bs-game-route .bs-live-feed .bs-event-actor {
+  border-radius: 3px;
+}
+
+/* Keep genuinely circular artwork and indicators circular. */
+.bs-portrait,
+.bs-event-portrait,
+.bs-setup-formation-avatar,
+.bs-stamina-portrait,
+.bs-stamina-ring,
+.bs-flow-meter,
+.bs-zone-player,
+.bs-setup-chemistry-key i,
+.bs-match-chemistry-track,
+.bs-match-chemistry-fill {
+  border-radius: initial;
+}
+.bs-setup-formation-avatar,
+.bs-stamina-portrait,
+.bs-zone-player {
+  border-radius: 50%;
+}
+.bs-flow-meter,
+.bs-stamina-ring,
+.bs-match-chemistry-track,
+.bs-match-chemistry-fill,
+.bs-setup-chemistry-key i {
+  border-radius: 999px;
+}
+.bs-portrait,
+.bs-event-portrait {
+  border-radius: 2px;
+}
