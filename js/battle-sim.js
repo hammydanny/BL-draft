@@ -163,8 +163,8 @@ function playerTick(state){
  const eventsBefore=state.events.length;
  state.tick++;
  const phaseEnd=state.phase==="firstHalf"?HALF:FULL;
- const fakeMinutes=10+Math.floor(state.random()*11);
- state.timeSeconds=Math.min(phaseEnd,state.timeSeconds+fakeMinutes*60);
+ const fakeSeconds=10+Math.floor(state.random()*11);
+ state.timeSeconds=Math.min(phaseEnd,state.timeSeconds+fakeSeconds);
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>=30){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}));
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  moveOffBall(state);
