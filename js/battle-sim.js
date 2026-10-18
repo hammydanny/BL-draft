@@ -18,7 +18,7 @@ const STRATEGIES=[
 {key:"width",label:"Width",low:"Compact",high:"Wide"}
 ];
 const DEFAULT_STRATEGY={tempo:52,directness:48,pressing:48,line:45,width:55};
-let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false,feedTimer=null,feedQueue=[],feedQueueIds=new Set(),feedDelayMs=1000,draggedReserve=null;
+let launchSnapshot=null,savedTeams=[],setupTeams=[],match=null,initialized=false,runnerTimer=null,matchViewBuilt=false,feedTimer=null,feedQueue=[],feedQueueIds=new Set(),feedDelayMs=1000,stoppageTimer=null,draggedReserve=null;
 const byId=id=>document.getElementById(id);
 function make(tag,cls,label){const e=document.createElement(tag);if(cls)e.className=cls;if(label!==undefined&&label!==null)e.textContent=String(label);return e;}
 function put(parent,child){if(parent&&child)parent.appendChild(child);return child;}
@@ -246,7 +246,7 @@ function renderEvent(event,archive){
  if(event.dialogue&&event.dialogue.length){const q=make("div","bs-event-dialogue");event.dialogue.forEach(d=>put(q,make("p","",d.text)));put(item,q);}
  if(archive&&!event.notable)put(item,make("span","bs-routine-tag","ROUTINE EVENT"));return item;
 }
-function clearFeedQueue(){if(feedTimer!==null)clearTimeout(feedTimer);feedTimer=null;feedQueue=[];feedQueueIds.clear();}
+function clearFeedQueue(){if(feedTimer!==null)clearTimeout(feedTimer);if(stoppageTimer!==null)clearTimeout(stoppageTimer);feedTimer=null;stoppageTimer=null;feedQueue=[];feedQueueIds.clear();}
 function scheduleFeedEvent(){
  if(feedTimer!==null||!feedQueue.length)return;
  feedTimer=setTimeout(function(){
@@ -263,7 +263,7 @@ function scheduleFeedEvent(){
     root.scrollTop=0;
    }
   }
-  if(feedQueue.length)scheduleFeedEvent();else if(match&&match.status==="paused")renderStoppage();
+  if(feedQueue.length)scheduleFeedEvent();else if(match&&match.status==="paused"){if(stoppageTimer!==null)clearTimeout(stoppageTimer);stoppageTimer=setTimeout(function(){stoppageTimer=null;if(match&&match.status==="paused"&&feedQueue.length===0&&feedTimer===null)renderStoppage();},500);}
  },feedDelayMs);
 }
 function renderFeed(){
@@ -281,7 +281,7 @@ function renderFeed(){
 }
 function renderStoppage(){
  const root=byId("bs-stoppage-panel");if(!root)return;
- const shouldShow=match.status==="paused"&&feedQueue.length===0&&feedTimer===null,wasHidden=root.hidden;root.hidden=!shouldShow;
+ const shouldShow=match.status==="paused"&&feedQueue.length===0&&feedTimer===null&&stoppageTimer===null,wasHidden=root.hidden;root.hidden=!shouldShow;
  if(!shouldShow){root.classList.remove("bs-stoppage-pop");return;}
  const required=match.requiredSub;
  byId("bs-stoppage-title").textContent=match.stoppage||"PLAY PAUSED";
