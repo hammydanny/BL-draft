@@ -266,3 +266,48 @@ body.bs-game-route .bs-event-stat-comparison,body.bs-game-route .bs-event-succes
  body.bs-game-route .bs-live-feed .bs-event-actor{padding:5px}
  body.bs-game-route .bs-live-feed .bs-event-portrait{width:38px;height:44px}
 }
+
+
+/* BATTLE SIM V0.7.8 // stoppage sequencing, drag substitutions, expanded portraits and event-speed control */
+.bs-stoppage-panel.bs-stoppage-pop{animation:bs-event-pop .42s cubic-bezier(.18,.75,.25,1) both;animation-delay:0ms;transform-origin:top center}
+body.bs-game-route .bs-match-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;justify-content:stretch;gap:8px;width:100%;margin:0 0 12px;padding:10px;box-sizing:border-box;border:1px solid var(--border-subtle,#203b54);border-radius:10px;background:color-mix(in srgb,var(--bg-surface,#07111c) 88%,var(--bs-possession-color,#19a7ff) 12%)}
+body.bs-game-route .bs-match-actions>.bs-button{width:100%;min-width:0;max-width:none;height:44px;min-height:44px;padding:6px 10px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;white-space:normal;text-align:center;font-size:clamp(9px,.7vw,12px)}
+body.bs-game-route .bs-feed-delay-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;align-self:stretch;gap:6px;width:100%;min-width:0;height:44px;min-height:44px;margin:0;padding:0 9px;box-sizing:border-box;border:1px solid var(--border-subtle,#25435d);border-radius:7px;background:var(--bg-surface-raised,#0b1826);font-size:10px;font-weight:900;color:var(--text-secondary,#a9bbcb);white-space:nowrap}
+body.bs-game-route .bs-feed-delay-control input{grid-column:1;grid-row:1;width:100%;min-width:0;height:24px;margin:0;accent-color:var(--bs-possession-color,#65c4ff);cursor:pointer}
+body.bs-game-route .bs-feed-delay-control output{grid-column:2;grid-row:1;min-width:32px;color:var(--text-primary,#eaf2ff);font-size:12px;font-variant-numeric:tabular-nums;text-align:right}
+body.bs-game-route .bs-score-names>.bs-result-team-name:first-child{justify-self:center;text-align:center;width:100%;max-width:none;margin:0}
+body.bs-game-route .bs-score-names>.bs-result-team-name:last-child{justify-self:center;text-align:center;width:100%;max-width:none;margin:0}
+body.bs-game-route .bs-formation-player{width:clamp(60px,4.1vw,78px)}
+body.bs-game-route .bs-formation-avatar .bs-stamina-ring{--portrait-size:40px;width:46px;height:46px;padding:3px}
+body.bs-game-route .bs-formation-avatar .bs-flow-meter{width:5px;flex-basis:5px;height:42px}
+body.bs-game-route .bs-formation-player-name{font-size:clamp(7px,.58vw,10px)}
+body.bs-game-route .bs-match-player-row .bs-stamina-ring,body.bs-game-route .bs-bench-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-bench-player .bs-flow-meter{height:46px}
+.bs-event-actor{border:1px solid color-mix(in srgb,var(--bs-actor-color,#52667a) 65%,transparent);border-radius:7px;background:color-mix(in srgb,var(--bs-actor-color,#52667a) 16%,var(--bg-surface-raised,#0b1826))}
+.bs-event-portrait{border:2px solid var(--bs-actor-color,#52667a);box-shadow:0 0 0 1px color-mix(in srgb,var(--bs-actor-color,#52667a) 40%,transparent)}
+body.bs-game-route .bs-live-feed .bs-event-portrait{width:50px;height:58px}
+body.bs-game-route .bs-live-feed .bs-event-actor{padding:7px 10px;gap:9px;font-size:12px}
+body.bs-game-route .bs-live-feed .bs-event-actor .bs-flow-meter{height:56px}
+body.bs-game-route .bs-live-feed .bs-event-dialogue{margin-top:12px;padding:8px 14px;border-left-width:3px;border-radius:0 7px 7px 0;background:color-mix(in srgb,var(--bg-surface,#07111c) 87%,var(--bs-event-team-color,#65c4ff) 13%)}
+body.bs-game-route .bs-live-feed .bs-event-dialogue p{font-size:clamp(14px,1vw,16px);line-height:1.55;margin:5px 0}
+body.bs-game-route .bs-formation-player[data-swap-slot]{cursor:copy;transition:box-shadow .15s ease,border-color .15s ease}
+body.bs-game-route .bs-formation-player[data-swap-slot]:after{content:"DROP RESERVE";position:absolute;inset:auto 2px -7px;display:none;padding:2px 3px;border-radius:3px;background:#06111ced;color:#fff;font-size:7px;font-weight:900;letter-spacing:.04em}
+body.bs-game-route .bs-match-team-panel:has(.bs-bench-player[draggable="true"]) .bs-formation-player[data-swap-slot]:hover:after,body.bs-game-route .bs-formation-player[data-swap-slot].is-drop-target:after{display:block}
+body.bs-game-route .bs-formation-player.is-drop-target{z-index:3;border-color:#a6f3c9;box-shadow:0 0 0 2px #a6f3c980,0 0 18px #6de4ad65;background:#154633}
+body.bs-game-route .bs-bench-player[draggable="true"]{cursor:grab;outline:1px dashed color-mix(in srgb,var(--bs-team-color,#65c4ff) 60%,transparent);outline-offset:-2px}
+body.bs-game-route .bs-bench-player[draggable="true"]:active{cursor:grabbing}
+body.bs-game-route .bs-formation-player--vacant{border:2px dashed var(--bs-team-color,#65c4ff);background:color-mix(in srgb,var(--bs-team-color,#65c4ff) 22%,#07111c);box-shadow:0 0 0 2px color-mix(in srgb,var(--bs-team-color,#65c4ff) 30%,transparent);justify-content:center;min-height:64px}
+body.bs-game-route .bs-formation-player--vacant .bs-formation-player-name{white-space:normal;overflow-wrap:anywhere;color:#fff;font-size:clamp(8px,.65vw,11px)}
+body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:#bcf8dd}
+@media(max-width:1350px){
+ body.bs-game-route .bs-formation-player{width:clamp(58px,5vw,70px)}
+}
+@media(max-width:780px){
+ body.bs-game-route .bs-match-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:8px}
+ body.bs-game-route .bs-match-actions>.bs-button{height:44px;min-height:44px;font-size:11px}
+ body.bs-game-route .bs-feed-delay-control{height:44px;min-height:44px}
+ body.bs-game-route .bs-formation-player{width:60px}
+ body.bs-game-route .bs-formation-avatar .bs-stamina-ring{--portrait-size:34px;width:40px;height:40px}
+ body.bs-game-route .bs-formation-avatar .bs-flow-meter{height:36px}
+}
+@media(prefers-reduced-motion:reduce){.bs-stoppage-panel.bs-stoppage-pop{animation:none!important}}
