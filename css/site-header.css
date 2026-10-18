@@ -169,3 +169,27 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
   .directory-item{font-size:15px}
   .site-breadcrumb{font-size:14px}
 }
+
+/* BATTLE SIM // CLEAR YELLOW ENTRY POINTS */
+.battle-sim-cta{
+    display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;
+    padding:11px 18px;border:1px solid #dca900;border-radius:3px;
+    background:linear-gradient(135deg,#ffe979 0%,#ffc928 100%);color:#15202a;
+    font:900 14px/1 "Rajdhani",sans-serif;letter-spacing:1px;text-transform:uppercase;
+    box-shadow:0 4px 16px rgba(255,195,0,.2);cursor:pointer;text-decoration:none;
+    transition:transform var(--motion-fast),box-shadow var(--motion-fast),background var(--motion-fast);
+}
+.battle-sim-cta:hover,.battle-sim-cta:focus-visible{
+    color:#101820;background:linear-gradient(135deg,#fff19a 0%,#ffd64b 100%);
+    border-color:#ffe783;box-shadow:0 6px 20px rgba(255,195,0,.28);transform:translateY(-1px);
+}
+.battle-sim-cta b{font-size:18px;line-height:1}
+.directory-item.battle-sim-nav{
+    color:#18202a;background:linear-gradient(135deg,#ffe979 0%,#ffc928 100%);
+    border-color:#dca900;font-weight:900;
+}
+.directory-item.battle-sim-nav:hover,.directory-item.battle-sim-nav[aria-current="page"]{
+    color:#101820;background:linear-gradient(135deg,#fff19a 0%,#ffd64b 100%);
+    border-color:#ffe783;box-shadow:0 4px 14px rgba(255,195,0,.2);
+}
+.page-context-team .battle-sim-context{min-width:130px;min-height:42px;padding:10px 20px;}
