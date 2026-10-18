@@ -160,7 +160,7 @@
 .bs-match-layout{grid-template-columns:minmax(190px,.68fr) minmax(510px,2.55fr) minmax(190px,.68fr);gap:10px;align-items:start}
 .bs-match-team-panel{padding:9px;overflow:visible}.bs-match-team-panel h2{font-size:clamp(17px,1.45vw,23px);margin:5px 0 7px}.bs-center-stage{gap:10px;min-width:0}
 .bs-live-feed-panel{position:relative;min-height:480px;max-height:none;border-top:4px solid var(--bs-possession-color,#19a7ff);transition:border-color .25s ease}.bs-live-feed-panel>.bs-panel-topline{padding:14px 16px 11px}.bs-live-feed{min-height:380px;max-height:680px;padding:13px;gap:9px;scroll-behavior:auto}
-.bs-feed-event{animation:bs-event-pop .42s cubic-bezier(.18,.75,.25,1) both;animation-delay:var(--bs-pop-delay,0ms);transform-origin:top center}.bs-feed-event.is-notable{border-left-color:var(--bs-possession-color,#65c4ff)}.bs-live-feed-panel .bs-event-type{color:var(--bs-possession-color,#65c4ff);transition:color .25s ease}
+.bs-feed-event{animation:bs-event-pop .42s cubic-bezier(.18,.75,.25,1) both;animation-delay:var(--bs-pop-delay,0ms);transform-origin:top center}.bs-feed-event.is-notable{border-left-color:var(--bs-event-team-color,#65c4ff)}.bs-live-feed-panel .bs-event-type{color:var(--text-secondary,#8fa9bf)}
 @keyframes bs-event-pop{0%{opacity:0;transform:translateY(-12px) scale(.985);filter:blur(2px)}70%{opacity:1;transform:translateY(1px) scale(1.005);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1);filter:none}}
 .bs-mini-pitch{position:relative;isolation:isolate;min-height:400px;margin:10px 0 14px;overflow:hidden;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 38%,#31506a);border-radius:7px;background:linear-gradient(90deg,transparent 49.5%,#ffffff18 49.5%,#ffffff18 50.5%,transparent 50.5%),linear-gradient(180deg,#0d5343,#0a4136);box-shadow:inset 0 0 0 5px #ffffff07}
 .bs-mini-pitch:before{content:"";position:absolute;inset:5px;border:1px solid #d1fff12c;border-radius:3px;pointer-events:none}.bs-mini-pitch-markings{position:absolute;left:25%;right:25%;top:5px;height:35px;border:1px solid #d1fff12c;border-top:0;pointer-events:none}
@@ -217,3 +217,52 @@ body.bs-game-route .bs-feed-event{animation-delay:var(--bs-pop-delay,0ms)}
 
 /* Match archive accent uses the team recorded in possession for each individual event. */
 .bs-event-archive .bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
+
+
+/* BATTLE SIM V0.7.7 // analysis-rich event cards, live flow meters, centered scoreboard, message pacing controls */
+body.bs-game-route .bs-match-scorebar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.5fr) minmax(0,1fr);align-items:center;gap:clamp(8px,1vw,16px)}
+body.bs-game-route .bs-match-clock{grid-column:1;justify-self:start}
+body.bs-game-route .bs-score-names{grid-column:2;justify-self:stretch;width:100%;max-width:none;margin:0;gap:clamp(8px,1.25vw,24px)}
+body.bs-game-route .bs-match-meta{grid-column:3;justify-self:end;text-align:right}
+body.bs-game-route .bs-match-actions{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin:0 0 12px;padding:10px;box-sizing:border-box;border:1px solid var(--border-subtle,#203b54);border-radius:10px;background:color-mix(in srgb,var(--bg-surface,#07111c) 88%,var(--bs-possession-color,#19a7ff) 12%);flex-wrap:wrap}
+.bs-feed-delay-control{display:grid;grid-template-columns:auto minmax(86px,clamp(86px,8vw,130px)) auto;align-items:center;gap:7px;min-width:0;padding:4px 8px;border:1px solid var(--border-subtle,#25435d);border-radius:7px;background:var(--bg-surface-raised,#0b1826);font-size:9px;font-weight:900;letter-spacing:.07em;color:var(--text-secondary,#a9bbcb);white-space:nowrap}
+.bs-feed-delay-control input{width:100%;min-width:0;accent-color:var(--bs-possession-color,#65c4ff);cursor:pointer}
+.bs-feed-delay-control output{color:var(--text-primary,#eaf2ff);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
+.bs-feed-event.is-notable{border-left-color:var(--bs-event-team-color,#65c4ff)}
+.bs-event-analysis{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-event-stat-comparison,.bs-event-success{display:inline-flex;align-items:center;justify-content:center;padding:5px 8px;border:1px solid var(--border-subtle,#2a4a64);border-radius:5px;background:color-mix(in srgb,var(--bg-surface,#07111c) 70%,var(--bs-event-team-color,#65c4ff) 30%);font-size:11px;font-weight:900;letter-spacing:.035em;color:var(--text-primary,#eaf2ff);font-variant-numeric:tabular-nums}
+.bs-event-success{border-color:color-mix(in srgb,#80dab3 45%,var(--border-subtle,#2a4a64));color:#a6f3c9}
+.bs-flow-meter{position:relative;display:inline-flex;align-self:center;flex:0 0 5px;width:5px;height:46px;margin:0 2px;overflow:hidden;border-radius:999px;background:#394959;box-shadow:inset 0 0 0 1px #ffffff12;vertical-align:middle}
+.bs-flow-meter-fill{position:absolute;left:0;bottom:0;display:block;width:100%;height:var(--flow,50%);border-radius:inherit;background:linear-gradient(0deg,#f34d5d 0%,#f4cb59 53%,#56dda0 100%);box-shadow:0 0 7px #80d8ab35;transition:height .25s ease}
+.bs-formation-avatar{display:flex;align-items:center;justify-content:center;gap:4px;min-height:30px}
+.bs-formation-avatar .bs-flow-meter{height:32px;width:4px;flex-basis:4px}
+body.bs-game-route .bs-match-player-row,body.bs-game-route .bs-bench-player{gap:9px}
+body.bs-game-route .bs-match-player-row .bs-stamina-ring,body.bs-game-route .bs-bench-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-match-player-row .bs-flow-meter{height:47px}
+body.bs-game-route .bs-bench-player .bs-flow-meter{height:42px}
+body.bs-game-route .bs-mini-pitch .bs-formation-player .bs-stamina-ring{width:calc(var(--portrait-size,34px) + 6px);height:calc(var(--portrait-size,34px) + 6px);padding:3px}
+body.bs-game-route .bs-live-feed .bs-feed-event{padding:clamp(14px,1.1vw,20px);border-radius:9px}
+body.bs-game-route .bs-live-feed .bs-event-description{font-size:clamp(13px,.9vw,15px);line-height:1.55}
+body.bs-game-route .bs-live-feed .bs-event-actors{gap:10px;margin-top:12px}
+body.bs-game-route .bs-live-feed .bs-event-actor{gap:8px;min-width:0;max-width:100%;padding:6px 9px;border:1px solid var(--border-subtle,#25435d);border-radius:8px;background:color-mix(in srgb,var(--bg-surface-raised,#0b1826) 91%,var(--bs-event-team-color,#19a7ff) 9%);font-size:11px}
+body.bs-game-route .bs-live-feed .bs-event-portrait{width:44px;height:50px;flex:0 0 auto;border-radius:6px}
+body.bs-game-route .bs-live-feed .bs-event-actor .bs-flow-meter{height:50px}
+body.bs-game-route .bs-live-feed .bs-event-actor-name{min-width:0;overflow-wrap:anywhere}
+body.bs-game-route .bs-live-feed .bs-event-analysis{justify-content:space-between}
+body.bs-game-route .bs-event-stat-comparison,body.bs-game-route .bs-event-success{font-size:12px;padding:6px 10px}
+@media(max-width:1050px){
+ body.bs-game-route .bs-match-scorebar{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);padding:10px}
+ body.bs-game-route .bs-match-actions .bs-button{min-width:120px}
+}
+@media(max-width:700px){
+ body.bs-game-route .bs-match-scorebar{grid-template-columns:minmax(0,1fr);justify-items:stretch}
+ body.bs-game-route .bs-match-clock,body.bs-game-route .bs-match-meta{grid-column:1;justify-self:center;text-align:center}
+ body.bs-game-route .bs-score-names{grid-column:1;width:100%;gap:6px}
+ body.bs-game-route .bs-match-actions{padding:8px}
+ body.bs-game-route .bs-match-actions .bs-button,body.bs-game-route .bs-match-actions .bs-button--primary{width:100%;min-width:0;flex:1 1 100%}
+ .bs-feed-delay-control{width:100%;box-sizing:border-box;grid-template-columns:auto minmax(0,1fr) auto}
+ body.bs-game-route .bs-live-feed .bs-event-actors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.bs-game-route .bs-live-feed .bs-event-actor{padding:5px}
+ body.bs-game-route .bs-live-feed .bs-event-portrait{width:38px;height:44px}
+}
