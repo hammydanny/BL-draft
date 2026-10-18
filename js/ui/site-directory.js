@@ -79,7 +79,7 @@ function configureTeamBuilderHeader(standalone){
     document.getElementById("formationHeaderStatus").innerHTML=standalone?"<i></i> STANDALONE MODE":"<i></i> TACTICAL MODE";
     document.getElementById("backToResults").hidden=standalone;
     const teamContext=document.getElementById("formationTeamContext");
-    if(standalone)teamContext.innerHTML='<button type="button" class="battle-sim-cta battle-sim-context" onclick="openBattleSimPage()">Battle Sim</button>';
+    if(standalone)teamContext.innerHTML='<button type="button" class="context-control battle-sim-context" onclick="openBattleSimPage()">Battle Sim</button>';
     else teamContext.textContent=teamByNumber(formationTeamNumber).name;
     updateSiteDirectory(formationScreen);
 }
