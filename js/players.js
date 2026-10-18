@@ -83,7 +83,7 @@ const players = [
     PLAYER_79_DATA,
     PLAYER_80_DATA,
     PLAYER_81_DATA
-]
+];
 
 players.forEach(player=>{
     // Keep a stable weapons array on every character for the future Battle Sim.
