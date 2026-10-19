@@ -110,6 +110,8 @@ function runDirectoryAction(action){
 function isMobileSiteNavigation(){return getComputedStyle(document.getElementById("directoryMenuToggle")).display!=="none";}
 function initSiteDirectory(){
     const header=document.querySelector(".site-header"),directory=document.getElementById("siteDirectory");
+    const builderNav=directory.querySelector('[data-directory-action="builder"]'),battleNav=directory.querySelector('[data-directory-action="battle-sim"]');
+    if(builderNav&&battleNav)directory.insertBefore(battleNav,builderNav);
     const toggle=document.getElementById("directoryMenuToggle"),groups=[...directory.querySelectorAll("details")];
     const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
     const settingsUtilities=settingsToggle.closest(".site-utilities"),soundToggle=document.getElementById("soundToggle");
@@ -127,8 +129,8 @@ function initSiteDirectory(){
             <button type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></button>
             <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
             <button type="button" data-directory-action="challenges" data-directory-href="./?challenge=all" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>CHALLENGES</strong></button>
-            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>04</span><strong>TEAM BUILDER</strong></button>
-            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>05</span><strong>BATTLE SIM</strong></button>
+            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>04</span><strong>BATTLE SIM</strong></button>
+            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>05</span><strong>TEAM BUILDER</strong></button>
             <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></button>
           </div>
           <div class="mobile-secondary-links">
