@@ -193,7 +193,7 @@ function createAutoBestSearchContext(n){
         const value=relation.score;
         const pair={value,bonus:formationChemistryScoreValue(value),
             known:!!(relation.contexts.length||CHEMISTRY_SPECIAL[chemistryKey(a,b)]),
-            weight:value<70?1.18:value>=95?1.08:1};
+            weight:value<CHEMISTRY_NEUTRAL_SCORE?1.18:value>=95?1.08:1};
         pairsById.get(a.id).set(b.id,pair);
         pairsById.get(b.id).set(a.id,pair);
     }
@@ -226,7 +226,7 @@ function cachedAutoBestChemistry(search,formation,assignment,deployed){
         linkValues.push(pair.value);
         links.push({a:{index:a,slot:formation.shape[a],p:search.playersById.get(assignment[a])},b:{index:b,slot:formation.shape[b],p:search.playersById.get(assignment[b])},value:pair.value});
         chemistryFloor=Math.min(chemistryFloor,pair.value);
-        if(pair.value<70)weakLinks++;
+        if(pair.value<CHEMISTRY_NEUTRAL_SCORE)weakLinks++;
         if(pair.value>=90)eliteLinks++;
     }
     const knownValues=[];
@@ -412,7 +412,7 @@ function formationLineupMetrics(n,formationName,assignment,search=null){
         network=chem;const links=chem.links||[];
         chemistry=links.length?(chem.overall||0):0;
         chemistryFloor=links.length?Math.min(...links.map(x=>x.value)):0;
-        weakLinks=links.filter(x=>x.value<70).length;
+        weakLinks=links.filter(x=>x.value<CHEMISTRY_NEUTRAL_SCORE).length;
         eliteLinks=links.filter(x=>x.value>=90).length;
         hasLinks=links.length>0;
     }

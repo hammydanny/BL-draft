@@ -52,7 +52,7 @@
 .character-profile-score{flex:0 0 auto;min-width:70px;padding:5px 7px;text-align:center;background:var(--bg-surface);border:1px solid var(--border-subtle)}
 .character-profile-score small,.character-profile-score span{display:block;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:.5px}
 .character-profile-score strong{display:inline-block;margin:2px 3px;color:var(--text-primary);font:900 24px/1 "Barlow Condensed",sans-serif}
-.character-profile-score.chemical strong{color:var(--chem-chemical)}.character-profile-score.elite strong{color:var(--chem-elite)}.character-profile-score.strong strong{color:var(--chem-strong)}.character-profile-score.link strong{color:var(--chem-link)}.character-profile-score.weak strong{color:var(--chem-weak)}
+.character-profile-score.chemical strong{color:var(--chem-chemical)}.character-profile-score.elite strong{color:var(--chem-elite)}.character-profile-score.strong strong{color:var(--chem-strong)}.character-profile-score.link strong{color:var(--chem-link)}.character-profile-score.neutral strong{color:var(--chem-neutral)}.character-profile-score.negative strong{color:var(--chem-weak)}
 .character-profile-chemistry-label{display:block;margin-top:8px;color:var(--text-secondary);font-size:12px;font-weight:900;letter-spacing:.8px}
 .character-profile-chemistry-card p,.character-profile-team-card p{margin:8px 0 0;color:var(--text-secondary);font-size:13px;line-height:1.55}
 .character-profile-team-card h4{margin:0;color:var(--text-primary);font:900 italic 20px/1.1 "Barlow Condensed",sans-serif}
@@ -120,7 +120,7 @@
 .chemistry-tier-guide{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .chemistry-tier-guide>span{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--relationship-color);font-size:12px;font-weight:900}
 .chemistry-tier-guide i{width:14px;height:3px;background:currentColor}
-.chemical{--relationship-color:var(--chem-chemical)}.elite{--relationship-color:var(--chem-elite)}.strong{--relationship-color:var(--chem-strong)}.link{--relationship-color:var(--chem-link)}.weak{--relationship-color:var(--chem-weak)}
+.chemical{--relationship-color:var(--chem-chemical)}.elite{--relationship-color:var(--chem-elite)}.strong{--relationship-color:var(--chem-strong)}.link{--relationship-color:var(--chem-link)}.neutral{--relationship-color:var(--chem-neutral)}.negative{--relationship-color:var(--chem-weak)}
 .chemistry-lore-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .chemistry-lore-card{min-width:0;padding:16px;background:linear-gradient(145deg,var(--bg-surface-raised),var(--bg-surface));border:1px solid var(--border-subtle);border-left:3px solid var(--relationship-color)}
 .chemistry-lore-heading{display:flex;justify-content:space-between;gap:12px}

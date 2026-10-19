@@ -26,32 +26,49 @@ function rosterChemistrySnapshot(team){
 }
 function resultSquadContribution(team,n){
     const assignment=formationAssignments[n]||{},deployed=Object.values(assignment).filter(Boolean).length;
-    if(deployed)return {...formationContributionSnapshot(n),projected:false,deployed};
+    if(deployed)return {...formationContributionSnapshot(n),formation:formationByTeam[n]||"4-3-3",projected:false,deployed};
     const plan=cpuPlanRoster(team.players),shape=formationShape(plan.formation),chemistry=tacticalChemistrySnapshot(team.players,plan.assignment,shape,formationEdgePairs(plan.formation),new Set(shape.map((_,i)=>i)));
-    return {...lineupContributionSnapshot(team.players,plan.assignment,shape,chemistry),chemistry,projected:true,deployed:plan.fitCount};
+    return {...lineupContributionSnapshot(team.players,plan.assignment,shape,chemistry),chemistry,formation:plan.formation,projected:true,deployed:plan.fitCount};
 }
 function resultChemistrySnapshot(team,n){
     const profile=resultSquadContribution(team,n),chem=profile.chemistry;
-    const links=[...chem.links].sort((x,y)=>y.value-x.value).map(link=>({a:link.a.p,b:link.b.p,score:link.value,label:link.relation?.label||chemistryRelation(link.a.p,link.b.p).label,reason:link.relation?.reason||"",known:true}));
+    const links=[...chem.links].sort((x,y)=>y.value-x.value).map(link=>({a:link.a.p,b:link.b.p,score:link.value,label:link.relation?.label||chemistryRelation(link.a.p,link.b.p).label,reason:link.relation?.reason||"",known:link.value!==CHEMISTRY_NEUTRAL_SCORE}));
     return {overall:chem.overall,links,source:profile.projected?"PROJECTED LINEUP":"ACTIVE LINEUP"};
 }
 function resultChemistryLinksMarkup(team,n){
     const snap=resultChemistrySnapshot(team,n);
-    const meaningful=snap.links.filter(link=>link.score>=70||link.known);
-    const shown=(meaningful.length?meaningful:snap.links).slice(0,6);
+    const meaningful=snap.links.filter(link=>chemistryTier(link.score)!=="neutral");
+    const shown=meaningful.slice(0,6);
     return `<section class="results-chemistry-panel">
       <div class="results-chemistry-head"><div><span>CHEMISTRY LINKS</span><strong>${esc(snap.source)}</strong></div><b class="${snap.overall?chemistryTier(snap.overall):""}">${snap.overall||"--"}</b></div>
-      <div class="results-chemistry-links">${shown.length?shown.map(link=>`<div class="result-chem-link ${chemistryTier(link.score)}" title="${esc(link.reason||link.label)}"><span>${esc(link.a.name)}</span><i>×</i><span>${esc(link.b.name)}</span><b>${link.score}</b><small>${esc(link.label)}</small></div>`).join(""):`<div class="results-chemistry-empty">NO ACTIVE CHEMISTRY LINKS YET</div>`}</div>
+      <div class="results-chemistry-links">${shown.length?shown.map(link=>`<div class="result-chem-link ${chemistryTier(link.score)}" title="${esc(link.reason||link.label)}"><span>${esc(link.a.name)}</span><i>×</i><span>${esc(link.b.name)}</span><b>${link.score}</b><small>${esc(chemistryTierLabel(link.score))} // ${esc(link.label)}</small></div>`).join(""):`<div class="results-chemistry-empty">${snap.links.length?"NEUTRAL":"NO ACTIVE CHEMISTRY LINKS YET"}</div>`}</div>
     </section>`;
 }
-function getMvpSigning(n){
-    const history=getTeamHistory(n);if(!history.length)return null;
-    return [...history].sort((a,b)=>playerOverall(b.player)-playerOverall(a.player)||a.price-b.price)[0];
+// Marginal signing impact holds the user's actual shape and every other starter fixed.
+// Only owned reserves are considered. No Auto Best or save mutation occurs here.
+function resultSigningContributions(n,profile=resultSquadContribution(teamByNumber(n),n)){
+    const team=teamByNumber(n),shape=profile.shape||formationShape(profile.formation||formationByTeam[n]||"4-3-3");
+    const assignment=Object.fromEntries(profile.members.map(m=>[m.slot,m.player.id])),used=new Set(Object.values(assignment)),reserves=team.players.filter(p=>!used.has(p.id));
+    const formation=profile.formation||formationByTeam[n]||"4-3-3",edges=formationEdgePairs(formation),active=new Set(profile.members.map(m=>m.slot));
+    const strength=members=>members.reduce((sum,m)=>sum+ratingStrength(m.raw),0),total=strength(profile.members);
+    return getTeamHistory(n).map(signing=>{
+        const member=profile.members.find(m=>m.player.id===signing.player.id);if(!member)return {...signing,contribution:0,effective:0,marginal:0};
+        const without={...assignment};delete without[member.slot];
+        const evaluate=next=>lineupContributionSnapshot(team.players,next,shape,tacticalChemistrySnapshot(team.players,next,shape,edges,active));
+        let alternative=strength(evaluate(without).members)+ratingStrength(60);
+        for(const reserve of reserves)alternative=Math.max(alternative,strength(evaluate({...without,[member.slot]:reserve.id}).members));
+        const marginal=Math.max(0,total-alternative),contribution=ratingStrength(member.raw)*8+marginal*12;
+        const versatility=Math.min(4,new Set(shape.filter(slot=>acceptablePositionFit(signing.player,slot.label)).map(slot=>slot.label)).size);
+        return {...signing,contribution,effective:member.effective,marginal,versatility};
+    });
 }
-function getBestValueSigning(n){
-    const history=getTeamHistory(n);if(!history.length)return null;
-    const score=x=>playerOverall(x.player)-(x.price/Math.max(1,startingBudget))*32;
-    return [...history].sort((a,b)=>score(b)-score(a)||playerOverall(b.player)-playerOverall(a.player))[0];
+function getMvpSigning(n,signings=resultSigningContributions(n)){
+    return [...signings].sort((a,b)=>b.contribution-a.contribution||b.effective-a.effective||a.price-b.price)[0]||null;
+}
+function getBestValueSigning(n,signings=resultSigningContributions(n)){
+    // A small amortized contract floor keeps free signings finite; reserves contribute no starting impact.
+    const score=x=>x.contribution*(1+(x.versatility||0)*.025)/Math.max(bidIncrement,startingBudget/Math.max(1,maxPlayers)*.1,x.price);
+    return [...signings].sort((a,b)=>score(b)-score(a)||b.contribution-a.contribution||a.price-b.price)[0]||null;
 }
 function strongestRosterChemistry(team){
     let best=null;
@@ -66,21 +83,20 @@ function resultMetricLeader(a,b,higher=true){
     return (higher?a>b:a<b)?team1.name:team2.name;
 }
 function createResultsComparison(){
-    const o1=naturalSquadOVR(team1),o2=naturalSquadOVR(team2);
+    const p1=resultSquadContribution(team1,1),p2=resultSquadContribution(team2,2),o1=p1.effectiveQuality,o2=p2.effectiveQuality;
     const c1=resultChemistrySnapshot(team1,1),c2=resultChemistrySnapshot(team2,2);
-    const spent1=startingBudget-team1.budget,spent2=startingBudget-team2.budget;
     return `<section class="results-comparison">
       <div class="comparison-head"><span>HEAD-TO-HEAD // DRAFT INTELLIGENCE</span><strong>POST-AUCTION COMPARISON</strong></div>
       <div class="comparison-grid">
-        <div><span>SQUAD OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${o2}</b></div>
+        <div><span>EFFECTIVE OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${o1}</b><em>${esc(resultMetricLeader(o1,o2))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${o2}</b></div>
+        <div><span>BASE QUALITY</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${p1.baseQuality}</b><em>${esc(resultMetricLeader(p1.baseQuality,p2.baseQuality))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${p2.baseQuality}</b></div>
+        <div><span>CHEMISTRY</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${c1.overall||"--"}</b><em>${esc(resultMetricLeader(c1.overall||0,c2.overall||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${c2.overall||"--"}</b></div>
         <div><span>CAPITAL REMAINING</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${team1.budget.toLocaleString()}</b><em>${esc(resultMetricLeader(team1.budget,team2.budget))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${team2.budget.toLocaleString()}</b></div>
-        <div><span>CHEMISTRY OVR</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">${c1.overall||"--"}</b><em>${esc(resultMetricLeader(c1.overall||0,c2.overall||0))} ADVANTAGE</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">${c2.overall||"--"}</b></div>
-        <div><span>CAPITAL SPENT</span><b style="${teamVars(team1)};color:var(--team-heading,var(--team))">$${spent1.toLocaleString()}</b><em>${spent1===spent2?"EVEN SPEND":"DRAFT PROFILE"}</em><b style="${teamVars(team2)};color:var(--team-heading,var(--team))">$${spent2.toLocaleString()}</b></div>
       </div>
     </section>`;
 }
 function createFinalTeamCard(team,n){
-    const spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n),value=getBestValueSigning(n),chemistry=resultChemistrySnapshot(team,n),chem=chemistry.links[0]||null,contribution=resultSquadContribution(team,n);
+    const contribution=resultSquadContribution(team,n),signings=resultSigningContributions(n,contribution),spent=startingBudget-team.budget,expensive=getMostExpensiveSigning(n),mvp=getMvpSigning(n,signings),value=getBestValueSigning(n,signings),chemistry=resultChemistrySnapshot(team,n),chem=chemistry.links.find(link=>link.score>=70)||null;
     const roster=team.players.length?team.players.map(p=>`<div class="final-player"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><span>${esc(p.name)}</span>${positionBadges(p,true)}<em class="effective-ovr">${playerOverall(p)}</em></div>`).join(""):`<div class="history-empty">NO PLAYERS DRAFTED</div>`;
     return `<article class="final-team-card results-team-card" style="${teamVars(team)}">
       <div class="team-accent"></div>
@@ -92,7 +108,7 @@ function createFinalTeamCard(team,n){
         <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
       </div>
       <div class="result-intel-grid">
-        <div><span>MVP SIGNING</span><strong>${mvp?esc(mvp.player.name):"—"}</strong><b>${mvp?`OVR ${playerOverall(mvp.player)}`:"—"}</b></div>
+        <div><span>MVP SIGNING</span><strong>${mvp?esc(mvp.player.name):"—"}</strong><b>${mvp?`<span>EFFECTIVE OVR</span> ${mvp.effective||playerOverall(mvp.player)}`:"—"}</b></div>
         <div><span>BEST VALUE</span><strong>${value?esc(value.player.name):"—"}</strong><b>${value?(value.price===0?"FREE":"$"+value.price.toLocaleString()):"—"}</b></div>
         <div><span>TOP VALUATION</span><strong>${expensive?esc(expensive.player.name):"—"}</strong><b>${expensive?(expensive.price===0?"FREE":"$"+expensive.price.toLocaleString()):"—"}</b></div>
         <div><span>STRONGEST CHEMISTRY</span><strong>${chem?`${esc(chem.a.name)} × ${esc(chem.b.name)}`:"—"}</strong><b class="${chem?chemistryTier(chem.score):""}">${chem?chem.score:"—"}</b></div>
@@ -200,7 +216,7 @@ function createShareTeam(team,n){
     return `<article class="share-team share-team-v15" style="${teamVars(team)}">
       <div class="share-team-head"><div><span>SQUAD 0${n} // ${stateLabel}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
       <div class="share-v14-metrics">
-        <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
+        <div><span>EFFECTIVE OVR</span><strong>${snap.ovr||"--"}</strong></div>
         <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
         <div><span>CAPTAIN</span><strong>${captain?esc(captain.name):"—"}</strong></div>
         <div><span>DEPLOYED</span><strong>${snap.deployedCount}<small> / ${target}</small></strong></div>
@@ -243,7 +259,7 @@ function openExportPreview(teamNumber=null,reportContext=null){
 }
 function exportModeReport(){
     if(activeDraftChallenge){const r=modeScore(activeDraftChallenge);return {title:replayText(activeDraftChallenge.title),subtitle:[activeDraftChallenge.date,r.grade,replayText(r.gradeLabel),replayText("FINAL SCORE")+" "+r.score.toLocaleString(SiteI18n.language)].filter(Boolean).join(" · "),left:r.components.map(c=>replayText(c.label)+"  "+(c.value>0?"+":"")+c.value.toLocaleString(SiteI18n.language)),right:r.goals.map(g=>(g.pass?"✓ ":"○ ")+replayText(g.label)+"  "+g.current+" / "+g.target)};}
-    if(team2CpuControlled)return {title:replayText("VS CPU")+" · "+replayText(cpuDifficulty.toUpperCase()),subtitle:replayText("DRAFT VERDICT"),left:[team1.name+" · "+replayText("TEAM QUALITY")+" "+naturalSquadOVR(team1),team2.name+" · "+replayText("TEAM QUALITY")+" "+naturalSquadOVR(team2)],right:[team1.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team1,1).overall,team2.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team2,2).overall]};
+    if(team2CpuControlled)return {title:replayText("VS CPU")+" · "+replayText(cpuDifficulty.toUpperCase()),subtitle:replayText("DRAFT VERDICT"),left:[team1.name+" · "+replayText("EFFECTIVE OVR")+" "+resultSquadContribution(team1,1).effectiveQuality,team2.name+" · "+replayText("EFFECTIVE OVR")+" "+resultSquadContribution(team2,2).effectiveQuality],right:[team1.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team1,1).overall,team2.name+" · "+replayText("CHEMISTRY")+" "+resultChemistrySnapshot(team2,2).overall]};
     return null;
 }
 async function copyShareSummary(){
@@ -278,7 +294,7 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     const {x,y,width,height,portraits}=layout,accent=/^#[0-9a-f]{3,8}$/i.test(String(team.color||""))?team.color:"#25a9ff";
     const translate=value=>window.SiteI18n?.text(value)||value,spent=startingBudget-team.budget;
     const captain=team.players.find(player=>player.id===snap.captainId)||null;
-    const reportOVR=snap.deployedCount?snap.ovr:naturalSquadOVR(team),reportChemistry=snap.deployedCount?snap.chemistry:rosterChemistrySnapshot(team);
+    const reportContribution=snap.deployedCount?snap.contribution:resultSquadContribution(team,n),reportOVR=reportContribution.effectiveQuality,reportChemistry=snap.deployedCount?snap.chemistry:reportContribution.chemistry;
     const usedIds=new Set(Object.values(snap.assignment||{}).filter(Boolean).map(String));
     shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
     shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+"\u2066"+formationLabel(snap.formation)+"\u2069",x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
@@ -286,7 +302,7 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
     const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*5)/6;
     const metrics=[
-        [translate("BASE QUALITY"),String(snap.baseOvr||naturalSquadOVR(team)||"--")],[translate("EFFECTIVE OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],
+        [translate("BASE QUALITY"),String(reportContribution.baseQuality||"--")],[translate("EFFECTIVE OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],
         [translate("CAPTAIN"),captain?.name||translate("UNASSIGNED")],[translate("DEPLOYED"),snap.deployedCount+"/"+Math.min(11,team.players.length)],
         n?[translate("REMAINING"),"$"+team.budget.toLocaleString()]:[translate("RESERVES"),String(snap.reserves.length)]
     ];
@@ -302,10 +318,10 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     ctx.beginPath();ctx.arc(pitchX+pitchW/2,pitchY+pitchH/2,52,0,Math.PI*2);ctx.stroke();
     ctx.strokeRect(pitchX+pitchW*.34,pitchY+14,pitchW*.32,53);ctx.strokeRect(pitchX+pitchW*.34,pitchY+pitchH-67,pitchW*.32,53);
     ctx.strokeRect(pitchX+pitchW*.42,pitchY+14,pitchW*.16,21);ctx.strokeRect(pitchX+pitchW*.42,pitchY+pitchH-35,pitchW*.16,21);
-    (snap.chemistry?.links||[]).filter(link=>Number(link.value)>=82&&link.a?.slot&&link.b?.slot).slice(0,14).forEach(link=>{
-        ctx.strokeStyle="rgba(63,173,255,.30)";ctx.lineWidth=2;ctx.beginPath();
+    (snap.chemistry?.links||[]).filter(link=>link.a?.slot&&link.b?.slot).forEach(link=>{
+        const line=chemistryLineStyle(link.value);ctx.save();ctx.strokeStyle=line.color;ctx.globalAlpha=line.opacity;ctx.lineWidth=line.width;ctx.setLineDash(line.tier==="negative"?[5,4]:[]);ctx.beginPath();
         ctx.moveTo(pitchX+pitchW*(Number(link.a.slot.x)||0)/100,pitchY+pitchH*(Number(link.a.slot.y)||0)/100);
-        ctx.lineTo(pitchX+pitchW*(Number(link.b.slot.x)||0)/100,pitchY+pitchH*(Number(link.b.slot.y)||0)/100);ctx.stroke();
+        ctx.lineTo(pitchX+pitchW*(Number(link.b.slot.x)||0)/100,pitchY+pitchH*(Number(link.b.slot.y)||0)/100);ctx.stroke();ctx.restore();
     });
     const markerW=Math.min(148,pitchW*.205),markerH=48;
     (snap.shape||[]).forEach((slot,index)=>{
@@ -321,10 +337,15 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
         if(portraits?.get(player.id))drawReportPortrait(ctx,portraits.get(player.id),markerX+5,markerY+18,24,26);
         shareImageText(ctx,player.name,markerX+33,markerY+35,markerW-38,'800 13px "Barlow Condensed", sans-serif',"#f5faff","left");
     });
-    shareImageText(ctx,n?translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString():translate("DEPLOYED")+"  "+snap.deployedCount+"     //     "+translate("RESERVES")+"  "+snap.reserves.length,x+25,y+(snap.reserves.length?616+snap.reserves.length*29:571),width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
+    [65,58,75,85,92,99].forEach((score,i)=>{
+        const line=chemistryLineStyle(score),lx=pitchX+i*pitchW/6;
+        ctx.strokeStyle=line.color;ctx.lineWidth=line.width;ctx.beginPath();ctx.moveTo(lx,pitchY+pitchH+14);ctx.lineTo(lx+12,pitchY+pitchH+14);ctx.stroke();
+        shareImageText(ctx,translate(chemistryTierLabel(score)),lx+17,pitchY+pitchH+18,pitchW/6-22,'800 10px "Barlow Condensed", sans-serif',line.color);
+    });
+    shareImageText(ctx,n?translate("SPENT")+"  $"+spent.toLocaleString()+"     //     "+translate("REMAINING")+"  $"+team.budget.toLocaleString():translate("DEPLOYED")+"  "+snap.deployedCount+"     //     "+translate("RESERVES")+"  "+snap.reserves.length,x+25,y+(snap.reserves.length?634+snap.reserves.length*29:589),width-50,'800 15px "Barlow Condensed", sans-serif',"#8fb6d4");
     if(!snap.reserves.length)return;
-    shareImageText(ctx,translate("RESERVES"),x+25,y+575,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
-    const listX=x+24,listY=y+600,rowH=29,listW=width-48;
+    shareImageText(ctx,translate("RESERVES"),x+25,y+593,width-50,'900 21px "Barlow Condensed", sans-serif',"#e6f4ff");
+    const listX=x+24,listY=y+618,rowH=29,listW=width-48;
     shareImageText(ctx,translate("PLAYER"),listX+12,listY-5,390,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("POSITION"),listX+435,listY-5,85,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
     shareImageText(ctx,translate("ROLE"),listX+540,listY-5,75,'800 11px "Barlow Condensed", sans-serif',"#6e9cbe");
@@ -349,7 +370,7 @@ async function createAuctionShareImageBlob(teamNumber=null,reportEntries=null,re
     const entries=reportEntries||numbers.map(n=>({n,team:{...teamByNumber(n),players:[...teamByNumber(n).players]},snap:shareFormationSnapshot(n)}));
     const modeReport=reportOverride||(teamNumber===0?null:exportModeReport());
     await document.fonts?.ready;
-    const text=["BASE QUALITY","EFFECTIVE OVR","TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
+    const text=["NEUTRAL","NEGATIVE","LINK","STRONG","ELITE","CHEMICAL","BASE QUALITY","EFFECTIVE OVR","TEAM OVR","SQUAD OVR","CHEMISTRY","CAPTAIN","DEPLOYED","REMAINING","RESERVES","SPENT","PLAYERS","UNASSIGNED","SQUAD","SQUAD REPORT","SQUAD ROSTER","PLAYER","POSITION","ROLE","FEE","FREE","STARTER","RESERVE","FINAL RESULT"].map(value=>SiteI18n.text(value)).concat(entries.flatMap(entry=>[entry.team.name,...entry.team.players.map(player=>player.name)]),modeReport?[modeReport.title,modeReport.subtitle,...modeReport.left,...modeReport.right]:[]).join(" ");
     if(document.fonts?.load)await Promise.all([document.fonts.load('800 18px "Barlow Condensed"',text),document.fonts.load('700 14px "Rajdhani"',text)]);
     const portraits=new Map();
     await Promise.all([...new Map(entries.flatMap(entry=>entry.team.players).map(p=>[p.id,p])).values()].map(async player=>{
@@ -358,7 +379,7 @@ async function createAuctionShareImageBlob(teamNumber=null,reportEntries=null,re
         portraits.set(player.id,ready.image);
     }));
     const reportHeight=modeReport?125+Math.max(modeReport.left.length,modeReport.right.length)*27:0;
-    const maxReserves=Math.max(...entries.map(entry=>entry.snap.reserves.length),0),panelY=175,panelHeight=maxReserves?645+maxReserves*29:610;
+    const maxReserves=Math.max(...entries.map(entry=>entry.snap.reserves.length),0),panelY=175,panelHeight=maxReserves?663+maxReserves*29:628;
     const canvas=document.createElement("canvas");canvas.width=entries.length===1?1100:1800;canvas.height=panelY+panelHeight+reportHeight+90;
     const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Image export is unavailable.");
     const backdrop=ctx.createLinearGradient(0,0,canvas.width,canvas.height);backdrop.addColorStop(0,"#0c2b49");backdrop.addColorStop(.48,"#061426");backdrop.addColorStop(1,"#081c31");
@@ -461,7 +482,7 @@ function createStandaloneShareTeam(){
       <div class="squad-report-status"><span>${stateLabel}</span><b>${team.players.length} SELECTED</b></div>
       <div class="share-v14-metrics">
         <div><span>FORMATION</span><strong>${snap.formation}</strong></div>
-        <div><span>TEAM OVR</span><strong>${snap.ovr||"--"}</strong></div>
+        <div><span>EFFECTIVE OVR</span><strong>${snap.ovr||"--"}</strong></div>
         <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
         <div><span>DEPLOYED</span><strong>${snap.deployedCount}<small> / ${target}</small></strong></div>
       </div>
@@ -479,7 +500,7 @@ function createStandaloneShareTeam(){
         </div>
         <aside class="squad-report-info">
           <div class="report-info-item"><span>CAPTAIN</span><strong>${captain?esc(captain.name):"UNASSIGNED"}</strong></div>
-          <div class="report-info-item report-best-link"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:"NO ACTIVE LINK"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
+          <div class="report-info-item report-best-link"><span>BEST LINK</span><strong>${snap.chemistry.top?`${esc(snap.chemistry.top.a.p.name)} × ${esc(snap.chemistry.top.b.p.name)}`:snap.chemistry.links.length?"NEUTRAL":"NO ACTIVE LINK"}</strong><b class="${snap.chemistry.top?chemistryTier(snap.chemistry.top.value):""}">${snap.chemistry.top?.value||"--"}</b></div>
           <div class="share-reserves"><span>RESERVES // ${snap.reserves.length}</span><div>${snap.reserves.length?snap.reserves.map(p=>`<b><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="36" height="40" loading="lazy" decoding="async"><span>${esc(p.name)}</span><i>${playerOverall(p)}</i></b>`).join(""):'<p>NO RESERVES</p>'}</div></div>
         </aside>
       </div>

@@ -1,27 +1,28 @@
 // Shared football contribution model. Base player data and relationship scores stay untouched.
-const SQUAD_BALANCE_REVISION=2;
+const SQUAD_BALANCE_REVISION=3;
 function boundedNumber(value,min,max){return Math.max(min,Math.min(max,value));}
 function ratingStrength(rating){return Math.exp((boundedNumber(Number(rating)||1,1,104)-70)/18);}
 function strengthRating(value){return 70+18*Math.log(Math.max(.001,value));}
 function qualityScore(rating){return boundedNumber(32+68*(ratingStrength(rating)-ratingStrength(40))/(ratingStrength(100)-ratingStrength(40)),0,100);}
 function chemistryPerformanceModifier(value){
-    const stops=[[40,-3],[55,-2],[65,-1],[72,0],[82,1],[90,2.2],[95,3.2],[100,4]],score=boundedNumber(Number(value)||0,40,100);
+    const stops=[[40,-3],[58,-2.5],[64,-1],[65,0],[69,0],[82,1],[90,2.2],[95,3.2],[100,4]],score=boundedNumber(Number(value)||0,40,100);
     for(let i=1;i<stops.length;i++)if(score<=stops[i][0]){const [a,x]=stops[i-1],[b,y]=stops[i];return x+(y-x)*(score-a)/(b-a);}
     return 4;
 }
 function playerChemistryPerformance(values){
-    const links=(values||[]).map(Number).filter(Number.isFinite).sort((a,b)=>b-a);if(!links.length)return 0;
+    const links=(values||[]).map(Number).filter(Number.isFinite).map(chemistryPerformanceModifier).sort((a,b)=>b-a);if(!links.length)return 0;
     const mean=links.reduce((a,b)=>a+b,0)/links.length,best=links.slice(0,2).reduce((a,b)=>a+b,0)/Math.min(2,links.length);
     // Strongest links help; the whole local network and its weakest link still matter.
-    return chemistryPerformanceModifier(mean*.55+best*.30+links.at(-1)*.15);
+    return boundedNumber(mean*.55+best*.30+links.at(-1)*.15,-3,4);
 }
 function playerPositionProfile(player,label){
     const base=playerOverall(player);if(!player||!label)return {base,position:base,role:0,penalty:0,fit:"primary"};
     const equivalent=position=>["CF","ST"].includes(normalizePosition(position))?"ST":normalizePosition(position),primary=!!player.allPositions||equivalent(primaryPosition(player))===equivalent(label),demonstrated=playerPositions(player).some(pos=>equivalent(pos)===equivalent(label)),natural=canonicalFit(player,label),from=positionGroup(primaryPosition(player)),to=positionGroup(label);
     const role=boundedNumber(Math.round((calculatePositionOVR(player,label)-calculatePositionOVR(player,primaryPosition(player)))*.25),-3,3);
     const penalty=primary?0:demonstrated?1:natural?2:to==="GK"?35:from==="GK"?30:from===to?7:14;
-    return {base,position:boundedNumber(base+role-penalty,1,100),role,penalty,fit:primary?"primary":demonstrated?"secondary":natural?"adapted":penalty>=30?"incompatible":from===to?"adapted":"poor"};
+    return {base,position:boundedNumber(base+role-penalty,1,100),role,penalty,fit:primary?"primary":demonstrated?"secondary":natural||from===to?"adapted":penalty>=30?"incompatible":"poor"};
 }
+function acceptablePositionFit(player,label){return !!player&&["primary","secondary","adapted"].includes(playerPositionProfile(player,label).fit);}
 function playerContribution(player,label,links=[],positionProfile=null){
     const position=positionProfile||playerPositionProfile(player,label);if(!player||!label)return {...position,chemistry:0,raw:0,effective:0};
     const chemistry=playerChemistryPerformance(links),raw=boundedNumber(position.position+chemistry,1,104);

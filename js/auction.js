@@ -76,7 +76,7 @@ const cpuPlanCache=new Map();
 function cpuAssignment(roster,shape,indices){
     const rows=indices.length,columns=roster.length+rows,u=Array(rows+1).fill(0),v=Array(columns+1).fill(0),p=Array(columns+1).fill(0),way=Array(columns+1).fill(0);
     const affinity=new Map(roster.map(player=>[player.id,cpuChemistryFit(player,{players:roster.filter(p=>p.id!==player.id)})]));
-    const weights=indices.map(index=>roster.map(player=>canonicalFit(player,shape[index].label)?160+ratingStrength(effectiveOVR(player,shape[index].label))*18+(primaryFit(player,shape[index].label)?3:0)+affinity.get(player.id)*.3:-1000).concat(Array(rows).fill(0)));
+    const weights=indices.map(index=>roster.map(player=>acceptablePositionFit(player,shape[index].label)?160+ratingStrength(effectiveOVR(player,shape[index].label))*18+affinity.get(player.id)*.3:-1000).concat(Array(rows).fill(0)));
     // Rectangular maximum-weight assignment. Dummy columns represent genuine gaps.
     for(let i=1;i<=rows;i++){
         p[0]=i;let j0=0;const minimum=Array(columns+1).fill(Infinity),used=Array(columns+1).fill(false);
@@ -112,16 +112,26 @@ function cpuObjectiveValue(player,team){
         if(o.type==="statCount"&&playerStats(player)[o.key]>=o.threshold&&team.players.filter(p=>playerStats(p)[o.key]>=o.threshold).length<o.target)value+=6;
     }return Math.min(15,value);
 }
+const cpuTargetCache=new WeakMap();
 function evaluateCpuTarget(team=team2){
+    // Bid amount and budgets affect the cap, not this football evaluation.
+    // Include every public football input so repeated raises can reuse it safely.
+    const key=[SQUAD_BALANCE_REVISION,maxPlayers,cpuDifficulty,currentPlayer?.id,
+        team.players.map(p=>p.id).join(","),team1.players.map(p=>p.id).join(","),team2.players.map(p=>p.id).join(","),
+        [...selectedPlayerIds].join(","),JSON.stringify(activeDraftChallenge)].join("|");
+    const cached=cpuTargetCache.get(team);if(cached?.key===key)return cached.value;
+    const value=computeCpuTarget(team);cpuTargetCache.set(team,{key,value});return value;
+}
+function computeCpuTarget(team){
     if(!currentPlayer)return {rating:0,positionFit:0,chemistryFit:0,score:0};
     const rating=playerOverall(currentPlayer),before=cpuPlanRoster(team.players),after=cpuPlanRoster([...team.players,currentPlayer]),fitGain=Math.max(0,after.fitCount-before.fitCount),upgrade=fitGain?0:Math.max(0,after.quality-before.quality),depthGain=Math.max(0,after.depth-before.depth);
-    const positionFit=fitGain?12:upgrade>10?5:0,chemistryFit=cpuChemistryFit(currentPlayer,team),targetSlot=Object.keys(after.assignment).find(index=>after.assignment[index]===currentPlayer.id),targetLabel=targetSlot==null?null:FORMATIONS[after.formation][targetSlot].label;
-    const neededLabels=[...new Set(FORMATIONS[before.formation].filter((_,i)=>!before.assignment[i]).map(s=>s.label))],versatility=Math.min(3,neededLabels.filter(label=>canonicalFit(currentPlayer,label)).length);
-    const alternatives=cpuPublicAlternatives().filter(p=>targetLabel?canonicalFit(p,targetLabel):cpuPlayerRoles(p).some(role=>cpuPlayerRoles(currentPlayer).includes(role))),stronger=alternatives.filter(p=>playerOverall(p)>rating).length;
+    const positionFit=fitGain?12:upgrade>10?5:0,chemistryFit=(after.contribution.members.find(m=>m.player.id===currentPlayer.id)?.chemistry||0)*2.5,targetSlot=Object.keys(after.assignment).find(index=>after.assignment[index]===currentPlayer.id),targetLabel=targetSlot==null?null:FORMATIONS[after.formation][targetSlot].label;
+    const neededLabels=[...new Set(FORMATIONS[before.formation].filter((_,i)=>!before.assignment[i]).map(s=>s.label))],versatility=Math.min(3,neededLabels.filter(label=>acceptablePositionFit(currentPlayer,label)).length);
+    const alternatives=cpuPublicAlternatives().filter(p=>targetLabel?acceptablePositionFit(p,targetLabel):cpuPlayerRoles(p).some(role=>cpuPlayerRoles(currentPlayer).includes(role))),stronger=alternatives.filter(p=>playerOverall(p)>rating).length;
     const scarcity=fitGain?Math.max(0,5-alternatives.filter(p=>playerOverall(p)>=rating-6).length):0,percentile=1-stronger/Math.max(1,alternatives.length),saturation=team.players.filter(p=>cpuPlayerRoles(p).some(role=>cpuPlayerRoles(currentPlayer).includes(role))&&playerOverall(p)>=rating).length;
     const objectiveValue=cpuObjectiveValue(currentPlayer,team),intelligence=cpuDifficulty==="hard"?1:cpuDifficulty==="normal"?.7:.25;
     const score=rating*.4+qualityScore(rating)*.3+positionFit*intelligence*2+Math.min(25,upgrade)*intelligence+chemistryFit*(cpuDifficulty==="hard"?.9:.3)+scarcity*intelligence*2+versatility*intelligence*1.5+objectiveValue*.5-saturation*(cpuDifficulty==="hard"?3:1);
-    return {rating,positionFit,chemistryFit,score,scarcity,percentile,saturation,before,after,fitGain,upgrade,depthGain,objectiveValue,versatility,improvement:Math.max(0,(after.score-before.score)/100),tier:fitGain||upgrade>8?rating>=94?"elite":"starter":upgrade>2?"upgrade":"depth"};
+    return {rating,effective:after.contribution.members.find(m=>m.player.id===currentPlayer.id)?.raw||0,positionFit,chemistryFit,score,scarcity,percentile,saturation,before,after,fitGain,upgrade,depthGain,objectiveValue,versatility,improvement:Math.max(0,(after.score-before.score)/100),tier:fitGain||upgrade>8?rating>=94?"elite":"starter":upgrade>2?"upgrade":"depth"};
 }
 function cpuMaximumBid(team,evaluation){
     const slots=Math.max(1,maxPlayers-team.players.length),minimum=nextLegalAuctionBid(0),average=team.budget/slots,hard=cpuDifficulty==="hard",normal=cpuDifficulty==="normal";
@@ -129,8 +139,14 @@ function cpuMaximumBid(team,evaluation){
     const affordable=Math.max(0,team.budget-reserve),gain=evaluation.fitGain??(evaluation.positionFit>=8?1:0),upgrade=evaluation.upgrade??Math.max(0,(evaluation.score-65)/3);
     const intelligence=hard?1:normal?.7:.25,quality=Math.max(.1,qualityScore(evaluation.rating)/100),variation=CPU_DIFFICULTIES[cpuDifficulty].variation;
     const style=1+(cpuVariation(currentPlayer.id+":"+team.players.length)-.5)*2*variation;
-    const elitePremium=Math.max(0,ratingStrength(evaluation.rating)-ratingStrength(88))*.25;
-    let factor=.2+quality*.8+elitePremium+gain*(hard?1.4:normal?1.1:.65)+Math.min(1.3,upgrade/16)*intelligence+(evaluation.versatility||0)*intelligence*.07+(evaluation.scarcity||0)*.07+(evaluation.objectiveValue||0)*.025+(evaluation.chemistryFit||0)*(hard?.035:normal?.02:.005);
+    const elitePremium=Math.max(0,ratingStrength(evaluation.rating)-ratingStrength(88))*.45+Math.max(0,ratingStrength(evaluation.rating)-ratingStrength(93))*.25;
+    // A gap is not worth the same price for every player. Use the shared deployed
+    // contribution and public alternatives so competent managers save for real upgrades.
+    const deployedQuality=qualityScore(evaluation.effective??evaluation.rating)/100;
+    const percentile=boundedNumber(evaluation.percentile??.5,0,1);
+    const publicValue=hard?.25+.75*percentile*percentile:normal?.6+.4*percentile:1;
+    const starterValue=(hard||normal?.45+deployedQuality*.8+percentile*.45:1)*publicValue;
+    let factor=.2+quality*.8+elitePremium+gain*(hard?1.55:normal?1.25:.65)*starterValue+Math.min(1.3,upgrade/16)*intelligence+(evaluation.versatility||0)*intelligence*.07+(evaluation.scarcity||0)*.07+(evaluation.objectiveValue||0)*.025+(evaluation.chemistryFit||0)*(hard?.035:normal?.02:.005);
     if(!hard&&!normal)factor+=(evaluation.rating>=88?.8:.25);
     if(hard&&evaluation.before?.missing>0&&!gain&&upgrade<5)factor=Math.min(factor,.3);
     if(hard&&!gain&&upgrade<2)factor=Math.min(factor,.4+Math.min(.15,(evaluation.depthGain||0)/20));

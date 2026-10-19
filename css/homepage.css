@@ -98,7 +98,8 @@
 .scout-chemistry-score.chemical{color:var(--chem-chemical)}
 .scout-chemistry-score.elite{color:var(--chem-elite)}
 .scout-chemistry-score.link{color:var(--chem-link)}
-.scout-chemistry-score.weak{color:var(--chem-weak)}
+.scout-chemistry-score.neutral{color:var(--chem-neutral)}
+.scout-chemistry-score.negative{color:var(--chem-weak)}
 .scout-chemistry-score strong{font:800 42px/1 "Barlow Condensed",sans-serif}
 .scout-chemistry-score small{color:var(--text-muted);font:700 12px "Rajdhani",sans-serif;margin-left:5px}
 .scout-chemistry-score>span{font-size:12px;font-weight:800;letter-spacing:.9px}

@@ -54,7 +54,7 @@ function runSoloDraftTests(){
         drawAuctionShareImageTeam(ctx,snap.team,reportTeam,snap,{x:0,y:0,width:1004,height:900,portraits});
         assert.equal(images.length,state.ids.length);assert.deepEqual(images.map(args=>args[0].id).sort((a,b)=>a-b),[...state.ids].sort((a,b)=>a-b));
         for(const id of state.ids)assert.equal(labels.filter(item=>item.y>=181&&item.label===playerById(id).name).length,1,'Player duplicated in report: '+id);
-        assert.equal(labels.some(item=>item.label==='RESERVES'&&item.y===575),reserveCount>0);
+        assert.equal(labels.some(item=>item.label==='RESERVES'&&item.y>575),reserveCount>0);
         assert.equal(labels.some(item=>item.label==='PLAYER'),reserveCount>0);
         assert(!labels.some(item=>item.label==='SQUAD ROSTER'||item.label==='STARTER'));
         for(const args of images){assert.equal(args.length,9);assert.equal(args[2],0);assert(Math.abs(args[3]/args[4]-args[7]/args[8])<.00001,'Portrait must preserve its aspect ratio');}

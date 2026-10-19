@@ -34,7 +34,7 @@ function dailyPickRule(date=localDraftDate()){
 function dailyRuleForState(state){const rule=dailyPickRule(state.date);return state.carry?{...rule,size:state.carry.size}:rule;}
 function dailyPickNew(date=localDraftDate()){
     const rule=dailyPickRule(date),formation=dailyFormationNames(rule.size)[0];
-    return {v:2,kind:"daily",date:rule.date,ids:[],seen:[],actions:[],tokens:2,chosenFormation:formation,formation,assignment:{},captain:null,phase:"formation",attempt:0};
+    return {v:2,balanceRevision:SQUAD_BALANCE_REVISION,kind:"daily",date:rule.date,ids:[],seen:[],actions:[],tokens:2,chosenFormation:formation,formation,assignment:{},captain:null,phase:"formation",attempt:0};
 }
 function dailyPickPlan(state,formation=state.formation){
     return soloWithTeam(state,()=>{
@@ -137,7 +137,7 @@ function soloRecordResult(state){
 }
 
 function normalizeDailyCarry(value,date){
-    const rule=dailyPickRule(date);if(!replayRecord(value)||![7,8,11,14].includes(value.size)||!Array.isArray(value.ids)||value.ids.length>value.size||new Set(value.ids).size!==value.ids.length||!value.ids.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!Array.isArray(value.seen)||value.seen.length>48||!value.seen.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!value.ids.every(id=>value.seen.includes(id))||!Number.isInteger(value.tokens)||value.tokens<0||value.tokens>2||value.captainId!=null&&(!Number.isInteger(value.captainId)||!value.ids.includes(value.captainId)))replayFail("Saved draft is invalid or outdated.");
+    const rule=dailyPickRule(date);if(!replayRecord(value)||![7,8,9,10,11,14].includes(value.size)||!Array.isArray(value.ids)||value.ids.length>value.size||new Set(value.ids).size!==value.ids.length||!value.ids.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!Array.isArray(value.seen)||value.seen.length>48||!value.seen.every(id=>Number.isInteger(id)&&rule.pool.includes(id))||!value.ids.every(id=>value.seen.includes(id))||!Number.isInteger(value.tokens)||value.tokens<0||value.tokens>2||value.captainId!=null&&(!Number.isInteger(value.captainId)||!value.ids.includes(value.captainId)))replayFail("Saved draft is invalid or outdated.");
     return {size:value.size,ids:[...value.ids],seen:[...new Set(value.seen)],tokens:value.tokens,captainId:value.captainId??null};
 }
 function migrateDailyRun(value){
@@ -150,6 +150,8 @@ function normalizeSoloState(value){
     if(!replayRecord(value)||![1,2].includes(value.v))replayFail("Saved draft is invalid or outdated.");
     if(value.kind==="daily"){
         if(value.v===1)return migrateDailyRun(value);
+        if(value.balanceRevision==null)return migrateDailyBalanceRun(value);
+        if(value.balanceRevision!==SQUAD_BALANCE_REVISION)replayFail("Saved draft is invalid or outdated.");
         let clean=dailyPickNew(soloDate(value.date));
         if(value.carry){clean.carry=normalizeDailyCarry(value.carry,value.date);clean.ids=[...clean.carry.ids];clean.seen=[...clean.carry.seen];clean.tokens=clean.carry.tokens;}
         if(!dailyFormationNames(dailyRuleForState(clean).size).includes(value.chosenFormation))replayFail("This squad uses an unknown formation.");
@@ -157,12 +159,37 @@ function normalizeSoloState(value){
         if(clean.ids.length===dailyRuleForState(clean).size)clean.phase="review";else if(value.phase!=="formation")dailyStartPicks(clean);
         if(!Array.isArray(value.actions)||value.actions.length>16)replayFail("Saved draft is invalid or outdated.");for(const action of value.actions){if(!replayRecord(action))replayFail("Invalid draft action.");dailyPickAction(clean,action);}
         if(clean.phase==="review"){
-            const form=dailyFormations(clean).find(f=>f.formation===value.formation);if(!form)replayFail("This squad uses an unknown formation.");Object.assign(clean,{formation:form.formation,assignment:form.assignment});clean.captain=soloChooseCaptain(clean);if(value.phase==="result")clean.phase="result";
+            const form=dailyFormations(clean).find(f=>f.formation===value.formation);if(!form)replayFail("This squad uses an unknown formation.");Object.assign(clean,{formation:form.formation,assignment:validatedDailyAssignment(clean.ids,form.formation,value.assignment)});clean.captain=value.captain; if(clean.captain!=null&&!Object.values(clean.assignment).includes(clean.captain))replayFail("Invalid squad data.");if(value.phase==="result")clean.phase="result";
         }
         clean.attempt=Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1;return clean;
     }
     if(value.kind==="puzzle"){const m=puzzleMission(value.mission);return puzzleValidate({v:1,kind:"puzzle",mission:m.id,formation:value.formation,assignment:value.assignment,captain:value.captain,ids:[],phase:value.phase==="result"?"result":"building",attempt:Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1});}
     replayFail("Saved draft is invalid or outdated.");
 }
+
+// Older deterministic offers depended on the previous chemistry/position model.
+// Preserve the validated owned state as a carry instead of replaying obsolete offers.
+function migrateDailyBalanceRun(value){
+    const date=soloDate(value.date),rule=dailyPickRule(date),size=value.carry?.size||rule.size;
+    if(!Array.isArray(value.actions)||value.actions.length>16||!value.actions.every(a=>replayRecord(a)&&(a.type==="pick"&&Number.isInteger(a.id)||a.type==="reroll")))replayFail("Saved draft is invalid or outdated.");
+    const previous=value.carry?normalizeDailyCarry(value.carry,date):{ids:[],tokens:2};
+    const ids=[...previous.ids,...value.actions.filter(a=>a.type==="pick").map(a=>a.id)],tokens=previous.tokens-value.actions.filter(a=>a.type==="reroll").length;
+    if(JSON.stringify(ids)!==JSON.stringify(value.ids)||tokens!==value.tokens||!["formation","picking","review","result"].includes(value.phase))replayFail("Saved draft is invalid or outdated.");
+    if(value.phase==="formation"&&ids.length)replayFail("Saved draft is invalid or outdated.");
+    if(["review","result"].includes(value.phase)!==(ids.length===size))replayFail("Saved draft is invalid or outdated.");
+    const clean=dailyPickNew(date);
+    clean.carry=normalizeDailyCarry({size,ids,seen:value.seen,tokens,captainId:value.captain},date);
+    Object.assign(clean,{ids:[...ids],seen:[...clean.carry.seen],tokens,chosenFormation:value.chosenFormation,formation:value.formation,captain:value.captain,phase:value.phase,attempt:Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1});
+    if(!dailyFormationNames(size).includes(clean.chosenFormation)||!dailyFormationNames(size).includes(clean.formation))replayFail("This squad uses an unknown formation.");
+    clean.assignment=validatedDailyAssignment(ids,clean.formation,value.assignment);
+    if(clean.captain!=null&&!Object.values(clean.assignment).includes(clean.captain))replayFail("Invalid squad data.");
+    return clean;
+}
 function soloLoad(){try{const raw=localStorage.getItem(SOLO_SAVE_KEY);return raw?normalizeSoloState(JSON.parse(raw)):null;}catch{return null;}}
 function soloSave(){try{localStorage.setItem(SOLO_SAVE_KEY,JSON.stringify(soloState));return true;}catch{soloStorageFailed=true;return false;}}
+
+function validatedDailyAssignment(ids,formation,assignment){
+    const shape=formationShape(formation);
+    if(!replayRecord(assignment)||Object.keys(assignment).some(slot=>!/^\d+$/.test(slot)||String(Number(slot))!==slot||!shape[Number(slot)])||Object.values(assignment).some(id=>!ids.includes(id))||new Set(Object.values(assignment)).size!==Object.values(assignment).length||Object.values(assignment).length!==Math.min(shape.length,ids.length))replayFail("Invalid squad data.");
+    return {...assignment};
+}

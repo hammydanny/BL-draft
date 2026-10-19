@@ -291,14 +291,14 @@ function portrait(parent,p,size){if(!p)return;const img=make("img","bs-portrait"
 function stratControls(number,team,compact){const wrap=make("div",compact?"bs-strategy-grid bs-strategy-grid--compact":"bs-strategy-grid");STRATEGIES.forEach(d=>{const l=make("label","bs-strategy-control"),head=make("span","bs-strategy-heading");put(head,make("strong","",d.label));put(head,make("output","bs-strategy-value",team.strategy[d.key]));put(l,head);const range=make("input","bs-range");range.type="range";range.min="0";range.max="100";range.value=team.strategy[d.key];range.setAttribute("data-team-strategy",number);range.setAttribute("data-strategy-key",d.key);put(l,range);const ends=make("span","bs-strategy-ends");put(ends,make("span","",d.low));put(ends,make("span","",d.high));put(l,ends);put(wrap,l);});return wrap;}
 
 function teamChemistrySnapshot(team){
- if(!team)return{overall:0,links:[],counts:{chemical:0,elite:0,strong:0,link:0,weak:0},activeLinks:0,possibleLinks:0,top:null,weakest:null};
+ if(!team)return{overall:0,links:[],counts:{chemical:0,elite:0,strong:0,link:0,neutral:0,negative:0},activeLinks:0,possibleLinks:0,top:null,weakest:null};
  const assignment=team.assignment||{},formation=team.formation||"4-3-3";
  const signature=formation+"|"+Object.keys(assignment).sort((a,b)=>Number(a)-Number(b)).map(k=>k+":"+idOf(assignment[k])).join(",");
  if(team._bsChemistrySignature===signature&&team._bsChemistryCache)return team._bsChemistryCache;
  const edgeMap=typeof FORMATION_CHEMISTRY_EDGES!=="undefined"?FORMATION_CHEMISTRY_EDGES:{};
  const edgePairs=edgeMap[formation]||edgeMap["4-3-3"]||[];
  const slots=team.slots||[],eligible=edgePairs.filter(([a,b])=>slots[a]&&slots[b]);
- const relationFor=(a,b)=>typeof chemistryRelation==="function"?chemistryRelation(a,b):{score:55,label:"UNPROVEN LINK",reason:"No chemistry model is available.",contexts:[]};
+ const relationFor=(a,b)=>typeof chemistryRelation==="function"?chemistryRelation(a,b):{score:65,label:"NEUTRAL",reason:"No chemistry model is available.",contexts:[]};
  const links=eligible.map(([ai,bi])=>{
   const aId=assignment[String(ai)],bId=assignment[String(bi)];
   if(!aId||!bId)return null;
@@ -315,8 +315,8 @@ function teamChemistrySnapshot(team){
  }
  const values=links.map(l=>l.value);
  const overall=typeof chemistryNetworkScore==="function"?chemistryNetworkScore(values,knownPairs,eligible.length):(values.length?Math.round(values.reduce((a,b)=>a+b,0)/values.length):0);
- const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
- links.forEach(l=>{const tier=typeof chemistryTier==="function"?chemistryTier(l.value):(l.value>=82?"strong":l.value>=70?"link":"weak");counts[tier]=(counts[tier]||0)+1;});
+ const counts={chemical:0,elite:0,strong:0,link:0,neutral:0,negative:0};
+ links.forEach(l=>{const tier=typeof chemistryTier==="function"?chemistryTier(l.value):(l.value>=82?"strong":l.value>=70?"link":l.value>=65?"neutral":"negative");counts[tier]=(counts[tier]||0)+1;});
  const sorted=links.slice().sort((a,b)=>b.value-a.value);
  const result={overall,links,counts,activeLinks:links.length,possibleLinks:eligible.length,knownPairs:knownPairs.length,deployedCount:deployed.length,coverage:eligible.length?Math.round(links.length/eligible.length*100):0,top:sorted[0]||null,weakest:sorted.length?sorted[sorted.length-1]:null};
  team._bsChemistrySignature=signature;team._bsChemistryCache=result;return result;
@@ -327,7 +327,7 @@ function appendFormationChemistryLines(pitch,team,flipY,className){
  chemistry.links.forEach(link=>{
   const line=document.createElementNS(ns,"line"),x1=Number(link.a.slot.x)||50,x2=Number(link.b.slot.x)||50;
   const rawY1=Number(link.a.slot.y)||50,rawY2=Number(link.b.slot.y)||50,y1=flipY?100-rawY1:rawY1,y2=flipY?100-rawY2:rawY2;
-  const tier=typeof chemistryTier==="function"?chemistryTier(link.value):"weak";
+  const tier=typeof chemistryTier==="function"?chemistryTier(link.value):"neutral";
   line.setAttribute("x1",String(x1));line.setAttribute("y1",String(y1));line.setAttribute("x2",String(x2));line.setAttribute("y2",String(y2));
   line.setAttribute("class","bs-chem-line "+tier);line.setAttribute("data-chemistry",String(link.value));
   line.setAttribute("aria-label",link.a.p.name+" and "+link.b.p.name+" chemistry "+link.value);
@@ -366,7 +366,7 @@ function renderSetupChemistry(team){
  });
  put(section,featured);
  const key=make("div","bs-setup-chemistry-key");put(key,make("b","","LINK KEY"));
- [["chemical","95+"],["elite","90+"],["strong","82+"],["link","70+"],["weak","<70"]].forEach(item=>{const part=make("span","");put(part,make("i",item[0]));put(part,make("span","",item[1]));put(key,part);});
+ [["chemical","95+"],["elite","90+"],["strong","82+"],["link","70+"],["neutral","NEUTRAL"],["negative","NEGATIVE"]].forEach(item=>{const part=make("span","");put(part,make("i",item[0]));put(part,make("span","",item[1]));put(key,part);});
  put(section,key);return section;
 }
 function renderMatchChemistry(team){

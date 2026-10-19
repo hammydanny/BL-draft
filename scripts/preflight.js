@@ -33,3 +33,5 @@ require('./game-modes-tests.js').runGameModeTests();
 require('./solo-draft-tests.js').runSoloDraftTests();
 
 require('./balance-tests.js').runBalanceTests();
+
+require('./chemistry-balance-tests.js').runChemistryBalanceTests();

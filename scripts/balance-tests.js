@@ -25,16 +25,16 @@ function runBalanceTests(){
  const {context,run}=createModeTestContext();vm.runInContext(fs.readFileSync(path.join(__dirname,'../js/solo-draft.js'),'utf8'),context,{filename:'solo-draft.js'});
  run(`
     assert(qualityScore(95)-qualityScore(90)>qualityScore(85)-qualityScore(80));assert(ratingStrength(95)-ratingStrength(90)>ratingStrength(85)-ratingStrength(80));
-    assert.equal(chemistryPerformanceModifier(72),0);assert.equal(chemistryPerformanceModifier(100),4);assert.equal(chemistryPerformanceModifier(40),-3);assert(playerChemistryPerformance(Array(30).fill(99))<=4);
+    assert.equal(chemistryPerformanceModifier(65),0);assert.equal(chemistryPerformanceModifier(100),4);assert.equal(chemistryPerformanceModifier(40),-3);assert(playerChemistryPerformance(Array(30).fill(99))<=4);
     const synthetic=(rating,id=999)=>({id,name:'Balance fixture '+id,primaryPosition:'CM',positions:['CM','DM'],stats:{ovr:rating,off:rating,sho:rating,spd:rating,def:rating,pas:rating,dri:rating,gk:40}});
     assert(playerContribution(synthetic(88),'CM',[95,95]).raw>playerContribution(synthetic(91),'CM',[55,55]).raw,'Chemistry can reverse a small quality gap');
-    assert(playerContribution(synthetic(95),'CM',[72,72]).raw>playerContribution(synthetic(80),'CM',[100,100]).raw,'Chemistry cannot erase a large quality gap');
+    assert(playerContribution(synthetic(95),'CM',[65,65]).raw>playerContribution(synthetic(80),'CM',[100,100]).raw,'Chemistry cannot erase a large quality gap');
     const canonical=JSON.stringify(players),fixture=synthetic(90);assert(playerContribution(fixture,'CM',[98,98]).effective>playerContribution(fixture,'CM',[48,48]).effective);assert(playerContribution(fixture,'GK',[100,100]).effective<65);assert(playerPositionProfile(fixture,'DM').position>=playerPositionProfile(fixture,'ST').position+10);
     assert(effectiveOVR(playerById(8),'GK')>effectiveOVR(playerById(3),'GK'),'A real goalkeeper beats an elite striker in goal');
     assert.equal(JSON.stringify(players),canonical);
     // Two coherent squad comparisons use the production model, not a parallel formula.
     const sample=(rating,chem)=>{const shape=FORMATIONS['4-3-3'],roster=shape.map((slot,i)=>({...synthetic(rating,1000+i),primaryPosition:slot.label,positions:[slot.label]})),assignment=Object.fromEntries(roster.map((p,i)=>[i,p.id])),links=FORMATION_CHEMISTRY_EDGES['4-3-3'].map(([a,b])=>({a:{p:roster[a]},b:{p:roster[b]},value:chem}));return lineupContributionSnapshot(roster,assignment,shape,{links});};
-    assert(sample(88,95).effectiveQuality>sample(91,55).effectiveQuality);assert(sample(95,72).effectiveQuality>sample(80,100).effectiveQuality);
+    assert(sample(88,95).effectiveQuality>sample(91,55).effectiveQuality);assert(sample(95,65).effectiveQuality>sample(80,100).effectiveQuality);
     // Position/chemistry effects stay visible independently of immutable base ratings.
     const standardFingerprint=JSON.stringify(FORMATIONS);for(const [name,shape]of Object.entries(DAILY_FORMATIONS)){
         const size=Number(name.split('v')[0]);assert.equal(shape.length,size);assert.equal(shape.filter(s=>s.label==='GK').length,1);assert.equal(new Set(shape.map(s=>s.x+':'+s.y)).size,size);assert(shape.every(s=>s.x>=10&&s.x<=90&&s.y>=12&&s.y<=90));

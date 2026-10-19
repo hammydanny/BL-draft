@@ -10,6 +10,9 @@
 // Generic fallback scores come from repeated shared-team history.
 // ----------------------------------------------------------------------------
 
+const CHEMISTRY_NEUTRAL_SCORE = 65;
+const CHEMISTRY_NEUTRAL_REASON = "No significant on-field relationship has been demonstrated through Chapter 364.";
+
 const CHEMISTRY_CONTEXTS = [
   {name:"TEAM Z",score:79,players:["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"]},
   {name:"TEAM Y // NIKO-OKAWA ROUTE",score:88,players:["Ikki Niko","Hibiki Okawa"]},
@@ -121,17 +124,17 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Teddy Knight","Achanpong",88,"ENGLAND VOLUNTEER SYSTEM","Achanpong explains that England willingly chose Fox's collective system; Teddy is its elite attacking reference and Achanpong its captain."],
   ["Agi","Teddy Knight",72,"SYSTEM FRICTION","They share England U-20, but Agi is removed for allowing his individual ego to disrupt Fox's system while Teddy remains its ideal obedient star."],
 
-  // Explicitly poor or unstable links
-  ["Junichi Wanima","Hyoma Chigiri",55,"BAD BLOOD","They share high-school history, but Junichi's treatment of Chigiri and Team W's attempt to exploit his fear make this a poor trust relationship rather than useful chemistry."],
-  ["Keisuke Wanima","Hyoma Chigiri",55,"BAD BLOOD","They share high-school history, but Keisuke joins the psychological pressure on Chigiri instead of functioning as a trusted partner."],
-  ["Sae Itoshi","Shuto Sendo",67,"DISMISSIVE PLAYMAKER","Sae repeatedly belittles Sendo's finishing during the original U-20 match; they can occupy the same attack, but trust and mutual respect are poor."],
-  ["Ryusei Shido","Shuto Sendo",48,"HOSTILE TEAMMATES","Shido physically attacks Sendo before the U-20 match and Sae's preference for Shido further worsens the relationship."],
+  // Rechecked through Chapter 364: personal hostility alone is not poor football chemistry.
+  ["Junichi Wanima","Hyoma Chigiri",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Keisuke Wanima","Hyoma Chigiri",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Sae Itoshi","Shuto Sendo",70,"LINK","Demonstrated passing combinations outweigh personal friction."],
+  ["Ryusei Shido","Shuto Sendo",70,"LINK","Demonstrated passing combinations outweigh personal friction."],
   ["Seishiro Nagi","Shoei Baro",80,"VOLATILE TEAM WHITE","They can function in the same Second Selection attack, but their constant clashes and competing egos make the partnership unstable."],
   ["Rin Itoshi","Ryusei Shido",58,"INCOMPATIBLE EGOS","Ego states they failed to spark a chemical reaction; PXG initially required separate systems, and they still clash after the France match."],
-  ["Rin Itoshi","Sae Itoshi",62,"FRACTURED BROTHERS","They once combined naturally as children, but their shared dream collapsed and their current football relationship is openly hostile."],
-  ["Rensuke Kunigami","Ryusei Shido",60,"PERSONAL CONFLICT","Shido eliminated Kunigami from the Second Selection path; their later encounters are defined more by confrontation than combination."],
-  ["Sae Itoshi","Bunny Iglesias",58,"INTENSE RIVALRY","Sae is shown reacting bitterly to Bunny and his U-20 World Cup motivation is tied to confronting that rivalry."],
-  ["Yoichi Isagi","Vivien Hugo",56,"PHILOSOPHY CLASH","France U-20: Hugo repeatedly challenges Isagi's ego philosophy and tries to redirect his idea of what a striker should be."],
+  ["Rin Itoshi","Sae Itoshi",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Rensuke Kunigami","Ryusei Shido",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Sae Itoshi","Bunny Iglesias",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Yoichi Isagi","Vivien Hugo",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
   ["Jingo Raichi","Zaruchi",99,"SPECIAL CHEMISTRY","You know the guy with blonde hair and sharp teeth?"]
 ];
 
@@ -142,20 +145,25 @@ const CHEMISTRY_SPECIAL = Object.fromEntries(
 );
 
 const SHARED_TEAM_CHEMISTRY_FLOOR = 70;
-const SHARED_TEAM_FLOOR_EXCEPTIONS = new Set([
-  ["Rin Itoshi","Ryusei Shido"].sort().join("|"),
-  ["Sae Itoshi","Shuto Sendo"].sort().join("|"),
-  ["Ryusei Shido","Shuto Sendo"].sort().join("|"),
-  ["Rensuke Kunigami","Ryusei Shido"].sort().join("|"),
-  ["Junichi Wanima","Hyoma Chigiri"].sort().join("|"),
-  ["Keisuke Wanima","Hyoma Chigiri"].sort().join("|")
-]);
+// Exact neutral/negative classifications bypass generic shared-team history.
+const SHARED_TEAM_FLOOR_EXCEPTIONS = new Set(
+    CHEMISTRY_SPECIAL_PAIRS.filter(([, ,score])=>score<SHARED_TEAM_CHEMISTRY_FLOOR).map(([a,b])=>[a,b].sort().join("|"))
+);
 
 function chemistryKey(a,b){return [a.name,b.name].sort().join("|");}
 function sharedChemistryContexts(a,b){
     return CHEMISTRY_CONTEXTS.filter(c=>c.players.includes(a.name)&&c.players.includes(b.name));
 }
+const chemistryRelationCache=new WeakMap();
 function chemistryRelation(a,b){
+    if(!a||!b||a.id===b.id)return {score:0,label:"NO LINK",reason:"A player cannot form chemistry with themself.",contexts:[]};
+    const cached=chemistryRelationCache.get(a)?.get(b);if(cached)return cached;
+    const relation=computeChemistryRelation(a,b);
+    if(!chemistryRelationCache.has(a))chemistryRelationCache.set(a,new WeakMap());
+    if(!chemistryRelationCache.has(b))chemistryRelationCache.set(b,new WeakMap());
+    chemistryRelationCache.get(a).set(b,relation);chemistryRelationCache.get(b).set(a,relation);return relation;
+}
+function computeChemistryRelation(a,b){
     if(!a||!b||a.id===b.id)return {score:0,label:"NO LINK",reason:"A player cannot form chemistry with themself.",contexts:[]};
     const key=chemistryKey(a,b);
     const special=CHEMISTRY_SPECIAL[key];
@@ -186,15 +194,23 @@ function chemistryRelation(a,b){
         };
     }
     return {
-        score:55,
-        label:"UNPROVEN LINK",
-        reason:"No sustained shared on-field system has been demonstrated in Blue Lock through chapter 364.",
+        score:CHEMISTRY_NEUTRAL_SCORE,
+        label:"NEUTRAL",
+        reason:CHEMISTRY_NEUTRAL_REASON,
         contexts:[]
     };
 }
+function chemistryAccessibleLabel(a,b,value){
+    return `${a.name} and ${b.name} chemistry ${value}, ${chemistryTierLabel(value)}`;
+}
+// Canvas reports have a fixed dark palette; HTML consumes the equivalent theme tokens.
+function chemistryLineStyle(value){
+    const tier=chemistryTier(value),colors={chemical:"#ffe65a",elite:"#43ff9a",strong:"#31d7ff",link:"#9c8cff",neutral:"#94a3b8",negative:"#ff496d"};
+    return {tier,color:colors[tier],opacity:tier==="neutral"?.48:tier==="negative"?.9:.8,width:tier==="neutral"?1.25:tier==="negative"?2.2:2.5};
+}
 function playerChemistry(a,b){return chemistryRelation(a,b).score;}
-function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":"weak";}
-function chemistryTierLabel(v){return v>=95?"CHEMICAL":v>=90?"ELITE":v>=82?"STRONG":v>=70?"LINK":"WEAK";}
+function chemistryTier(v){return v>=95?"chemical":v>=90?"elite":v>=82?"strong":v>=70?"link":v>=CHEMISTRY_NEUTRAL_SCORE?"neutral":"negative";}
+function chemistryTierLabel(v){return v>=95?"CHEMICAL":v>=90?"ELITE":v>=82?"STRONG":v>=70?"LINK":v>=CHEMISTRY_NEUTRAL_SCORE?"NEUTRAL":"NEGATIVE";}
 
 // Team chemistry is a network score, not a simple average. Weak tactical links
 // matter more because one broken connection can interrupt an entire passing
@@ -204,7 +220,7 @@ function chemistryNetworkScore(linkValues,knownPairScores=[],possibleLinks=null)
     const values=(Array.isArray(linkValues)?linkValues:[]).map(Number).filter(Number.isFinite);
     if(!values.length)return 0;
     const known=(Array.isArray(knownPairScores)?knownPairScores:[]).map(Number).filter(Number.isFinite);
-    const linkWeight=value=>value<70?1.28:value<82?1.08:value>=95?1.04:1;
+    const linkWeight=value=>value<CHEMISTRY_NEUTRAL_SCORE?1.28:value<82?1.08:value>=95?1.04:1;
     const weightTotal=values.reduce((sum,value)=>sum+linkWeight(value),0);
     const weightedAverage=values.reduce((sum,value)=>sum+value*linkWeight(value),0)/weightTotal;
     const ordered=[...values].sort((a,b)=>a-b);
@@ -212,7 +228,7 @@ function chemistryNetworkScore(linkValues,knownPairScores=[],possibleLinks=null)
     const lowerBand=ordered.slice(0,lowerCount).reduce((a,b)=>a+b,0)/lowerCount;
     const strongRatio=values.filter(value=>value>=82).length/values.length;
     const eliteRatio=values.filter(value=>value>=90).length/values.length;
-    const weakRatio=values.filter(value=>value<70).length/values.length;
+    const weakRatio=values.filter(value=>value<CHEMISTRY_NEUTRAL_SCORE).length/values.length;
     const networkScale=Math.min(1,values.length/6);
     const familiarityAverage=known.length?known.reduce((a,b)=>a+b,0)/known.length:0;
     const familiarityAdjustment=familiarityAverage
@@ -328,7 +344,7 @@ function tacticalChemistrySnapshot(roster,ass,shape,edgePairs,activeSlotsInput=n
     const overall=chemistryNetworkScore(links.map(link=>link.value),knownPairs,eligibleEdges.length);
 
     const sorted=[...links].sort((x,y)=>y.value-x.value);
-    const counts={chemical:0,elite:0,strong:0,link:0,weak:0};
+    const counts={chemical:0,elite:0,strong:0,link:0,neutral:0,negative:0};
     links.forEach(l=>counts[chemistryTier(l.value)]++);
     return {
         overall,
@@ -339,7 +355,7 @@ function tacticalChemistrySnapshot(roster,ass,shape,edgePairs,activeSlotsInput=n
         knownPairs:knownPairs.length,
         deployedCount:deployed.length,
         coverage:eligibleEdges.length?Math.round(links.length/eligibleEdges.length*100):0,
-        top:sorted[0]||null,
+        top:sorted.find(link=>link.value>=70)||null,
         weakest:sorted.length?sorted[sorted.length-1]:null
     };
 }
@@ -358,7 +374,11 @@ function chemistrySvg(teamNumber){
         x1="${l.a.slot.x}" y1="${l.a.slot.y}" x2="${l.b.slot.x}" y2="${l.b.slot.y}"
         class="chem-link ${chemistryTier(l.value)}"
         data-a-id="${l.a.p.id}" data-b-id="${l.b.p.id}"
-        aria-label="${esc(l.a.p.name)} and ${esc(l.b.p.name)} chemistry ${l.value}, ${esc(l.relation.label)}"
+        role="button" tabindex="0"
+        aria-label="${esc(chemistryAccessibleLabel(l.a.p,l.b.p,l.value))}"
+        onfocus="showChemistryTooltip(event,this)" onblur="hideChemistryTooltip()"
+        onclick="showChemistryTooltip(event,this)"
+        onkeydown="if(event.key==='Escape'){hideChemistryTooltip();this.blur();}else if(event.key==='Enter'||event.key===' '){event.preventDefault();showChemistryTooltip(event,this);}"
         onpointerenter="showChemistryTooltip(event,this)"
         onpointermove="moveChemistryTooltip(event)"
         onpointerleave="hideChemistryTooltip()"></line>`).join("")}</svg>`;
@@ -386,12 +406,14 @@ function showChemistryTooltip(event,line){
         <strong>${esc(a.name)} × ${esc(b.name)}</strong>
         <small>${esc(r.reason)}</small>
       </div>`;
+    window.SiteI18n?.apply(chemistryTooltipEl);
     chemistryTooltipEl.classList.add("show");
     moveChemistryTooltip(event);
 }
 function moveChemistryTooltip(event){
     if(!chemistryTooltipEl)return;
     const pad=14;
+    if(!Number.isFinite(event.clientX)||!Number.isFinite(event.clientY)){const r=event.target?.getBoundingClientRect();event={clientX:r?.x||pad,clientY:r?.y||pad};}
     let x=event.clientX+18,y=event.clientY+18;
     const rect=chemistryTooltipEl.getBoundingClientRect();
     if(x+rect.width>window.innerWidth-pad)x=event.clientX-rect.width-18;
@@ -424,7 +446,7 @@ function chemistryHud(teamNumber,team){
         <div><span>STRONG</span><strong>${c.counts.strong}</strong></div>
       </div>
       <div class="chemistry-featured">
-        <div class="best"><span>BEST ACTIVE LINK</span><strong>${top?esc(chemistryLinkName(top)):"ADD PLAYERS"}</strong><b class="${top?chemistryTier(top.value):""}">${top?top.value:"--"}</b></div>
+        <div class="best"><span>BEST ACTIVE LINK</span><strong>${top?esc(chemistryLinkName(top)):c.activeLinks?"NEUTRAL":"ADD PLAYERS"}</strong><b class="${top?chemistryTier(top.value):""}">${top?top.value:"--"}</b></div>
         <div class="risk"><span>LOWEST ACTIVE LINK</span><strong>${weak?esc(chemistryLinkName(weak)):"ADD PLAYERS"}</strong><b class="${weak?chemistryTier(weak.value):""}">${weak?weak.value:"--"}</b></div>
       </div>
       <div class="chem-key">
@@ -433,7 +455,8 @@ function chemistryHud(teamNumber,team){
         <span><i class="elite"></i>90+</span>
         <span><i class="strong"></i>82+</span>
         <span><i class="link"></i>70+</span>
-        <span><i class="weak"></i>&lt;70</span>
+        <span><i class="neutral"></i>NEUTRAL</span>
+        <span><i class="negative"></i>NEGATIVE</span>
       </div>
     </div>`;
 }

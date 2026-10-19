@@ -328,7 +328,8 @@ body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:
 .bs-chem-line.elite{stroke:#5ef0b1;opacity:1;stroke-width:1.7;filter:drop-shadow(0 0 2px #5ef0b1) drop-shadow(0 0 5px #5ef0b1)}
 .bs-chem-line.strong{stroke:#4bc8ff;opacity:.98;stroke-width:1.6;filter:drop-shadow(0 0 2px #4bc8ff) drop-shadow(0 0 5px #4bc8ff)}
 .bs-chem-line.link{stroke:#d3a7ff;opacity:.93;stroke-width:1.45;filter:drop-shadow(0 0 2px #d3a7ff) drop-shadow(0 0 4px #d3a7ff)}
-.bs-chem-line.weak{stroke:#ff8da0;opacity:.84;stroke-width:1.2;stroke-dasharray:2 1.6;filter:drop-shadow(0 0 2px #ff7c91)}
+.bs-chem-line.neutral{stroke:var(--chem-neutral);opacity:.48;stroke-width:1.2;filter:none}
+.bs-chem-line.negative{stroke:#ff8da0;opacity:.84;stroke-width:1.2;stroke-dasharray:2 1.6;filter:drop-shadow(0 0 2px #ff7c91)}
 .bs-setup-formation-player{position:absolute;z-index:2;left:var(--player-x,50%);top:var(--player-y,50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:82px;max-width:25%;min-width:0;padding:3px 2px 4px;border:1px solid color-mix(in srgb,var(--bs-team-color,#19a7ff) 72%,#ffffff35);border-radius:7px;background:#03120fe8;box-shadow:0 2px 8px #00140fa3;transform:translate(-50%,-50%);text-align:center}
 .bs-setup-formation-portrait{position:relative;display:block;flex:0 0 44px;width:44px;height:44px;margin:0 auto}.bs-setup-formation-avatar{display:block;flex:0 0 auto;width:44px;height:44px;object-fit:cover;object-position:top center;border:3px solid var(--bs-team-color,#19a7ff);border-radius:50%;background:#102b42;box-shadow:0 0 16px color-mix(in srgb,var(--bs-team-color,#19a7ff) 45%,transparent)}.bs-setup-formation-ovr{position:absolute;right:-6px;bottom:-3px;display:grid;place-items:center;min-width:22px;height:20px;padding:0 3px;border:1px solid var(--bs-team-color,#19a7ff);border-radius:4px;background:#030b13;color:#fff;font:900 13px/1 "Barlow Condensed",sans-serif;box-shadow:0 0 8px color-mix(in srgb,var(--bs-team-color,#19a7ff) 36%,transparent);pointer-events:none}
 .bs-setup-formation-player>strong{display:block;width:100%;overflow:hidden;color:#f5fff9;font:800 9px/1.05 "Barlow Condensed",sans-serif;text-overflow:ellipsis;white-space:nowrap}
@@ -347,7 +348,7 @@ body.bs-game-route .bs-formation-player--vacant .bs-formation-player-meta{color:
 .bs-setup-chemistry-featured>div>span{grid-column:1/-1}
 .bs-setup-chemistry-featured strong{min-width:0;overflow:hidden;color:var(--text-primary,#eaf2ff);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
 .bs-setup-chemistry-featured b{font:900 13px "Barlow Condensed",sans-serif}
-.bs-setup-chemistry-featured b.chemical{color:#f2e56c}.bs-setup-chemistry-featured b.elite{color:#5ef0b1}.bs-setup-chemistry-featured b.strong{color:#4bc8ff}.bs-setup-chemistry-featured b.link{color:#d3a7ff}.bs-setup-chemistry-featured b.weak{color:#ff7c91}
+.bs-setup-chemistry-featured b.chemical{color:#f2e56c}.bs-setup-chemistry-featured b.elite{color:#5ef0b1}.bs-setup-chemistry-featured b.strong{color:#4bc8ff}.bs-setup-chemistry-featured b.link{color:#d3a7ff}.bs-setup-chemistry-featured b.neutral{color:var(--chem-neutral)}.bs-setup-chemistry-featured b.negative{color:#ff7c91}
 .bs-setup-chemistry-key{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;color:var(--text-secondary,#9bb2c9);font-size:9px}
 .bs-setup-chemistry-key>b{color:var(--text-primary,#eaf2ff);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.08em}
 .bs-setup-chemistry-key>span{display:inline-flex;align-items:center;gap:4px}
