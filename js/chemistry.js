@@ -135,6 +135,8 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Rensuke Kunigami","Ryusei Shido",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
   ["Sae Itoshi","Bunny Iglesias",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
   ["Yoichi Isagi","Vivien Hugo",65,"NEUTRAL","Rivalry or personal conflict alone does not establish negative football chemistry."],
+  ["Shoei Baro","Qazicutie",85,"Best Character","This is the best character they can play"],
+  ["Ryusei Shido","Qazicutie",75,"SECRET CHARACTER LINK","Project-defined chemistry rating with Qazicutie."],
   ["Jingo Raichi","Zaruchi",99,"SPECIAL CHEMISTRY","You know the guy with blonde hair and sharp teeth?"]
 ];
 
