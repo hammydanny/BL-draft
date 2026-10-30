@@ -21,8 +21,8 @@ const PLAYER_82_DATA = {
   }],
   stats: { ovr: 74, off: 83, sho: 78, spd: 66, def: 55, pas: 68, dri: 70, gk: 40 },
   profileChemistries: [
-    { playerName: "Shoei Baro", score: 85, label: "Best Character", description: "This is the best character they can play" },
-    { playerName: "Ryusei Shido", score: 75, label: "SECRET CHARACTER LINK", description: "Project-defined chemistry rating with Qazicutie." },
+    { playerName: "Shoei Baro", score: 85, label: "BEST CHARACTER", description: "This is the best character they can play" },
+    { playerName: "Ryusei Shido", score: 75, label: "BEST CHARACTER", description: "Project-defined chemistry rating with Qazicutie." },
     { playerName: "hdannyy", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
     { playerName: "floppy_willy", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
     { playerName: "raf", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
