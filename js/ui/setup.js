@@ -119,7 +119,7 @@ function renderPlayerPool(){
               <div class="pool-player-check">${selected?"✓":"+"}</div>
               <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="lazy" decoding="async" width="160" height="168">
               <div class="pool-player-info">
-                  <span>PLAYER // ${String(player.id).padStart(2,"0")} // OVR ${playerOverall(player)}</span>
+                  <span>PLAYER // ${playerDisplayId(player)} // OVR ${playerOverall(player)}</span>
                   <strong>${esc(player.name)}</strong>
               </div>
             </button>

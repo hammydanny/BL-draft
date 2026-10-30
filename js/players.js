@@ -82,7 +82,8 @@ const players = [
     PLAYER_78_DATA,
     PLAYER_79_DATA,
     PLAYER_80_DATA,
-    PLAYER_81_DATA
+    PLAYER_81_DATA,
+    PLAYER_82_DATA
 ];
 
 players.forEach(player=>{
@@ -93,7 +94,16 @@ players.forEach(player=>{
 
 // IDs and gameplay array order stay stable. Chronology is a display-only sort.
 const PLAYER_BY_ID=new Map(players.map(player=>[player.id,player]));
-function playerById(id){return PLAYER_BY_ID.get(id)||null;}
+const PLAYER_BY_SECRET_ID=new Map(players.filter(player=>player.secretCharacter&&player.secretId).map(player=>[player.secretId.toUpperCase(),player]));
+function playerById(id){
+    if(typeof id==="string"&&/^SC-\d+$/i.test(id.trim()))return PLAYER_BY_SECRET_ID.get(id.trim().toUpperCase())||null;
+    return PLAYER_BY_ID.get(Number(id))||null;
+}
+// Keep internal numeric keys stable for saves; secret characters use their own visible IDs.
+function playerDisplayId(player){
+    if(player?.secretCharacter)return player.secretId||("SC-"+String(player.id));
+    return String(player?.id??"").padStart(2,"0");
+}
 function comparePlayerAppearance(a,b){
     return a.debutChapter-b.debutChapter||a.appearanceOrder-b.appearanceOrder||a.id-b.id;
 }
