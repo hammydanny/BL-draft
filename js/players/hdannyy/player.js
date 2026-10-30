@@ -5,7 +5,7 @@ const PLAYER_83_DATA = {
   name: "hdannyy",
   debutChapter: 1,
   appearanceOrder: 83,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/hdanny.jpg",
   primaryPosition: "RW",
   positions: ["RW", "LW", "CF", "CM", "GK"],
   secretCharacter: true,
