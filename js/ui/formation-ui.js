@@ -133,7 +133,7 @@ function createPlayerInfoSidebar(team){
 
   return `<aside class="player-info-panel" style="${teamVars(team)}">
     <div class="player-info-top">
-      <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${String(player.id).padStart(2,"0")}</strong></div>
+      <div><span class="player-info-code">PLAYER // PROFILE</span><strong class="player-info-id">${playerDisplayId(player)}</strong></div>
       <button class="player-info-close" onclick="clearSelectedFormationPlayer()" aria-label="Clear selected player">×</button>
     </div>
     <div class="player-info-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="240" height="270"><div class="player-info-ovr"><span>${pos}</span><strong>${rating}</strong><b class="evaluation-grade">${playerStatGrade(rating)}</b></div></div>
