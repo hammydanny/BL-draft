@@ -10,7 +10,8 @@ const PLAYER_82_DATA = {
   positions: ["CF", "LW", "RW"],
   secretCharacter: true,
   nationality: null,
-  countryLabel: "🟥 Roblox",
+  countryName: "Roblox",
+  countryFlag: "images/flags/roblox.svg",
   description: "Talkative striker with a very limited set of abilities",
   quote: "Pass it to me we win",
   weapons: [{

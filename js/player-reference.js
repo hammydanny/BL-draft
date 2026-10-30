@@ -131,6 +131,11 @@ if(MARC_SNUFFY_PLAYER&&!MARC_SNUFFY_PLAYER.nationality){
     };
 }
 function playerNationalityMarkup(player){
+    if(player?.countryFlag){
+        const label=player.countryName||player.countryLabel||"";
+        const src=new URL(player.countryFlag,document.baseURI);src.searchParams.set("v",APP_VERSION);
+        return `<div class="player-nationality" title="${esc(label)}"><img src="${src.href}" alt="" width="24" height="16" decoding="async"><span>${esc(label)}</span></div>`;
+    }
     if(player?.countryLabel)return `<div class="player-nationality" title="${esc(player.countryLabel)}"><span>${esc(player.countryLabel)}</span></div>`;
     if(player?.nationalityUnknown===true)return `<div class="player-nationality" title="Nationality unknown"><span>UNKNOWN</span></div>`;
     const nationality=player?.nationality,country=PLAYER_COUNTRIES[nationality?.code];

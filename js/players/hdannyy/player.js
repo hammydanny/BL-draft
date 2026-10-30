@@ -10,7 +10,8 @@ const PLAYER_83_DATA = {
   positions: ["RW", "LW", "CF", "CM", "GK"],
   secretCharacter: true,
   nationality: null,
-  countryLabel: "🟥 Roblox",
+  countryName: "Roblox",
+  countryFlag: "images/flags/roblox.svg",
   description: "Minecraft For Pros benchmark player with the ability to unlock one's potential.",
   quote: "Press F! Stop jumping!",
   weapons: [{
