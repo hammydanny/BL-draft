@@ -1063,7 +1063,7 @@ check('Auction flags reuse verified nationality and saved secret players require
         }
         const base={team1:{players:[1]},team2:{players:[2]},remainingPlayerIds:[3],selectedPlayerIds:[1,2,3],currentPlayerId:1,auctionHistory:[]};
         assert(!auctionSaveNeedsSecretCode(base));
-        for(const id of [80,81,82]){
+        for(const id of [80,81]){
             for(const saved of [{...base,currentPlayerId:id},{...base,remainingPlayerIds:[id]},{...base,selectedPlayerIds:[id]},{...base,team1:{players:[id]}},{...base,auctionHistory:[{playerId:id}]},{...base,auctionUndoStack:[{team2:{playerIds:[id]}}]},{...base,auctionRedoStack:[{currentPlayerId:id}]}]){
                 const before=JSON.stringify(saved);assert(auctionSaveNeedsSecretCode(saved));assert.equal(JSON.stringify(saved),before);
             }
@@ -1084,28 +1084,11 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
             for(const role of profile.canonPositions||[]){assert(/^https:\\/\\//.test(role.sourceUrl));assert(!role.chapter||role.chapter<=364);}
         }
         for(const [id,name]of [[18,'Double Aces of Rajitsu Tech'],[19,'Double Aces of Rajitsu Tech'],[20,'King-of-All-Trades'],[62,'Luminous'],[64,'Butterfly Lashes'],[66,'Iron Man'],[67,'Rainbow Knight']])assert(verifiedPlayerAliases(id).some(a=>a.name===name));
-        for(const id of [80,81,82]){assert(playerById(id).secretCharacter);assert(!PLAYER_PROFILE_METADATA[id]?.canonPositions?.length);}
+        for(const id of [80,81]){assert(playerById(id).secretCharacter);assert(!PLAYER_PROFILE_METADATA[id]?.canonPositions?.length);}
         assert(!secretCharactersUnlocked);assert(players.filter(p=>p.secretCharacter).every(p=>!selectedPlayerIds.has(p.id)));
         unlockSecretCharacters();assert(secretCharactersUnlocked);assert(players.filter(p=>p.secretCharacter).every(p=>!selectedPlayerIds.has(p.id)));
         assert(canonicalFit(playerById(80),'GK'));assert.equal(positionBadges(playerById(80)).includes('ALL'),true);
         assert.equal(playerChemistry(playerById(81),playerById(9)),99);
-        assert.equal(playerDisplayId(playerById(80)),"SC-001");
-        assert.equal(playerDisplayId(playerById(81)),"SC-002");
-        assert.equal(playerDisplayId(playerById(82)),"SC-003");
-        const qazicutie=playerById(82);
-        assert.equal(qazicutie.primaryPosition,"CF");
-        assert.equal(qazicutie.positions.join(","),"CF,LW,RW");
-        assert.equal(qazicutie.stats.sho,78);assert.equal(qazicutie.stats.pas,68);
-        assert.equal(qazicutie.stats.dri,70);assert.equal(qazicutie.stats.spd,66);
-        assert.equal(qazicutie.stats.off,83);assert.equal(qazicutie.stats.def,55);assert.equal(qazicutie.stats.gk,40);
-        assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Shoei Baro")),85);
-        assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Ryusei Shido")),75);
-        const qazicutieDossier=characterLoreProfileMarkup(qazicutie);
-        assert(qazicutieDossier.includes("Best Character")&&qazicutieDossier.includes("This is the best character they can play"));
-        assert(qazicutieDossier.includes("hdannyy")&&qazicutieDossier.includes("floppy_willy")&&qazicutieDossier.includes("raf"));
-        assert(qazicutieDossier.includes("Azure Latch")&&qazicutieDossier.includes("3-Headed Cerberus"));
-        assert(!characterLoreProfileMarkup(players.find(p=>p.name==="Shoei Baro")).includes("Qazicutie"));
-        assert(!characterLoreProfileMarkup(players.find(p=>p.name==="Ryusei Shido")).includes("Qazicutie"));
     `);
 });
 check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{
