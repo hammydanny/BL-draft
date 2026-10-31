@@ -5,7 +5,7 @@ const PLAYER_86_DATA = {
   name: "floppy_willy",
   debutChapter: 1,
   appearanceOrder: 86,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/floppy-willy.png",
   primaryPosition: "CF",
   positions: ["CF", "RW", "LW"],
   secretCharacter: true,
