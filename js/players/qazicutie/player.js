@@ -5,7 +5,7 @@ const PLAYER_82_DATA = {
   name: "Qazicutie",
   debutChapter: 1,
   appearanceOrder: 82,
-  image: "images/qazicutie.jpg",
+  image: "images/qqqazicutie.jpg",
   primaryPosition: "CF",
   positions: ["CF", "LW", "RW"],
   secretCharacter: true,
