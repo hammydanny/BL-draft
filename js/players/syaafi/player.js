@@ -20,8 +20,8 @@ const PLAYER_84_DATA = {
     category: "mental",
     description: "Gain style points after using emotes on the field. Does not improve stats."
   }],
-  // CF position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 77, sho: 87, pas: 68, dri: 80, spd: 62, off: 80, def: 60, gk: 70 },
+  // CF position-weighted overall: SHO 25%, OFF 29%, DRI 17%, PAS 12%, SPD 12%, DEF 3%, GK 2%.
+  stats: { ovr: 78, sho: 87, pas: 70, dri: 80, spd: 64, off: 80, def: 65, gk: 70 },
   profileChemistries: [
     { playerName: "Yoichi Isagi", score: 91, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Syaafi." },
     { playerName: "Michael Kaiser", score: 85, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Syaafi." },
