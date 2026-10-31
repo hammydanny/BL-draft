@@ -1,0 +1,1 @@
+// Per-character profile/reference metadata: raf (secret dossier SC-6; internal ID 87).\nconst PLAYER_87_REFERENCE = null;\n
