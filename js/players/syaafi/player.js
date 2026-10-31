@@ -5,7 +5,7 @@ const PLAYER_84_DATA = {
   name: "Syaafi",
   debutChapter: 1,
   appearanceOrder: 84,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/syaafi.jpg",
   primaryPosition: "CF",
   positions: ["CF", "LW", "RW", "GK"],
   secretCharacter: true,
