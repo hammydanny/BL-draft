@@ -21,7 +21,7 @@ const PLAYER_86_DATA = {
     description: "When on a solo run, disregard all other players and only focus on getting the ball into the net by your own hands. Increases stats when teammates are yelling to pass."
   }],
   // CF position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 78, sho: 91, pas: 84, dri: 86, spd: 84, off: 92, def: 80, gk: 60 },
+  stats: { ovr: 88, sho: 91, pas: 84, dri: 86, spd: 84, off: 92, def: 80, gk: 60 },
   profileChemistries: [
     { playerName: "Seishiro Nagi", score: 92, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for floppy_willy." },
     { playerName: "Kenyu Yukimiya", score: 90, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for floppy_willy." },
