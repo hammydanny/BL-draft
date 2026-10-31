@@ -5,7 +5,7 @@ const PLAYER_85_DATA = {
   name: "jon",
   debutChapter: 1,
   appearanceOrder: 85,
-  image: "images/jon1.png",
+  image: "images/jon2.png",
   primaryPosition: "CM",
   positions: ["CM", "CF", "RW", "LW"],
   secretCharacter: true,
