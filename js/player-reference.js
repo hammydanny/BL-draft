@@ -82,7 +82,8 @@ const PLAYER_PROFILE_METADATA = {
   "77": PLAYER_77_REFERENCE,
   "78": PLAYER_78_REFERENCE,
   "79": PLAYER_79_REFERENCE,
-  "87": PLAYER_87_REFERENCE
+  "87": PLAYER_87_REFERENCE,
+  "88": PLAYER_88_REFERENCE
 };
 
 // Shared category registry: Auction selection and Database browsing use the same data.
