@@ -34,7 +34,7 @@ const PLAYER_83_DATA = {
     { playerName: "oka", score: 80, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with hdannyy." }
   ],
   teamHistory: [
-    { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi_IV", "Qazicutie", "oka", "floppy_willy"] },
+    { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] },
     { name: "3-Headed Succubus", members: ["hdannyy", "floppy_willy", "Qazicutie"] }
   ]
 };
