@@ -12,7 +12,7 @@ const PLAYER_83_DATA = {
   nationality: null,
   countryName: "Roblox",
   countryFlag: "images/flags/roblox.svg",
-  description: "Minecraft For Pros benchmark player with the ability to unlock one's potential.",
+  description: "Minecraft for Pros benchmark player with the ability to unlock one's potential.",
   quote: "Press F! Stop jumping!",
   weapons: [{
     id: "rallying-spirit",
