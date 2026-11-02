@@ -26,7 +26,7 @@ const PLAYER_85_DATA = {
     { playerName: "Shoei Baro", score: 96, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
     { playerName: "Don Lorenzo", score: 93, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
     { playerName: "Oliver Aiku", score: 91, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
-    { playerName: "Qazicutie", score: 58, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
+    { playerName: "Qazicutie", score: 63, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
     { playerName: "hdannyy", score: 70, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
     { playerName: "Syaafi", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
     { playerName: "raf", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
