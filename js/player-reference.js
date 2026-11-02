@@ -2,7 +2,8 @@
 // never copied. Existing latest-main profiles/categories are retained verbatim.
 const PLAYER_REFERENCE_SCHEMA_VERSION=1;
 const PLAYER_DATA_CLASSIFICATIONS=Object.freeze({ratings:"PROJECT_RATING",positions:"GAMEPLAY_INTERPRETATION",canonPositions:"CANON",profile:"PROJECT_REFERENCE"});
-const PLAYER_PROFILE_METADATA = {
+// Secret/project characters may ship a null reference module; only real profiles are registered.
+const PLAYER_PROFILE_METADATA = Object.fromEntries(Object.entries({
   "1": ISAGI_PLAYER_REFERENCE,
   "2": PLAYER_2_REFERENCE,
   "3": PLAYER_3_REFERENCE,
@@ -85,7 +86,7 @@ const PLAYER_PROFILE_METADATA = {
   "87": PLAYER_87_REFERENCE,
   "88": PLAYER_88_REFERENCE,
   "89": PLAYER_89_REFERENCE
-};
+}).filter(([,profile])=>profile));
 
 // Shared category registry: Auction selection and Database browsing use the same data.
 const PLAYER_POOL_CATEGORIES = {
