@@ -22,17 +22,6 @@ const PLAYER_86_DATA = {
   }],
   // CF position-weighted overall, derived from the supplied attributes.
   stats: { ovr: 88, sho: 91, pas: 84, dri: 86, spd: 84, off: 92, def: 80, gk: 60 },
-  profileChemistries: [
-    { playerName: "Seishiro Nagi", score: 92, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for floppy_willy." },
-    { playerName: "Kenyu Yukimiya", score: 90, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for floppy_willy." },
-    { playerName: "Yoichi Isagi", score: 84, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for floppy_willy." },
-    { playerName: "Syaafi", score: 67, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." },
-    { playerName: "Qazicutie", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." },
-    { playerName: "hdannyy", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." },
-    { playerName: "oka", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." },
-    { playerName: "jon", score: 50, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." },
-    { playerName: "raf", score: 70, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with floppy_willy." }
-  ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] },
     { name: "3-Headed Succubus", members: ["hdannyy", "floppy_willy", "Qazicutie"] }

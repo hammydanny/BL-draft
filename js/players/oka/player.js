@@ -22,17 +22,6 @@ const PLAYER_88_DATA = {
   }],
   // LW position-weighted overall, derived from the supplied attributes.
   stats: { ovr: 84, sho: 88, pas: 87, dri: 83, spd: 81, off: 90, def: 70, gk: 55 },
-  profileChemistries: [
-    { playerName: "Tabito Karasu", score: 93, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for oka." },
-    { playerName: "Sae Itoshi", score: 90, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for oka." },
-    { playerName: "Oliver Aiku", score: 80, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for oka." },
-    { playerName: "Syaafi", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." },
-    { playerName: "Qazicutie", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." },
-    { playerName: "hdannyy", score: 80, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." },
-    { playerName: "floppy_willy", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." },
-    { playerName: "jon", score: 90, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." },
-    { playerName: "raf", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with oka." }
-  ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] }
   ]

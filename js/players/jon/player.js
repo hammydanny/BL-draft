@@ -22,17 +22,6 @@ const PLAYER_85_DATA = {
   }],
   // CM position-weighted overall, derived from the supplied attributes.
   stats: { ovr: 94, sho: 94, pas: 95, dri: 95, spd: 90, off: 93, def: 97, gk: 72 },
-  profileChemistries: [
-    { playerName: "Shoei Baro", score: 96, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
-    { playerName: "Don Lorenzo", score: 93, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
-    { playerName: "Oliver Aiku", score: 91, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for jon." },
-    { playerName: "Qazicutie", score: 63, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
-    { playerName: "hdannyy", score: 70, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
-    { playerName: "Syaafi", score: 75, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
-    { playerName: "raf", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
-    { playerName: "floppy_willy", score: 50, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." },
-    { playerName: "oka", score: 90, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with jon." }
-  ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] }
   ]

@@ -935,24 +935,32 @@ check('Battle Sim Early Access has no active disabled-route links',()=>{
     }
     assert(!read('js/router.js').includes('battle-sim-disabled/'),'Router must never send users to the disabled Battle Sim route');
 });
-check('Jameswasnthere chemistry uses one authoritative source',()=>{
-    const chemistry=read('js/chemistry.js'),james=read('js/players/jameswasnthere/player.js'),reference=read('js/player-reference.js');
-    assert(!james.includes('profileChemistries:'),'James chemistry must not duplicate the shared chemistry table');
-    assert(!reference.includes('["Kenyu Yukimiya","Jameswasnthere"]')&&!reference.includes('["Yoichi Isagi","Jameswasnthere"]'),'James chemistry must not be hidden behind profile-only duplicates');
-    for(const pair of [["Kenyu Yukimiya",79],["Yoichi Isagi",80],["jon",65],["Qazicutie",65],["hdannyy",70],["Syaafi",65],["raf",65],["floppy_willy",65],["oka",65]]){
-        const name=pair[0],score=pair[1];
-        const a='["Jameswasnthere","'+name+'",'+score;
-        const b='["'+name+'","Jameswasnthere",'+score;
-        assert(chemistry.includes(a)||chemistry.includes(b),'Missing latest James chemistry '+name+' '+score);
-    }
-});
 check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
     const lore=read('js/lore.js'),css=read('css/character-lore.css');
     assert(read('js/router.js').includes('battle-sim/initializer/'),'Battle Sim should route to the Early Access initializer');
     for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
     for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
-    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accessible compare controls');
+    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accecheck('All secret-character chemistry uses one authoritative source',()=>{
+    const chemistry=read('js/chemistry.js'),reference=read('js/player-reference.js');
+    const secretModules=['qazicutie','hdannyy','syaafi','jon','floppy-willy','raf','oka','jameswasnthere'];
+    for(const folder of secretModules){
+        const player=read('js/players/'+folder+'/player.js');
+        assert(!player.includes('profileChemistries:')&&!player.includes('profileChemistry:'),folder+': chemistry must come only from the shared table');
+    }
+    for(const name of ['Qazicutie','hdannyy','Syaafi','jon','floppy_willy','raf','oka','Jameswasnthere'])assert(!reference.includes(',"'+name+'"]')&&!reference.includes('["'+name+'",'),'Secret chemistry must not be profile-only: '+name);
+    const block=chemistry.slice(chemistry.indexOf('// Project-created secret characters'),chemistry.indexOf('["Jingo Raichi","Zaruchi"'));
+    const entries=[...block.matchAll(/\["([^"]+)","([^"]+)",(\d+),/g)].map(match=>({key:[match[1],match[2]].sort().join('|'),score:Number(match[3])}));
+    assert(entries.length>0,'Secret chemistry block missing');
+    const counts=new Map();
+    for(const entry of entries)counts.set(entry.key,(counts.get(entry.key)||0)+1);
+    for(const [key,count] of counts)assert.equal(count,1,'Duplicate secret chemistry pair '+key);
+    for(const pair of [['Kenyu Yukimiya','Jameswasnthere',79],['Yoichi Isagi','Jameswasnthere',80],['Qazicutie','jon',63],['Qazicutie','Syaafi',69],['Qazicutie','oka',65],['hdannyy','raf',90],['floppy_willy','jon',50],['jon','oka',90]]){
+        const key=[pair[0],pair[1]].sort().join('|'),entry=entries.find(item=>item.key===key);
+        assert(entry&&entry.score===pair[2],'Latest secret chemistry missing '+key+' '+pair[2]);
+    }
+});
+ssible compare controls');
     assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
     for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
