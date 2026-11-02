@@ -30,17 +30,6 @@ const PLAYER_89_DATA = {
   ],
   // CF position-weighted overall derived from the supplied attributes.
   stats: { ovr: 69, sho: 68, pas: 66, dri: 75, spd: 72, off: 69, def: 59, gk: 38 },
-  profileChemistries: [
-    { playerName: "Kenyu Yukimiya", score: 79, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Jameswasnthere." },
-    { playerName: "Yoichi Isagi", score: 80, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Jameswasnthere." },
-    { playerName: "jon", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "Qazicutie", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "hdannyy", score: 70, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "Syaafi", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "raf", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "floppy_willy", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "oka", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." }
-  ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy", "Jameswasnthere"] }
   ]

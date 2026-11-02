@@ -2009,9 +2009,7 @@ const CHEMISTRY_REFERENCE_CONTEXTS=CHEMISTRY_CONTEXTS.map((context,index)=>({
 const PROFILE_ONLY_CHEMISTRY_PAIRS=new Set([
     ["Jingo Raichi","Zaruchi"],
     ["Shoei Baro","Qazicutie"],
-    ["Ryusei Shido","Qazicutie"],
-    ["Kenyu Yukimiya","Jameswasnthere"],
-    ["Yoichi Isagi","Jameswasnthere"]
+    ["Ryusei Shido","Qazicutie"]
 ].map(pair=>pair.sort().join("|")));
 const CHEMISTRY_REFERENCE_PAIRS=CHEMISTRY_SPECIAL_PAIRS.filter(([a,b])=>!PROFILE_ONLY_CHEMISTRY_PAIRS.has([a,b].sort().join("|"))).map(([a,b,score,label,description])=>({
     id:[REFERENCE_PLAYER_BY_NAME.get(a)?.id,REFERENCE_PLAYER_BY_NAME.get(b)?.id].sort((x,y)=>x-y).join("-"),

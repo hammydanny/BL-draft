@@ -935,6 +935,17 @@ check('Battle Sim Early Access has no active disabled-route links',()=>{
     }
     assert(!read('js/router.js').includes('battle-sim-disabled/'),'Router must never send users to the disabled Battle Sim route');
 });
+check('Jameswasnthere chemistry uses one authoritative source',()=>{
+    const chemistry=read('js/chemistry.js'),james=read('js/players/jameswasnthere/player.js'),reference=read('js/player-reference.js');
+    assert(!james.includes('profileChemistries:'),'James chemistry must not duplicate the shared chemistry table');
+    assert(!reference.includes('["Kenyu Yukimiya","Jameswasnthere"]')&&!reference.includes('["Yoichi Isagi","Jameswasnthere"]'),'James chemistry must not be hidden behind profile-only duplicates');
+    for(const pair of [["Kenyu Yukimiya",79],["Yoichi Isagi",80],["jon",65],["Qazicutie",65],["hdannyy",70],["Syaafi",65],["raf",65],["floppy_willy",65],["oka",65]]){
+        const name=pair[0],score=pair[1];
+        const a='["Jameswasnthere","'+name+'",'+score;
+        const b='["'+name+'","Jameswasnthere",'+score;
+        assert(chemistry.includes(a)||chemistry.includes(b),'Missing latest James chemistry '+name+' '+score);
+    }
+});
 check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
     const lore=read('js/lore.js'),css=read('css/character-lore.css');
     assert(read('js/router.js').includes('battle-sim/initializer/'),'Battle Sim should route to the Early Access initializer');

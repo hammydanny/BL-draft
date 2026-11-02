@@ -142,13 +142,13 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Qazicutie","oka",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Qazicutie."],
   ["Kenyu Yukimiya","Jameswasnthere",79,"BEST CHARACTER","Best-character chemistry rating supplied for Jameswasnthere."],
   ["Yoichi Isagi","Jameswasnthere",80,"BEST CHARACTER","Best-character chemistry rating supplied for Jameswasnthere."],
-  ["Jameswasnthere","jon",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
-  ["Jameswasnthere","Qazicutie",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","jon",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","Qazicutie",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
   ["Jameswasnthere","hdannyy",70,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
-  ["Jameswasnthere","Syaafi",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
-  ["Jameswasnthere","raf",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
-  ["Jameswasnthere","floppy_willy",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
-  ["Jameswasnthere","oka",60,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","Syaafi",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","raf",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","floppy_willy",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
+  ["Jameswasnthere","oka",65,"TEAMMATE CHEMISTRY","Project-defined chemistry rating with Jameswasnthere."],
   ["Jingo Raichi","Zaruchi",99,"SPECIAL CHEMISTRY","You know the guy with blonde hair and sharp teeth?"]
 ];
 
