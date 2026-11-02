@@ -21,6 +21,13 @@ Players can compete for each signing by placing valid bids according to the conf
 
 The auction supports alternating turns, passing, automatic assignments when a team is full, zero-budget situations, sold-player animations, and auction history.
 
+### 🗓️ Ego Board, Draft Duel and Challenge Lab
+
+* **Ego Board** — three deterministic daily activities: the Daily Ego Draft (with a daily rule such as Salary Cap or Deep Scouting), a Daily Tactical Challenge and a Daily Draft Duel.
+* **Draft Duel** — draft against an Easy, Normal or Hard CPU from a shared market of four. No bidding and no match simulation; squads are compared on Effective OVR, chemistry and Base Quality.
+* **Draft Challenges and Challenge Lab** — sixteen curated squad puzzles with medals, plus a creator that proves a challenge is solvable and shares it as a code.
+* **Ego Record** — personal bests, Draft Duel results and achievements, stored only in your browser.
+
 ### 🎲 Random Draft
 
 Don't want to run a full auction?

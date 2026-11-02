@@ -117,10 +117,10 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     }
     assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
     assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
-    const expected=['js/site-preferences.js','js/version.js','js/i18n/messages.js','js/localization.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
-        'js/player-reference.js','js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
+    const expected=['js/site-preferences.js','js/version.js','js/i18n/messages.js','js/i18n/ego-messages.js','js/localization.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
+        'js/player-reference.js','js/lore.js','js/formations.js','js/solo-draft.js','js/draft-duel.js','js/challenge-lab.js','js/ego-record.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/site-information.js','js/ui/homepage.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
-        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/app.js'];
+        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/ui/solo-draft-ui.js','js/ui/ego-board-ui.js','js/ui/draft-duel-ui.js','js/ui/challenge-lab-ui.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
         assert(scripts.includes(expected[i]),`Missing ${expected[i]}`);
         if(i)assert(scripts.indexOf(expected[i])>scripts.indexOf(expected[i-1]),`Order: ${expected[i]}`);
@@ -187,7 +187,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7.2.3');
+    assert.equal(data.APP_VERSION,'0.7.3');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');

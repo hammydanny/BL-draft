@@ -256,13 +256,15 @@ html[data-theme="light"] .home-today .mode-overline{color:#8a5c00}
 .play-hub .play-mode-card{min-height:0}
 .play-mode-card.mode-duel{--mode-accent:#4fb4e1}.play-mode-card.mode-lab{--mode-accent:#dc7389}
 /* Responsive */
-@media(max-width:1100px){.ego-links{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-layout{grid-template-columns:1fr}.duel-squads{grid-template-columns:1fr 1fr}.lab-layout{grid-template-columns:1fr}.lab-preview{grid-row:1}.ego-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px){.ego-links{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-layout{grid-template-columns:1fr}.duel-squads{grid-template-columns:1fr 1fr}.lab-layout{display:flex;flex-direction:column}.lab-form,.lab-preview{display:contents}.ego-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.ego-activities{grid-template-columns:1fr}.duel-setup-grid{grid-template-columns:1fr}.home-today{grid-template-columns:1fr}.play-hub-row{grid-template-columns:1fr}.duel-market{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-compare{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-boards{grid-template-columns:1fr}}
 @media(max-width:620px){.play-view-screen{padding:0 12px}.play-view-header{margin-top:14px}.challenge-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.challenge-open-toggle{margin-inline-start:0}.ego-links{grid-template-columns:1fr}.home-today-list{grid-template-columns:1fr}.duel-setup fieldset{grid-template-columns:1fr}.duel-formations{grid-template-columns:1fr!important}.duel-squads{grid-template-columns:1fr}.lab-objective-controls{grid-template-columns:1fr 1fr}.lab-objective-controls input{grid-column:auto!important}.ego-favourites{grid-template-columns:1fr}.ego-duel-levels{grid-template-columns:repeat(3,minmax(0,1fr))}.ego-week{gap:4px}.ego-week li{padding:7px 2px}.ego-progress{grid-template-columns:1fr}}
 @media(max-width:380px){.duel-market{grid-template-columns:1fr 1fr}.ego-stats{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.ego-toast,.ego-progress-bar i{transition:none}}
 /* RTL: text and ordinary layout reflow; pitches, portraits and tactical structures stay left-to-right. */
-:lang(ar) .play-view-screen :is(.solo-board,.lab-board,.daily-shape-preview,.duel-boards){direction:ltr}
+:lang(ar) :is(.play-view-screen,.home-today,.play-hub){direction:rtl}
+:lang(ar) .play-view-screen :is(.solo-board,.lab-board,.daily-shape-preview,.duel-boards .solo-board,.ego-week i,.duel-compare b,textarea,input[type=number]){direction:ltr}
+:lang(ar) .play-view-screen .duel-compare div{direction:rtl}
 /* Pre-existing fix: solo screens had no side gutter below their 1360px maximum width. */
 .solo-screen{padding-inline:var(--shell-gutter,20px);box-sizing:border-box}
 @media(max-width:620px){.solo-screen{padding-inline:12px}}
@@ -274,3 +276,4 @@ html[data-theme="light"] .home-today .mode-overline{color:#8a5c00}
 .home-mode-utilities .home-mode{text-align:start;align-items:flex-start}
 .home-mode-utilities .home-mode-title{overflow-wrap:normal;word-break:normal;hyphens:manual}
 @media(max-width:760px){.home-modes.home-mode-utilities{grid-template-columns:1fr!important}}
+.duel-actions{align-items:stretch}.duel-actions>button{min-height:52px;margin:0;flex:1 1 150px}
