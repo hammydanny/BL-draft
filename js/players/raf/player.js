@@ -21,7 +21,7 @@ const PLAYER_87_DATA = {
     description: "Positions himself in unoccupied to create confusion among opposition backlines. Making his first touch greatly effective for scoring goals."
   }],
   // CF position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 75, sho: 84, pas: 71, dri: 65, spd: 62, off: 85, def: 54, gk: 42 },
+  stats: { ovr: 75, sho: 81, pas: 71, dri: 65, spd: 62, off: 85, def: 54, gk: 42 },
   profileChemistries: [
     { playerName: "Michael Kaiser", score: 85, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for raf." },
     { playerName: "hdannyy", score: 90, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with raf." },
