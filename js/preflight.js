@@ -928,7 +928,7 @@ check('Data validation rejects malformed players, reversed pairs, missing labels
 });
 check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
     const lore=read('js/lore.js'),css=read('css/character-lore.css');
-    assert(read('js/router.js').includes('battle-sim-disabled/'),'Existing future-mode descriptions must not enable Battle Sim');
+    assert(read('js/router.js').includes('battle-sim/initializer/'),'Battle Sim should route to the Early Access initializer');
     for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
     for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <base href="../">
-    <script>window.location.replace(new URL("battle-sim-disabled/",document.querySelector("base").href).href);</script>
+    <script>window.location.replace(new URL("battle-sim/initializer/?early-access=1",document.querySelector("base").href).href);</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Blue Lock Draft — Battle Sim</title>
     <link rel="canonical" href="battle-sim/">
@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="css/player-stats.css?v=0.7.2.3">
     <link rel="stylesheet" href="css/character-lore.css?v=0.7.2.3&database=phase4&final=phase5">
     <link rel="stylesheet" href="css/site-header.css?v=0.7.2.3&battle=phase3">
-    <link rel="stylesheet" href="css/homepage.css?v=0.7.2.3&battle=phase2">
+    <link rel="stylesheet" href="css/homepage.css?v=0.7.2.3&battle=early-access2">
     <link rel="stylesheet" href="css/site-information.css?v=0.7.2.3">
     <link rel="stylesheet" href="css/localization.css?v=0.7.2.3">
     <link rel="stylesheet" href="css/mobile.css?v=0.7.2.3&auction=phase2&builder=phase3&database=phase4&final=phase5">
@@ -33,7 +33,7 @@
     <script defer src="js/version.js?v=0.7.2.3" fetchpriority="high"></script>
     <script defer src="js/i18n/messages.js?v=0.7.2.3&builder=phase3&database=phase4"></script>
     <script defer src="js/i18n/quote-messages.js?v=0.7.2.3&quotes=final1"></script>
-    <script defer src="js/i18n/replayability-messages.js?v=0.7.2.3"></script>
+    <script defer src="js/i18n/replayability-messages.js?v=0.7.2.3&battle=early-access2"></script>
     <script defer src="js/localization.js?v=0.7.2.3&final=phase5"></script>
     <script defer src="js/player-images.js?v=0.7.2.3" fetchpriority="high"></script>
     <script src="js/players-loader.js?v=0.7.2.3"></script>
@@ -53,11 +53,11 @@
     <script defer src="js/results.js?v=0.7.2.3&auction=phase2&builder=phase3&final=phase5&share=phase4&battle=phase2" fetchpriority="high"></script>
     <script defer src="js/auction.js?v=0.7.2.3&auction=phase2" fetchpriority="high"></script>
     <script defer src="js/ui/auction-ui.js?v=0.7.2.3&auction=phase2" fetchpriority="high"></script>
-    <script defer src="js/router.js?v=0.7.2.3&battle=phase1" fetchpriority="high"></script>
+    <script defer src="js/router.js?v=0.7.2.3&battle=early-access2" fetchpriority="high"></script>
     <script defer src="js/ui/site-information.js?v=0.7.2.3" fetchpriority="high"></script>
     <script defer src="js/ui/homepage.js?v=0.7.2.3" fetchpriority="high"></script>
     <script defer src="js/ui/menu.js?v=0.7.2.3" fetchpriority="high"></script>
-    <script defer src="js/ui/site-directory.js?v=0.7.2.3&auction=phase2&battle=phase2" fetchpriority="high"></script>
+    <script defer src="js/ui/site-directory.js?v=0.7.2.3&auction=phase2&battle=early-access2" fetchpriority="high"></script>
     <script defer src="js/ui/setup.js?v=0.7.2.3" fetchpriority="high"></script>
     <script defer src="js/standalone-builder.js?v=0.7.2.3&builder=phase3" fetchpriority="high"></script>
     <script defer src="js/ui/formation-ui.js?v=0.7.2.3&builder=phase3&database=phase4" fetchpriority="high"></script>
@@ -65,7 +65,7 @@
     <script defer src="js/site-runtime.js?v=0.7.2.3" fetchpriority="high"></script>
     <script defer src="js/ui/replayability-ui.js?v=0.7.2.3"></script>
     <script defer src="js/ui/solo-draft-ui.js?v=0.7.2.3"></script>
-    <script defer src="js/battle-sim.js?v=0.7.2.3" fetchpriority="high"></script>
+    <script defer src="js/battle-sim.js?v=0.7.2.3&battle=early-access2" fetchpriority="high"></script>
     <script defer src="js/app.js?v=0.7.2.3" fetchpriority="high"></script>
     <link rel="preload" href="fonts/barlow-condensed-latin-800-italic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin fetchpriority="low">
@@ -104,7 +104,7 @@
                     </div>
                 </details>
                 <button class="directory-item" type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder">TEAM BUILDER</button>
-                <button class="directory-item battle-sim-nav" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim">BATTLE SIM</button>
+                <button class="directory-item battle-sim-nav" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/initializer/" data-directory-section="battle-sim">BATTLE SIM</button>
                 <details class="directory-group">
                     <summary class="directory-item" data-directory-section="database" aria-expanded="false">DATABASE <span aria-hidden="true">⌄</span></summary>
                     <div class="directory-options">
@@ -189,7 +189,7 @@
                         <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 4h22v24H5Zm6 0v24M15 10h8M15 15h8M15 20h5"/></svg><span>03 // DISCOVER</span></span>
                         <strong class="home-mode-title">DATABASE</strong><span class="home-mode-description">Explore player ratings, positions, chemistry and character dossiers before your next move.</span><span class="home-mode-action">EXPLORE DATABASE <b aria-hidden="true">→</b></span>
                     </button>
-                    <button id="menuBattleSim" class="home-mode home-mode--battle-sim" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim-disabled/" data-directory-section="battle-sim" onclick="openBattleSimPage()">
+                    <button id="menuBattleSim" class="home-mode home-mode--battle-sim" type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/initializer/" data-directory-section="battle-sim" onclick="openBattleSimPage()">
                         <span class="home-mode-top"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M18 2 7 17h7l-1 13 12-18h-7Z"/></svg><span>04 // COMPETE</span></span>
                         <strong class="home-mode-title">BATTLE SIM</strong><span class="home-mode-description">Simulate a battle between two custom made squads.</span><span class="home-mode-action">ENTER BATTLE SIM <b aria-hidden="true">→</b></span>
                     </button>
