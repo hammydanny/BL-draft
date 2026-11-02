@@ -33,13 +33,13 @@ const PLAYER_89_DATA = {
   profileChemistries: [
     { playerName: "Kenyu Yukimiya", score: 79, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Jameswasnthere." },
     { playerName: "Yoichi Isagi", score: 80, label: "BEST CHARACTER", description: "Best-character chemistry rating supplied for Jameswasnthere." },
-    { playerName: "jon", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "Qazicutie", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
+    { playerName: "jon", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
+    { playerName: "Qazicutie", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
     { playerName: "hdannyy", score: 70, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "Syaafi", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "raf", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "floppy_willy", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
-    { playerName: "oka", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." }
+    { playerName: "Syaafi", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
+    { playerName: "raf", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
+    { playerName: "floppy_willy", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." },
+    { playerName: "oka", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Jameswasnthere." }
   ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy", "Jameswasnthere"] }
