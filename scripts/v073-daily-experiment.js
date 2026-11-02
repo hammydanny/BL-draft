@@ -38,9 +38,9 @@ function runDailyExperiment(days=365,start='2026-11-02'){
                 if(state.phase!=='review'){report.failures.push({date,policy,reason:'incomplete',phase:state.phase});continue;}
                 if(rule.cap!=null&&dailyBudgetLeft(state)<0)report.failures.push({date,policy,reason:'over cap'});
                 if(rule.eliteCap&&state.ids.filter(id=>playerOverall(playerById(id))>=rule.eliteCap).length>1)report.failures.push({date,policy,reason:'elite cap broken'});
-                if(rule.captainId&&state.captain!==rule.captainId)report.failures.push({date,policy,reason:'captain lost'});
+                if(rule.captainId&&Object.values(state.assignment).includes(rule.captainId)&&state.captain!==rule.captainId)report.failures.push({date,policy,reason:'captain lost'});
                 if(!rule.formations.includes(state.formation))report.failures.push({date,policy,reason:'formation outside rule'});
-                const restored=normalizeSoloState(JSON.parse(JSON.stringify(state)));if(JSON.stringify(restored.ids)!==JSON.stringify(state.ids))report.failures.push({date,policy,reason:'replay mismatch'});
+                try{const restored=normalizeSoloState(JSON.parse(JSON.stringify(state)));if(JSON.stringify(restored.ids)!==JSON.stringify(state.ids))report.failures.push({date,policy,reason:'replay mismatch'});}catch(error){report.failures.push({date,policy,reason:'reload: '+error.message,rule:rule.modifier.id,size:rule.size,captain:state.captain,inXI:Object.values(state.assignment).includes(state.captain)});}
                 const result=dailyPickScore(state);const bucket=report.scores[rule.modifier.id]||(report.scores[rule.modifier.id]={n:0,sum:0,min:1e9,max:0,grades:{}});
                 bucket.n++;bucket.sum+=result.score;bucket.min=Math.min(bucket.min,result.score);bucket.max=Math.max(bucket.max,result.score);bucket.grades[result.grade]=(bucket.grades[result.grade]||0)+1;
                 const objective=result.goal.label;report.objectives[objective]=(report.objectives[objective]||0)+(policy==='best-ovr'?1:0);

@@ -40,10 +40,14 @@ function runV073Tests(){
             assert.equal(state.phase,'review',date);assert.equal(state.ids.length,rule.size);
             if(rule.cap!=null)assert(dailyBudgetLeft(state)>=0,'cap respected '+date);
             if(rule.eliteCap)assert(state.ids.filter(id=>playerOverall(playerById(id))>=rule.eliteCap).length<=1+rule.start.filter(id=>playerOverall(playerById(id))>=rule.eliteCap).length);
-            if(rule.captainId)assert.equal(state.captain,rule.captainId);
+            if(rule.captainId&&Object.values(state.assignment).includes(rule.captainId))assert.equal(state.captain,rule.captainId);
             const restored=normalizeSoloState(JSON.parse(JSON.stringify(state)));assert.deepEqual(restored.ids,state.ids);assert.equal(restored.rules,3);
             const score=dailyPickScore(state);assert(score.score>0&&score.score<12500);
         }
+        // Regression: 14-pick Locked Captain days where the best lineup benches the captain must still reload.
+        for(const date of ['2027-05-17','2027-07-26']){const rule=dailyPickRule(date);assert.equal(rule.modifier.id,'locked-captain');assert.equal(rule.size,14);
+            const state=dailyPickNew(date);state.formation=rule.formations[0];dailyStartPicks(state);while(state.phase==='picking'){const o=dailyPickOptions(state);dailyPickAction(state,{type:'pick',id:[...o].sort((a,b)=>playerOverall(playerById(b))-playerOverall(playerById(a)))[0]});}
+            assert(Object.values(state.assignment).includes(state.captain),'captain is deployed '+date);assert.deepEqual(normalizeSoloState(JSON.parse(JSON.stringify(state))).ids,state.ids);}
         // A run saved before v0.7.3 on a v3 date keeps its original (legacy) rules.
         const legacy=dailyPickNew('2026-11-05',2);assert.equal(legacy.rules,undefined);dailyStartPicks(legacy);dailyPickAction(legacy,{type:'pick',id:dailyPickOptions(legacy)[0]});
         const reloaded=normalizeSoloState(JSON.parse(JSON.stringify(legacy)));assert.equal(reloaded.rules,undefined);assert.deepEqual(reloaded.ids,legacy.ids);assert.equal(dailyRuleForState(reloaded).modifier,null);

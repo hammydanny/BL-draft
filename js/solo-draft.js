@@ -88,7 +88,8 @@ function dailyRuleForState(state){
 function dailyModifierText(rule){if(!rule.modifier)return "";return replayText(rule.modifier.description,{player:rule.captainId?playerById(rule.captainId).name:""});}
 function dailySpend(state){const rule=dailyRuleForState(state),start=new Set(rule.start||[]);return state.ids.filter(id=>!start.has(id)).reduce((sum,id)=>sum+dailyPrice(id),0);}
 function dailyBudgetLeft(state){const rule=dailyRuleForState(state);return rule.cap==null?null:rule.cap-dailySpend(state);}
-function dailyCaptain(state){const rule=dailyRuleForState(state);return rule.captainId&&state.ids.includes(rule.captainId)?rule.captainId:soloChooseCaptain(state);}
+// The locked captain wears the armband whenever he is deployed; a benched reserve cannot captain.
+function dailyCaptain(state){const rule=dailyRuleForState(state);return rule.captainId&&Object.values(state.assignment||{}).includes(rule.captainId)?rule.captainId:soloChooseCaptain(state);}
 function dailyPickNew(date=localDraftDate(),revision=null){
     const day=soloDate(typeof date==="string"?date:localDraftDate(date)),rules=revision||dailyRevisionForDate(day),state={v:2,balanceRevision:SQUAD_BALANCE_REVISION,kind:"daily",date:day,ids:[],seen:[],actions:[],tokens:2,chosenFormation:null,formation:null,assignment:{},captain:null,phase:"formation",attempt:0};
     if(rules===3)state.rules=3;const rule=dailyRuleForState(state),formation=rule.formations[0];
@@ -251,7 +252,7 @@ function normalizeSoloState(value){
         if(clean.ids.length===dailyRuleForState(clean).size)clean.phase="review";else if(value.phase!=="formation")dailyStartPicks(clean);
         if(!Array.isArray(value.actions)||value.actions.length>(clean.rules===3?24:16))replayFail("Saved draft is invalid or outdated.");for(const action of value.actions){if(!replayRecord(action))replayFail("Invalid draft action.");dailyPickAction(clean,action);}
         if(clean.phase==="review"){
-            const form=dailyFormations(clean).find(f=>f.formation===value.formation);if(!form)replayFail("This squad uses an unknown formation.");Object.assign(clean,{formation:form.formation,assignment:validatedDailyAssignment(clean.ids,form.formation,value.assignment)});clean.captain=value.captain; if(clean.captain!=null&&!Object.values(clean.assignment).includes(clean.captain)||dailyRuleForState(clean).captainId&&clean.captain!==dailyRuleForState(clean).captainId)replayFail("Invalid squad data.");if(value.phase==="result")clean.phase="result";
+            const form=dailyFormations(clean).find(f=>f.formation===value.formation);if(!form)replayFail("This squad uses an unknown formation.");Object.assign(clean,{formation:form.formation,assignment:validatedDailyAssignment(clean.ids,form.formation,value.assignment)});clean.captain=value.captain; if(clean.captain!=null&&!Object.values(clean.assignment).includes(clean.captain)||dailyRuleForState(clean).captainId&&Object.values(clean.assignment).includes(dailyRuleForState(clean).captainId)&&clean.captain!==dailyRuleForState(clean).captainId)replayFail("Invalid squad data.");if(value.phase==="result")clean.phase="result";
         }
         clean.attempt=Number.isInteger(value.attempt)&&value.attempt>0&&value.attempt<=100000?value.attempt:1;return clean;
     }
