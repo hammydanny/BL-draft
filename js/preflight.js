@@ -22,6 +22,27 @@ function walk(dir){
     });
 }
 const jsFiles=walk(root).filter(file=>file.endsWith('.js'));
+// Tiny compatibility documents that only forward to a canonical route are not page shells.
+const isRedirectStub=content=>content.length<4000&&/window\.location\.replace\(/.test(content)&&!content.includes('<header class="site-header"');
+const htmlPages=()=>walk(root).filter(file=>file.endsWith('.html')&&!isRedirectStub(fs.readFileSync(file,'utf8')));
+check('Generated shells match index.html and every asset reference uses the central version',()=>{
+    const shells=require('../scripts/sync-shells.js'),versions=require('../scripts/set-version.js');
+    assert.deepEqual(shells.drift(),[],'Run node scripts/sync-shells.js after editing index.html');
+    assert.deepEqual(versions.stale(),[],'Run node scripts/set-version.js after changing js/version.js');
+    for(const [legacy,target] of Object.entries(shells.LEGACY_REDIRECTS)){const stub=read(legacy);assert(isRedirectStub(stub),legacy+' must stay a lightweight redirect');assert(stub.includes('href="'+shells.GAME_SHELLS[target].canonical+'"'),legacy+' redirects to its canonical route');assert(stub.includes('target.search=window.location.search')&&stub.includes('target.hash=window.location.hash'),legacy+' preserves query and hash');}
+});
+check('Compatibility redirect documents forward to a canonical route and keep a no-script link',()=>{
+    const stubs=walk(root).filter(file=>file.endsWith('.html')&&isRedirectStub(fs.readFileSync(file,'utf8')));
+    assert(stubs.length>=1,'Expected at least one compatibility redirect');
+    for(const file of stubs){
+        const content=fs.readFileSync(file,'utf8'),name=path.relative(root,file);
+        const target=content.match(/<link rel="canonical" href="([^"]+)">/)?.[1];
+        assert(target,name+': canonical target');
+        assert(content.includes('<a href="'+target),name+': visible fallback link');
+        assert(/<base href="[^"]*">/.test(content),name+': base for nested hosting');
+        assert(content.includes('name="description"')&&content.includes('property="og:title"'),name+': metadata');
+    }
+});
 check(`JavaScript syntax (${jsFiles.length} files)`,()=>{
     const errors=[];
     for(const file of jsFiles){
@@ -35,7 +56,7 @@ check('No unresolved merges or duplicate document asset declarations',()=>{
     for(const file of walk(root).filter(file=>/\.(?:html|css|js|md|yml|json|svg)$/.test(file))){
         const content=fs.readFileSync(file,'utf8'),relative=path.relative(root,file);
         assert(!marker.test(content),`${relative}: unresolved conflict`);
-        if(!file.endsWith('.html'))continue;
+        if(!file.endsWith('.html')||isRedirectStub(content))continue;
         const head=content.match(/<head>[\s\S]*?<\/head>/i)?.[0]||'';
         assert.equal((head.match(/rel="icon"/g)||[]).length,1,`${relative}: exactly one favicon in head`);
         const assets=[...content.matchAll(/<(?:script|link)\b[^>]*(?:src|href)="([^"?]+)(?:\?[^"]*)?"/g)].map(match=>match[1]);
@@ -76,7 +97,7 @@ check('Information routes, shared shell, metadata and nested local assets',()=>{
         assert(content.includes('js/site-runtime.js?v='+version),'Shared version/cache runtime');
         assert(!content.includes('js/players.js'),'Information pages need no game database payload');
     }
-    for(const file of walk(root).filter(file=>file.endsWith('.html'))){
+    for(const file of htmlPages()){
         const content=fs.readFileSync(file,'utf8');
         assert.equal((content.match(/<header class="site-header"/g)||[]).length,1,'One shared header');
         assert.equal((content.match(/<footer class="site-footer"/g)||[]).length,1,'One shared footer');
@@ -96,10 +117,10 @@ check('Classic deferred script dependencies and bootstrap order',()=>{
     }
     assert.equal(scripts[0],'js/site-preferences.js','Theme must initialize in the head before styles');
     assert(html.indexOf('js/site-preferences.js')<html.indexOf('rel="stylesheet"'),'Theme before first stylesheet');
-    const expected=['js/site-preferences.js','js/version.js','js/i18n/messages.js','js/localization.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
-        'js/player-reference.js','js/lore.js','js/formations.js','js/storage.js','js/results.js','js/auction.js',
+    const expected=['js/site-preferences.js','js/version.js','js/i18n/messages.js','js/i18n/ego-messages.js','js/localization.js','js/player-images.js','js/players.js','js/state.js','js/ui/player-stats.js','js/audio.js','js/fx.js','js/chemistry.js',
+        'js/player-reference.js','js/lore.js','js/formations.js','js/solo-draft.js','js/draft-duel.js','js/challenge-lab.js','js/ego-record.js','js/storage.js','js/results.js','js/auction.js',
         'js/ui/auction-ui.js','js/router.js','js/ui/site-information.js','js/ui/homepage.js','js/ui/menu.js','js/ui/site-directory.js','js/ui/setup.js',
-        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/app.js'];
+        'js/standalone-builder.js','js/ui/formation-ui.js','js/ui/quick-draft.js','js/site-runtime.js','js/ui/solo-draft-ui.js','js/ui/ego-board-ui.js','js/ui/draft-duel-ui.js','js/ui/challenge-lab-ui.js','js/app.js'];
     for(let i=0;i<expected.length;i++){
         assert(scripts.includes(expected[i]),`Missing ${expected[i]}`);
         if(i)assert(scripts.indexOf(expected[i])>scripts.indexOf(expected[i-1]),`Order: ${expected[i]}`);
@@ -166,7 +187,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7.2.3');
+    assert.equal(data.APP_VERSION,'0.7.3');
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -339,8 +360,8 @@ check('Auction page state stays aligned with canonical URLs',()=>{
     assert(router.includes('LEGACY_HASH_ROUTES'),'Legacy hash migration missing');
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html']);
-    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
+    const pages=htmlPages().map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
     for(const page of pages){
@@ -382,8 +403,8 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
     assert(fx.includes('function triggerFx('),'Preserve current visual FX');
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
-    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html']);
-    const pages=walk(root).filter(file=>file.endsWith('.html')).map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
+    const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
+    const pages=htmlPages().map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
         const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
@@ -507,10 +528,10 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
     const legacy=vm.runInContext('LEGACY_PAGE_ROUTES',context);
     for(const page of Object.keys(legacy))assert(fs.existsSync(path.join(root,page))||page==="battle-sim.html"&&fs.existsSync(path.join(root,"battle-sim-disabled/index.html")),`Missing legacy ${page}`);
     const preload=content=>[...content.matchAll(/<link rel="preload"[^>]+>/g)].map(match=>match[0]);
-    for(const page of walk(root).filter(file=>file.endsWith('.html'))){
+    for(const page of htmlPages()){
         const content=fs.readFileSync(page,'utf8');
         const relative=path.relative(root,page);
-        if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html','battle-sim-disabled/index.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
+        if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
     }
@@ -574,7 +595,7 @@ function appContext(initialStorage={},hash='#/'){
     return {run,saved,element,labels};
 }
 check('Mobile foundation loads on every route without restricting zoom; dialog locks preserve saves',()=>{
-    for(const file of walk(root).filter(file=>file.endsWith('.html'))){
+    for(const file of htmlPages()){
         const content=fs.readFileSync(file,'utf8');
         const viewport=content.match(/<meta name="viewport" content="([^"]+)"/)?.[1]||'';
         assert(viewport.includes('viewport-fit=cover'),path.relative(root,file)+': safe-area viewport');
@@ -600,7 +621,7 @@ check('Phase 2 presentation preserves Auction state, exposes full history and us
     assert(light.includes('viewBox="0 0 512 512"'));
     const embedded=/data:image\/webp;base64,([^\"]+)/.exec(light)?.[1];
     assert(embedded&&Buffer.from(embedded,'base64').equals(hd),'Both themes derive from the same legitimate HD image');
-    for(const file of walk(root).filter(file=>file.endsWith('.html')))assert(fs.readFileSync(file,'utf8').match(/images\/bld-logo-header-hd\.webp\?v=[^" ]+&header=phase2/),'Every entry point uses HD branding');
+    for(const file of htmlPages())assert(fs.readFileSync(file,'utf8').match(/images\/bld-logo-header-hd\.webp\?v=[^" ]+&header=phase2/),'Every entry point uses HD branding');
     const app=appContext();app.run(`
         resetDraftState({n1:'A',n2:'B',budget:15000,bidIncrement:50,maxPlayers:11,selectedPlayers:players.slice(0,30)});
         currentPlayer=playerById(3);startingTeam=1;auctionNumber=13;currentBid=50;currentBidder=1;
@@ -941,7 +962,12 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
     for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
-    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accecheck('Secret players do not inflate the public roster count',()=>{
+    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accessible compare controls');
+    assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
+    for(const file of htmlPages()){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
+    for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
+});
+check('Secret players do not inflate the public roster count',()=>{
     const setup=read('js/ui/setup.js');
     assert(setup.includes('players.filter(player=>!player.secretCharacter)'),'Public roster total must exclude secret characters');
     assert(setup.includes('players.filter(player=>player.secretCharacter&&secretPlayerAvailable(player))'),'Secret roster must have its own count');
@@ -966,11 +992,6 @@ check('All secret-character chemistry uses one authoritative source',()=>{
         const key=[pair[0],pair[1]].sort().join('|'),entry=entries.find(item=>item.key===key);
         assert(entry&&entry.score===pair[2],'Latest secret chemistry missing '+key+' '+pair[2]);
     }
-});
-ssible compare controls');
-    assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
-    for(const file of walk(root).filter(file=>file.endsWith('.html'))){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
-    for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
 });
 
 check('Chapter-364 quote boundary, review coverage and new canon aliases remain searchable',()=>{
@@ -1137,13 +1158,16 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
         assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Shoei Baro")),85);
         assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Ryusei Shido")),75);
         const qazicutieDossier=characterLoreProfileMarkup(qazicutie);
-        assert(qazicutieDossier.includes("Best Character")&&qazicutieDossier.includes("This is the best character they can play"));
+        assert(qazicutieDossier.includes(qazicutie.description),"Dossier shows the current collaborator-authored description");
         assert(qazicutieDossier.includes("hdannyy")&&qazicutieDossier.includes("floppy_willy")&&qazicutieDossier.includes("raf"));
         assert(qazicutieDossier.includes("Syaafi")&&qazicutieDossier.includes("jon")&&qazicutieDossier.includes("oka"));
-        assert(playerNationalityMarkup(qazicutie).includes("🟥 Roblox"));
+        assert(playerNationalityMarkup(qazicutie).includes("images/flags/roblox.svg")&&playerNationalityMarkup(qazicutie).includes(">Roblox<"),"Roblox representation uses the project flag asset");
         assert(qazicutieDossier.includes("Azure Latch")&&qazicutieDossier.includes("3-Headed Succubus"));
-        assert(!characterLoreProfileMarkup(players.find(p=>p.name==="Shoei Baro")).includes("Qazicutie"));
-        assert(!characterLoreProfileMarkup(players.find(p=>p.name==="Ryusei Shido")).includes("Qazicutie"));
+        // Shared-table secret chemistry is visible only after the session unlock.
+        secretCharactersUnlocked=false;
+        for(const name of ["Shoei Baro","Ryusei Shido"]){const dossier=characterLoreProfileMarkup(players.find(p=>p.name===name));assert(!dossier.includes("Qazicutie"),"Locked secret partner leaked into "+name);for(const secret of players.filter(p=>p.secretCharacter))assert(!dossier.includes(">"+secret.name+"<"),"Locked secret "+secret.name+" leaked into "+name);}
+        secretCharactersUnlocked=true;
+        assert(characterLoreProfileMarkup(players.find(p=>p.name==="Shoei Baro")).includes("Qazicutie"),"Unlocked sessions show the shared secret pair");
     `);
 });
 check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{

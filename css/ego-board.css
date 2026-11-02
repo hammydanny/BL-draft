@@ -1,0 +1,279 @@
+/* v0.7.3 play views: Ego Board, Draft Challenges, Draft Duel, Challenge Lab, Ego Record and the home Play Hub.
+   Uses the shared palette tokens, BL-Draft typography and the canonical solo pitch components. */
+.play-view-screen{--solo-accent:var(--accent);--solo-ink:var(--accent-text);--ego-daily:#e1b24f;--ego-tactic:#dc7389;--ego-duel:#4fb4e1;--ego-gold:#f2c94c;--ego-silver:#b9c6d3;--ego-bronze:#d08a4e;max-width:1240px;margin:0 auto 48px;padding:0 var(--shell-gutter,20px)}
+html[data-theme="light"] .play-view-screen{--ego-daily:#a7700a;--ego-tactic:#b23b58;--ego-duel:#126f9c;--ego-gold:#9a6b00;--ego-silver:#52606d;--ego-bronze:#94531c}
+.play-view-screen[data-view=duel]{--solo-accent:var(--ego-duel);--solo-ink:var(--ego-duel)}
+.play-view-screen[data-view=lab]{--solo-accent:var(--ego-tactic);--solo-ink:var(--ego-tactic)}
+.play-view-screen button,.home-today button{min-height:44px;min-width:44px;border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text-primary);padding:10px 15px;font:800 15px/1.25 "Rajdhani",sans-serif;cursor:pointer;border-radius:var(--panel-radius)}
+.play-view-screen button:hover:not(:disabled){border-color:var(--solo-accent);background:var(--bg-hover)}
+.play-view-screen button:disabled{opacity:.45;cursor:not-allowed}
+.play-view-screen :is(button,input,select,textarea,summary):focus-visible,.home-today button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.play-view-screen .primary-button{background:var(--solo-accent);color:#07121d;border-color:transparent}
+html[data-theme="light"] .play-view-screen .primary-button{color:#fff}
+.play-view-screen input,.play-view-screen select,.play-view-screen textarea{min-height:44px;width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--border-strong);background:var(--bg-input);color:var(--text-primary);font:600 15px "Rajdhani",sans-serif;border-radius:var(--panel-radius)}
+.play-view-screen textarea{min-height:92px;font:600 13px/1.4 ui-monospace,monospace;word-break:break-all}
+.play-view-screen label,.play-view-screen legend{display:block;font:800 12px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-secondary);margin:12px 0 6px}
+.play-view-header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:22px 0 20px;padding-bottom:18px;border-bottom:1px solid var(--border-strong)}
+.play-view-header>div:first-child{flex:1 1 420px;min-width:0}
+.play-view-kicker{display:block;font:800 12px "Rajdhani",sans-serif;letter-spacing:1.2px;color:var(--solo-ink);text-transform:uppercase}
+.play-view-header h1{margin:6px 0 0;font:900 italic clamp(32px,5vw,50px)/1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.play-view-header p{margin:10px 0 0;max-width:720px;color:var(--text-secondary);font-size:16px}
+.play-view-actions{display:flex;gap:8px;flex-wrap:wrap}
+.play-view-actions button{background:transparent}
+/* Ego Board */
+.ego-progress{display:grid;grid-template-columns:auto minmax(120px,1fr);gap:8px 16px;align-items:center;padding:14px 16px;border:1px solid var(--border-strong);background:var(--bg-surface);margin-bottom:16px}
+.ego-progress strong{font:900 22px "Barlow Condensed",sans-serif;color:var(--text-primary)}
+.ego-progress-bar{display:block;height:8px;background:var(--bg-inset);border:1px solid var(--border-subtle)}
+.ego-progress-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ego-daily),var(--ego-tactic),var(--ego-duel));transition:width var(--motion-enter) ease-out}
+.ego-progress small{grid-column:1/-1;color:var(--text-muted);font-size:14px}
+.ego-activities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ego-activity{--tone:var(--ego-daily);display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid var(--border-strong);border-top:4px solid var(--tone);background:linear-gradient(180deg,color-mix(in srgb,var(--tone) 9%,var(--bg-surface)),var(--bg-surface) 55%);min-width:0}
+.ego-activity[data-activity=tactic]{--tone:var(--ego-tactic)}.ego-activity[data-activity=duel]{--tone:var(--ego-duel)}
+.ego-activity-kicker{font:800 12px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--tone)}
+.ego-activity h2{margin:0;font:900 italic 30px/1.02 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.ego-activity>p{margin:0;color:var(--text-secondary);font-size:15px}
+.ego-activity .ego-rule,.home-today em{font-size:13px;color:var(--text-muted)}
+.ego-rule strong{color:var(--text-primary)}
+.ego-activity dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:auto 0 0}
+.ego-activity dl div{padding:8px 10px;background:var(--bg-inset);border:1px solid var(--border-subtle)}
+.ego-activity dt{font:800 11px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.ego-activity dd{margin:2px 0 0;font:900 19px "Barlow Condensed",sans-serif;color:var(--text-primary)}
+.ego-activity .primary-button{background:var(--tone)}
+.ego-status{font:800 13px "Rajdhani",sans-serif;color:var(--text-muted)}
+.ego-status.is-done{color:var(--success)}.ego-status.is-live{color:var(--warning)}
+.ego-section-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.ego-section-heading h2,.ego-record-section h2,.challenge-import h2,.lab-library h2{margin:0;font:900 italic 26px "Barlow Condensed",sans-serif}
+.ego-section-heading p,.ego-note,.lab-hint{margin:6px 0 0;color:var(--text-muted);font-size:14px}
+.ego-history,.ego-record-section,.challenge-import,.lab-library{margin-top:22px;padding:18px;border:1px solid var(--border-strong);background:var(--bg-surface)}
+.ego-week{list-style:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:14px 0 0;padding:0}
+.ego-week li{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px;border:1px solid var(--border-subtle);background:var(--bg-inset);min-width:0}
+.ego-week li.is-today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.ego-week span{font:800 11px "Rajdhani",sans-serif;color:var(--text-muted);text-transform:uppercase}
+.ego-week b{font:900 20px "Barlow Condensed",sans-serif}
+.ego-week i{display:flex;gap:4px}
+.ego-week em{width:10px;height:10px;border:1px solid var(--border-strong);transform:rotate(45deg)}
+.ego-week em.is-done[data-mode=daily]{background:var(--ego-daily);border-color:var(--ego-daily)}
+.ego-week em.is-done[data-mode=tactic]{background:var(--ego-tactic);border-color:var(--ego-tactic)}
+.ego-week em.is-done[data-mode=duel]{background:var(--ego-duel);border-color:var(--ego-duel)}
+.ego-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
+.ego-links button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;padding:16px;background:var(--bg-surface)}
+.ego-links span{font:800 12px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--accent-text)}
+.ego-links strong{font:900 20px/1.1 "Barlow Condensed",sans-serif}
+.ego-links small{font:600 14px/1.35 "Rajdhani",sans-serif;color:var(--text-secondary)}
+.ego-toast{position:fixed;z-index:80;inset-inline-end:16px;bottom:16px;max-width:min(360px,calc(100vw - 32px));display:grid;gap:8px;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity var(--motion-enter),transform var(--motion-enter)}
+.ego-toast.is-visible{opacity:1;transform:none}
+.ego-toast p{margin:0;padding:12px 14px;border:1px solid var(--ego-gold,#f2c94c);border-inline-start:4px solid #f2c94c;background:var(--bg-surface-raised);box-shadow:var(--shadow-strong);display:grid;gap:2px}
+.ego-toast span{font:800 11px "Rajdhani",sans-serif;letter-spacing:1px;color:#f2c94c}.ego-toast strong{font:900 20px "Barlow Condensed",sans-serif}.ego-toast small{color:var(--text-secondary)}
+/* Draft Challenges */
+.challenge-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.challenge-summary div{padding:12px 14px;border:1px solid var(--border-strong);background:var(--bg-surface)}
+.challenge-summary span{display:block;font:800 11px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.challenge-summary strong{font:900 26px "Barlow Condensed",sans-serif}
+.challenge-summary .is-gold strong{color:var(--ego-gold)}.challenge-summary .is-silver strong{color:var(--ego-silver)}.challenge-summary .is-bronze strong{color:var(--ego-bronze)}
+.challenge-medal-key{color:var(--text-muted);font-size:14px;margin:10px 0 0}
+.challenge-filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.challenge-filters button{padding:8px 14px;font-size:13px;letter-spacing:.6px;background:transparent}
+.challenge-filters [aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.challenge-open-toggle{margin-inline-start:auto}
+.challenge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.challenge-card{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--border-strong);border-top:3px solid var(--ego-tactic);background:var(--bg-surface);min-width:0}
+.challenge-card[data-difficulty=easy]{border-top-color:var(--success)}.challenge-card[data-difficulty=hard]{border-top-color:var(--warning)}.challenge-card[data-difficulty=extreme]{border-top-color:var(--danger)}
+.challenge-card .mode-overline{font:800 12px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.challenge-card h3{margin:0;font:900 italic 25px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.challenge-card p{margin:0;color:var(--text-secondary);font-size:15px}
+.challenge-facts{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:auto 0 0;padding:0}
+.challenge-facts li{padding:4px 8px;border:1px solid var(--border-subtle);background:var(--bg-inset);font:700 13px "Rajdhani",sans-serif;color:var(--text-secondary)}
+.challenge-card-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border-subtle)}
+.challenge-medal{display:inline-flex;align-items:center;gap:6px;font:800 12px "Rajdhani",sans-serif;color:var(--text-muted)}
+.challenge-medal i{width:14px;height:14px;border-radius:50%;background:currentColor;box-shadow:inset 0 0 0 3px color-mix(in srgb,currentColor 55%,#000)}
+.challenge-medal.is-gold{color:var(--ego-gold)}.challenge-medal.is-silver{color:var(--ego-silver)}.challenge-medal.is-bronze{color:var(--ego-bronze)}
+.challenge-best{font:800 14px "Rajdhani",sans-serif;color:var(--text-secondary)}
+.challenge-best b{font:900 20px "Barlow Condensed",sans-serif;color:var(--text-primary)}
+.challenge-empty{color:var(--text-muted)}
+.challenge-import form{display:grid;gap:10px;max-width:760px}
+.challenge-import form button{justify-self:start}
+/* Ego Record */
+.ego-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ego-stat{padding:14px;border:1px solid var(--border-strong);background:var(--bg-surface);min-width:0}
+.ego-stat>span{display:block;font:800 11px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.ego-stat>strong{display:block;font:900 30px/1.1 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.ego-stat>strong small{display:block;font:700 12px "Rajdhani",sans-serif;color:var(--text-muted)}
+.ego-stat>small{color:var(--text-muted);font-size:13px}
+.ego-medal-row{display:flex;gap:8px}.ego-medal-row b{font:900 17px "Barlow Condensed",sans-serif}
+.ego-medal-row .is-gold{color:var(--ego-gold)}.ego-medal-row .is-silver{color:var(--ego-silver)}.ego-medal-row .is-bronze{color:var(--ego-bronze)}
+.ego-duel-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.ego-duel-levels div{padding:12px;border:1px solid var(--border-subtle);background:var(--bg-inset)}
+.ego-duel-levels span{display:block;font:800 12px "Rajdhani",sans-serif;color:var(--text-muted)}
+.ego-duel-levels strong{font:900 26px "Barlow Condensed",sans-serif}
+.ego-favourites{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:14px}
+.ego-favourites h2{grid-column:1/-1}
+.ego-favourites>div>span{display:block;font:800 12px "Rajdhani",sans-serif;color:var(--text-muted)}
+.ego-favourites>div>strong{font:900 30px "Barlow Condensed",sans-serif}
+.ego-favourites ul{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ego-favourites li{display:grid;grid-template-columns:36px 1fr;gap:2px 8px;align-items:center;padding:6px;border:1px solid var(--border-subtle);background:var(--bg-inset)}
+.ego-favourites li img{grid-row:1/3;width:36px;height:40px;object-fit:cover;object-position:center top}
+.ego-favourites li b{font:800 14px "Rajdhani",sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ego-favourites li small{color:var(--text-muted);font-size:12px}
+.ego-favourites .ego-empty{display:block;color:var(--text-muted);border:0;background:none;padding:0}
+.ego-achievements{list-style:none;padding:0;margin:12px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.ego-achievements li{display:grid;grid-template-columns:28px 1fr;gap:10px;padding:12px;border:1px solid var(--border-subtle);background:var(--bg-inset);color:var(--text-muted)}
+.ego-achievements li.is-unlocked{border-color:color-mix(in srgb,var(--ego-gold) 55%,var(--border-strong));color:var(--text-primary)}
+.ego-achievements i{font-style:normal;font-size:22px;line-height:1;color:var(--ego-gold)}
+.ego-achievements li:not(.is-unlocked) i{color:var(--text-subtle)}
+.ego-achievements strong{display:block;font:900 18px "Barlow Condensed",sans-serif}
+.ego-achievements small{display:block;font-size:13px;color:var(--text-secondary)}
+.ego-achievements time{display:block;margin-top:4px;font:700 12px "Rajdhani",sans-serif;color:var(--ego-gold)}
+/* Draft Duel */
+.duel-resume{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:14px;border:1px solid var(--warning);background:color-mix(in srgb,var(--warning) 8%,var(--bg-surface))}
+.duel-resume p{margin:0}
+.duel-setup-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+.duel-setup,.duel-side>section,.duel-code{padding:18px;border:1px solid var(--border-strong);background:var(--bg-surface)}
+.duel-side{display:grid;gap:12px}
+.duel-setup fieldset{border:0;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.duel-setup fieldset legend{grid-column:1/-1}
+.duel-setup fieldset:nth-of-type(3){display:block}
+.duel-choice{position:relative;display:flex!important;flex-direction:column;gap:4px;margin:0!important;padding:12px;border:1px solid var(--border-strong);background:var(--bg-inset);cursor:pointer;min-height:44px}
+.duel-choice input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.duel-choice strong{font:900 20px "Barlow Condensed",sans-serif;color:var(--text-primary);letter-spacing:0}
+.duel-choice span{font:600 13px/1.3 "Rajdhani",sans-serif;color:var(--text-secondary);letter-spacing:0}
+.duel-choice:has(input:checked){border-color:var(--solo-accent);box-shadow:inset 0 0 0 1px var(--solo-accent);background:color-mix(in srgb,var(--solo-accent) 12%,var(--bg-surface))}
+.duel-choice:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
+.duel-formations{grid-template-columns:repeat(3,minmax(0,1fr))!important;margin-block:6px!important}
+.duel-note{color:var(--text-muted);font-size:13px;margin:6px 0 0}
+.duel-daily h2,.duel-record h2{margin:4px 0;font:900 italic 24px "Barlow Condensed",sans-serif}
+.duel-daily .mode-overline{font:800 12px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--ego-duel)}
+.duel-daily p{color:var(--text-secondary);margin:0 0 10px}
+.duel-daily-best{font:800 15px "Rajdhani",sans-serif;color:var(--text-primary)!important}
+.duel-record dl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 0}
+.duel-record dl div{padding:8px;background:var(--bg-inset);border:1px solid var(--border-subtle)}
+.duel-record dt{font:800 11px "Rajdhani",sans-serif;color:var(--text-muted)}
+.duel-record dd{margin:0;font:900 20px "Barlow Condensed",sans-serif}
+.duel-code{display:grid;gap:8px}.duel-code label{margin:0}
+.duel-rules{margin-top:16px}
+.duel-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+.duel-turn{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:12px 14px;margin-bottom:12px;border:1px solid var(--border-strong);border-inline-start:4px solid var(--ego-duel);background:var(--bg-surface)}
+.duel-turn.is-cpu{border-inline-start-color:var(--ego-tactic)}
+.duel-turn strong{font:900 20px "Barlow Condensed",sans-serif}.duel-turn span{color:var(--text-secondary)}
+.duel-market{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.duel-offer{position:relative;display:flex!important;flex-direction:column;align-items:center;gap:6px;padding:12px 8px!important;text-align:center;min-width:0}
+.duel-offer .draft-portrait{width:100%;max-width:120px;aspect-ratio:136/155}
+.duel-offer .draft-portrait img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.duel-offer>strong{font:900 18px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.duel-offer>small{color:var(--text-secondary);font-size:13px}
+.duel-offer>b{margin-top:auto;font:800 13px "Rajdhani",sans-serif;color:var(--ego-duel)}
+.duel-offer .solo-choice-ovr{position:absolute;top:8px;inset-inline-start:8px;font:900 20px "Barlow Condensed",sans-serif;color:var(--text-primary)}
+.duel-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:22px}
+.duel-tags em{font:800 11px "Rajdhani",sans-serif;font-style:normal;letter-spacing:.5px;padding:2px 6px;border:1px solid currentColor}
+.duel-tags .is-you{color:var(--ego-duel)}.duel-tags .is-cpu{color:var(--ego-tactic)}
+.duel-log{margin-top:12px}.duel-log ol{margin:8px 0 0;padding-inline-start:18px;color:var(--text-secondary);display:grid;gap:4px}
+.duel-squads{display:grid;gap:12px}
+.duel-squad{padding:14px;border:1px solid var(--border-strong);border-top:3px solid var(--ego-duel);background:var(--bg-surface)}
+.duel-squad.is-cpu{border-top-color:var(--ego-tactic)}
+.duel-squad header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.duel-squad h3{margin:0;font:900 italic 21px "Barlow Condensed",sans-serif}
+.duel-squad header span{font:800 13px "Rajdhani",sans-serif;color:var(--text-muted)}
+.duel-projection,.duel-open{margin:6px 0 0;font-size:13px;color:var(--text-muted)}
+.duel-projection b,.duel-open b{color:var(--text-primary)}
+.duel-roster{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:4px}
+.duel-roster li{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center}
+.duel-roster img{width:34px;height:38px;object-fit:cover;object-position:center top}
+.duel-roster span{display:grid;min-width:0}.duel-roster b{font:800 14px "Rajdhani",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.duel-roster small{font-size:12px;color:var(--text-muted)}
+.duel-roster .duel-empty{display:block;color:var(--text-muted);font-size:14px}
+.duel-reveal{margin-top:6px}
+.duel-verdict{padding:16px;border:1px solid var(--border-strong);border-top:4px solid var(--text-muted);background:var(--bg-surface)}
+.duel-verdict.is-win{border-top-color:var(--success)}.duel-verdict.is-loss{border-top-color:var(--danger)}
+.duel-compare{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.duel-compare div{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;padding:10px;background:var(--bg-inset);border:1px solid var(--border-subtle)}
+.duel-compare span{flex-basis:100%;font:800 11px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.duel-compare b{font:900 26px "Barlow Condensed",sans-serif}.duel-compare b:first-of-type{color:var(--ego-duel)}.duel-compare b:last-of-type{color:var(--ego-tactic)}
+.duel-compare em{color:var(--text-subtle);font-style:normal}
+.duel-boards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.duel-board-wrap h3{margin:0 0 8px;font:900 italic 20px "Barlow Condensed",sans-serif}
+.duel-boards .solo-board{direction:ltr}
+.duel-actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+/* Challenge Lab */
+.lab-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:16px;align-items:start}
+.lab-form,.lab-preview{display:grid;gap:12px;min-width:0}
+.lab-step{padding:16px 18px;border:1px solid var(--border-strong);background:var(--bg-surface);min-width:0}
+.lab-step h2,.lab-step>summary{margin:0 0 4px;font:900 italic 22px "Barlow Condensed",sans-serif;cursor:default}
+.lab-step h2 b,.lab-step>summary b{color:var(--solo-accent);font-style:normal;margin-inline-end:6px}
+.lab-restrictions>summary{cursor:pointer;list-style-position:inside;min-height:44px;display:flex;align-items:center;gap:6px}
+.lab-restrictions>summary small{margin-inline-start:auto;font:800 13px "Rajdhani",sans-serif;color:var(--text-muted)}
+.lab-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lab-objective{padding:10px 0;border-top:1px solid var(--border-subtle)}
+.lab-objective label{margin-top:0}
+.lab-objective-controls{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr) 90px;gap:8px}
+.lab-objective-controls.no-key{grid-template-columns:minmax(110px,150px) 110px}
+.lab-board{direction:ltr;margin-top:8px}
+.lab-board .solo-slot{cursor:pointer}
+.lab-slot-panel{margin-top:12px}
+.lab-slot-panel h3{margin:0;font:900 20px "Barlow Condensed",sans-serif}
+.lab-current{margin:6px 0}
+.lab-inline-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.lab-player-list{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px;max-height:280px;overflow:auto}
+.lab-player-list button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:start;padding:8px 10px}
+.lab-player-list small{color:var(--text-muted);font-size:12px;white-space:nowrap}
+.lab-empty{color:var(--text-muted);padding:6px 0}
+.lab-chips{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.lab-chips button{padding:6px 10px;font-size:13px}
+.lab-status{margin:4px 0 12px;color:var(--text-secondary)}
+.lab-status.is-ok{color:var(--success)}.lab-status.is-error{color:var(--danger)}
+.lab-test textarea{min-height:70px}
+.lab-library ul{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px}
+.lab-library li{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--border-subtle);background:var(--bg-inset)}
+.lab-library li strong{display:block;font:900 19px "Barlow Condensed",sans-serif}
+.lab-library li small{color:var(--text-muted)}
+.lab-library .lab-inline-actions{margin:0}
+/* Daily rule presentation */
+.daily-rule-card{margin:12px 0;padding:10px 12px;border:1px solid var(--solo-accent,#e1b24f);border-inline-start-width:4px;background:color-mix(in srgb,var(--solo-accent,#e1b24f) 8%,var(--bg-surface))}
+.daily-rule-card span{display:block;font:800 11px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--solo-ink,#eed18e)}
+.daily-rule-card strong{display:block;font:900 20px "Barlow Condensed",sans-serif}
+.daily-rule-card p{margin:2px 0 0;color:var(--text-secondary);font-size:14px}
+.daily-rule-strip{margin:12px 0 0;font-size:14px;color:var(--text-secondary)}
+.daily-rule-strip span{font:800 11px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--solo-ink)}
+.daily-budget{font-size:18px!important}
+.daily-price{position:absolute;top:8px;inset-inline-end:8px;font:900 16px "Barlow Condensed",sans-serif;color:var(--warning)}
+.daily-start-note{color:var(--text-secondary);font-size:14px}
+.solo-best.is-empty .solo-best-empty{font:800 15px "Rajdhani",sans-serif;color:var(--text-muted);letter-spacing:.5px}
+.solo-banned{font-size:14px;color:var(--text-secondary)}
+/* Home Play Hub */
+.play-hub{display:grid;gap:18px;margin-bottom:18px}
+.home-today{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:14px;padding:18px;border:1px solid var(--border-strong);border-top:3px solid #e1b24f;background:linear-gradient(120deg,color-mix(in srgb,#e1b24f 8%,var(--bg-surface)),var(--bg-surface) 60%)}
+.home-today-head h2{margin:6px 0 4px;font:900 italic clamp(28px,3.4vw,40px)/1 "Barlow Condensed",sans-serif}
+.home-today-head p{margin:0 0 12px;color:var(--text-secondary);font:800 15px "Rajdhani",sans-serif}
+.home-today .mode-overline{font:800 12px "Rajdhani",sans-serif;letter-spacing:1px;color:#e1b24f}
+html[data-theme="light"] .home-today .mode-overline{color:#8a5c00}
+.home-today-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.home-today-list button{width:100%;height:100%;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:start;padding:12px;background:var(--bg-surface)}
+.home-today-list span{font:800 11px "Rajdhani",sans-serif;letter-spacing:.8px;color:var(--text-muted)}
+.home-today-list strong{font:900 20px/1.05 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
+.home-today-list em{display:block;font-style:normal}
+.home-today-list small{margin-top:auto;font:800 13px "Rajdhani",sans-serif;color:var(--text-muted)}
+.home-today-list small.is-done{color:var(--success)}
+.play-hub-group>h3{margin:0 0 10px;font:800 13px "Rajdhani",sans-serif;letter-spacing:1.4px;color:var(--text-muted)}
+.play-hub-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.play-hub .play-mode-card{min-height:0}
+.play-mode-card.mode-duel{--mode-accent:#4fb4e1}.play-mode-card.mode-lab{--mode-accent:#dc7389}
+/* Responsive */
+@media(max-width:1100px){.ego-links{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-layout{grid-template-columns:1fr}.duel-squads{grid-template-columns:1fr 1fr}.lab-layout{display:flex;flex-direction:column}.lab-form,.lab-preview{display:contents}.ego-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.ego-activities{grid-template-columns:1fr}.duel-setup-grid{grid-template-columns:1fr}.home-today{grid-template-columns:1fr}.play-hub-row{grid-template-columns:1fr}.duel-market{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-compare{grid-template-columns:repeat(2,minmax(0,1fr))}.duel-boards{grid-template-columns:1fr}}
+@media(max-width:620px){.play-view-screen{padding:0 12px}.play-view-header{margin-top:14px}.challenge-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.challenge-open-toggle{margin-inline-start:0}.ego-links{grid-template-columns:1fr}.home-today-list{grid-template-columns:1fr}.duel-setup fieldset{grid-template-columns:1fr}.duel-formations{grid-template-columns:1fr!important}.duel-squads{grid-template-columns:1fr}.lab-objective-controls{grid-template-columns:1fr 1fr}.lab-objective-controls input{grid-column:auto!important}.ego-favourites{grid-template-columns:1fr}.ego-duel-levels{grid-template-columns:repeat(3,minmax(0,1fr))}.ego-week{gap:4px}.ego-week li{padding:7px 2px}.ego-progress{grid-template-columns:1fr}}
+@media(max-width:380px){.duel-market{grid-template-columns:1fr 1fr}.ego-stats{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.ego-toast,.ego-progress-bar i{transition:none}}
+/* RTL: text and ordinary layout reflow; pitches, portraits and tactical structures stay left-to-right. */
+:lang(ar) :is(.play-view-screen,.home-today,.play-hub){direction:rtl}
+:lang(ar) .play-view-screen :is(.solo-board,.lab-board,.daily-shape-preview,.duel-boards .solo-board,.ego-week i,.duel-compare b,textarea,input[type=number]){direction:ltr}
+:lang(ar) .play-view-screen .duel-compare div{direction:rtl}
+/* Pre-existing fix: solo screens had no side gutter below their 1360px maximum width. */
+.solo-screen{padding-inline:var(--shell-gutter,20px);box-sizing:border-box}
+@media(max-width:620px){.solo-screen{padding-inline:12px}}
+.play-view-screen button{text-align:center}
+.play-view-screen :is(.ego-links,.home-today-list,.lab-player-list) button{text-align:start}
+/* Pre-existing fix: the three home utility cards (Team Builder, Database, Battle Sim) left a half-empty row
+   on desktop and squeezed "DATABASE" into a mid-word break in two phone columns. */
+.home-modes.home-mode-utilities{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.home-mode-utilities .home-mode{text-align:start;align-items:flex-start}
+.home-mode-utilities .home-mode-title{overflow-wrap:normal;word-break:normal;hyphens:manual}
+@media(max-width:760px){.home-modes.home-mode-utilities{grid-template-columns:1fr!important}}
+.duel-actions{align-items:stretch}.duel-actions>button{min-height:52px;margin:0;flex:1 1 150px}

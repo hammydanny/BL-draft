@@ -152,7 +152,10 @@ function updatePoolStatus(){
     const regularSelected=regularPlayers.filter(player=>selectedPlayerIds.has(player.id)).length;
     const secretSelected=secretPlayers.filter(player=>selectedPlayerIds.has(player.id)).length;
     const selected=regularSelected+secretSelected;
-    count.innerHTML=`${regularSelected} / ${regularPlayers.length}${secretCharactersUnlocked?`<br><small><span>SECRET ROSTER</span> ${secretSelected} / ${secretPlayers.length}</small>`:""}`;
+    // The secret roster is never mentioned unless the code is in the search box right now,
+    // even when this tab has already been unlocked.
+    const codeTyped=secretCharactersUnlocked&&document.getElementById("playerSearch")?.value.trim()===SECRET_CHARACTER_CODE;
+    count.innerHTML=`${regularSelected} / ${regularPlayers.length}${codeTyped?`<br><small><span>SECRET ROSTER</span> ${secretSelected} / ${secretPlayers.length}</small>`:""}`;
     window.SiteI18n?.apply(count);
     if(max<=0){
         requirement.textContent="ENTER A VALID TEAM SIZE";

@@ -28,7 +28,7 @@ function runSoloDraftTests(){
  `);
  const fixtures=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/puzzle-completions.json'),'utf8'));
  run(`
-    const witnesses=${JSON.stringify(fixtures)};assert.equal(witnesses.length,10);assert.equal(puzzleMissions().length,10);
+    const witnesses=${JSON.stringify(fixtures)};assert.equal(witnesses.length,10);assert.equal(puzzleMissions().length,16);// v0.7.3 missions are proven by the solver in v073-tests.
     for(const fixture of witnesses){const mission=puzzleMission(fixture.id),state=puzzleNew(mission.id);assert.equal(puzzleScore(state).complete,false);assert.equal(puzzleScore(state).grade,'D');
         assert.throws(()=>puzzlePlace(state,mission.locked[0],null));assert.throws(()=>puzzlePlace(state,0,80));assert.throws(()=>normalizeSoloState({...state,formation:'8-8-8'}));assert.throws(()=>normalizeSoloState({...state,assignment:{...state.assignment,99:1}}));assert.throws(()=>normalizeSoloState({...state,captain:999}));
         // Apply the witness through actual placement validation, preserving all locked players.

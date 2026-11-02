@@ -48,9 +48,10 @@ function runBalanceTests(){
  `);
  const legacy=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/legacy-solo-v0721.json'),'utf8'));
  run(`for(const old of ${JSON.stringify(legacy)}){const migrated=normalizeSoloState(old);assert.equal(migrated.v,2);assert.deepEqual(migrated.ids,old.ids);assert.equal(migrated.tokens,old.tokens);if(Object.values(migrated.assignment).includes(old.captain))assert.equal(migrated.captain,old.captain);assert.equal(dailyRuleForState(migrated).size,old.ids.length===14?14:7);assert.deepEqual(normalizeSoloState(JSON.parse(JSON.stringify(migrated))).ids,old.ids);if(migrated.phase==='picking')dailyPickAction(migrated,{type:'pick',id:dailyPickOptions(migrated)[0]});assert.throws(()=>normalizeSoloState({...old,ids:[80],actions:[{type:'pick',id:80}],seen:[80]}));}
-    const seenSizes=new Map();for(let d=0;d<120;d++){const date=localDraftDate(new Date(2026,9,1+d)),size=dailyPickRule(date).size;if(!seenSizes.has(size))seenSizes.set(size,date);}
+    const seenSizes=new Map();for(let d=0;d<120;d++){const date=localDraftDate(new Date(2026,9,1+d)),size=dailyLegacyRule(date).size;if(!seenSizes.has(size))seenSizes.set(size,date);}
     assert.equal(seenSizes.size,6);let runs=0,usable=0;for(const [size,date]of seenSizes)for(const name of dailyFormationNames(size)){
-        const state=dailyPickNew(date);state.formation=name;dailyStartPicks(state);assert.equal(state.chosenFormation,name);
+        // v0.7.2.2 rules are pinned explicitly; v0.7.3 daily rules are covered by v073-tests.js.
+        const state=dailyPickNew(date,2);state.formation=name;dailyStartPicks(state);assert.equal(state.chosenFormation,name);
         while(state.phase==='picking'){
             let id=null,value=-Infinity;for(const option of dailyPickOptions(state)){const next={...state,ids:[...state.ids,option]},plan=dailyPickPlan(next),snap=soloSnapshot({...next,...plan}),score=soloFitCount(snap)*1000+snap.ovr+snap.chemistry.overall*.5;if(score>value){value=score;id=option;}}
             dailyPickAction(state,{type:'pick',id});assert.equal(state.formation,name);

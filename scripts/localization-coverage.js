@@ -23,7 +23,7 @@ function parseFrozen(source,name){
 function catalog(){
     const context=vm.createContext({window:{}});
     vm.runInContext(read('js/i18n/messages.js'),context);
-    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
+    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js','js/i18n/ego-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
     const localization=read('js/localization.js');
     return {
         ...context.window.BLD_MESSAGES,
@@ -154,13 +154,34 @@ function soloDraftCoverage(covered){
     }
     return missing;
 }
+// v0.7.3 play views, engines and computed keys (difficulties, medals, categories, outcomes, formats).
+function v073Coverage(covered){
+    const missing=[];
+    for(const file of ['js/draft-duel.js','js/challenge-lab.js','js/ego-record.js','js/ui/ego-board-ui.js','js/ui/draft-duel-ui.js','js/ui/challenge-lab-ui.js','js/ui/site-directory.js']){
+        const source=read(file),values=[];
+        for(const match of source.matchAll(/(?:replayFail|replayText|replayDialog|showSiteError|showConfirm|playViewHeader)\("([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/(?:showSiteError|showConfirm|playViewHeader)\((?:"[^"\n]*"|`[^`\n]*`),\s*"([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/playViewHeader\((?:"[^"\n]*"|`[^`\n]*`),\s*"[^"\n]+",\s*"([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/(?:title|description|label):"([^"\n]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/"([A-Z][A-Z '+.:?\/&·-]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/>\s*([A-Za-z][^<>${}`\n]*?)\s*</g))values.push(match[1]);
+        for(const match of source.matchAll(/(?:aria-label|placeholder)="([^"${}]+)"/g))values.push(match[1]);
+        for(const match of source.matchAll(/radio\((?:"[^"\n]*",){2}"([^"\n]+)","([^"\n]*)"\)/g))values.push(match[1],...(match[2]?[match[2]]:[]));
+        // Skip source-code fragments captured by the broad quote pattern.
+        for(const value of new Set(values.map(decode)))if(value!=="S+"&&!/[()=;]|":"/.test(value)&&!intentional(value)&&!covered(value))missing.push({file,value});
+    }
+    const computed=['EASY','NORMAL','HARD','EXTREME','CUSTOM','GOLD MEDAL','SILVER MEDAL','BRONZE MEDAL','WIN','LOSS','DRAW','QUICK','STANDARD','FULL XI','TACTICAL','CHEMISTRY','BUDGET','FORMATION','CHARACTER','RESTRICTED','EXPERT','ALL',
+        'EGO BOARD','DRAFT CHALLENGES','DRAFT DUEL','CHALLENGE LAB','EGO RECORD','DAILY EGO DRAFT','DAILY TACTICAL CHALLENGE','COMPLETED','IN PROGRESS','NOT STARTED','NOT COMPLETED','YOUR SQUAD','CPU SQUAD','YOU WIN THE DRAFT','CPU WINS THE DRAFT','DRAWN DRAFT'];
+    for(const value of computed)if(!covered(value))missing.push({file:'v073-computed',value});
+    return missing;
+}
 function balanceCoverage(covered){
     const values=["BASE QUALITY","EFFECTIVE OVR","POSITION IMPACT","CHEMISTRY IMPACT","PROJECTED LINEUP","ACTIVE LINEUP","DAILY FORMATIONS","Move impact: effective OVR {ovr}, chemistry {chem}.","Team OVR {current} → {next}. Chemistry {chem}."];
     return values.filter(value=>!covered(value)).map(value=>({file:"v0722-feedback",value}));
 }
 function scanCoverage(){
     const entries=catalog(),covered=resolver(entries);
-    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered),...balanceCoverage(covered)];
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered),...balanceCoverage(covered),...v073Coverage(covered)];
     return {missing,catalogSize:Object.keys(entries).length};
 }
 module.exports={scanCoverage,sourceStrings,resolver,quoteCoverage};

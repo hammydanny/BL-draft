@@ -224,6 +224,36 @@ unverified or malformed quotes and duplicated quote text. See
 [the player audit](docs/player-audit-v0.6.9.1.md) for factual coverage and
 [the release report](docs/release-v0.6.9.1.md) for validation and the file manifest.
 
+## V0.7.3 page shells, versions and play views
+
+`index.html` is the single editable game shell. After editing it, run
+`node scripts/sync-shells.js`: the six canonical directory documents are regenerated
+(only their `<base>`, title, canonical URL and descriptive metadata differ), the
+information and Battle Sim documents receive the identical header and footer, and the
+legacy `*.html` URLs are tiny redirects that preserve query and hash. Preflight fails
+on any drift (`--check`).
+
+Cache busting has one source: `node scripts/set-version.js 0.7.3` sets `APP_VERSION`
+and moves every HTML `?v=` reference, the per-character module loader and the image/font
+service-worker cache together. Preflight fails on any stale reference.
+
+New screens (Ego Board, Draft Challenges browser, Draft Duel, Challenge Lab, Ego Record)
+are views of the home document: `./?play=board|challenges|duel|lab|record`, rendered into
+`#playViewScreen` by `js/ui/ego-board-ui.js`. The router preserves the `play` parameter and
+resumes the view on load and Back/Forward, like the existing `./?solo=run`.
+
+Engines stay separate from rendering: `js/draft-duel.js`, `js/challenge-lab.js` (shared
+puzzle solver, Daily Tactical generator, Lab codes) and `js/ego-record.js`. All of them use
+the shared position, chemistry, contribution, Auto Best and snapshot functions. New
+storage keys: `bldDraftDuelV1`, `bldDraftDuelRecordsV1`, `bldChallengeLabV1`,
+`bldEgoRecordV1`. Existing keys keep their schemas; Daily runs record `rules:3` when they
+start under the v0.7.3 daily rules and older runs replay under their original rules.
+
+New copy lives in `js/i18n/ego-messages.js` (English key → ten languages) and is covered by
+`scripts/localization-coverage.js`. Regression tests: `node scripts/v073-tests.js`;
+experiments: `node scripts/v073-daily-experiment.js 365` and
+`node scripts/v073-duel-experiment.js 16`.
+
 ## Mandatory localization release gate
 
 Localization is a prerequisite for **every future update**, including small fixes.

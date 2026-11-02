@@ -1,6 +1,7 @@
 # Release checklist
 
-- [ ] Central version correct
+- [ ] Central version correct (`node scripts/set-version.js <version>`)
+- [ ] Page shells regenerated from `index.html` (`node scripts/sync-shells.js --check` reports 0 drift)
 - [ ] All project JavaScript syntax valid
 - [ ] `node scripts/preflight.js` PASS, 0 failed checks
 - [ ] LOCALIZATION RELEASE GATE: every new/changed visible string, dynamic UI string, accessibility label and Changelog note is translated in all supported languages
