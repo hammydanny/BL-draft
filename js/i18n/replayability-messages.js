@@ -3985,6 +3985,18 @@ const messages=Object.freeze({
     "ru": "СИМУЛЯЦИЯ МАТЧА",
     "es": "SIMULACIÓN DE PARTIDO"
   },
+  "EARLY ACCESS": {
+    "ms": "AKSES AWAL",
+    "ja": "早期アクセス",
+    "ar": "وصول مبكر",
+    "zh-CN": "抢先体验",
+    "fr": "ACCÈS ANTICIPÉ",
+    "de": "FRÜHZUGANG",
+    "ko": "얼리 액세스",
+    "pt": "ACESSO ANTECIPADO",
+    "ru": "РАННИЙ ДОСТУП",
+    "es": "ACCESO ANTICIPADO"
+  },
   "BATTLE": {
     "ms": "PERLAWANAN",
     "ja": "バトル",

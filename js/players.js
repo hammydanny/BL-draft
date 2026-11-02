@@ -89,7 +89,8 @@ const players = [
     PLAYER_85_DATA,
     PLAYER_86_DATA,
     PLAYER_87_DATA,
-    PLAYER_88_DATA
+    PLAYER_88_DATA,
+    PLAYER_89_DATA
 ];
 
 players.forEach(player=>{

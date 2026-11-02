@@ -83,7 +83,8 @@ const PLAYER_PROFILE_METADATA = {
   "78": PLAYER_78_REFERENCE,
   "79": PLAYER_79_REFERENCE,
   "87": PLAYER_87_REFERENCE,
-  "88": PLAYER_88_REFERENCE
+  "88": PLAYER_88_REFERENCE,
+  "89": PLAYER_89_REFERENCE
 };
 
 // Shared category registry: Auction selection and Database browsing use the same data.
@@ -2008,7 +2009,9 @@ const CHEMISTRY_REFERENCE_CONTEXTS=CHEMISTRY_CONTEXTS.map((context,index)=>({
 const PROFILE_ONLY_CHEMISTRY_PAIRS=new Set([
     ["Jingo Raichi","Zaruchi"],
     ["Shoei Baro","Qazicutie"],
-    ["Ryusei Shido","Qazicutie"]
+    ["Ryusei Shido","Qazicutie"],
+    ["Kenyu Yukimiya","Jameswasnthere"],
+    ["Yoichi Isagi","Jameswasnthere"]
 ].map(pair=>pair.sort().join("|")));
 const CHEMISTRY_REFERENCE_PAIRS=CHEMISTRY_SPECIAL_PAIRS.filter(([a,b])=>!PROFILE_ONLY_CHEMISTRY_PAIRS.has([a,b].sort().join("|"))).map(([a,b,score,label,description])=>({
     id:[REFERENCE_PLAYER_BY_NAME.get(a)?.id,REFERENCE_PLAYER_BY_NAME.get(b)?.id].sort((x,y)=>x-y).join("-"),
