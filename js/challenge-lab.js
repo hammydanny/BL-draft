@@ -119,7 +119,7 @@ function labMission(value){
     const ids=list=>Array.isArray(list)&&list.every(Number.isInteger)&&new Set(list).size===list.length;
     if(!ids(value.banned)||value.banned.length>8)replayFail("Invalid challenge rules.");
     if(!Array.isArray(value.locked)||value.locked.length>10)replayFail("Invalid challenge rules.");
-    for(const id of [...value.banned,...value.locked.map(pair=>Array.isArray(pair)?pair[1]:null)]){const p=Number.isInteger(id)?playerById(id):null;if(!p)replayFail("This squad contains a missing player.");if(p.secretCharacter)replayFail("Secret characters cannot be used in Challenge Lab.");}
+    for(const id of [...value.banned,...value.locked.map(pair=>Array.isArray(pair)?pair[1]:null)]){const p=Number.isInteger(id)?playerById(id):null;if(!p)replayFail("This squad contains a missing player.");if(p.secretCharacter)replayFail("This squad contains a missing player.");}
     const shape=FORMATIONS[value.formation],banned=new Set(value.banned),pool=challengePool().filter(id=>LAB_POOLS[value.pool].filter(playerById(id))&&!banned.has(id));
     const initial={};
     for(const pair of value.locked){

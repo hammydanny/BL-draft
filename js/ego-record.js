@@ -99,7 +99,7 @@ function egoEventFromSolo(state,result){
 }
 function egoFavourites(record){
     const formation=Object.entries(record.formations).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]||null;
-    // Gated secret players never appear in the record until this session has unlocked them.
-    const players=Object.entries(record.players).map(([id,n])=>[playerById(Number(id)),n]).filter(([p])=>p&&secretPlayerAvailable(p)).sort((a,b)=>b[1]-a[1]||a[0].id-b[0].id).slice(0,5);
+    // Secret players never appear in the record, even in an unlocked session.
+    const players=Object.entries(record.players).map(([id,n])=>[playerById(Number(id)),n]).filter(([p])=>p&&!p.secretCharacter).sort((a,b)=>b[1]-a[1]||a[0].id-b[0].id).slice(0,5);
     return {formation,players};
 }

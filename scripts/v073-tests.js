@@ -105,6 +105,7 @@ function runV073Tests(){
         assert.equal(labMission({...base,title:'  <b>Hi</b>\\u0007 '}).title,'bHi/b','markup and control characters are stripped');
         const parts=code.split('.');assert.throws(()=>labDecode(parts[0]+'.'+parts[1]+'.zzz'),'tampered checksum');assert.throws(()=>labDecode('BLDC2.'+parts[1]+'.'+parts[2]),'wrong prefix');assert.throws(()=>labDecode('x'.repeat(13000)));
         assert.throws(()=>labRegisterCode(replayCode('BLDL1',[1,'Secret','4-3-3',2500,'all',[],[[9,81]],null,[],[]])),'secret characters cannot be imported');
+        assert.throws(()=>labMission({...base,locked:[[9,81]]}),/missing player/,'the error never names the secret roster');
         assert.throws(()=>labRegisterCode(labEncode({...base,budget:300,locked:[[0,8]],captain:null,goals:[{type:'chemistry',target:99},{type:'minOVR',target:99}],bonus:[]})),'infeasible challenges are rejected');
         labSaveToLibrary(code,true);assert.equal(labLibrary()[0].id,mission.id);labRemoveFromLibrary(mission.id);assert.equal(labLibrary().length,0);
         localStorage.setItem(LAB_LIBRARY_KEY,'{"v":1,"items":[{"code":"BLDL1.bad.0"},{"code":42},null]}');assert.deepEqual(labLibrary(),[]);
@@ -146,7 +147,7 @@ function runV073Tests(){
         for(const formation of ['3-4-3','5-3-2'])egoRecordEvent({mode:'challenge',complete:true,formation,playerIds:[3]});assert(egoRecordLoad().achievements['tactical-range']);
         // Secret players never appear among favourites in a locked session.
         egoRecordEvent({mode:'challenge',complete:true,formation:'4-3-3',playerIds:[81,81]});secretCharactersUnlocked=false;assert(egoFavourites(egoRecordLoad()).players.every(([p])=>!p.secretCharacter));
-        secretCharactersUnlocked=true;assert(egoFavourites(egoRecordLoad()).players.some(([p])=>p.id===81));secretCharactersUnlocked=false;
+        secretCharactersUnlocked=true;assert(egoFavourites(egoRecordLoad()).players.every(([p])=>!p.secretCharacter),'never, even when unlocked');secretCharactersUnlocked=false;
         localStorage.setItem(EGO_RECORD_KEY,JSON.stringify({v:1,migrated:true,counts:{daily:-5,duel:'x'},formations:{'9-9-9':3,'4-4-2':2},players:{'99999':4,'1':2},achievements:{'giant-killer':'never','regular':'2026-11-01'},activity:{'2026-11-01':['daily','hack']}}));
         const clean=egoRecordLoad();assert.equal(clean.counts.daily,0);assert.deepEqual(clean.formations,{'4-4-2':2});assert.deepEqual(clean.players,{'1':2});assert.deepEqual(clean.achievements,{regular:'2026-11-01'});assert.deepEqual(clean.activity['2026-11-01'],['daily']);
         localStorage.setItem(EGO_RECORD_KEY,'{broken');assert.equal(egoRecordLoad().v,1);
