@@ -147,9 +147,13 @@ function updatePoolStatus(){
     const requirement=document.getElementById("poolRequirement");
     const max=Number(document.getElementById("maxPlayers").value)||0;
     const needed=max*2;
-    const selected=selectedPlayerIds.size;
-    const availableCount=players.filter(secretPlayerAvailable).length;
-    count.textContent=`${selected} / ${availableCount}`;
+    const regularPlayers=players.filter(player=>!player.secretCharacter);
+    const secretPlayers=players.filter(player=>player.secretCharacter&&secretPlayerAvailable(player));
+    const regularSelected=regularPlayers.filter(player=>selectedPlayerIds.has(player.id)).length;
+    const secretSelected=secretPlayers.filter(player=>selectedPlayerIds.has(player.id)).length;
+    const selected=regularSelected+secretSelected;
+    count.innerHTML=`${regularSelected} / ${regularPlayers.length}${secretCharactersUnlocked?`<br><small>SECRET ROSTER ${secretSelected} / ${secretPlayers.length}</small>`:""}`;
+    window.SiteI18n?.apply(count);
     if(max<=0){
         requirement.textContent="ENTER A VALID TEAM SIZE";
         requirement.className="pool-requirement warning";

@@ -941,7 +941,14 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     for(const id of ['characterLoreAffiliation','characterLoreCategory','characterLoreComparison','chemistryLorePlayerA','chemistryLorePlayerB','chemistryLoreContext','chemistryLorePairEvaluation'])assert(html.includes(`id="${id}"`),id);
     for(const key of ['sho','spd','dri','pas','def'])assert(html.includes(`value="${key}"`),'Attribute sort '+key);
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
-    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accecheck('All secret-character chemistry uses one authoritative source',()=>{
+    assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accecheck('Secret players do not inflate the public roster count',()=>{
+    const setup=read('js/ui/setup.js');
+    assert(setup.includes('players.filter(player=>!player.secretCharacter)'),'Public roster total must exclude secret characters');
+    assert(setup.includes('players.filter(player=>player.secretCharacter&&secretPlayerAvailable(player))'),'Secret roster must have its own count');
+    assert(setup.includes('SECRET ROSTER'),'Unlocked secret roster count must be displayed separately');
+    assert(!setup.includes('const availableCount=players.filter(secretPlayerAvailable).length'),'Combined roster denominator must not return');
+});
+check('All secret-character chemistry uses one authoritative source',()=>{
     const chemistry=read('js/chemistry.js'),reference=read('js/player-reference.js');
     const secretModules=['qazicutie','hdannyy','syaafi','jon','floppy-willy','raf','oka','jameswasnthere'];
     for(const folder of secretModules){

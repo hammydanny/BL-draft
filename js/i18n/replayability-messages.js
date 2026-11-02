@@ -1,6 +1,18 @@
 // Localized replayability and game-mode copy. English keys are the source strings.
 (function(){
 const messages=Object.freeze({
+  "SECRET ROSTER": {
+    "ms": "ROSTER RAHSIA",
+    "ja": "シークレットロスター",
+    "ar": "القائمة السرية",
+    "zh-CN": "秘密名单",
+    "fr": "EFFECTIF SECRET",
+    "de": "GEHEIMER KADER",
+    "ko": "비밀 로스터",
+    "pt": "ELENCO SECRETO",
+    "ru": "СЕКРЕТНЫЙ СОСТАВ",
+    "es": "PLANTILLA SECRETA"
+  },
   "BALANCED XI": {
     "ms": "XI SEIMBANG",
     "ja": "バランス重視のXI",
