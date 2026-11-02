@@ -27,9 +27,9 @@ const PLAYER_82_DATA = {
     { playerName: "hdannyy", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
     { playerName: "floppy_willy", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
     { playerName: "raf", score: 88, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
-    { playerName: "Syaafi", score: 64, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
-    { playerName: "jon", score: 58, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
-    { playerName: "oka", score: 60, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." }
+    { playerName: "Syaafi", score: 69, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
+    { playerName: "jon", score: 63, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." },
+    { playerName: "oka", score: 65, label: "TEAMMATE CHEMISTRY", description: "Project-defined chemistry rating with Qazicutie." }
   ],
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] },

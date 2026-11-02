@@ -20,6 +20,11 @@ function runChemistryBalanceTests({seeds=18}={}){
     const unknown=pair('Noel Noa','Hibiki Okawa');
     assert.equal(unknown.score,CHEMISTRY_NEUTRAL_SCORE);assert.equal(chemistryTier(unknown.score),'neutral');
     assert.equal(chemistryLineStyle(unknown.score).color,'#94a3b8');assert.equal(playerChemistryPerformance([unknown.score,unknown.score]),0);
+    // Project-created secret-character profile values must also drive Team Builder links.
+    for(const [a,b,score]of [['Qazicutie','jon',63],['Qazicutie','Syaafi',69],['Qazicutie','oka',65]])assert.equal(pair(a,b).score,score,a+'/'+b);
+    assert.equal(byName('oka').stats.pas,87);assert.equal(byName('oka').stats.off,90);assert.equal(playerOverall(byName('oka')),84);
+    assert.equal(byName('Syaafi').stats.off,84);assert.equal(byName('Syaafi').stats.dri,82);assert.equal(byName('Syaafi').stats.spd,65);
+    assert(!playerPositions(byName('Syaafi')).includes('GK'));assert.equal(playerOverall(byName('Syaafi')),80);
     const negative=pair('Rin Itoshi','Ryusei Shido');assert.equal(chemistryTier(negative.score),'negative');
     assert.equal(chemistryLineStyle(negative.score).color,'#ff496d');assert(playerChemistryPerformance([negative.score])<=-2);
     assert.equal(chemistryTier(pair('Yoichi Isagi','Yo Hiori').score),'chemical');
