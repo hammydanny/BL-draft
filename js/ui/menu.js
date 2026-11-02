@@ -7,6 +7,7 @@ function refreshMainMenu(){
 }
 function goToMainMenu(options={}){
     if(!options.skipHistory&&document.getElementById("soloDraftScreen")&&!document.getElementById("soloDraftScreen").classList.contains("hidden")&&typeof leaveSoloDraft==="function"){leaveSoloDraft();return;}
+    if(!options.skipHistory&&typeof playViewVisible==="function"&&playViewVisible()){leavePlayView();return;}
     if(uiState.screen==="setup")saveSetupPreferences();
     if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
 

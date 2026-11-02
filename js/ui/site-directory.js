@@ -21,9 +21,18 @@ function updateSiteDirectory(screen){
         refreshDirectoryResume();
         return;
     }
+    const playScreen=document.getElementById("playViewScreen");
+    if(playScreen&&!playScreen.classList.contains("hidden")&&typeof playViewTitle==="function"){
+        const label=playViewTitle(playScreen.dataset.view),section=playViewSection(playScreen.dataset.view);
+        setMobilePageContext(label);
+        document.querySelectorAll("[data-directory-section]").forEach(item=>{if(item.dataset.directorySection===section)item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");});
+        document.getElementById("siteBreadcrumb").innerHTML=`<button type="button" data-directory-action="home">HOME</button><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
+        if(typeof SiteI18n!=="undefined")SiteI18n.apply(document.getElementById("siteBreadcrumb"));
+        refreshDirectoryResume();return;
+    }
     const soloScreen=document.getElementById("soloDraftScreen");
     if(soloScreen&&!soloScreen.classList.contains("hidden")){
-        const label=soloScreen.dataset.soloKind==="daily"?"DAILY EGO DRAFT":"DRAFT CHALLENGES";
+        const label=typeof soloKindLabel==="function"&&soloState?soloKindLabel(soloState):soloScreen.dataset.soloKind==="daily"?"DAILY EGO DRAFT":"DRAFT CHALLENGES";
         setMobilePageContext(label);
         document.querySelectorAll("[data-directory-section]").forEach(item=>{if(item.dataset.directorySection==="challenges")item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");});
         document.getElementById("siteBreadcrumb").innerHTML=`<button type="button" data-directory-action="home">HOME</button><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
@@ -86,9 +95,11 @@ function configureTeamBuilderHeader(standalone){
 }
 function runDirectoryAction(action){
     if(action==="battle-sim"){openBattleSimPage();return;}
-    if(["challenges","daily-draft","draft-challenges"].includes(action)&&typeof openChallengesMenu==="function"){
-        if(action==="daily-draft")openDraftChallenges(true);else if(action==="draft-challenges")openDraftChallenges();else openChallengesMenu();return;
-    }
+    // v0.7.3 play views live on the home document; other documents navigate there.
+    const views={"challenges":"board","ego-board":"board","draft-challenges":"challenges","draft-duel":"duel","challenge-lab":"lab","ego-record":"record"};
+    if(views[action]&&typeof openPlayView==="function"){openPlayView(views[action]);return;}
+    if(action==="daily-draft"&&typeof openDraftChallenges==="function"){openDraftChallenges(true);return;}
+    if(action==="vs-cpu"&&typeof openCpuBriefing==="function"){openCpuBriefing();return;}
 
     if(document.body.dataset.sitePage){
         const button=document.querySelector(`[data-directory-action="${action}"][data-directory-href]`);
@@ -133,13 +144,19 @@ function initSiteDirectory(){
           <div class="mobile-primary-links">
             <button type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></button>
             <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
-            <button type="button" data-directory-action="challenges" data-directory-href="./?challenge=all" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>CHALLENGES</strong></button>
+            <button type="button" data-directory-action="ego-board" data-directory-href="./?play=board" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>EGO BOARD</strong></button>
             <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/initializer/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>04</span><strong>BATTLE SIM</strong></button>
             <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>05</span><strong>TEAM BUILDER</strong></button>
             <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></button>
           </div>
           <div class="mobile-secondary-links">
             <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT</button>
+            <button type="button" data-directory-action="vs-cpu" data-directory-href="./?challenge=cpu">VS CPU</button>
+            <button type="button" data-directory-action="draft-duel" data-directory-href="./?play=duel">DRAFT DUEL</button>
+            <button type="button" data-directory-action="daily-draft" data-directory-href="./?challenge=daily">DAILY EGO DRAFT</button>
+            <button type="button" data-directory-action="draft-challenges" data-directory-href="./?play=challenges">DRAFT CHALLENGES</button>
+            <button type="button" data-directory-action="challenge-lab" data-directory-href="./?play=lab">CHALLENGE LAB</button>
+            <button type="button" data-directory-action="ego-record" data-directory-href="./?play=record">EGO RECORD</button>
             <button type="button" data-directory-action="resume" data-directory-href="auction/room/" hidden>RESUME AUCTION</button>
             <button type="button" data-directory-action="characters" data-directory-href="lore/?view=characters">CHARACTERS</button>
             <button type="button" data-directory-action="chemistry" data-directory-href="lore/?view=chemistry">CHEMISTRY</button>
