@@ -8,7 +8,7 @@ function refreshDirectoryResume(){
 function updateSiteDirectory(screen){
     const informationPage=document.body.dataset.sitePage;
     if(informationPage){
-        const pageLabel=({privacy:"PRIVACY",legal:"LEGAL",changelog:"CHANGELOG","404":"PAGE NOT FOUND","battle-sim-disabled":"BATTLE SIM DISABLED"})[informationPage]||informationPage.toUpperCase();
+        const pageLabel=({privacy:"PRIVACY",legal:"LEGAL",changelog:"CHANGELOG","404":"PAGE NOT FOUND"})[informationPage]||informationPage.toUpperCase();
         setMobilePageContext(pageLabel||"HOME");
         document.getElementById("siteBreadcrumb").textContent=`HOME / ${pageLabel}`;
         document.querySelectorAll(".footer-links a").forEach(link=>{

@@ -926,6 +926,15 @@ check('Data validation rejects malformed players, reversed pairs, missing labels
     reject({metadata:{1:{overview:'Role test',classification:'CANON',canonPositions:[{position:'INVALID'}]}}},'canon role');
     reject({categories:{unknown:{label:'Unknown',names:['Unknown Player']}}},'category');
 });
+check('Battle Sim Early Access has no active disabled-route links',()=>{
+    const activePages=walk(root).filter(file=>file.endsWith('.html')&&!file.endsWith(path.join('battle-sim-disabled','index.html')));
+    for(const file of activePages){
+        const content=fs.readFileSync(file,'utf8');
+        assert(!content.includes('data-directory-href="battle-sim-disabled/"'),`${path.relative(root,file)}: disabled Battle Sim nav link`);
+        if(file.includes(path.join('battle-sim',path.sep)))assert(!content.includes('new URL("battle-sim-disabled/"'),`${path.relative(root,file)}: disabled Battle Sim redirect`);
+    }
+    assert(!read('js/router.js').includes('battle-sim-disabled/'),'Router must never send users to the disabled Battle Sim route');
+});
 check('Database guidance, accessible controls, scoped styling and metadata foundations',()=>{
     const lore=read('js/lore.js'),css=read('css/character-lore.css');
     assert(read('js/router.js').includes('battle-sim/initializer/'),'Battle Sim should route to the Early Access initializer');

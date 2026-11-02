@@ -197,7 +197,16 @@ if(restoreGameInPlace){
     };
 }
 
+function ensureBattleSimRouteDocument(route){
+    if(historyOnlyNavigation())return false;
+    const canonical=route==="battleSim"?"battleSimInitializer":route;
+    if(!["battleSimInitializer","battleSimGame","battleSimResults"].includes(canonical))return false;
+    if(appRelativePath()===routePath(canonical))return false;
+    replaceLocation(canonicalRouteUrl(canonical),canonical);
+    return true;
+}
 function navigateToRoute(route,options={}){
+    if(ensureBattleSimRouteDocument(route))return;
     switch(route){
         case "menu":
             goToMainMenu({...options,skipHistory:true});
