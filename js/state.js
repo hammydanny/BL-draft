@@ -122,7 +122,7 @@ function hideSiteError(){
 
 
 function teamByNumber(n){ return n === 0 ? standaloneBuilderTeam : (n === 1 ? team1 : team2); }
-function isTeamFull(n){ return teamByNumber(n).players.length >= maxPlayers; }
+function isTeamFull(n){ return signedCount(teamByNumber(n)) >= maxPlayers; }
 function otherTeamNumber(n){ return n === 1 ? 2 : 1; }
 function onlyTeamWithSpace(){
     const t1Full=isTeamFull(1), t2Full=isTeamFull(2);

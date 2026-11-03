@@ -103,7 +103,7 @@ function createFinalTeamCard(team,n){
       <div class="final-team-top"><span>SQUAD // 0${n}</span><h3>${esc(team.name)}</h3></div>
       <div class="final-stats final-stats-v9">
         <div><span>BASE QUALITY</span><strong>${contribution.baseQuality||"--"}</strong></div>
-        <div><span>PLAYERS</span><strong>${team.players.length}</strong></div>
+        <div><span>PLAYERS</span><strong>${signedCount(team)}</strong></div>
         <div><span>SPENT</span><strong>$${spent.toLocaleString()}</strong></div>
         <div><span>REMAINING</span><strong>$${team.budget.toLocaleString()}</strong></div>
       </div>
@@ -165,16 +165,17 @@ function showAuctionComplete(){
 function openBattleSimFromResults(){
     const snapshot={
         source:"auction-results",timestamp:Date.now(),
-        team1:{name:team1.name,color:team1.color,players:team1.players.map(function(p){return {
+        team1:{name:team1.name,color:team1.color,players:signedPlayers(team1).map(function(p){return {
             id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
             positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
         };})},
-        team2:{name:team2.name,color:team2.color,players:team2.players.map(function(p){return {
+        team2:{name:team2.name,color:team2.color,players:signedPlayers(team2).map(function(p){return {
             id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
             positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
         };})},
         formations:{1:formationByTeam[1]||"4-3-3",2:formationByTeam[2]||"4-3-3"},
-        assignments:{1:Object.assign({},formationAssignments[1]||{}),2:Object.assign({},formationAssignments[2]||{})}
+        // Blue Lock Man is an Auction-only keeper; Battle Sim receives the drafted squads.
+        assignments:Object.fromEntries([1,2].map(n=>[n,Object.fromEntries(Object.entries(formationAssignments[n]||{}).filter(([,id])=>!isBlueLockManId(id)))]))
     };
     try{sessionStorage.setItem("blBattleSimLaunchV1",JSON.stringify(snapshot));}
     catch(error){showSiteError("This browser could not transfer the drafted squads. Battle Sim will open with new teams.","BATTLE SIM HANDOFF");}
@@ -214,7 +215,7 @@ function createShareTeam(team,n){
     const target=snap.deployment;
     const stateLabel=snap.deployedCount===0?"NO FORMATION BUILT":snap.complete?"FORMATION COMPLETE":`INCOMPLETE ${snap.deployedCount}/${target}`;
     return `<article class="share-team share-team-v15" style="${teamVars(team)}">
-      <div class="share-team-head"><div><span>SQUAD 0${n} // ${stateLabel}</span><h3>${esc(team.name)}</h3></div><b>${team.players.length}</b></div>
+      <div class="share-team-head"><div><span>SQUAD 0${n} // ${stateLabel}</span><h3>${esc(team.name)}</h3></div><b>${signedCount(team)}</b></div>
       <div class="share-v14-metrics">
         <div><span>EFFECTIVE OVR</span><strong>${snap.ovr||"--"}</strong></div>
         <div><span>CHEMISTRY</span><strong class="${snap.chemistry.overall?chemistryTier(snap.chemistry.overall):""}">${snap.chemistry.overall||"--"}</strong></div>
@@ -299,7 +300,7 @@ function drawAuctionShareImageTeam(ctx,team,n,snap,layout){
     shareImageRoundRect(ctx,x,y,width,height,18,"#0a1d33","#234866");ctx.fillStyle=accent;ctx.fillRect(x+1,y+18,5,height-36);
     shareImageText(ctx,translate("SQUAD")+(n?" "+String(n).padStart(2,"0"):"")+"  //  "+"\u2066"+formationLabel(snap.formation)+"\u2069",x+28,y+35,width-56,'800 18px "Barlow Condensed", sans-serif',"#61bcff");
     shareImageText(ctx,team.name,x+28,y+78,width-178,'900 italic 39px "Barlow Condensed", sans-serif',"#f0f7ff");
-    shareImageText(ctx,team.players.length+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
+    shareImageText(ctx,signedCount(team)+" "+translate("PLAYERS"),x+width-28,y+72,125,'800 17px "Barlow Condensed", sans-serif',"#9cbad4","right");
     const metricY=y+100,metricH=62,gap=8,insideW=width-48,metricW=(insideW-gap*5)/6;
     const metrics=[
         [translate("BASE QUALITY"),String(reportContribution.baseQuality||"--")],[translate("EFFECTIVE OVR"),String(reportOVR||"--")],[translate("CHEMISTRY"),String(reportChemistry?.overall||"--")],

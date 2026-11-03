@@ -240,7 +240,25 @@ function cachedAutoBestChemistry(search,formation,assignment,deployed){
     return {network:{overall,links},hasLinks:linkValues.length>0,chemistry:overall,
         chemistryFloor:linkValues.length?chemistryFloor:0,weakLinks,eliteLinks};
 }
+// Blue Lock Man keeper lock: when a team has him, every lineup must have him in the GK slot and nowhere else.
+// The shared scorers reject other lineups, so Auto Best, CPU builds and every caller obey the same rule.
+function teamBlueLockMan(n){return teamByNumber(n)?.players?.find(isBlueLockMan)||null;}
+function keeperSlotIndex(formationName){return (formationShape(formationName)||[]).findIndex(slot=>slot.label==="GK");}
+function keeperLockViolations(n,assignment,formationName){
+    const keeper=teamBlueLockMan(n);if(!keeper)return 0;
+    const gk=keeperSlotIndex(formationName);let violations=0;
+    for(const [slot,id] of Object.entries(assignment||{}))if((id===keeper.id)!==(Number(slot)===gk))violations++;
+    return violations;
+}
+function keeperLockBlocks(n,formationName,slotIndex,player){const keeper=teamBlueLockMan(n);return !!keeper&&(slotIndex===keeperSlotIndex(formationName))!==(player?.id===keeper.id);}
+function enforceBlueLockManKeeper(n){
+    const keeper=teamBlueLockMan(n),gk=keeperSlotIndex(formationByTeam[n]||"4-3-3");if(!keeper||gk<0)return;
+    const assignment=formationAssignments[n]||(formationAssignments[n]={});
+    for(const slot of Object.keys(assignment))if(assignment[slot]===keeper.id)delete assignment[slot];
+    assignment[gk]=keeper.id;
+}
 function formationAssignmentScore(n,assignment,formationName=formationByTeam[n]||"4-3-3",search=null){
+    const lockViolations=keeperLockViolations(n,assignment,formationName);if(lockViolations)return -1e6*lockViolations;
     if(search){
         const formation=search.formations.get(formationName);
         const key=autoBestAssignmentKey(assignment,formation.shape);
@@ -268,6 +286,7 @@ function formationAssignmentScore(n,assignment,formationName=formationByTeam[n]|
     return score;
 }
 function incrementalFormationCandidateScore(n,formationName,assignment,slotIndex,player,search=null){
+    if(keeperLockBlocks(n,formationName,slotIndex,player))return -1e6;
     if(search){
         const formation=search.formations.get(formationName);
         let score=formation.roles[slotIndex].get(player.id).score;
@@ -438,6 +457,7 @@ function evaluateFormationCandidate(n,formationName,assignment,search=null){
         ...metrics,
         exactScore:formationAssignmentScore(n,assignment,formationName,search)
     };
+    const lockViolations=keeperLockViolations(n,assignment,formationName);if(lockViolations)evaluation.score-=1e6*lockViolations;
     return formation?memoizeAutoBestValue(formation.evaluations,key,evaluation):evaluation;
 }
 
@@ -655,6 +675,7 @@ function sanitizeFormationAssignments(n){
         if(i>=0 && i<slots.length && teamIds.has(id) && !seen.has(id)){clean[i]=id;seen.add(id);}
     });
     formationAssignments[n]=clean;
+    enforceBlueLockManKeeper(n);
     ensureFormationCaptain(n,false);
 }
 function switchFormationTeam(n){
@@ -738,6 +759,7 @@ async function autoBestXI(){
 
 function resetCurrentFormation(){
     formationAssignments[formationTeamNumber]={};
+    enforceBlueLockManKeeper(formationTeamNumber);
     formationCaptainByTeam[formationTeamNumber]=null;
     selectedFormationPlayerId=null;
     renderFormationBuilder();saveGame();
@@ -775,6 +797,7 @@ function movePlayerToSlot(playerId,slotIndex){
 }
 function movePlayerToBench(playerId){
     const n=formationTeamNumber;
+    if(isBlueLockMan(playerById(playerId))){playSfx("error");return;}
     const sourceSlot=Object.keys(formationAssignments[n]).find(k=>formationAssignments[n][k]===playerId);
     if(sourceSlot!==undefined) delete formationAssignments[n][sourceSlot];
     if(formationCaptainByTeam[n]===playerId)formationCaptainByTeam[n]=null;
@@ -915,6 +938,7 @@ function formationDropTargetAt(x,y){
     return hit.closest(".formation-slot,[data-formation-bench]");
 }
 function beginFormationPointerDrag(event,id){
+    if(isBlueLockMan(playerById(id)))return;
     if(event.button!==undefined && event.button!==0)return;
     // Phone/tablet gestures scroll normally. The selected-player drag handle
     // explicitly opts into the existing pointer engine for intentional touch drags.

@@ -56,7 +56,10 @@ function dailyFormationNames(size){return size<11?Object.keys(DAILY_FORMATIONS).
 function availableFormationNames(n){const current=formationByTeam[n];return Object.keys(FORMATIONS).concat(DAILY_FORMATIONS[current]?dailyFormationNames(DAILY_FORMATIONS[current].length):[]);}
 // Both previews and real placement use this exact swap/reserve rule.
 function formationMoveAssignment(n,playerId,slotIndex){
-    const shape=formationShape(formationByTeam[n]||"4-3-3"),team=teamByNumber(n);if(!Number.isInteger(slotIndex)||!shape?.[slotIndex]||!team.players.some(p=>p.id===playerId))return null;
+    const shape=formationShape(formationByTeam[n]||"4-3-3"),team=teamByNumber(n);
+    // Blue Lock Man stays in goal: he cannot move and nobody can take the GK slot from him.
+    if(typeof teamBlueLockMan==="function"&&teamBlueLockMan(n)&&(isBlueLockMan(playerById(playerId))||shape?.[slotIndex]?.label==="GK"))return null;
+    if(!Number.isInteger(slotIndex)||!shape?.[slotIndex]||!team.players.some(p=>p.id===playerId))return null;
     const assignment={...formationAssignments[n]},source=Object.keys(assignment).find(slot=>assignment[slot]===playerId),target=assignment[slotIndex];
     if(source!==undefined)delete assignment[source];if(target&&target!==playerId&&source!==undefined)assignment[source]=target;assignment[slotIndex]=playerId;return assignment;
 }

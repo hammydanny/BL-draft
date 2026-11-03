@@ -7,7 +7,7 @@ function homepageResumeSummary(saved){
     const route=auctionRouteForSavedState(saved);
     const phase=route==="auctionTeamBuilder"?"FORMATION BUILDER":route==="auctionResults"?"DRAFT COMPLETE":
         ({coin:"COIN FLIP",opening:"OPENING BID",bidding:"LIVE BIDDING",zero:"FREE SIGNING",forced:"FREE SIGNING",sold:"PLAYER SIGNED",next:"NEXT PLAYER"}[saved.uiState?.phase]||"AUCTION IN PROGRESS");
-    return {remaining,phase,route,filled:roster.length,capacity:saved.maxPlayers*2};
+    return {remaining,phase,route,filled:roster.filter(id=>!isBlueLockManId(id)).length,capacity:saved.maxPlayers*2};
 }
 function refreshHomepageSession(saved){
     const panel=document.getElementById("menuResumePanel");
@@ -18,7 +18,7 @@ function refreshHomepageSession(saved){
     document.getElementById("menuResumeMeta").textContent=summary.phase;
     for(const number of [1,2]){
         document.getElementById(`homeResumeTeam${number}`).textContent=saved[`team${number}`].name;
-        document.getElementById(`homeResumeRoster${number}`).textContent=`${saved[`team${number}`].players.length} / ${saved.maxPlayers} PLAYERS`;
+        document.getElementById(`homeResumeRoster${number}`).textContent=`${saved[`team${number}`].players.filter(id=>!isBlueLockManId(id)).length} / ${saved.maxPlayers} PLAYERS`;
     }
     document.getElementById("homeResumeAuction").textContent=String(saved.auctionNumber).padStart(2,"0");
     document.getElementById("homeResumeRemaining").textContent=summary.remaining;

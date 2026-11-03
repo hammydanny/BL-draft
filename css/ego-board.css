@@ -277,3 +277,19 @@ html[data-theme="light"] .home-today .mode-overline{color:#8a5c00}
 .home-mode-utilities .home-mode-title{overflow-wrap:normal;word-break:normal;hyphens:manual}
 @media(max-width:760px){.home-modes.home-mode-utilities{grid-template-columns:1fr!important}}
 .duel-actions{align-items:stretch}.duel-actions>button{min-height:52px;margin:0;flex:1 1 150px}
+/* Blue Lock Man setup toggle: the existing CPU-control card pattern with the keeper portrait. */
+.blue-lock-man-toggle{display:grid;grid-template-columns:auto 64px minmax(0,1fr);align-items:center;gap:14px;margin-top:14px;padding:12px 14px;border:1px solid var(--border-strong);border-inline-start:3px solid var(--accent);background:var(--bg-panel,var(--bg-surface));cursor:pointer}
+.blue-lock-man-toggle input{width:18px;height:18px;margin:0;accent-color:var(--blue,var(--accent))}
+.blue-lock-man-toggle img{width:64px;height:80px;object-fit:cover;border:1px solid var(--border-strong);background:#07182a}
+.blue-lock-man-toggle>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.blue-lock-man-toggle strong{color:var(--text-primary);font-size:13px;letter-spacing:.8px}
+.blue-lock-man-toggle small{color:var(--text-secondary);font-size:12px;font-weight:500;line-height:1.45;letter-spacing:0}
+.blue-lock-man-toggle .blue-lock-man-stats{font:800 12px "Rajdhani",sans-serif;color:var(--accent-text);letter-spacing:.6px}
+.blue-lock-man-toggle .blue-lock-man-stats span{display:inline-block;padding:0 5px;margin-inline-end:4px;border:1px solid var(--accent);font-size:11px}
+.blue-lock-man-toggle:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--bg-surface))}
+.blue-lock-man-toggle:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
+.blue-lock-man-toggle:has(input:disabled){opacity:.5;cursor:not-allowed}
+.cpu-briefing .blue-lock-man-toggle{margin:14px 0 4px}
+@media(max-width:560px){.blue-lock-man-toggle{grid-template-columns:auto 52px minmax(0,1fr);gap:10px}.blue-lock-man-toggle img{width:52px;height:65px}}
+.blue-lock-man-toggle .blue-lock-man-stats i{font-style:normal}
+.mini-player-card .mini-player-lock{align-self:flex-start;margin-top:2px;padding:1px 6px;border:1px solid var(--accent);color:var(--accent-text);font:800 10px "Rajdhani",sans-serif;font-style:normal;letter-spacing:.8px}

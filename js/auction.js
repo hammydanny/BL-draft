@@ -27,7 +27,7 @@ function getValidatedSetup(){
     if(selectedPlayers.length===0) return showSiteError("Select at least one player for the auction.","PLAYER POOL EMPTY");
     if(selectedPlayers.length<requiredPlayers) return showSiteError(`You need at least ${requiredPlayers} selected players to fill two teams of ${setupMaxPlayers}. Select more players or lower the maximum players per team.`,"NOT ENOUGH PLAYERS");
     if(typeof validateChallengeSetup==="function"&&!validateChallengeSetup({budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,selectedPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal"}))return;
-    return {cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal",challenge:setupDraftChallenge,n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,selectedPlayers};
+    return {cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal",challenge:setupDraftChallenge,n1,n2,budget,bidIncrement:setupBidIncrement,maxPlayers:setupMaxPlayers,team2CpuControlled:document.getElementById("team2CpuControlled").checked,blueLockMan:!!document.getElementById("blueLockManKeeper")?.checked&&!setupDraftChallenge,selectedPlayers};
 }
 
 function resetDraftState(setup){
@@ -37,8 +37,10 @@ function resetDraftState(setup){
     cpuDifficulty=normalizeCpuDifficulty(setup.cpuDifficulty);cpuPersonalitySeed=(Math.random()*0xffffffff)>>>0;cpuLastAction="";cpuBuiltRosterKey="";
     activeDraftChallenge=setup.challenge?normalizeDraftChallenge(setup.challenge):null;draftModeState=normalizeDraftModeState(null,activeDraftChallenge);
     if(activeDraftChallenge?.id==="daily"&&activeDraftChallenge.v===2)cpuPersonalitySeed=replayHash("cpu-v072:"+exportChallengeCode(activeDraftChallenge));
-    team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:[]};
-    team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:[]};
+    // Blue Lock Man starts in goal for both teams; he is never a signing and costs nothing.
+    const keeper=n=>setup.blueLockMan&&!setup.challenge?[blueLockManFor(n)]:[];
+    team1={name:setup.n1,color:document.getElementById("team1Color").value,budget:setup.budget,players:keeper(1)};
+    team2={name:setup.n2,color:document.getElementById("team2Color").value,budget:setup.budget,players:keeper(2)};
     remainingPlayers=activeDraftChallenge?.v===2?modeMarketOrder(activeDraftChallenge):shufflePlayers(setup.selectedPlayers);auctionHistory=[];auctionNumber=0;
     currentPlayer=null;currentBid=0;currentBidder=null;
     auctionUndoStack=[];auctionRedoStack=[];auctionHistoryRestoring=false;
@@ -76,7 +78,7 @@ const cpuPlanCache=new Map();
 function cpuAssignment(roster,shape,indices){
     const rows=indices.length,columns=roster.length+rows,u=Array(rows+1).fill(0),v=Array(columns+1).fill(0),p=Array(columns+1).fill(0),way=Array(columns+1).fill(0);
     const affinity=new Map(roster.map(player=>[player.id,cpuChemistryFit(player,{players:roster.filter(p=>p.id!==player.id)})]));
-    const weights=indices.map(index=>roster.map(player=>acceptablePositionFit(player,shape[index].label)?160+ratingStrength(effectiveOVR(player,shape[index].label))*18+affinity.get(player.id)*.3:-1000).concat(Array(rows).fill(0)));
+    const weights=indices.map(index=>roster.map(player=>isBlueLockMan(player)?(shape[index].label==="GK"?100000:-1000):acceptablePositionFit(player,shape[index].label)?160+ratingStrength(effectiveOVR(player,shape[index].label))*18+affinity.get(player.id)*.3:-1000).concat(Array(rows).fill(0)));
     // Rectangular maximum-weight assignment. Dummy columns represent genuine gaps.
     for(let i=1;i<=rows;i++){
         p[0]=i;let j0=0;const minimum=Array(columns+1).fill(Infinity),used=Array(columns+1).fill(false);
@@ -134,8 +136,8 @@ function computeCpuTarget(team){
     return {rating,effective:after.contribution.members.find(m=>m.player.id===currentPlayer.id)?.raw||0,positionFit,chemistryFit,score,scarcity,percentile,saturation,before,after,fitGain,upgrade,depthGain,objectiveValue,versatility,improvement:Math.max(0,(after.score-before.score)/100),tier:fitGain||upgrade>8?rating>=94?"elite":"starter":upgrade>2?"upgrade":"depth"};
 }
 function cpuMaximumBid(team,evaluation){
-    const slots=Math.max(1,maxPlayers-team.players.length),minimum=nextLegalAuctionBid(0),average=team.budget/slots,hard=cpuDifficulty==="hard",normal=cpuDifficulty==="normal";
-    const gaps=Math.min(slots-1,evaluation.after?.missing??Math.max(0,Math.min(11,maxPlayers)-team.players.length-1)),reserve=Math.max((slots-1)*minimum,Math.min(team.budget*.8,gaps*average*(hard?.6:normal?.4:.15)+(slots-1-gaps)*minimum));
+    const slots=Math.max(1,maxPlayers-signedCount(team)),minimum=nextLegalAuctionBid(0),average=team.budget/slots,hard=cpuDifficulty==="hard",normal=cpuDifficulty==="normal";
+    const gaps=Math.min(slots-1,evaluation.after?.missing??Math.max(0,Math.min(11,maxPlayers)-signedCount(team)-1)),reserve=Math.max((slots-1)*minimum,Math.min(team.budget*.8,gaps*average*(hard?.6:normal?.4:.15)+(slots-1-gaps)*minimum));
     const affordable=Math.max(0,team.budget-reserve),gain=evaluation.fitGain??(evaluation.positionFit>=8?1:0),upgrade=evaluation.upgrade??Math.max(0,(evaluation.score-65)/3);
     const intelligence=hard?1:normal?.7:.25,quality=Math.max(.1,qualityScore(evaluation.rating)/100),variation=CPU_DIFFICULTIES[cpuDifficulty].variation;
     const style=1+(cpuVariation(currentPlayer.id+":"+team.players.length)-.5)*2*variation;
@@ -162,15 +164,15 @@ function cpuOpeningBid(team,evaluation){
 }
 function cpuValuesTarget(evaluation){return evaluation.score>=48||evaluation.positionFit>=8;}
 function cpuChooseBid(team,current=0,opening=false,evaluation=evaluateCpuTarget(team)){
-    if(team.players.length>=maxPlayers||!modeCanSign(team,currentPlayer))return opening?0:null;
+    if(signedCount(team)>=maxPlayers||!modeCanSign(team,currentPlayer))return opening?0:null;
     if(opening)return cpuOpeningBid(team,evaluation);
     const next=nextLegalAuctionBid(current),maximum=cpuMaximumBid(team,evaluation);
     if(next>maximum||next>team.budget||!cpuValuesTarget(evaluation))return null;
     // Hard has almost no random withdrawal: marginal value and completion reserves decide.
-    const average=team.budget/Math.max(1,maxPlayers-team.players.length),opponent=team===team2?team1:team2;
+    const average=team.budget/Math.max(1,maxPlayers-signedCount(team)),opponent=team===team2?team1:team2;
     if(cpuDifficulty==="hard"){
         if(evaluation.before?.missing&&!evaluation.fitGain&&evaluation.upgrade<3&&next>average*.3)return null;
-        if(current>opponent.budget/Math.max(1,maxPlayers-opponent.players.length)*1.8&&!evaluation.fitGain&&next>maximum*.85)return null;
+        if(current>opponent.budget/Math.max(1,maxPlayers-signedCount(opponent))*1.8&&!evaluation.fitGain&&next>maximum*.85)return null;
     }else if(next>maximum*.7&&evaluation.positionFit<8&&cpuVariation(currentPlayer.id+":"+current+":"+team.players.length)<(cpuDifficulty==="easy"?.07:.03))return null;
     return next;
 }
@@ -361,11 +363,11 @@ function startRandomDraft(){
     const setup=getValidatedSetup();if(!setup)return;
     resetDraftState(setup);draftMode="random";
     const shuffled=shufflePlayers(setup.selectedPlayers);
-    team1.players=shuffled.slice(0,maxPlayers);team2.players=shuffled.slice(maxPlayers,maxPlayers*2);
+    team1.players=[...team1.players,...shuffled.slice(0,maxPlayers)];team2.players=[...team2.players,...shuffled.slice(maxPlayers,maxPlayers*2)];
     remainingPlayers=shuffled.slice(maxPlayers*2);
     auctionHistory=[
-        ...team1.players.map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true})),
-        ...team2.players.map((player,index)=>({auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true}))
+        ...signedPlayers(team1).map((player,index)=>({auction:index+1,player,teamNumber:1,teamName:team1.name,teamColor:team1.color,price:0,randomDraft:true})),
+        ...signedPlayers(team2).map((player,index)=>({auction:maxPlayers+index+1,player,teamNumber:2,teamName:team2.name,teamColor:team2.color,price:0,randomDraft:true}))
     ];
     auctionNumber=auctionHistory.length;currentPlayer=null;currentBid=0;currentBidder=null;startingTeam=null;
     uiState={screen:"auction",phase:"complete",turn:null};
@@ -504,7 +506,7 @@ function validateBid(bid,team,minimum){
     if(!Number.isFinite(bid)||bid<=minimum){showSiteError(minimum===0?"Please enter a valid bid.":`Your bid must be higher than $${minimum.toLocaleString()}.`,"BID REJECTED");return false;}
     if(bid%bidIncrement!==0){showSiteError(`Bids must be in intervals of $${bidIncrement}.`,"INVALID BID INTERVAL");return false;}
     if(bid>team.budget){showSiteError(`${team.name} only has $${team.budget.toLocaleString()} remaining.`,"INSUFFICIENT BUDGET");return false;}
-    if(team.players.length>=maxPlayers){showSiteError(`${team.name}'s roster is full.`,"ROSTER FULL");return false;}
+    if(signedCount(team)>=maxPlayers){showSiteError(`${team.name}'s roster is full.`,"ROSTER FULL");return false;}
     return true;
 }
 
@@ -556,10 +558,10 @@ function showModeMarket(){
     if(!remainingPlayers.length||isTeamFull(1)&&isTeamFull(2)){showAuctionComplete();return;}
     currentPlayer=null;currentBid=0;currentBidder=null;uiState={screen:"auction",phase:"market",turn:1};saveGame();
     const candidates=remainingPlayers.slice(0,3);auctionContent.dataset.playerId="";auctionScreen.dataset.auctionPhase="market";auctionScreen.style.setProperty("--auction-dock-height","0px");ensureAuctionHistoryControls();
-    auctionContent.innerHTML=`${modeHudMarkup()}<section class="nomination-market"><div class="market-heading"><div><span>PUBLIC MARKET</span><h2>NOMINATE YOUR NEXT TARGET</h2><p>Choose the footballer who best serves this mission. Both managers may bid.</p></div><b>${remainingPlayers.length} <span>PLAYERS LEFT</span></b></div><div class="market-candidates">${candidates.map(p=>`<button type="button" class="market-player" data-mode-nominate="${p.id}" ${![team1,team2].some(team=>team.players.length<maxPlayers&&modeCanSign(team,p))?"disabled":""}><span class="market-player-rating" aria-label="${esc(replayText("OVERALL RATING"))}">${playerOverall(p)}</span><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="160" height="180" loading="eager"><strong data-i18n-ignore>${esc(p.name)}</strong>${positionBadges(p,true)}<span class="market-nominate-label">NOMINATE <b aria-hidden="true">→</b></span></button>`).join("")}</div><div class="market-footer"><button type="button" data-mode-refresh ${!draftModeState.refreshes||remainingPlayers.length<=3?"disabled":""}>SCOUT MARKET <b>${draftModeState.refreshes}</b></button><p>Refresh moves these targets to the back of the market. It does not remove them.</p></div></section>`;
+    auctionContent.innerHTML=`${modeHudMarkup()}<section class="nomination-market"><div class="market-heading"><div><span>PUBLIC MARKET</span><h2>NOMINATE YOUR NEXT TARGET</h2><p>Choose the footballer who best serves this mission. Both managers may bid.</p></div><b>${remainingPlayers.length} <span>PLAYERS LEFT</span></b></div><div class="market-candidates">${candidates.map(p=>`<button type="button" class="market-player" data-mode-nominate="${p.id}" ${![team1,team2].some(team=>signedCount(team)<maxPlayers&&modeCanSign(team,p))?"disabled":""}><span class="market-player-rating" aria-label="${esc(replayText("OVERALL RATING"))}">${playerOverall(p)}</span><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" width="160" height="180" loading="eager"><strong data-i18n-ignore>${esc(p.name)}</strong>${positionBadges(p,true)}<span class="market-nominate-label">NOMINATE <b aria-hidden="true">→</b></span></button>`).join("")}</div><div class="market-footer"><button type="button" data-mode-refresh ${!draftModeState.refreshes||remainingPlayers.length<=3?"disabled":""}>SCOUT MARKET <b>${draftModeState.refreshes}</b></button><p>Refresh moves these targets to the back of the market. It does not remove them.</p></div></section>`;
     auctionContent.querySelectorAll("[data-mode-nominate]").forEach(button=>button.onclick=()=>selectModeNomination(Number(button.dataset.modeNominate)));
     auctionContent.querySelector("[data-mode-refresh]").onclick=()=>{if(uiState.phase!=="market"||!draftModeState.refreshes||remainingPlayers.length<=3)return;recordAuctionUndoPoint("SCOUT MARKET");draftModeState.refreshes--;remainingPlayers.push(...remainingPlayers.splice(0,3));playSfx("select");showModeMarket();};
-    if(!candidates.some(p=>[team1,team2].some(team=>team.players.length<maxPlayers&&modeCanSign(team,p)))){
+    if(!candidates.some(p=>[team1,team2].some(team=>signedCount(team)<maxPlayers&&modeCanSign(team,p)))){
         // Invalid contracts cannot trap an otherwise playable market.
         for(const p of candidates)draftModeState.retired.push(p.id);remainingPlayers.splice(0,candidates.length);saveGame();scheduleAuctionTransition(showModeMarket,100);
     }
@@ -582,6 +584,6 @@ function showExclusiveModeContract(n){
     cancelAuctionTransition();uiState={screen:"auction",phase:"contract",turn:n};saveGame();const team=teamByNumber(n),cost=team.budget>=bidIncrement?nextLegalAuctionBid(0):0;
     renderAuctionScreen(`<div class="exclusive-contract" style="${teamVars(team)}"><span>EXCLUSIVE CONTRACT</span><h3 data-i18n-ignore>${esc(team.name)}</h3><p>The other squad cannot sign this player under the mission rules.</p><div class="winning-price">${cost?"$"+cost.toLocaleString():esc(replayText("FREE"))}</div>${n===2&&team2CpuControlled?'<p>CPU considering…</p>':'<div class="bid-actions"><button type="button" id="modeContractBuy">SIGN PLAYER</button><button type="button" id="modeContractPass">PASS</button></div>'}</div>`);
     const buy=()=>{if(uiState.phase!=="contract"||uiState.turn!==n||!modeCanSign(team,currentPlayer))return;recordAuctionUndoPoint("CONTROL BUY");currentBid=cost;currentBidder=n;awardPlayer(n);};
-    if(n===2&&team2CpuControlled)scheduleAuctionTransition(()=>{const evaluation=evaluateCpuTarget(team);if(cpuMaximumBid(team,evaluation)>=cost||!cost||team.players.length<maxPlayers-1)buy();else retireModeTarget();},420);
+    if(n===2&&team2CpuControlled)scheduleAuctionTransition(()=>{const evaluation=evaluateCpuTarget(team);if(cpuMaximumBid(team,evaluation)>=cost||!cost||signedCount(team)<maxPlayers-1)buy();else retireModeTarget();},420);
     else{document.getElementById("modeContractBuy").onclick=buy;document.getElementById("modeContractPass").onclick=retireModeTarget;}
 }

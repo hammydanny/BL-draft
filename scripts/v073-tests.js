@@ -133,6 +133,35 @@ function runV073Tests(){
     const levels=JSON.parse(run(`(()=>{const out={};for(const level of DUEL_LEVELS){let strength=0,n=0;for(const format of ['quick','standard','full'])for(let seed=1;seed<=6;seed++){const state=duelNew({seed:seed*7919,format,level});duelStart(state);while(state.phase==='draft'){const best=[...state.market].sort((a,b)=>duelValue(state.human,state.humanFormation,b)-duelValue(state.human,state.humanFormation,a)||a-b)[0];duelPick(state,best);}strength+=duelResult(state).cpu.strength;n++;}out[level]=strength/n;}return JSON.stringify(out);})()`));
     assert(levels.hard>levels.normal&&levels.normal>levels.easy,JSON.stringify(levels));
     pass(`Draft Duel is deterministic, never duplicates players, validates saves/codes/records; CPU strength over 18 paired duels Easy ${levels.easy.toFixed(2)} < Normal ${levels.normal.toFixed(2)} < Hard ${levels.hard.toFixed(2)}`);
+    // ---------- Blue Lock Man (Auction setup toggle) ----------
+    block(`
+        const [k1,k2]=[blueLockManFor(1),blueLockManFor(2)];
+        assert(!players.includes(k1)&&!players.includes(k2)&&!players.some(isBlueLockMan),'never in the Database/player list');
+        assert.equal(playerById(9101),k1);assert.equal(playerById(9102),k2);assert(!challengePool().includes(9101));
+        assert.deepEqual(k1.positions,['GK']);assert(canonicalFit(k1,'GK')&&!acceptablePositionFit(k1,'ST'));
+        const pool=players.filter(p=>!p.secretCharacter).slice(0,40);
+        const setup={n1:'A',n2:'B',budget:10000,bidIncrement:50,maxPlayers:11,team2CpuControlled:true,cpuDifficulty:'hard',selectedPlayers:pool,blueLockMan:true};
+        resetDraftState(setup);assert.deepEqual(team1.players,[k1]);assert.deepEqual(team2.players,[k2]);assert.equal(signedCount(team1),0);assert(!isTeamFull(1));
+        resetDraftState({...setup,blueLockMan:false});assert.deepEqual(team1.players,[]);
+        resetDraftState({...setup,challenge:draftChallengePresets()[0]});assert.deepEqual(team1.players,[],'challenges never add him');
+        resetDraftState(setup);
+        const gks=players.filter(p=>!p.secretCharacter&&canonicalFit(p,'GK')).slice(0,2),field=players.filter(p=>!p.secretCharacter&&!canonicalFit(p,'GK')).slice(0,11);
+        team1.players=[k1,...gks,...field.slice(0,9)];assert.equal(signedCount(team1),11);assert(isTeamFull(1));
+        // Auto Best: every formation keeps him in the GK slot, even with real keepers available.
+        const winner=solveBestFormationAndAssignment(1);assert.equal(winner.assignment[keeperSlotIndex(winner.formation)],k1.id);
+        for(const name of Object.keys(FORMATIONS)){const best=bestLineupForFormation(1,name);const gk=keeperSlotIndex(name);assert.equal(best.assignment[gk],k1.id,name);assert.equal(Object.values(best.assignment).filter(id=>id===k1.id).length,1,name);}
+        // Team Builder: he cannot move, be benched or be displaced from goal.
+        formationByTeam[1]='4-3-3';formationAssignments[1]={};sanitizeFormationAssignments(1);assert.equal(formationAssignments[1][0],k1.id,'sanitize puts him in goal');
+        formationAssignments[1]={0:gks[0].id,5:k1.id};sanitizeFormationAssignments(1);assert.equal(formationAssignments[1][0],k1.id);assert(!Object.entries(formationAssignments[1]).some(([slot,id])=>id===k1.id&&slot!=='0'));
+        assert.equal(formationMoveAssignment(1,k1.id,5),null);assert.equal(formationMoveAssignment(1,gks[1].id,0),null);assert.notEqual(formationMoveAssignment(1,field[0].id,9),null);
+        formationByTeam[1]='3-5-2';sanitizeFormationAssignments(1);assert.equal(formationAssignments[1][keeperSlotIndex('3-5-2')],k1.id,'formation change keeps him in goal');
+        // CPU planning counts him as its goalkeeper.
+        const plan=cpuPlanRoster([k2,...field]);assert.equal(plan.assignment[keeperSlotIndex(plan.formation)],k2.id);
+        // Saves restore him through playerById; the home resume card does not count him.
+        const saved=cleanSavedPlayerReferences({team1:{name:'A',players:[9101,1]},team2:{name:'B',players:[9102,2]},remainingPlayerIds:[3]});
+        assert.deepEqual(saved.team1.players,[9101,1]);assert.deepEqual(hydratePlayers(saved.team2.players).map(p=>p.id),[9102,2]);
+    `);
+    pass('Blue Lock Man stays out of the Database and roster counts, is always the GK under Auto Best/CPU/Team Builder, and saves cleanly');
     // ---------- Ego Record ----------
     const fresh=v073Context();
     fresh.run(`{

@@ -77,13 +77,13 @@ function createTeamTrackers(){
 function createTeamTracker(team,number){
     const isTurn=uiState.turn===number;
     const isLeader=currentBidder===number&&currentBid>0;
-    const slotsLeft=Math.max(0,maxPlayers-team.players.length);
+    const slotsLeft=Math.max(0,maxPlayers-signedCount(team));
     const budgetPct=startingBudget?Math.max(0,Math.round(team.budget/startingBudget*100)):0;
     const lowBudget=budgetPct<=20&&team.budget>0;
     const full=slotsLeft===0;
     const roster=team.players.length?team.players.map(p=>`
       <div class="mini-player-card" title="${esc(p.name)} // OVR ${playerOverall(p)}">
-        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small>${typeof playerBattleBadges==="function"?playerBattleBadges(p):""}</span>
+        <img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async" width="42" height="48"><span><strong>${esc(p.name)}</strong><small>${primaryPosition(p)} // ${playerOverall(p)}</small>${isBlueLockMan(p)?`<em class="mini-player-lock">LOCKED</em>`:""}${typeof playerBattleBadges==="function"?playerBattleBadges(p):""}</span>
       </div>`).join(""):`<div class="empty-roster">NO SIGNINGS RECORDED</div>`;
     const warnings=[];
     if(full)warnings.push("ROSTER FULL");
@@ -98,7 +98,7 @@ function createTeamTracker(team,number){
       <div class="team-live-state">${isTurn?"● ACTIVE TURN":isLeader?"◆ LEADING BID":"SQUAD STATUS"}</div>
       <div class="team-header">
         <div><span class="team-code">SQUAD // 0${number}</span><h3>${esc(team.name)}</h3></div>
-        <span class="roster-count">${team.players.length}/${maxPlayers}</span>
+        <span class="roster-count">${signedCount(team)}/${maxPlayers}</span>
       </div>
       <div class="team-economy-grid">
         <div><span>AVAILABLE CAPITAL</span><strong>$${team.budget.toLocaleString()}</strong></div>

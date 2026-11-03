@@ -167,6 +167,7 @@ function saveSetupPreferences(){
                 team1Name:document.getElementById("team1Name").value,
                 team2Name:document.getElementById("team2Name").value,
                 team2CpuControlled:document.getElementById("team2CpuControlled").checked,
+                blueLockManKeeper:!!document.getElementById("blueLockManKeeper")?.checked,
                 cpuDifficulty:document.getElementById("cpuDifficulty")?.value||"normal",
                 team1Color:document.getElementById("team1Color").value,
                 team2Color:document.getElementById("team2Color").value,
@@ -217,6 +218,8 @@ function restoreSetup(saved){
     document.getElementById("team2ColorValue").textContent=document.getElementById("team2Color").value.toUpperCase();
     const cpuControl=document.getElementById("team2CpuControlled");
     if(cpuControl&&typeof s.team2CpuControlled==="boolean")cpuControl.checked=s.team2CpuControlled;
+    const keeperToggle=document.getElementById("blueLockManKeeper");
+    if(keeperToggle&&typeof s.blueLockManKeeper==="boolean")keeperToggle.checked=s.blueLockManKeeper;
     if(document.getElementById("cpuDifficulty"))document.getElementById("cpuDifficulty").value=normalizeCpuDifficulty(s.cpuDifficulty);
     if(s.poolCategories&&typeof s.poolCategories==="object"){
         playerPoolCategoryState={...s.poolCategories};

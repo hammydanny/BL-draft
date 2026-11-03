@@ -101,6 +101,19 @@ players.forEach(player=>{
 
 // IDs and gameplay array order stay stable. Chronology is a display-only sort.
 const PLAYER_BY_ID=new Map(players.map(player=>[player.id,player]));
+// Blue Lock Man: an optional Auction goalkeeper (setup toggle). He is never part of `players`, so the
+// Database, player pool, searches and roster totals never include him; playerById still resolves him for
+// saves, lineups, chemistry and reports. One object per Auction team keeps player IDs unique.
+const BLUE_LOCK_MAN_IDS=Object.freeze([9101,9102]);
+const BLUE_LOCK_MAN_KEEPERS=BLUE_LOCK_MAN_IDS.map(id=>({id,name:"Blue Lock Man",blueLockMan:true,image:new URL("images/blue-lock-man.svg",document.baseURI).href,primaryPosition:"GK",positions:["GK"],
+    stats:{ovr:82,off:20,sho:30,spd:50,def:60,pas:55,dri:25,gk:86},weapons:[],teamHistory:[],nationality:null,debutChapter:1,appearanceOrder:9999}));
+function blueLockManFor(teamNumber){return BLUE_LOCK_MAN_KEEPERS[teamNumber===2?1:0];}
+function isBlueLockMan(player){return player?.blueLockMan===true;}
+function isBlueLockManId(id){return BLUE_LOCK_MAN_IDS.includes(Number(id));}
+// Roster counts (capacity, "players" totals) exclude Blue Lock Man.
+function signedPlayers(team){return (team?.players||[]).filter(player=>!isBlueLockMan(player));}
+function signedCount(team){return signedPlayers(team).length;}
+BLUE_LOCK_MAN_KEEPERS.forEach(keeper=>PLAYER_BY_ID.set(keeper.id,keeper));
 const PLAYER_BY_SECRET_ID=new Map(players.filter(player=>player.secretCharacter&&player.secretId).map(player=>[player.secretId.toUpperCase(),player]));
 function playerById(id){
     if(typeof id==="string"&&/^SC-\d+$/i.test(id.trim()))return PLAYER_BY_SECRET_ID.get(id.trim().toUpperCase())||null;

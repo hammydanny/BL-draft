@@ -210,8 +210,9 @@ function renderFormationBuilder({preserveScroll=true}={}){
     const pool=standalone?formationContent.querySelector(".standalone-pool-panel"):null;
     const team=teamByNumber(formationTeamNumber);
     activeFormation=formationByTeam[formationTeamNumber]||"4-3-3";
-    const slots=formationShape(activeFormation),contribution=formationContributionSnapshot(formationTeamNumber),contributions=new Map(contribution.members.map(m=>[m.player.id,m]));
+    // Sanitize first so contribution figures describe the lineup that is drawn.
     sanitizeFormationAssignments(formationTeamNumber);
+    const slots=formationShape(activeFormation),contribution=formationContributionSnapshot(formationTeamNumber),contributions=new Map(contribution.members.map(m=>[m.player.id,m]));
     const used=assignedIds(formationTeamNumber);
     const bench=team.players.filter(p=>!used.has(p.id));
     if(standalone)bench.sort(compareStandalonePlayers);
