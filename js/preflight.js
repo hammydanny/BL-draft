@@ -974,6 +974,23 @@ check('Secret players do not inflate the public roster count',()=>{
     assert(setup.includes('SECRET ROSTER'),'Unlocked secret roster count must be displayed separately');
     assert(!setup.includes('const availableCount=players.filter(secretPlayerAvailable).length'),'Combined roster denominator must not return');
 });
+check('Secret character IDs are unique and Oka uses the uploaded portrait',()=>{
+    const secretFiles=walk(path.join(root,'js/players')).filter(file=>file.endsWith(`${path.sep}player.js`)&&fs.readFileSync(file,'utf8').includes('secretCharacter: true'));
+    const secretIds=secretFiles.map(file=>{
+        const content=fs.readFileSync(file,'utf8');
+        const id=content.match(/secretId:\s*"([^"]+)"/)?.[1];
+        assert(id,`${path.relative(root,file)}: secretId`);
+        return id.toUpperCase();
+    });
+    assert(secretFiles.length>0,'Secret character modules should be discovered');
+    assert.equal(new Set(secretIds).size,secretIds.length,'Secret IDs must be unique because playerById resolves by secretId');
+    const oka=read('js/players/oka/player.js');
+    assert(oka.includes('secretCharacter: true'),'Oka remains a secret character');
+    const image=oka.match(/image:\s*"([^"]+)"/)?.[1];
+    assert.equal(image,'images/oka.jpg','Oka uses the uploaded portrait');
+    assert(fs.existsSync(path.join(root,image)),'Uploaded Oka portrait must exist');
+});
+
 check('All secret-character chemistry uses one authoritative source',()=>{
     const chemistry=read('js/chemistry.js'),reference=read('js/player-reference.js');
     const secretModules=['qazicutie','hdannyy','syaafi','jon','floppy-willy','raf','oka','jameswasnthere'];

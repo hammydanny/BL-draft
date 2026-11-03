@@ -1,7 +1,7 @@
 // Jameswasnthere is a project-created secret character.
 const PLAYER_89_DATA = {
   id: 89,
-  secretId: "SC-8",
+  secretId: "SC-10",
   name: "Jameswasnthere",
   debutChapter: 1,
   appearanceOrder: 89,

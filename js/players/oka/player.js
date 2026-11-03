@@ -1,11 +1,11 @@
-// oka is a project-created secret character. Internal ID 88; visible ID SC-7.
+// oka is a project-created secret character. Internal ID 88; visible ID SC-9.
 const PLAYER_88_DATA = {
   id: 88,
-  secretId: "SC-7",
+  secretId: "SC-9",
   name: "oka",
   debutChapter: 1,
   appearanceOrder: 88,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/oka.jpg",
   primaryPosition: "LW",
   positions: ["LW", "RW", "CM"],
   secretCharacter: true,

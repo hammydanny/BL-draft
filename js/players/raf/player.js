@@ -1,7 +1,7 @@
 // raf is a project-created secret character. Internal ID 87 is retained for save compatibility.
 const PLAYER_87_DATA = {
   id: 87,
-  secretId: "SC-6",
+  secretId: "SC-8",
   name: "raf",
   debutChapter: 1,
   appearanceOrder: 87,
