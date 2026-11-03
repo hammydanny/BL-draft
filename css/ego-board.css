@@ -293,3 +293,6 @@ html[data-theme="light"] .home-today .mode-overline{color:#8a5c00}
 @media(max-width:560px){.blue-lock-man-toggle{grid-template-columns:auto 52px minmax(0,1fr);gap:10px}.blue-lock-man-toggle img{width:52px;height:65px}}
 .blue-lock-man-toggle .blue-lock-man-stats i{font-style:normal}
 .mini-player-card .mini-player-lock{align-self:flex-start;margin-top:2px;padding:1px 6px;border:1px solid var(--accent);color:var(--accent-text);font:800 10px "Rajdhani",sans-serif;font-style:normal;letter-spacing:.8px}
+/* Long translations: the Team Builder "More actions" button wraps its label instead of pushing the ⋯ off-screen. */
+#formation-screen .builder-more>summary{white-space:normal;overflow-wrap:anywhere;text-align:start;line-height:1.2}
+#formation-screen .builder-more>summary>span{flex:0 0 auto}

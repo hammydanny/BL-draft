@@ -275,13 +275,20 @@ function initSiteDirectory(){
     function fitHeader(){
         const root=document.documentElement,inner=header.querySelector(".site-header-inner");
         let next=window.innerWidth<=1200;
-        if(!next){
-            root.removeAttribute("data-header-compact");
+        // Longer translations first try a denser desktop header (tighter items, no breadcrumb);
+        // the phone layout is used only when even that cannot fit the full directory.
+        const fits=reserve=>{
             const probe=directory.cloneNode(true);probe.removeAttribute("id");probe.className="site-directory directory-width-probe";probe.inert=true;probe.setAttribute("aria-hidden","true");
             probe.querySelectorAll("[id]").forEach(node=>node.removeAttribute("id"));header.append(probe);
-            const required=header.querySelector(".site-header-brand").getBoundingClientRect().width+probe.getBoundingClientRect().width+header.querySelector(".site-utilities").getBoundingClientRect().width+150+64;
-            probe.remove();next=required>inner.clientWidth;
+            const required=header.querySelector(".site-header-brand").getBoundingClientRect().width+probe.getBoundingClientRect().width+header.querySelector(".site-utilities").getBoundingClientRect().width+reserve+64;
+            probe.remove();return required<=inner.clientWidth;
+        };
+        root.removeAttribute("data-header-dense");root.removeAttribute("data-header-tight");
+        if(!next){
+            root.removeAttribute("data-header-compact");
+            if(!fits(150)){root.setAttribute("data-header-dense","");if(!fits(0)){root.setAttribute("data-header-tight","");next=!fits(0);}}
         }
+        if(next){root.removeAttribute("data-header-dense");root.removeAttribute("data-header-tight");}
         root.toggleAttribute("data-header-compact",next);
         if(compact!==next){compact=next;closeDirectory();closeSettings();}
     }

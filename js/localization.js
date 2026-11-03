@@ -53,6 +53,9 @@
         }
         if(!translated&&/^[“"].+[”"]$/.test(key)){const inner=key.slice(1,-1),localized=text(inner);if(localized!==inner)translated=key[0]+localized+key.at(-1);}
         if(!translated)return source;
+        // Keep the English capitalisation style: an all-caps source label stays all-caps in languages with
+        // letter case, so headings, buttons and navigation look the same in every language.
+        if(/\p{Lu}{2}/u.test(key)&&key===key.toLocaleUpperCase('en')&&!/\p{Ll}/u.test(key))translated=translated.toLocaleUpperCase(language);
         return (source.match(/^\s*/)?.[0]||'')+translated+(source.match(/\s*$/)?.[0]||'');
     }
     const titles={

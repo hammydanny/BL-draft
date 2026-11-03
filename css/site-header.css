@@ -197,3 +197,17 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
     background:#ffd33d;color:#17202a;border-color:#d4aa0d;
     box-shadow:none;transform:none;
 }
+/* Dense desktop header: used when translated labels are wider than English, before falling back to the
+   phone layout. Every destination, the sound toggle and settings stay visible. */
+:root[data-header-dense]:not([data-header-compact]) .site-header-inner{grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px}
+:root[data-header-dense]:not([data-header-compact]) .site-breadcrumb{display:none}
+:root[data-header-dense]:not([data-header-compact]) .site-header-brand{gap:8px}
+:root[data-header-dense]:not([data-header-compact]) .site-header-brand>span{font-size:20px}
+:root[data-header-dense] .site-directory{gap:2px}
+:root[data-header-dense] .directory-item,:root[data-header-dense] .directory-width-probe .directory-item,:root[data-header-dense] .directory-group>summary.directory-item{padding-inline:7px;font-size:12px;letter-spacing:.2px;gap:4px}
+:root[data-header-dense] .site-utilities{width:auto;justify-self:end}
+/* Tight tier: the logo alone stands for the brand; items lose a little more padding. */
+:root[data-header-tight]:not([data-header-compact]) .site-header-brand>span{display:none}
+:root[data-header-tight] .directory-item,:root[data-header-tight] .directory-width-probe .directory-item,:root[data-header-tight] .directory-group>summary.directory-item{padding-inline:5px;font-size:12px;letter-spacing:0}
+:root[data-header-tight]:not([data-header-compact]) .sound-toggle strong{display:none}
+:root[data-header-tight] .site-directory{gap:0}

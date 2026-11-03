@@ -162,6 +162,15 @@ function runV073Tests(){
         assert.deepEqual(saved.team1.players,[9101,1]);assert.deepEqual(hydratePlayers(saved.team2.players).map(p=>p.id),[9102,2]);
     `);
     pass('Blue Lock Man stays out of the Database and roster counts, is always the GK under Auto Best/CPU/Team Builder, and saves cleanly');
+    // ---------- Language-independent layout and secret roster count ----------
+    {
+        const directory=read('js/ui/site-directory.js'),header=read('css/site-header.css'),i18n=read('js/localization.js'),setup=read('js/ui/setup.js');
+        assert(directory.includes('data-header-dense')&&directory.includes('data-header-tight')&&directory.includes('if(!fits(150))'),'longer translations try denser desktop headers before the phone layout');
+        assert(header.includes(':root[data-header-dense]')&&header.includes(':root[data-header-tight]'),'dense header styles');
+        assert(i18n.includes("translated=translated.toLocaleUpperCase(language)"),'all-caps English labels stay all-caps in every cased language');
+        assert(setup.includes('codeTyped||secretSelected>0'),'secret roster count shows while the code is typed or a secret player is selected');
+    }
+    pass('Header fit tiers, consistent capitalisation across languages and the secret roster count rule');
     // ---------- Ego Record ----------
     const fresh=v073Context();
     fresh.run(`{
