@@ -105,7 +105,7 @@ const PLAYER_BY_ID=new Map(players.map(player=>[player.id,player]));
 // Database, player pool, searches and roster totals never include him; playerById still resolves him for
 // saves, lineups, chemistry and reports. One object per Auction team keeps player IDs unique.
 const BLUE_LOCK_MAN_IDS=Object.freeze([9101,9102]);
-const BLUE_LOCK_MAN_KEEPERS=BLUE_LOCK_MAN_IDS.map(id=>({id,name:"Blue Lock Man",blueLockMan:true,image:new URL("images/blue-lock-man.svg",document.baseURI).href,primaryPosition:"GK",positions:["GK"],
+const BLUE_LOCK_MAN_KEEPERS=BLUE_LOCK_MAN_IDS.map(id=>({id,name:"Blue Lock Man",blueLockMan:true,image:new URL("images/blue-lock-man.webp",document.baseURI).href,primaryPosition:"GK",positions:["GK"],
     stats:{ovr:82,off:20,sho:30,spd:50,def:60,pas:55,dri:25,gk:86},weapons:[],teamHistory:[],nationality:null,debutChapter:1,appearanceOrder:9999}));
 function blueLockManFor(teamNumber){return BLUE_LOCK_MAN_KEEPERS[teamNumber===2?1:0];}
 function isBlueLockMan(player){return player?.blueLockMan===true;}
