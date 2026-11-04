@@ -29,7 +29,29 @@ check('Generated shells match index.html and every asset reference uses the cent
     const shells=require('../scripts/sync-shells.js'),versions=require('../scripts/set-version.js');
     assert.deepEqual(shells.drift(),[],'Run node scripts/sync-shells.js after editing index.html');
     assert.deepEqual(versions.stale(),[],'Run node scripts/set-version.js after changing js/version.js');
+    // A cached script, stylesheet, character module, image or font edited after its version shipped stays stale for returning players.
+    assert.deepEqual(versions.unreleased(),[],'Cached assets changed without a version bump: run node scripts/set-version.js <next-version>');
     for(const [legacy,target] of Object.entries(shells.LEGACY_REDIRECTS)){const stub=read(legacy);assert(isRedirectStub(stub),legacy+' must stay a lightweight redirect');assert(stub.includes('href="'+shells.GAME_SHELLS[target].canonical+'"'),legacy+' redirects to its canonical route');assert(stub.includes('target.search=window.location.search')&&stub.includes('target.hash=window.location.hash'),legacy+' preserves query and hash');}
+});
+check('Every local asset reference in pages, stylesheets and scripts resolves to a real file',()=>{
+    const missing=[];
+    const resolve=(from,url,base)=>{
+        url=url.split(/[?#]/)[0];
+        if(!url||/^(?:https?:|data:|mailto:|javascript:|blob:)/.test(url)||url.includes('${'))return;
+        let target=url.startsWith('/BL-draft/')?path.join(root,url.slice(10)):url.startsWith('/')?null:path.resolve(base||path.dirname(from),decodeURIComponent(url));
+        if(!target){missing.push(path.relative(root,from)+' -> '+url+' (outside /BL-draft/)');return;}
+        if(fs.existsSync(target)&&fs.statSync(target).isDirectory())target=path.join(target,'index.html');
+        if(!target.startsWith(root)||!fs.existsSync(target))missing.push(path.relative(root,from)+' -> '+url);
+    };
+    for(const file of htmlPages()){
+        const source=fs.readFileSync(file,'utf8').replace(/<base [^>]*>/,''),baseHref=fs.readFileSync(file,'utf8').match(/<base href="([^"]+)"/)?.[1];
+        const base=baseHref?(baseHref.startsWith('/BL-draft/')?path.join(root,baseHref.slice(10)):path.resolve(path.dirname(file),baseHref)):null;
+        for(const [,url] of source.matchAll(/(?:src|href|content)="([^"]+\.(?:js|css|webp|png|jpe?g|svg|woff2|ico|json|html)(?:[?#][^"]*)?|\/BL-draft\/[^"]*|\.\.?\/[^"]*)"/g))resolve(file,url,base);
+    }
+    for(const file of walk(root).filter(file=>file.endsWith('.css')))for(const [,url] of fs.readFileSync(file,'utf8').matchAll(/url\(["']?([^"')]+)["']?\)/g))resolve(file,url);
+    for(const file of walk(path.join(root,'js')).filter(file=>file.endsWith('.js')&&!file.endsWith(`${path.sep}preflight.js`)))
+        for(const [,url] of fs.readFileSync(file,'utf8').matchAll(/["'`]((?:\.\.\/)*(?:images|fonts|assets)\/[^"'`\s]+\.(?:webp|png|jpe?g|svg|woff2))["'`]/g))resolve(path.join(root,'index.html'),url.replace(/^(?:\.\.\/)+/,''));
+    assert.deepEqual(missing,[],'Missing asset references');
 });
 check('Compatibility redirect documents forward to a canonical route and keep a no-script link',()=>{
     const stubs=walk(root).filter(file=>file.endsWith('.html')&&isRedirectStub(fs.readFileSync(file,'utf8')));
@@ -187,7 +209,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.equal(data.APP_VERSION,'0.7.3.2');
+    assert.match(data.APP_VERSION,/^\d+(?:\.\d+){1,3}$/);assert.equal(data.APP_VERSION,require('../scripts/set-version.js').currentVersion());
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');
@@ -613,6 +635,13 @@ check('Mobile foundation loads on every route without restricting zoom; dialog l
         assert.equal(localStorage.getItem(SAVE_KEY),'unchanged auction');assert.equal(localStorage.getItem(STANDALONE_SAVE_KEY),'unchanged builder');
     `);
 });
+check('Labels with a decorative leading icon are translated in every language',()=>{
+    for(const language of ['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es']){
+        const app=appContext({blSitePreferencesV1:JSON.stringify({language})});
+        app.run(`assert.equal(SiteI18n.language,${JSON.stringify(language)});
+            for(const [label,icon] of [['TEAM REPORT','↗'],['SAVE SQUAD','⚡']]){const translated=SiteI18n.text(icon+' '+label);assert.equal(translated,icon+' '+SiteI18n.text(label),label);assert.notEqual(translated,icon+' '+label,label+' stays English');}`);
+    }
+});
 check('Phase 2 presentation preserves Auction state, exposes full history and uses original-source HD branding',()=>{
     const source=fs.readFileSync(path.join(root,'images/bld-logo.png'));
     assert.equal(source.readUInt32BE(16),1254,'Original high-resolution source retained');
@@ -991,6 +1020,16 @@ check('Secret character IDs are unique and Oka uses the uploaded portrait',()=>{
     assert(fs.existsSync(path.join(root,image)),'Uploaded Oka portrait must exist');
 });
 
+check('Jon uses the updated white portrait under the versioned character loader',()=>{
+    const jon=read('js/players/jon/player.js'),image=jon.match(/image:\s*"([^"]+)"/)?.[1];
+    assert(jon.includes('secretCharacter: true'),'Jon remains a secret character');
+    assert.equal(image,'images/jon-white.webp','Jon uses the updated portrait');
+    assert(fs.existsSync(path.join(root,image))&&fs.statSync(path.join(root,image)).size>1000,'Jon portrait must exist');
+    const versions=require('../scripts/set-version.js'),cached=versions.cachedAssets();
+    for(const file of ['js/players/jon/player.js',image,'js/players/oka/player.js','images/oka.jpg'])assert(cached.includes(file),file+' must be covered by the release fingerprint');
+    assert(read('js/players-loader.js').includes('const version = "'+versions.currentVersion()+'"'),'Character modules load with the current version');
+    assert(read('js/player-images.js').includes('resolved.searchParams.set("v",APP_VERSION)'),'Portraits load with the current version');
+});
 check('All secret-character chemistry uses one authoritative source',()=>{
     const chemistry=read('js/chemistry.js'),reference=read('js/player-reference.js');
     const secretModules=['qazicutie','hdannyy','syaafi','jon','floppy-willy','raf','oka','jameswasnthere'];

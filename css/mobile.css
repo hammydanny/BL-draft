@@ -470,6 +470,9 @@ body.dialog-open{position:fixed;inset-inline:0;top:var(--dialog-scroll-offset,0)
   #formation-screen .formation-actions{flex:1;width:auto!important}
 }
 @media(min-width:600px) and (max-width:1024px) and (max-height:500px){
+  /* The side column is narrow in landscape: two action columns instead of one squeezed row. */
+  #formation-screen .formation-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  #formation-screen .formation-actions>.formation-auto{grid-column:1/-1}
   #formation-screen .formation-v2-shell{--pitch-height:680px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(235px,1fr);gap:8px}
   #formation-screen .formation-layout,#formation-screen .formation-layout.standalone-layout{display:contents!important}
   #formation-screen .formation-topbar{grid-column:2;grid-row:1}

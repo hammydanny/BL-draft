@@ -1,7 +1,7 @@
 /* v0.7.3 play views: Ego Board, Draft Challenges, Draft Duel, Challenge Lab, Ego Record and the home Play Hub.
    Uses the shared palette tokens, BL-Draft typography and the canonical solo pitch components. */
 .play-view-screen{--solo-accent:var(--accent);--solo-ink:var(--accent-text);--ego-daily:#e1b24f;--ego-tactic:#dc7389;--ego-duel:#4fb4e1;--ego-gold:#f2c94c;--ego-silver:#b9c6d3;--ego-bronze:#d08a4e;max-width:1240px;margin:0 auto 48px;padding:0 var(--shell-gutter,20px)}
-html[data-theme="light"] .play-view-screen{--ego-daily:#a7700a;--ego-tactic:#b23b58;--ego-duel:#126f9c;--ego-gold:#9a6b00;--ego-silver:#52606d;--ego-bronze:#94531c}
+html[data-theme="light"] .play-view-screen{--ego-daily:#94630a;--ego-tactic:#b23b58;--ego-duel:#126f9c;--ego-gold:#9a6b00;--ego-silver:#52606d;--ego-bronze:#94531c}
 .play-view-screen[data-view=duel]{--solo-accent:var(--ego-duel);--solo-ink:var(--ego-duel)}
 .play-view-screen[data-view=lab]{--solo-accent:var(--ego-tactic);--solo-ink:var(--ego-tactic)}
 .play-view-screen button,.home-today button{min-height:44px;min-width:44px;border:1px solid var(--border-strong);background:var(--bg-surface-raised);color:var(--text-primary);padding:10px 15px;font:800 15px/1.25 "Rajdhani",sans-serif;cursor:pointer;border-radius:var(--panel-radius)}

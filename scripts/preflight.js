@@ -37,3 +37,5 @@ require('./balance-tests.js').runBalanceTests();
 require('./chemistry-balance-tests.js').runChemistryBalanceTests();
 
 require('./v073-tests.js').runV073Tests();
+
+require('./v074-tests.js').runV074Tests();

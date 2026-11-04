@@ -8,5 +8,6 @@
 - Sharing must preserve the exact user-built formation; never run Auto Best during sharing.
 - Preserve player ratings, chemistry, formation definitions, and localStorage save compatibility.
 - Run `node scripts/preflight.js` (includes syntax checks for every project JavaScript file). Review the diff for unintended changes.
+- After changing any cached script, stylesheet, character file or image, bump the version with `node scripts/set-version.js <next-version>` (the release fingerprint fails otherwise).
 - Package only changed/new files with repository-relative paths; verify the ZIP listing.
 - Report validation accurately. Never claim browser testing unless it was actually performed.

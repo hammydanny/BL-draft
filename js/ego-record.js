@@ -20,6 +20,8 @@ const EGO_ACHIEVEMENTS=Object.freeze([
 const EGO_MODES=Object.freeze(["daily","tactic","duel","challenge","lab"]);
 function egoGradeRank(grade){return ["D","C","B","A","S","S+"].indexOf(grade);}
 function egoMedal(grade,complete=true){if(!complete||!grade||grade==="D")return null;return egoGradeRank(grade)>=4?"gold":grade==="A"?"silver":"bronze";}
+// Blue Lock Man is a locked Auction keeper, not a roster player, so he is never a favourite.
+function egoCountablePlayer(id){return !!playerById(id)&&!(typeof isBlueLockManId==="function"&&isBlueLockManId(id));}
 function egoEmpty(){return {v:1,since:localDraftDate(),activity:{},counts:{daily:0,tactic:0,duel:0,challenge:0,lab:0,created:0},dailyBest:null,gradeCounts:{"S+":0,S:0},formations:{},players:{},families:{},best:{chemistry:null,ovr:null},duel:{easy:0,normal:0,hard:0},achievements:{},migrated:false};}
 function egoCleanBest(value){return replayRecord(value)&&Number.isFinite(value.value)&&value.value>=0&&value.value<=120&&EGO_MODES.includes(value.mode)&&typeof value.date==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(value.date)&&(value.formation==null||knownFormation(value.formation))?{value:Math.round(value.value),mode:value.mode,date:value.date,formation:value.formation??null}:null;}
 function egoNormalize(raw){
@@ -31,7 +33,7 @@ function egoNormalize(raw){
     if(replayRecord(raw.gradeCounts))for(const key of ["S+","S"])clean.gradeCounts[key]=count(raw.gradeCounts[key]);
     if(Number.isInteger(raw.dailyBest)&&raw.dailyBest>=0&&raw.dailyBest<=20000)clean.dailyBest=raw.dailyBest;
     if(replayRecord(raw.formations))for(const [name,n]of Object.entries(raw.formations).slice(0,40))if(knownFormation(name))clean.formations[name]=count(n);
-    if(replayRecord(raw.players))for(const [id,n]of Object.entries(raw.players).slice(0,200))if(/^\d+$/.test(id)&&playerById(Number(id)))clean.players[id]=count(n);
+    if(replayRecord(raw.players))for(const [id,n]of Object.entries(raw.players).slice(0,200))if(/^\d+$/.test(id)&&egoCountablePlayer(Number(id)))clean.players[id]=count(n);
     if(replayRecord(raw.families))for(const key of ["3","4","5"])if(raw.families[key]===true)clean.families[key]=true;
     if(replayRecord(raw.best))for(const key of ["chemistry","ovr"])clean.best[key]=egoCleanBest(raw.best[key]);
     if(replayRecord(raw.duel))for(const key of DUEL_LEVELS)clean.duel[key]=count(raw.duel[key]);
@@ -50,7 +52,7 @@ function egoMigrate(record){
 }
 function egoTrackSquad(record,formation,ids){
     if(knownFormation(formation)){record.formations[formation]=(record.formations[formation]||0)+1;if(Object.hasOwn(FORMATIONS,formation)&&["3","4","5"].includes(formation[0]))record.families[formation[0]]=true;}
-    for(const id of ids||[])if(Number.isInteger(id)&&playerById(id))record.players[id]=(record.players[id]||0)+1;
+    for(const id of ids||[])if(Number.isInteger(id)&&egoCountablePlayer(id))record.players[id]=(record.players[id]||0)+1;
 }
 function egoRecordLoad(){
     let record;try{record=egoNormalize(JSON.parse(localStorage.getItem(EGO_RECORD_KEY)||"null"));}catch{record=egoEmpty();}
@@ -100,6 +102,6 @@ function egoEventFromSolo(state,result){
 function egoFavourites(record){
     const formation=Object.entries(record.formations).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0]||null;
     // Secret players never appear in the record, even in an unlocked session.
-    const players=Object.entries(record.players).map(([id,n])=>[playerById(Number(id)),n]).filter(([p])=>p&&!p.secretCharacter).sort((a,b)=>b[1]-a[1]||a[0].id-b[0].id).slice(0,5);
+    const players=Object.entries(record.players).map(([id,n])=>[playerById(Number(id)),n]).filter(([p])=>p&&!p.secretCharacter&&egoCountablePlayer(p.id)).sort((a,b)=>b[1]-a[1]||a[0].id-b[0].id).slice(0,5);
     return {formation,players};
 }

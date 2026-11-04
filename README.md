@@ -135,6 +135,23 @@ http://localhost:8000
 
 Using a local HTTP server is recommended instead of opening `index.html` directly with `file://`.
 
+The live site is served from `/BL-draft/`. To reproduce that path locally (the 404 page and
+absolute links use it), serve the parent folder instead and open
+`http://localhost:8000/BL-draft/`.
+
+### Checks before a release
+
+```bash
+node scripts/sync-shells.js --check
+node scripts/set-version.js --check
+node scripts/preflight.js
+```
+
+The same checks run on GitHub Actions for every pull request and push to `main`. Any change
+to a cached script, stylesheet, character file or image needs a version bump
+(`node scripts/set-version.js <next-version>`); see `DEVELOPMENT.md` and
+`RELEASE_CHECKLIST.md`.
+
 ## Important Notes
 
 ### Unofficial Fan Project

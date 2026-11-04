@@ -40,6 +40,8 @@
         if(!translated){const relation=key.match(/^(.+) and (.+) chemistry (\d+), (.+)$/);if(relation)translated=text('{a} and {b} chemistry {value}, {tier}').replace('{a}',isolate(relation[1])).replace('{b}',isolate(relation[2])).replace('{value}',isolate(relation[3])).replace('{tier}',text(relation[4]));}
         if(!translated){const metric=key.match(/^(Goalkeeper specialist|Goalkeeping): (\d+) out of 100, grade ([SABCDEFG])$/);if(metric)translated=text('{stat}: {value} out of 100, grade {grade}').replace('{stat}',text(metric[1].toUpperCase())).replace('{value}',isolate(metric[2])).replace('{grade}',isolate(metric[3]));}
         if(!translated){const coded=key.match(/^(\d{2}\s*\/{1,2}\s*)(.+)$/);if(coded){const label=text(coded[2]);if(label!==coded[2])translated=coded[1]+label;}}
+        // A decorative icon before a known label ("↗ TEAM REPORT") keeps the icon and translates the label.
+        if(!translated){const icon=key.match(/^([\u2190-\u21FF\u2600-\u27BF\u2B00-\u2BFF]\uFE0F?)\s+(.+)$/u);if(icon){const label=text(icon[2]);if(label!==icon[2])translated=icon[1]+' '+label;}}
         if(!translated){const count=key.match(/^(\d+) (SLOTS? LEFT|TOP)$/);if(count)translated=isolate(count[1])+' '+text(count[2]);}
         if(!translated){const top=key.match(/^TOP (\d+)$/);if(top)translated=text('TOP')+' '+isolate(top[1]);}
         if(!translated){const interval=key.match(/^(\$[\d,]+) INTERVAL$/);if(interval)translated=isolate(interval[1])+' '+text('INTERVAL');}

@@ -779,6 +779,7 @@ body.formation-pointer-dragging #formation-screen{-webkit-user-select:none!impor
 .pool-filter-grid label{margin:0;color:var(--text-muted);font-size:12px;font-weight:900;letter-spacing:1px}
 .pool-filter-grid select,.database-toolbar select{min-height:40px;border-radius:var(--panel-radius);width:100%;margin-top:4px;padding:9px 8px;color:var(--text-primary);background:var(--bg-surface);border:1px solid var(--border-strong);font:700 12px "Rajdhani";outline:none}
 .pool-filter-grid select:focus,.database-toolbar select:focus{border-color:var(--blue)}
+.pool-filter-grid select:focus-visible,.database-toolbar select:focus-visible{outline:2px solid var(--accent-text);outline-offset:1px}
 .pool-player-card{position:relative;padding:0!important}
 .pool-select-hit{display:block;width:100%;height:100%;padding:0;color:inherit;text-align:left;background:transparent;border:0}
 @media(max-width:900px){.player-database-toolbar{grid-template-columns:1fr}}
@@ -1292,6 +1293,8 @@ html[data-theme="light"] .chem-link.link{stroke-width:2.7;opacity:.9}
 html[data-theme="light"] .chem-link.neutral{stroke-width:2;stroke-dasharray:5 4;opacity:.82}
 html[data-theme="light"] .chem-link.negative{stroke-width:2;stroke-dasharray:5 4;opacity:.82}
 html[data-theme="light"] .slot-target-label{background:#fbfdff;border-width:1px}
+/* Raw team colours are too pale for small pitch labels on the light pitch; use the shared team-heading mix. */
+html[data-theme="light"] .slot-position{color:var(--team-heading,color-mix(in srgb,var(--team) 32%,#122c46))}
 html[data-theme="light"] .formation-slot[data-fit]>.slot-position{background:color-mix(in srgb,var(--target-color) 15%,#fbfdff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--target-color) 72%,transparent)}
 html[data-theme="light"] .formation-slot[data-target-action]{outline-width:3px;outline-offset:5px;background:color-mix(in srgb,var(--target-color) 18%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--target-color) 15%,transparent),0 0 20px color-mix(in srgb,var(--target-color) 40%,transparent)}
 html[data-theme="light"] .formation-slot[data-target-action="good"]{outline-width:2px;background:color-mix(in srgb,var(--target-color) 13%,transparent);box-shadow:0 0 0 5px color-mix(in srgb,var(--target-color) 12%,transparent),0 0 15px color-mix(in srgb,var(--target-color) 32%,transparent)}

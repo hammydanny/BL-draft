@@ -1,0 +1,44 @@
+# Release gate for Blue Lock Draft. Runs the same checks as a local release:
+# shell sync, version/cache fingerprint and the full preflight suite.
+# This workflow only reads the repository. It does not build or deploy the site;
+# GitHub Pages publishes main separately (see DEVELOPMENT.md, "Continuous integration").
+name: Preflight
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: Preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js (LTS)
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: lts/*
+
+      - name: Generated page shells match index.html
+        run: node scripts/sync-shells.js --check
+
+      - name: Version references and release fingerprint
+        run: node scripts/set-version.js --check
+
+      - name: Full preflight
+        run: node scripts/preflight.js

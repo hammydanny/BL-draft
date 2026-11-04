@@ -254,6 +254,45 @@ New copy lives in `js/i18n/ego-messages.js` (English key → ten languages) and 
 experiments: `node scripts/v073-daily-experiment.js 365` and
 `node scripts/v073-duel-experiment.js 16`.
 
+## V0.7.4 release fingerprint and continuous integration
+
+**Version bumps are required for every change a returning browser may have cached.**
+`scripts/release-manifest.json` stores a short SHA-256 of every versioned script and
+stylesheet, every character module (`js/players/<name>/player.js` and `reference.js`),
+and every file under `images/`, `fonts/` and `assets/`. `node scripts/set-version.js --check`
+(and preflight) fails when any of those files changed while `APP_VERSION` stayed the same,
+because returning players would keep the old copy. This is how the v0.7.3.2 Jon portrait
+change went unnoticed: `js/players/jon/player.js` changed under an unchanged `?v=`.
+
+- Shipping a change: `node scripts/set-version.js <next-version>` (for example `0.7.4.1`).
+  This updates every `?v=`, the character loader, the service-worker cache name and the
+  manifest in one step.
+- Still working on an unreleased version (not yet pushed to `main`):
+  `node scripts/set-version.js --stamp` re-records the manifest. Never stamp a version that
+  is already live; bump instead.
+- Uploading a file through the GitHub web interface (portraits, flags) also needs a bump.
+  The Preflight workflow reports it on the commit.
+
+**GitHub Actions.** `.github/workflows/preflight.yml` runs on pull requests to `main`,
+pushes to `main` and manual dispatch. It checks out the repository read-only (no
+secrets, `contents: read`, actions pinned to commit SHAs), sets up Node LTS and runs
+`node scripts/sync-shells.js --check`, `node scripts/set-version.js --check` and
+`node scripts/preflight.js`. A failing step fails the run.
+
+**Deployment.** GitHub Pages publishes `main` with GitHub's built-in branch deployment
+("pages build and deployment"). That deployment does **not** wait for the Preflight
+workflow: a push to `main` goes live even if Preflight fails. To make Preflight a real
+gate, a repository owner can enable branch protection (or a ruleset) on `main` that
+requires the **Preflight** status check and routes changes through pull requests. This
+is a repository-settings change and was not made automatically.
+
+**v0.7.4 regression suite.** `node scripts/v074-tests.js` checks roster totals and
+identity, cross-mode evaluation consistency (Draft Duel, Team Builder, share snapshot),
+signing-order independence, every storage reader against malformed/hostile/blocked
+storage, Blue Lock Man exclusion from Ego Record, loader/fingerprint coverage and the
+workflow's safety properties. js/preflight.js additionally checks that every local asset
+reference in pages, stylesheets and scripts resolves to a real file.
+
 ## Mandatory localization release gate
 
 Localization is a prerequisite for **every future update**, including small fixes.

@@ -34,7 +34,7 @@ html[data-theme="light"]{
   --bg-hover:#e4eff9;--bg-overlay:rgba(218,230,241,.9);--bg-page-glow:#d2e5f6;--bg-symbol:#7faed0;--bg-symbol-opacity:.30;--bg-page-top:#f1f6fb;--bg-page-bottom:#e9f0f7;
   --border-subtle:#b3c8d9;--border-strong:#6b8ca6;--border-line:rgba(59,102,136,.24);
   --text-primary:#122c46;--text-secondary:#2d506c;--text-muted:#47667f;--text-subtle:#526e84;
-  --accent:#0072c9;--accent-hover:#005f9e;--accent-text:#075f91;--accent-soft:rgba(0,114,201,.09);
+  --accent:#006bbd;--accent-hover:#005f9e;--accent-text:#075f91;--accent-soft:rgba(0,114,201,.09);
   --link-text:#155f87;--link-hover:#0d405f;
   --scroll-track:#dfe9f1;--scroll-thumb:#5a91b0;--scroll-thumb-hover:#34799e;
   --pitch-legacy-start:#d9e9e1;--pitch-legacy-end:#c8ddd5;
@@ -42,7 +42,7 @@ html[data-theme="light"]{
   --pitch-stripe:rgba(30,87,111,.065);--pitch-line:rgba(37,91,115,.32);--pitch-line-strong:rgba(31,81,104,.42);--pitch-goal:rgba(38,93,117,.28);--pitch-dot:rgba(25,73,94,.52);--pitch-share-line:rgba(37,91,115,.32);--pitch-share-soft:rgba(37,91,115,.18);--pitch-share-border:#87a8ba;
   --primary-start:#075fa9;--primary-end:#0870bb;
   --chem-chemical:#976000;--chem-elite:#087a49;--chem-strong:#0070ad;--chem-link:#6a4fc4;--chem-weak:#d12f5d;--chem-neutral:#3f5265;
-  --warning:#8f5d00;--success:#087a49;--danger:#b82246;
+  --warning:#8f5d00;--success:#067344;--danger:#b82246;
   --captain-text:#876b00;--share-text:#533dab;--role-canon:#087a49;
   --radar-glow:rgba(0,99,147,.16);--radar-cyan:#006393;--radar-grid:#9ab5ca;--radar-spoke:#b9cddb;--radar-fill:rgba(0,114,201,.2);
   --header-bg:#f6fafe;--shadow-soft:0 6px 22px rgba(35,70,105,.08);--shadow-strong:0 16px 44px rgba(35,70,105,.15);

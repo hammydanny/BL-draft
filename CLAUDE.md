@@ -393,6 +393,8 @@ Do not leave a repository where the code is fixed but normal users still load st
 
 ---
 
+Any edit to a cached file (versioned scripts/stylesheets, `js/players/*/player.js` and `reference.js`, `images/`, `fonts/`, `assets/`) needs a version bump with `node scripts/set-version.js <next-version>`; `scripts/release-manifest.json` makes `--check` and preflight fail otherwise. `--stamp` is only for a version that has not been pushed to `main`.
+
 ## 15. Product quality principles
 
 Think from the player's perspective.
@@ -465,7 +467,11 @@ The preflight currently includes or invokes:
 - game-mode tests;
 - solo-draft tests;
 - balance tests;
-- chemistry-balance tests.
+- chemistry-balance tests;
+- v0.7.3 and v0.7.4 regression suites (`scripts/v073-tests.js`, `scripts/v074-tests.js`);
+- asset-reference integrity and the release fingerprint (`node scripts/set-version.js --check`).
+
+The same gate runs in GitHub Actions (`.github/workflows/preflight.yml`). GitHub Pages deploys `main` independently of that workflow, so run the gate locally before pushing.
 
 Inspect the current scripts before assuming this list is unchanged.
 
