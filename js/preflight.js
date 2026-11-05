@@ -57,7 +57,7 @@ check('Compatibility redirect documents forward to a canonical route and keep a 
     const stubs=walk(root).filter(file=>file.endsWith('.html')&&isRedirectStub(fs.readFileSync(file,'utf8')));
     assert(stubs.length>=1,'Expected at least one compatibility redirect');
     for(const file of stubs){
-        const content=fs.readFileSync(file,'utf8'),name=path.relative(root,file);
+        const content=fs.readFileSync(file,'utf8'),name=path.relative(root,file).split(path.sep).join('/');
         const target=content.match(/<link rel="canonical" href="([^"]+)">/)?.[1];
         assert(target,name+': canonical target');
         assert(content.includes('<a href="'+target),name+': visible fallback link');
@@ -76,7 +76,7 @@ check(`JavaScript syntax (${jsFiles.length} files)`,()=>{
 check('No unresolved merges or duplicate document asset declarations',()=>{
     const marker=new RegExp('^\\s*(?:'+'<'.repeat(7)+'|'+'>'.repeat(7)+'|'+'[|]'.repeat(7)+')(?:[ \t].*)?$','m');
     for(const file of walk(root).filter(file=>/\.(?:html|css|js|md|yml|json|svg)$/.test(file))){
-        const content=fs.readFileSync(file,'utf8'),relative=path.relative(root,file);
+        const content=fs.readFileSync(file,'utf8'),relative=path.relative(root,file).split(path.sep).join('/');
         assert(!marker.test(content),`${relative}: unresolved conflict`);
         if(!file.endsWith('.html')||isRedirectStub(content))continue;
         const head=content.match(/<head>[\s\S]*?<\/head>/i)?.[0]||'';
@@ -383,7 +383,7 @@ check('Auction page state stays aligned with canonical URLs',()=>{
 });
 check('Canonical directory shell, global help and contextual recovery targets',()=>{
     const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
-    const pages=htmlPages().map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
+    const pages=htmlPages().map(file=>path.relative(root,file).split(path.sep).join('/')).filter(page=>!standaloneInfoPages.has(page));
     const shell=content=>content.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
     const expected=shell(html);assert(expected,'Missing global directory');
     for(const page of pages){
@@ -426,7 +426,7 @@ check('Original sound engine, persistence and separate visual feedback',()=>{
 });
 check('Foundation shell, early theme, global utilities and theme assets',()=>{
     const standaloneInfoPages=new Set(['legal/index.html','privacy/index.html','changelog/index.html','404.html']);
-    const pages=htmlPages().map(file=>path.relative(root,file)).filter(page=>!standaloneInfoPages.has(page));
+    const pages=htmlPages().map(file=>path.relative(root,file).split(path.sep).join('/')).filter(page=>!standaloneInfoPages.has(page));
     const footer=content=>content.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0];
     for(const page of pages){
         const content=read(page.endsWith('/')?page+'index.html':page||'index.html');
@@ -552,7 +552,7 @@ check('Clean canonical directory pages, legacy compatibility and critical fonts'
     const preload=content=>[...content.matchAll(/<link rel="preload"[^>]+>/g)].map(match=>match[0]);
     for(const page of htmlPages()){
         const content=fs.readFileSync(page,'utf8');
-        const relative=path.relative(root,page);
+        const relative=path.relative(root,page).split(path.sep).join('/');
         if(!['legal/index.html','privacy/index.html','changelog/index.html','404.html'].includes(relative))assert.deepEqual(preload(content),preload(html),'Consistent critical font preloads');
         assert.equal(new Set(preload(content)).size,preload(content).length,'No duplicate font preloads');
         assert(content.indexOf('css/fonts.css')<content.indexOf('style.css'),'Font faces precede component CSS');
@@ -620,7 +620,7 @@ check('Mobile foundation loads on every route without restricting zoom; dialog l
     for(const file of htmlPages()){
         const content=fs.readFileSync(file,'utf8');
         const viewport=content.match(/<meta name="viewport" content="([^"]+)"/)?.[1]||'';
-        assert(viewport.includes('viewport-fit=cover'),path.relative(root,file)+': safe-area viewport');
+        assert(viewport.includes('viewport-fit=cover'),path.relative(root,file).split(path.sep).join('/')+': safe-area viewport');
         assert(!/user-scalable\s*=\s*no|maximum-scale/i.test(viewport),'Accessibility zoom must stay available');
         assert.equal((content.match(/href="css\/mobile.css\?v=/g)||[]).length,1,'One shared mobile stylesheet');
         assert(content.indexOf('css/mobile.css')>content.indexOf('css/localization.css'),'Mobile foundation follows locale layout');
@@ -980,8 +980,8 @@ check('Battle Sim Early Access has no active disabled-route links',()=>{
     const activePages=walk(root).filter(file=>file.endsWith('.html')&&!file.endsWith(path.join('battle-sim-disabled','index.html')));
     for(const file of activePages){
         const content=fs.readFileSync(file,'utf8');
-        assert(!content.includes('data-directory-href="battle-sim-disabled/"'),`${path.relative(root,file)}: disabled Battle Sim nav link`);
-        if(file.includes(path.join('battle-sim',path.sep)))assert(!content.includes('new URL("battle-sim-disabled/"'),`${path.relative(root,file)}: disabled Battle Sim redirect`);
+        assert(!content.includes('data-directory-href="battle-sim-disabled/"'),`${path.relative(root,file).split(path.sep).join('/')}: disabled Battle Sim nav link`);
+        if(file.includes(path.join('battle-sim',path.sep)))assert(!content.includes('new URL("battle-sim-disabled/"'),`${path.relative(root,file).split(path.sep).join('/')}: disabled Battle Sim redirect`);
     }
     assert(!read('js/router.js').includes('battle-sim-disabled/'),'Router must never send users to the disabled Battle Sim route');
 });
@@ -993,7 +993,7 @@ check('Database guidance, accessible controls, scoped styling and metadata found
     assert(lore.includes('setTimeout(render,120)')&&lore.includes('characterSorts:new Map()')&&lore.includes('grid.replaceChildren(...nodes)'),'Debounced search, cached sorting and reused nodes');
     assert(lore.includes('href="${characterDossierHref')&&lore.includes('aria-pressed'),'Real dossier links and accessible compare controls');
     assert(css.includes('aspect-ratio:4/5')&&css.includes('object-fit:cover'),'Portrait frames');
-    for(const file of htmlPages()){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file)}: ${tag}`);}
+    for(const file of htmlPages()){const content=fs.readFileSync(file,'utf8');for(const tag of ['name="description"','property="og:title"','property="og:description"',...(file.endsWith('404.html')?[]:['rel="canonical"'])])assert(content.includes(tag),`${path.relative(root,file).split(path.sep).join('/')}: ${tag}`);}
     for(const file of ['fonts/LICENSE-Barlow-Condensed.txt','fonts/LICENSE-Rajdhani.txt'])assert(read('legal/index.html').includes(`href="${file}"`),'Visible font licence '+file);
 });
 check('Secret players do not inflate the public roster count',()=>{
@@ -1008,7 +1008,7 @@ check('Secret character IDs are unique and Oka uses the uploaded portrait',()=>{
     const secretIds=secretFiles.map(file=>{
         const content=fs.readFileSync(file,'utf8');
         const id=content.match(/secretId:\s*"([^"]+)"/)?.[1];
-        assert(id,`${path.relative(root,file)}: secretId`);
+        assert(id,`${path.relative(root,file).split(path.sep).join('/')}: secretId`);
         return id.toUpperCase();
     });
     assert(secretFiles.length>0,'Secret character modules should be discovered');

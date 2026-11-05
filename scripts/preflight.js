@@ -39,3 +39,7 @@ require('./chemistry-balance-tests.js').runChemistryBalanceTests();
 require('./v073-tests.js').runV073Tests();
 
 require('./v074-tests.js').runV074Tests();
+
+require('./bundle-characters.js').check()||assert.fail('Stale character bundle');
+require('./battle-sim-tests.js').runBattleSimTests();
+require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});

@@ -23,7 +23,7 @@ function parseFrozen(source,name){
 function catalog(){
     const context=vm.createContext({window:{}});
     vm.runInContext(read('js/i18n/messages.js'),context);
-    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js','js/i18n/ego-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
+    for(const file of ['js/i18n/quote-messages.js','js/i18n/replayability-messages.js','js/i18n/ego-messages.js','js/i18n/battle-messages.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context);
     const localization=read('js/localization.js');
     return {
         ...context.window.BLD_MESSAGES,
@@ -39,6 +39,9 @@ function resolver(entries){
         if(!key||seen.has(key))return false;
         seen.add(key);
         if(direct(key))return true;
+        if(/^TEAM \d+$/.test(key))return !!direct('TEAM {number}');
+        if(/^\d+ EVENTS$/.test(key))return !!direct('{count} EVENTS');
+        if(/^\d+(?:\.\d+)?s$/.test(key))return true;
         let match=key.match(/^Blue Lock Draft — (.+?) — (.+)$/);
         if(match)return covered(match[1],seen)&&covered(match[2],seen);
         if(key.startsWith('Blue Lock Draft — '))return covered(key.slice(18),seen);
@@ -73,6 +76,7 @@ function sourceStrings(html){
 function staticCoverage(covered){
     const pages=[
         'index.html','404.html','privacy/index.html','legal/index.html','changelog/index.html',
+        'battle-sim/initializer/index.html','battle-sim/game/index.html','battle-sim/results/index.html',
         'lore/index.html','team-builder/index.html','auction/setup/index.html','auction/room/index.html',
         'auction/results/index.html','auction/team-builder/index.html'
     ];
@@ -179,9 +183,13 @@ function balanceCoverage(covered){
     const values=["BASE QUALITY","EFFECTIVE OVR","POSITION IMPACT","CHEMISTRY IMPACT","PROJECTED LINEUP","ACTIVE LINEUP","DAILY FORMATIONS","Move impact: effective OVR {ovr}, chemistry {chem}.","Team OVR {current} → {next}. Chemistry {chem}."];
     return values.filter(value=>!covered(value)).map(value=>({file:"v0722-feedback",value}));
 }
+function battleCoverage(covered){
+ const required=['SQUAD SOURCE','TEAM STRATEGY','PROCEED TO NEXT SEQUENCE →','PLAYING SEQUENCE…','SUBSTITUTION REQUIRED','MANDATORY SUBSTITUTION','PLAYER OF THE MATCH','LATEST MANGA CHAPTER','BL-DRAFT CANON COVERAGE','Verification pending','{player} completes a pass to {other}.','{player} wins possession.','{player} saves the shot.','{team} bring on {player} for {other}.','{player} receives a card.','Seconds between notable events','LATEST FIRST','Shots','Passes','Tackles','Saves','Unable to save this squad. Check browser storage and player availability.'];
+ return required.filter(value=>!covered(value)).map(value=>({file:'battle-sim-dynamic',value}));
+}
 function scanCoverage(){
     const entries=catalog(),covered=resolver(entries);
-    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered),...balanceCoverage(covered),...v073Coverage(covered)];
+    const missing=[...staticCoverage(covered),...dynamicCoverage(covered),...quoteCoverage(covered),...replayabilityCoverage(covered),...soloDraftCoverage(covered),...balanceCoverage(covered),...v073Coverage(covered),...battleCoverage(covered)];
     return {missing,catalogSize:Object.keys(entries).length};
 }
 module.exports={scanCoverage,sourceStrings,resolver,quoteCoverage};

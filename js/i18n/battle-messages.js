@@ -1,0 +1,222 @@
+// English keys, followed by ms / ja / ar / zh-CN / fr / de / ko / pt / ru / es.
+// Structured templates keep names and numerical state out of translation keys.
+(function(){
+const languages=['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'];
+const rows=`
+LATEST MANGA CHAPTER|BAB MANGA TERKINI|漫画の最新話|أحدث فصل مانغا|漫画最新话|DERNIER CHAPITRE MANGA|NEUESTES MANGA-KAPITEL|최신 만화 화수|CAPÍTULO MAIS RECENTE|ПОСЛЕДНЯЯ ГЛАВА МАНГИ|ÚLTIMO CAPÍTULO DEL MANGA
+BL-DRAFT CANON COVERAGE|LIPUTAN KANON BL-DRAFT|BL-DRAFTの確認範囲|نطاق مراجعة BL-DRAFT|BL-DRAFT 正史审核范围|CANON VÉRIFIÉ PAR BL-DRAFT|GEPRÜFTER BL-DRAFT-KANON|BL-DRAFT 검토 범위|CÂNONE REVISADO DO BL-DRAFT|ПРОВЕРЕННЫЙ КАНОН BL-DRAFT|CANON REVISADO DE BL-DRAFT
+LAST CONFIRMED PUBLICATION|TERBITAN TERAKHIR DISAHKAN|最後に確認された刊行話|آخر إصدار مؤكد|最后确认已发布|DERNIÈRE PUBLICATION CONFIRMÉE|ZULETZT BESTÄTIGTE VERÖFFENTLICHUNG|마지막 확인 발행분|ÚLTIMA PUBLICAÇÃO CONFIRMADA|ПОСЛЕДНЯЯ ПОДТВЕРЖДЁННАЯ ПУБЛИКАЦИЯ|ÚLTIMA PUBLICACIÓN CONFIRMADA
+Verification pending|Pengesahan belum selesai|確認待ち|بانتظار التحقق|待核实|Vérification en attente|Bestätigung ausstehend|확인 대기 중|Verificação pendente|Ожидает проверки|Verificación pendiente
+OFFICIAL SOURCE ↗|SUMBER RASMI ↗|公式ソース ↗|المصدر الرسمي ↗|官方来源 ↗|SOURCE OFFICIELLE ↗|OFFIZIELLE QUELLE ↗|공식 출처 ↗|FONTE OFICIAL ↗|ОФИЦИАЛЬНЫЙ ИСТОЧНИК ↗|FUENTE OFICIAL ↗
+Manga publication and canon coverage|Terbitan manga dan liputan kanon|漫画の刊行と確認範囲|نشر المانغا ونطاق المراجعة|漫画发布与正史审核范围|Publication manga et canon vérifié|Manga-Veröffentlichung und geprüfter Kanon|만화 발행 및 검토 범위|Publicação do mangá e cânone revisado|Публикация манги и проверенный канон|Publicación del manga y canon revisado
+MATCH CONFIGURATION|KONFIGURASI PERLAWANAN|試合設定|إعداد المباراة|比赛设置|CONFIGURATION DU MATCH|SPIELEINSTELLUNGEN|경기 설정|CONFIGURAÇÃO DA PARTIDA|НАСТРОЙКА МАТЧА|CONFIGURACIÓN DEL PARTIDO
+SELECT YOUR SQUADS|PILIH SKUAD ANDA|チームを選択|اختر تشكيلتيك|选择球队|CHOISISSEZ VOS EFFECTIFS|KADER AUSWÄHLEN|선수단 선택|ESCOLHA OS ELENCOS|ВЫБЕРИТЕ СОСТАВЫ|ELIGE TUS PLANTILLAS
+Set your starting line-ups, review your reserves, and tune each team's strategy before kick-off.|Tetapkan kesebelasan utama, semak simpanan dan laraskan strategi sebelum sepak mula.|先発と控えを確認し、キックオフ前に両チームの戦術を調整します。|حدد التشكيلتين الأساسيتين وراجع البدلاء واضبط الخطط قبل البداية.|开球前设置首发、查看替补并调整两队战术。|Définissez les titulaires, vérifiez le banc et ajustez les tactiques avant le coup d’envoi.|Lege die Startelf fest, prüfe die Bank und passe vor dem Anstoß die Taktik an.|선발과 후보를 확인하고 킥오프 전 전술을 조정하세요.|Defina os titulares, confira as reservas e ajuste as táticas antes do início.|Настройте стартовые составы, проверьте запасных и выберите тактику до начала.|Define los titulares, revisa los suplentes y ajusta las tácticas antes del inicio.
+PROCEED TO MATCH →|MULAKAN PERLAWANAN →|試合へ進む →|ابدأ المباراة →|进入比赛 →|LANCER LE MATCH →|SPIEL STARTEN →|경기 시작 →|INICIAR PARTIDA →|НАЧАТЬ МАТЧ →|INICIAR PARTIDO →
+MATCH SQUAD|SKUAD PERLAWANAN|試合メンバー|تشكيلة المباراة|比赛阵容|EFFECTIF DU MATCH|SPIELKADER|경기 선수단|ELENCO DA PARTIDA|СОСТАВ НА МАТЧ|PLANTILLA DEL PARTIDO
+Squad source|Sumber skuad|チームの読み込み元|مصدر التشكيلة|阵容来源|Source de l’effectif|Kaderquelle|선수단 출처|Origem do elenco|Источник состава|Origen de la plantilla
+Use drafted auction team|Gunakan pasukan lelongan|オークションのチームを使用|استخدم فريق المزاد|使用拍卖球队|Utiliser l’équipe des enchères|Auktionsteam verwenden|경매 팀 사용|Usar equipe do leilão|Использовать команду аукциона|Usar equipo de subasta
+Use a saved team|Gunakan pasukan tersimpan|保存チームを使用|استخدم فريقًا محفوظًا|使用已保存球队|Utiliser une équipe sauvegardée|Gespeichertes Team verwenden|저장된 팀 사용|Usar equipe salva|Использовать сохранённую команду|Usar equipo guardado
+Generate a random team|Jana pasukan rawak|ランダムチームを生成|أنشئ فريقًا عشوائيًا|生成随机球队|Créer une équipe aléatoire|Zufälliges Team erstellen|무작위 팀 생성|Gerar equipe aleatória|Создать случайную команду|Generar equipo aleatorio
+Choose saved team…|Pilih pasukan tersimpan…|保存チームを選択…|اختر فريقًا محفوظًا…|选择已保存球队…|Choisir une équipe sauvegardée…|Gespeichertes Team wählen…|저장된 팀 선택…|Escolha uma equipe salva…|Выберите сохранённую команду…|Elige un equipo guardado…
+No saved teams yet|Belum ada pasukan tersimpan|保存チームはありません|لا توجد فرق محفوظة بعد|暂无已保存球队|Aucune équipe sauvegardée|Noch keine gespeicherten Teams|저장된 팀 없음|Nenhuma equipe salva|Сохранённых команд пока нет|Aún no hay equipos guardados
+TACTICAL BOARD|PAPAN TAKTIKAL|戦術ボード|لوحة الخطط|战术板|TABLEAU TACTIQUE|TAKTIKTAFEL|전술 보드|QUADRO TÁTICO|ТАКТИЧЕСКАЯ ДОСКА|PIZARRA TÁCTICA
+STARTING LINE-UP|KESEBELASAN UTAMA|先発メンバー|التشكيلة الأساسية|首发阵容|TITULAIRES|STARTELF|선발 명단|TITULARES|СТАРТОВЫЙ СОСТАВ|TITULARES
+No reserves on this roster.|Tiada simpanan dalam skuad ini.|このチームに控えはいません。|لا يوجد بدلاء في هذه التشكيلة.|此阵容没有替补。|Aucun remplaçant dans cet effectif.|Keine Reservespieler in diesem Kader.|이 선수단에 후보가 없습니다.|Sem reservas neste elenco.|В этом составе нет запасных.|No hay suplentes en esta plantilla.
+Swap for…|Ganti dengan…|交代する選手…|استبدل بـ…|替换球员…|Remplacer…|Ersetzen durch…|교체 대상…|Substituir…|Заменить…|Sustituir a…
+TEAM STRATEGY|STRATEGI PASUKAN|チーム戦術|خطة الفريق|球队战术|TACTIQUE D’ÉQUIPE|TEAMTAKTIK|팀 전술|TÁTICA DA EQUIPE|ТАКТИКА КОМАНДЫ|TÁCTICA DEL EQUIPO
+Tempo|Rentak|テンポ|الإيقاع|节奏|Rythme|Tempo|템포|Ritmo|Темп|Ritmo
+Measured|Terkawal|慎重|متأنٍ|稳健|Mesuré|Bedacht|신중하게|Controlado|Размеренно|Pausado
+Fast|Pantas|速い|سريع|快速|Rapide|Schnell|빠르게|Rápido|Быстро|Rápido
+Directness|Arah serangan|攻撃の直線性|المباشرة|直接性|Jeu direct|Direktheit|직접성|Jogo direto|Прямолинейность|Juego directo
+Short passes|Hantaran pendek|ショートパス|تمريرات قصيرة|短传|Passes courtes|Kurze Pässe|짧은 패스|Passes curtos|Короткие передачи|Pases cortos
+Forward balls|Hantaran ke depan|前方へのパス|كرات أمامية|向前传球|Ballons vers l’avant|Bälle nach vorn|전진 패스|Bolas à frente|Передачи вперёд|Balones hacia delante
+Pressing|Tekanan|プレス|الضغط|逼抢|Pressing|Pressing|압박|Pressão|Прессинг|Presión
+Hold shape|Kekal formasi|陣形維持|حافظ على التشكيل|保持阵型|Garder la structure|Formation halten|대형 유지|Manter formação|Держать строй|Mantener la forma
+Aggressive|Agresif|積極的|هجومي|积极|Agressif|Aggressiv|적극적으로|Agressivo|Агрессивно|Agresivo
+Defensive line|Garisan pertahanan|守備ライン|خط الدفاع|防线|Ligne défensive|Abwehrlinie|수비 라인|Linha defensiva|Линия обороны|Línea defensiva
+Deep|Rendah|低い|متراجع|靠后|Basse|Tief|낮게|Baixa|Глубоко|Baja
+High|Tinggi|高い|متقدم|靠前|Haute|Hoch|높게|Alta|Высоко|Alta
+Width|Lebar|横幅|العرض|宽度|Largeur|Breite|폭|Largura|Ширина|Anchura
+Compact|Rapat|コンパクト|متقارب|紧凑|Compact|Kompakt|좁게|Compacta|Компактно|Compacta
+Wide|Lebar|ワイド|واسع|拉开|Large|Breit|넓게|Ampla|Широко|Amplia
+SAVE TO BUILDER|SIMPAN KE PEMBINA|ビルダーに保存|احفظ في منشئ الفريق|保存至阵容编辑器|ENREGISTRER DANS LE CRÉATEUR|IM TEAM-EDITOR SPEICHERN|빌더에 저장|SALVAR NO CRIADOR|СОХРАНИТЬ В КОНСТРУКТОР|GUARDAR EN EL CREADOR
+Name this saved team|Namakan pasukan tersimpan|保存チーム名|اسم الفريق المحفوظ|为保存球队命名|Nom de l’équipe sauvegardée|Name des gespeicherten Teams|저장할 팀 이름|Nome da equipe salva|Название сохраняемой команды|Nombre del equipo guardado
+FORMATION-LINK MODEL|MODEL PAUTAN FORMASI|フォーメーション連係モデル|نموذج روابط التشكيل|阵型连线模型|MODÈLE DE LIENS TACTIQUES|FORMATIONSLINK-MODELL|포메이션 연계 모델|MODELO DE LIGAÇÕES TÁTICAS|МОДЕЛЬ СВЯЗЕЙ СХЕМЫ|MODELO DE ENLACES TÁCTICOS
+TACTICAL LINKS|PAUTAN TAKTIKAL|戦術的連係|الروابط التكتيكية|战术连线|LIENS TACTIQUES|TAKTISCHE VERBINDUNGEN|전술 연계|LIGAÇÕES TÁTICAS|ТАКТИЧЕСКИЕ СВЯЗИ|ENLACES TÁCTICOS
+BEST ACTIVE LINK|PAUTAN AKTIF TERBAIK|最高の有効連係|أفضل رابط نشط|最佳有效连线|MEILLEUR LIEN ACTIF|BESTE AKTIVE VERBINDUNG|최고 활성 연계|MELHOR LIGAÇÃO ATIVA|ЛУЧШАЯ АКТИВНАЯ СВЯЗЬ|MEJOR ENLACE ACTIVO
+LOWEST ACTIVE LINK|PAUTAN AKTIF TERENDAH|最低の有効連係|أدنى رابط نشط|最低有效连线|LIEN ACTIF LE PLUS FAIBLE|SCHWÄCHSTE AKTIVE VERBINDUNG|최저 활성 연계|MENOR LIGAÇÃO ATIVA|СЛАБЕЙШАЯ АКТИВНАЯ СВЯЗЬ|ENLACE ACTIVO MÁS BAJO
+LINK KEY|PETUNJUK PAUTAN|連係の凡例|دليل الروابط|连线图例|LÉGENDE DES LIENS|VERBINDUNGSLEGENDE|연계 범례|LEGENDA DAS LIGAÇÕES|ОБОЗНАЧЕНИЯ СВЯЗЕЙ|LEYENDA DE ENLACES
+IN POSSESSION|MENGUASAI BOLA|ボール保持|بحوزته الكرة|控球中|EN POSSESSION|IN BALLBESITZ|볼 소유 중|COM A POSSE|С МЯЧОМ|CON POSESIÓN
+OUT OF POSSESSION|TANPA BOLA|非保持|دون الكرة|无球|SANS LE BALLON|OHNE BALL|볼 미소유|SEM A POSSE|БЕЗ МЯЧА|SIN POSESIÓN
+ADJUST TACTICS|LARASKAN TAKTIK|戦術調整|عدّل الخطط|调整战术|AJUSTER LES TACTIQUES|TAKTIK ANPASSEN|전술 조정|AJUSTAR TÁTICAS|НАСТРОИТЬ ТАКТИКУ|AJUSTAR TÁCTICAS
+Replace starter…|Ganti pemain utama…|交代する先発…|اختر الأساسي المستبدل…|替换首发…|Remplacer un titulaire…|Stammspieler ersetzen…|교체할 선발…|Substituir titular…|Заменить основного…|Sustituir titular…
+SUB IN|MASUK|投入|إشراك|换上|FAIRE ENTRER|EINWECHSELN|투입|COLOCAR|ВЫПУСТИТЬ|DAR ENTRADA
+No available reserves.|Tiada simpanan tersedia.|出場可能な控えはいません。|لا يوجد بدلاء متاحون.|没有可用替补。|Aucun remplaçant disponible.|Keine verfügbaren Reservespieler.|교체 가능한 후보가 없습니다.|Sem reservas disponíveis.|Нет доступных запасных.|No hay suplentes disponibles.
+FIRST HALF|SEPARUH MASA PERTAMA|前半|الشوط الأول|上半场|PREMIÈRE MI-TEMPS|ERSTE HALBZEIT|전반전|PRIMEIRO TEMPO|ПЕРВЫЙ ТАЙМ|PRIMER TIEMPO
+SECOND HALF|SEPARUH MASA KEDUA|後半|الشوط الثاني|下半场|SECONDE MI-TEMPS|ZWEITE HALBZEIT|후반전|SEGUNDO TEMPO|ВТОРОЙ ТАЙМ|SEGUNDO TIEMPO
+HALF TIME|REHAT SEPARUH MASA|ハーフタイム|بين الشوطين|中场休息|MI-TEMPS|HALBZEIT|하프타임|INTERVALO|ПЕРЕРЫВ|DESCANSO
+FULL TIME|TAMAT PERLAWANAN|試合終了|نهاية المباراة|全场结束|FIN DU MATCH|ABPFIFF|경기 종료|FIM DE JOGO|МАТЧ ОКОНЧЕН|FINAL DEL PARTIDO
+STOPPAGE|HENTIAN|中断|توقف|暂停|ARRÊT DE JEU|UNTERBRECHUNG|경기 중단|PARADA|ОСТАНОВКА|INTERRUPCIÓN
+PAUSE SIM|JEDA SIMULASI|シミュレーションを一時停止|أوقف المحاكاة|暂停模拟|PAUSE SIMULATION|SIMULATION PAUSIEREN|시뮬레이션 일시정지|PAUSAR SIMULAÇÃO|ПАУЗА СИМУЛЯЦИИ|PAUSAR SIMULACIÓN
+RESUME SIM|SAMBUNG SIMULASI|シミュレーションを再開|استأنف المحاكاة|继续模拟|REPRENDRE LA SIMULATION|SIMULATION FORTSETZEN|시뮬레이션 재개|RETOMAR SIMULAÇÃO|ПРОДОЛЖИТЬ СИМУЛЯЦИЮ|REANUDAR SIMULACIÓN
+FAST-FORWARD TO RESULTS ⏩|TERUS KE KEPUTUSAN ⏩|結果まで早送り ⏩|انتقل إلى النتائج ⏩|快进至结果 ⏩|ALLER AUX RÉSULTATS ⏩|ZUM ERGEBNIS VORSPULEN ⏩|결과까지 빨리감기 ⏩|AVANÇAR AO RESULTADO ⏩|ПЕРЕЙТИ К РЕЗУЛЬТАТАМ ⏩|AVANZAR AL RESULTADO ⏩
+PROCEED TO NEXT SEQUENCE →|TERUS KE URUTAN SETERUSNYA →|次のプレーへ →|تابع إلى التسلسل التالي →|继续下一段比赛 →|PASSER À LA SÉQUENCE SUIVANTE →|NÄCHSTE SEQUENZ →|다음 시퀀스로 →|PRÓXIMA SEQUÊNCIA →|СЛЕДУЮЩИЙ ЭПИЗОД →|SIGUIENTE SECUENCIA →
+WAITING FOR STOPPAGE…|MENUNGGU HENTIAN…|中断待ち…|بانتظار توقف اللعب…|等待比赛中断…|EN ATTENTE D’UN ARRÊT…|WARTE AUF UNTERBRECHUNG…|중단 대기 중…|AGUARDANDO PARADA…|ОЖИДАНИЕ ОСТАНОВКИ…|ESPERANDO INTERRUPCIÓN…
+PLAYING SEQUENCE…|URUTAN SEDANG DIPAPARKAN…|プレーを表示中…|جارٍ عرض التسلسل…|正在播放比赛片段…|SÉQUENCE EN COURS…|SEQUENZ LÄUFT…|시퀀스 재생 중…|SEQUÊNCIA EM ANDAMENTO…|ПОКАЗ ЭПИЗОДА…|SECUENCIA EN CURSO…
+SUBSTITUTION REQUIRED|PENGGANTIAN DIPERLUKAN|交代が必要|يلزم تبديل|需要换人|REMPLACEMENT REQUIS|WECHSEL ERFORDERLICH|교체 필요|SUBSTITUIÇÃO NECESSÁRIA|ТРЕБУЕТСЯ ЗАМЕНА|SUSTITUCIÓN NECESARIA
+MATCH FEED|SUAPAN PERLAWANAN|試合ログ|سجل المباراة|比赛动态|FIL DU MATCH|SPIELVERLAUF|경기 피드|LANCE A LANCE|ЛЕНТА МАТЧА|RELATO DEL PARTIDO
+SEQUENCE PAUSED|URUTAN DIJEDA|プレー中断中|التسلسل متوقف|片段暂停|SÉQUENCE EN PAUSE|SEQUENZ PAUSIERT|시퀀스 일시정지|SEQUÊNCIA PAUSADA|ЭПИЗОД ПРИОСТАНОВЛЕН|SECUENCIA EN PAUSA
+PLAY PAUSED|PERMAINAN DIJEDA|試合中断中|اللعب متوقف|比赛暂停|JEU EN PAUSE|SPIEL PAUSIERT|경기 일시정지|JOGO PAUSADO|ИГРА ПРИОСТАНОВЛЕНА|JUEGO EN PAUSA
+MANDATORY SUBSTITUTION|PENGGANTIAN WAJIB|必須交代|تبديل إلزامي|强制换人|REMPLACEMENT OBLIGATOIRE|PFLICHTWECHSEL|필수 교체|SUBSTITUIÇÃO OBRIGATÓRIA|ОБЯЗАТЕЛЬНАЯ ЗАМЕНА|SUSTITUCIÓN OBLIGATORIA
+CONFIRM REPLACEMENT|SAHKAN PENGGANTIAN|交代を確定|أكد التبديل|确认换人|CONFIRMER LE REMPLACEMENT|WECHSEL BESTÄTIGEN|교체 확인|CONFIRMAR SUBSTITUIÇÃO|ПОДТВЕРДИТЬ ЗАМЕНУ|CONFIRMAR SUSTITUCIÓN
+Choose a reserve…|Pilih pemain simpanan…|控えを選択…|اختر بديلًا…|选择替补…|Choisir un remplaçant…|Reservespieler wählen…|후보 선택…|Escolha um reserva…|Выберите запасного…|Elige un suplente…
+Set-piece taker|Pengambil bola mati|キッカー|منفذ الكرة الثابتة|定位球主罚者|Tireur du coup de pied arrêté|Standardschütze|세트피스 키커|Cobrador da bola parada|Исполнитель стандарта|Lanzador a balón parado
+Routine|Rutin|パターン|التنفيذ|套路|Combinaison|Variante|방식|Jogada|Розыгрыш|Jugada
+Take the penalty|Ambil penalti|PKを蹴る|نفذ ركلة الجزاء|主罚点球|Tirer le penalty|Elfmeter schießen|페널티킥 차기|Cobrar o pênalti|Пробить пенальти|Lanzar el penalti
+Short distribution|Hantaran pendek penjaga gol|短い配球|توزيع قصير|短传开球|Relance courte|Kurzer Abwurf|짧게 배급|Saída curta|Короткий розыгрыш|Saque corto
+Long distribution|Hantaran jauh penjaga gol|長い配球|توزيع طويل|长传开球|Relance longue|Langer Abschlag|길게 배급|Saída longa|Длинный розыгрыш|Saque largo
+Cross into the box|Lintang ke kotak penalti|エリア内へクロス|عرضية إلى منطقة الجزاء|传中至禁区|Centrer dans la surface|Flanke in den Strafraum|박스 안으로 크로스|Cruzar na área|Навес в штрафную|Centrar al área
+Short corner|Sepakan sudut pendek|ショートコーナー|ركنية قصيرة|短角球|Corner court|Kurze Ecke|짧은 코너킥|Escanteio curto|Короткий угловой|Córner corto
+Direct shot|Sepakan terus|直接シュート|تسديدة مباشرة|直接射门|Tir direct|Direktschuss|직접 슛|Chute direto|Прямой удар|Tiro directo
+Play a pass|Buat hantaran|パスを出す|مرر الكرة|传球|Faire une passe|Pass spielen|패스하기|Fazer um passe|Отдать пас|Dar un pase
+FINAL WHISTLE|WISEL PENAMAT|試合終了の笛|صافرة النهاية|终场哨|COUP DE SIFFLET FINAL|SCHLUSSPFIFF|종료 휘슬|APITO FINAL|ФИНАЛЬНЫЙ СВИСТОК|PITIDO FINAL
+MATCH REPORT|LAPORAN PERLAWANAN|試合レポート|تقرير المباراة|比赛报告|RAPPORT DU MATCH|SPIELBERICHT|경기 보고서|RELATÓRIO DA PARTIDA|ОТЧЁТ О МАТЧЕ|INFORME DEL PARTIDO
+EDIT SQUADS|SUNTING SKUAD|チームを編集|عدّل التشكيلات|编辑阵容|MODIFIER LES EFFECTIFS|KADER BEARBEITEN|선수단 편집|EDITAR ELENCOS|ИЗМЕНИТЬ СОСТАВЫ|EDITAR PLANTILLAS
+REMATCH →|PERLAWANAN SEMULA →|再戦 →|إعادة المباراة →|再战 →|REVANCHE →|REVANCHE →|재경기 →|REVANCHE →|РЕВАНШ →|REVANCHA →
+PLAYER RATINGS|PENILAIAN PEMAIN|選手採点|تقييمات اللاعبين|球员评分|NOTES DES JOUEURS|SPIELERNOTEN|선수 평점|NOTAS DOS JOGADORES|ОЦЕНКИ ИГРОКОВ|NOTAS DE JUGADORES
+MATCH PERFORMANCE|PRESTASI PERLAWANAN|試合パフォーマンス|أداء المباراة|比赛表现|PERFORMANCE DU MATCH|SPIELLEISTUNG|경기 활약|DESEMPENHO NA PARTIDA|РЕЗУЛЬТАТИВНОСТЬ МАТЧА|RENDIMIENTO DEL PARTIDO
+COMPLETE MATCH RECORD|REKOD PENUH PERLAWANAN|全試合記録|السجل الكامل للمباراة|完整比赛记录|HISTORIQUE COMPLET DU MATCH|VOLLSTÄNDIGER SPIELVERLAUF|전체 경기 기록|REGISTRO COMPLETO DA PARTIDA|ПОЛНАЯ ЗАПИСЬ МАТЧА|REGISTRO COMPLETO DEL PARTIDO
+EVENT ARCHIVE|ARKIB PERISTIWA|イベント履歴|أرشيف الأحداث|事件档案|ARCHIVE DES ÉVÉNEMENTS|EREIGNISARCHIV|이벤트 기록|ARQUIVO DE EVENTOS|АРХИВ СОБЫТИЙ|ARCHIVO DE EVENTOS
+EVENT FILTER|PENAPIS PERISTIWA|イベント絞り込み|تصفية الأحداث|事件筛选|FILTRE D’ÉVÉNEMENTS|EREIGNISFILTER|이벤트 필터|FILTRO DE EVENTOS|ФИЛЬТР СОБЫТИЙ|FILTRO DE EVENTOS
+All events|Semua peristiwa|全イベント|كل الأحداث|全部事件|Tous les événements|Alle Ereignisse|모든 이벤트|Todos os eventos|Все события|Todos los eventos
+Notable only|Peristiwa utama sahaja|重要イベントのみ|الأحداث المهمة فقط|仅重要事件|Événements marquants|Nur wichtige Ereignisse|주요 이벤트만|Apenas destaques|Только важные|Solo destacados
+Possession|Penguasaan bola|ボール支配率|الاستحواذ|控球率|Possession|Ballbesitz|점유율|Posse|Владение|Posesión
+On target|Tepat sasaran|枠内|على المرمى|射正|Cadrés|Aufs Tor|유효 슈팅|No alvo|В створ|A puerta
+Pass accuracy|Ketepatan hantaran|パス成功率|دقة التمرير|传球成功率|Précision des passes|Passgenauigkeit|패스 성공률|Precisão de passes|Точность передач|Precisión de pases
+Interceptions|Pintasan|インターセプト|اعتراضات|拦截|Interceptions|Abgefangene Bälle|가로채기|Interceptações|Перехваты|Intercepciones
+Turnovers|Kehilangan bola|ボールロスト|فقدان الكرة|丢失球权|Pertes de balle|Ballverluste|볼 상실|Perdas de bola|Потери|Pérdidas
+Fouls|Kesalahan|ファウル|أخطاء|犯规|Fautes|Fouls|파울|Faltas|Фолы|Faltas
+Corners|Sepakan sudut|コーナー|ركنيات|角球|Corners|Ecken|코너킥|Escanteios|Угловые|Córneres
+Cards|Kad|カード|بطاقات|牌数|Cartons|Karten|카드|Cartões|Карточки|Tarjetas
+Stamina|Stamina|スタミナ|اللياقة|体力|Endurance|Ausdauer|체력|Resistência|Выносливость|Resistencia
+Rating|Penilaian|採点|التقييم|评分|Note|Note|평점|Nota|Оценка|Nota
+GOAL|GOL|ゴール|هدف|进球|BUT|TOR|골|GOL|ГОЛ|GOL
+SAVE|SELAMATAN|セーブ|تصدي|扑救|ARRÊT|PARADE|선방|DEFESA|СЕЙВ|PARADA
+SAVE / REBOUND|SELAMATAN / LANTUNAN|セーブ／こぼれ球|تصدي / كرة مرتدة|扑救 / 反弹球|ARRÊT / REBOND|PARADE / ABPRALLER|선방 / 리바운드|DEFESA / REBOTE|СЕЙВ / ОТСКОК|PARADA / REBOTE
+GOAL KICK|SEPAKAN GOL|ゴールキック|ركلة مرمى|球门球|SIX MÈTRES|ABSTOSS|골킥|TIRO DE META|УДАР ОТ ВОРОТ|SAQUE DE META
+CORNER|SEPAKAN SUDUT|コーナー|ركنية|角球|CORNER|ECKE|코너킥|ESCANTEIO|УГЛОВОЙ|CÓRNER
+FREE KICK|SEPAKAN PERCUMA|フリーキック|ركلة حرة|任意球|COUP FRANC|FREISTOSS|프리킥|FALTA|ШТРАФНОЙ|TIRO LIBRE
+PENALTY|PENALTI|ペナルティーキック|ركلة جزاء|点球|PENALTY|ELFMETER|페널티킥|PÊNALTI|ПЕНАЛЬТИ|PENALTI
+RED CARD|KAD MERAH|レッドカード|بطاقة حمراء|红牌|CARTON ROUGE|ROTE KARTE|레드카드|CARTÃO VERMELHO|КРАСНАЯ КАРТОЧКА|TARJETA ROJA
+YELLOW CARD|KAD KUNING|イエローカード|بطاقة صفراء|黄牌|CARTON JAUNE|GELBE KARTE|옐로카드|CARTÃO AMARELO|ЖЁЛТАЯ КАРТОЧКА|TARJETA AMARILLA
+NO CARDS|TIADA KAD|カードなし|لا بطاقات|无牌|AUCUN CARTON|KEINE KARTEN|카드 없음|SEM CARTÕES|НЕТ КАРТОЧЕК|SIN TARJETAS
+KICKOFF|SEPAK MULA|キックオフ|ركلة البداية|开球|COUP D’ENVOI|ANSTOSS|킥오프|SAÍDA|НАЧАЛЬНЫЙ УДАР|SAQUE INICIAL
+PASS|HANTARAN|パス|تمرير|传球|PASSE|PASS|패스|PASSE|ПАС|PASE
+DRIBBLE|GELECEK|ドリブル|مراوغة|盘带|DRIBBLE|DRIBBLING|드리블|DRIBLE|ДРИБЛИНГ|REGATE
+INTERCEPTION|PINTASAN|インターセプト|اعتراض|拦截|INTERCEPTION|ABGEFANGEN|가로채기|INTERCEPTAÇÃO|ПЕРЕХВАТ|INTERCEPCIÓN
+TURNOVER|KEHILANGAN BOLA|ボールロスト|تغيير الاستحواذ|球权转换|PERTE DE BALLE|BALLVERLUST|볼 전환|PERDA DE BOLA|СМЕНА ВЛАДЕНИЯ|CAMBIO DE POSESIÓN
+SHOT ATTEMPT|CUBAAN SEPAKAN|シュート|محاولة تسديد|射门尝试|TENTATIVE DE TIR|SCHUSSVERSUCH|슈팅 시도|TENTATIVA DE CHUTE|ПОПЫТКА УДАРА|INTENTO DE TIRO
+FLOW ACTIVATION|PENGAKTIFAN FLOW|FLOW発動|تفعيل FLOW|FLOW 激活|ACTIVATION FLOW|FLOW-AKTIVIERUNG|FLOW 발동|ATIVAÇÃO FLOW|АКТИВАЦИЯ FLOW|ACTIVACIÓN FLOW
+SUBSTITUTION|PENGGANTIAN|交代|تبديل|换人|REMPLACEMENT|AUSWECHSLUNG|교체|SUBSTITUIÇÃO|ЗАМЕНА|SUSTITUCIÓN
+FOUL|KESALAHAN|ファウル|خطأ|犯规|FAUTE|FOUL|파울|FALTA|ФОЛ|FALTA
+REBOUND|LANTUNAN|こぼれ球|كرة مرتدة|反弹球|REBOND|ABPRALLER|리바운드|REBOTE|ОТСКОК|REBOTE
+SET PIECE|BOLA MATI|セットプレー|كرة ثابتة|定位球|COUP DE PIED ARRÊTÉ|STANDARD|세트피스|BOLA PARADA|СТАНДАРТ|BALÓN PARADO
+PLAY|PERMAINAN|プレー|لعب|比赛|JEU|SPIEL|플레이|JOGO|ИГРА|JUEGO
+CARRY|BAWA BOLA|持ち運び|تقدم بالكرة|带球推进|CONDUITE|BALLFÜHRUNG|볼 운반|CONDUÇÃO|ПРОДВИЖЕНИЕ|CONDUCCIÓN
+ROUTINE EVENT|PERISTIWA BIASA|通常イベント|حدث عادي|普通事件|ÉVÉNEMENT COURANT|NORMALES EREIGNIS|일반 이벤트|EVENTO COMUM|ОБЫЧНОЕ СОБЫТИЕ|EVENTO NORMAL
+VACANT|KOSONG|空き|شاغر|空缺|VACANT|FREI|공석|VAGO|СВОБОДНО|VACANTE
+DROP RESERVE|LEPAS PEMAIN SIMPANAN|控えをドロップ|أفلت البديل|放置替补|DÉPOSER UN REMPLAÇANT|RESERVE ABLEGEN|후보 놓기|SOLTAR RESERVA|ПЕРЕТАЩИТЕ ЗАПАСНОГО|SUELTA UN SUPLENTE
+Drag onto a player on the pitch to substitute|Seret ke pemain di padang untuk mengganti|ピッチの選手へドラッグして交代|اسحب إلى لاعب في الملعب للتبديل|拖至场上球员进行换人|Glissez sur un joueur du terrain pour le remplacer|Zum Wechsel auf einen Feldspieler ziehen|필드 선수에게 끌어다 놓아 교체|Arraste sobre um jogador em campo para substituir|Перетащите на игрока на поле для замены|Arrastra sobre un jugador del campo para sustituirlo
+Drop a reserve here to substitute|Lepas pemain simpanan di sini untuk mengganti|控えをここにドロップして交代|أفلت بديلًا هنا للتبديل|将替补拖放至此换人|Déposez un remplaçant ici|Reserve hier zum Wechsel ablegen|후보를 여기에 놓아 교체|Solte um reserva aqui|Перетащите запасного сюда|Suelta un suplente aquí
+Drop a reserve here to replace the sent-off player|Lepas simpanan di sini untuk mengganti pemain dibuang|退場選手の代わりに控えをここへドロップ|أفلت بديلًا هنا بدل اللاعب المطرود|拖放替补以替换被罚下球员|Déposez un remplaçant pour le joueur expulsé|Reserve als Ersatz für den Platzverweis ablegen|퇴장 선수를 대신할 후보를 놓으세요|Solte um reserva para o jogador expulso|Перетащите запасного вместо удалённого игрока|Suelta un suplente para reemplazar al expulsado
+Formation player chemistry links|Pautan kimia pemain formasi|フォーメーションの選手連係|روابط الانسجام بين لاعبي التشكيل|阵型球员默契连线|Liens d’affinité des joueurs|Chemieverbindungen der Formation|포메이션 선수 케미 연계|Ligações de química da formação|Связи сыгранности в схеме|Enlaces de química de la formación
+All match tick events|Semua peristiwa langkah perlawanan|試合の全プレー記録|جميع أحداث خطوات المباراة|比赛所有步进事件|Tous les événements du match|Alle Spielereignisse|모든 경기 진행 이벤트|Todos os eventos da partida|Все события матча|Todos los eventos del partido
+Every match tick will appear here.|Setiap langkah perlawanan akan dipaparkan di sini.|試合の各プレーがここに表示されます。|ستظهر كل خطوة من المباراة هنا.|每步比赛事件将在此显示。|Chaque action apparaîtra ici.|Jeder Spielschritt erscheint hier.|모든 경기 진행이 여기에 표시됩니다.|Cada lance aparecerá aqui.|Здесь появится каждый эпизод матча.|Cada jugada aparecerá aquí.
+{player} completes a pass to {other}.|{player} melengkapkan hantaran kepada {other}.|{player}が{other}へパス成功。|يمرر {player} بنجاح إلى {other}.|{player} 成功传给 {other}。|{player} réussit une passe à {other}.|{player} passt erfolgreich zu {other}.|{player}이(가) {other}에게 패스합니다.|{player} completa um passe para {other}.|{player} отдаёт точный пас на {other}.|{player} completa un pase a {other}.
+{player} advances with the ball.|{player} mara dengan bola.|{player}がボールを運ぶ。|يتقدم {player} بالكرة.|{player} 带球推进。|{player} progresse avec le ballon.|{player} führt den Ball nach vorn.|{player}이(가) 공을 몰고 전진합니다.|{player} avança com a bola.|{player} продвигается с мячом.|{player} avanza con el balón.
+{player} wins possession.|{player} memenangi penguasaan bola.|{player}がボールを奪う。|يستعيد {player} الكرة.|{player} 赢得球权。|{player} récupère le ballon.|{player} erobert den Ball.|{player}이(가) 공을 빼앗습니다.|{player} recupera a bola.|{player} завладевает мячом.|{player} recupera la posesión.
+{player} shoots for {team}.|{player} menyepak untuk {team}.|{player}が{team}のシュートを放つ。|يسدد {player} لصالح {team}.|{player} 为 {team} 射门。|{player} tire pour {team}.|{player} schießt für {team}.|{player}이(가) {team}의 슛을 시도합니다.|{player} chuta por {team}.|{player} бьёт по воротам за {team}.|{player} dispara para {team}.
+{player} scores for {team}!|{player} menjaringkan gol untuk {team}!|{player}が{team}のゴール！|يسجل {player} لصالح {team}!|{player} 为 {team} 进球！|{player} marque pour {team} !|{player} trifft für {team}!|{player}이(가) {team}의 골을 넣습니다!|{player} marca por {team}!|{player} забивает за {team}!|¡{player} marca para {team}!
+{player} saves the shot.|{player} menyelamatkan sepakan.|{player}がシュートをセーブ。|يتصدى {player} للتسديدة.|{player} 扑出射门。|{player} arrête le tir.|{player} hält den Schuss.|{player}이(가) 슛을 막습니다.|{player} defende o chute.|{player} отражает удар.|{player} detiene el disparo.
+{team} restart play.|{team} memulakan semula permainan.|{team}がプレーを再開。|يستأنف {team} اللعب.|{team} 重新开始比赛。|{team} reprend le jeu.|{team} setzt das Spiel fort.|{team}이(가) 경기를 재개합니다.|{team} reinicia o jogo.|{team} возобновляет игру.|{team} reanuda el juego.
+{player} commits a foul.|{player} melakukan kesalahan.|{player}がファウル。|يرتكب {player} خطأ.|{player} 犯规。|{player} commet une faute.|{player} begeht ein Foul.|{player}이(가) 파울을 범합니다.|{player} comete uma falta.|{player} нарушает правила.|{player} comete una falta.
+{player} receives a card.|{player} menerima kad.|{player}にカード。|يتلقى {player} بطاقة.|{player} 被出示牌。|{player} reçoit un carton.|{player} erhält eine Karte.|{player}이(가) 카드를 받습니다.|{player} recebe um cartão.|{player} получает карточку.|{player} recibe una tarjeta.
+{team} bring on {player} for {other}.|{team} memasukkan {player} menggantikan {other}.|{team}は{other}に代えて{player}を投入。|يشرك {team} اللاعب {player} بدلًا من {other}.|{team} 换上 {player}，换下 {other}。|{team} fait entrer {player} à la place de {other}.|{team} wechselt {player} für {other} ein.|{team}이(가) {other} 대신 {player}을(를) 투입합니다.|{team} coloca {player} no lugar de {other}.|{team} выпускает {player} вместо {other}.|{team} da entrada a {player} por {other}.
+{player} activates FLOW.|{player} mengaktifkan FLOW.|{player}がFLOWを発動。|يفعل {player} حالة FLOW.|{player} 激活 FLOW。|{player} active FLOW.|{player} aktiviert FLOW.|{player}이(가) FLOW를 발동합니다.|{player} ativa FLOW.|{player} активирует FLOW.|{player} activa FLOW.
+Both teams reset their shape.|Kedua-dua pasukan menyusun formasi semula.|両チームが陣形を整える。|يعيد الفريقان تنظيم تشكيلتيهما.|两队重新组织阵型。|Les deux équipes se réorganisent.|Beide Teams ordnen ihre Formation.|양 팀이 대형을 정비합니다.|As duas equipes se reorganizam.|Обе команды восстанавливают строй.|Ambos equipos reorganizan su formación.
+{count} EVENTS|{count} PERISTIWA|{count}イベント|{count} أحداث|{count} 个事件|{count} ÉVÉNEMENTS|{count} EREIGNISSE|이벤트 {count}개|{count} EVENTOS|СОБЫТИЙ: {count}|{count} EVENTOS
+{count} STARTERS|{count} PEMAIN UTAMA|先発{count}人|{count} أساسيًا|{count} 名首发|{count} TITULAIRES|{count} STARTSPIELER|선발 {count}명|{count} TITULARES|ОСНОВНЫХ: {count}|{count} TITULARES
+{count} AVAILABLE|{count} TERSEDIA|{count}人出場可能|{count} متاحين|{count} 人可用|{count} DISPONIBLES|{count} VERFÜGBAR|{count}명 가능|{count} DISPONÍVEIS|ДОСТУПНО: {count}|{count} DISPONIBLES
+{team} WIN|{team} MENANG|{team}の勝利|فوز {team}|{team} 获胜|VICTOIRE DE {team}|{team} GEWINNT|{team} 승리|VITÓRIA DE {team}|ПОБЕДА {team}|GANA {team}
+TEAM {number}|PASUKAN {number}|チーム{number}|الفريق {number}|球队 {number}|ÉQUIPE {number}|TEAM {number}|팀 {number}|EQUIPE {number}|КОМАНДА {number}|EQUIPO {number}
+{formation} FORMATION|FORMASI {formation}|{formation}フォーメーション|تشكيل {formation}|{formation} 阵型|FORMATION {formation}|FORMATION {formation}|{formation} 포메이션|FORMAÇÃO {formation}|СХЕМА {formation}|FORMACIÓN {formation}
+SUCCESS CHANCE|PELUANG BERJAYA|成功確率|فرصة النجاح|成功率|CHANCE DE RÉUSSITE|ERFOLGSCHANCE|성공 확률|CHANCE DE SUCESSO|ШАНС УСПЕХА|PROBABILIDAD DE ÉXITO
+PASS SUCCESS|KEJAYAAN HANTARAN|パス成功率|نجاح التمرير|传球成功率|RÉUSSITE DE PASSE|PASSERFOLG|패스 성공|SUCESSO DO PASSE|УСПЕХ ПЕРЕДАЧИ|ÉXITO DEL PASE
+DRIBBLE SUCCESS|KEJAYAAN GELECEK|ドリブル成功率|نجاح المراوغة|盘带成功率|RÉUSSITE DU DRIBBLE|DRIBBLINGERFOLG|드리블 성공|SUCESSO DO DRIBLE|УСПЕХ ДРИБЛИНГА|ÉXITO DEL REGATE
+TACKLE WIN|KEJAYAAN TERJAHAN|タックル成功率|نجاح الافتكاك|抢断成功率|RÉUSSITE DU TACLE|ZWEIKAMPFERFOLG|태클 성공|SUCESSO DO DESARME|УСПЕХ ОТБОРА|ÉXITO DE LA ENTRADA
+GOAL CHANCE|PELUANG GOL|ゴール確率|فرصة التسجيل|进球概率|CHANCE DE BUT|TORCHANCE|득점 확률|CHANCE DE GOL|ШАНС ГОЛА|PROBABILIDAD DE GOL
+ULTIMATE SUCCESS|KEJAYAAN ULTIMATE|必殺技成功率|نجاح المهارة القصوى|终极技成功率|RÉUSSITE ULTIME|ULTIMATE-ERFOLG|궁극기 성공|SUCESSO DA ULTIMATE|УСПЕХ УЛЬТИМЕЙТА|ÉXITO DE HABILIDAD FINAL
+V0.8.0 Battle Sim Renaissance: reliable sequences, accurate formations, Blue Lock Man, faster character loading and verified chapter status.|V0.8.0 Kebangkitan Battle Sim: urutan stabil, formasi tepat, Blue Lock Man, pemuatan watak pantas dan status bab disahkan.|V0.8.0 Battle Sim刷新：安定した進行、正確な配置、Blue Lock Man、高速読み込み、刊行確認状況。|V0.8.0 تجديد Battle Sim: تسلسلات موثوقة وتشكيلات دقيقة وBlue Lock Man وتحميل أسرع وحالة فصول موثقة.|V0.8.0 Battle Sim 焕新：可靠比赛片段、准确阵型、Blue Lock Man、更快角色加载与章节核实状态。|V0.8.0 Renaissance Battle Sim : séquences fiables, formations précises, Blue Lock Man, chargement accéléré et suivi vérifié des chapitres.|V0.8.0 Battle Sim Renaissance: verlässliche Sequenzen, genaue Formationen, Blue Lock Man, schnelleres Laden und geprüfter Kapitelstatus.|V0.8.0 Battle Sim 개편: 안정적인 진행, 정확한 포메이션, Blue Lock Man, 빠른 로딩 및 화수 확인 상태.|V0.8.0 Renascimento Battle Sim: sequências confiáveis, formações precisas, Blue Lock Man, carregamento rápido e capítulos verificados.|V0.8.0 Обновление Battle Sim: надёжные эпизоды, точные схемы, Blue Lock Man, быстрая загрузка и проверка глав.|V0.8.0 Renacimiento de Battle Sim: secuencias fiables, formaciones precisas, Blue Lock Man, carga rápida y capítulos verificados.
+`.trim().split('\n').map(line=>line.split('|'));
+const extra=`
+Colour|Warna|カラー|اللون|颜色|Couleur|Farbe|색상|Cor|Цвет|Color
+Saved team|Pasukan tersimpan|保存チーム|فريق محفوظ|已保存球队|Équipe sauvegardée|Gespeichertes Team|저장된 팀|Equipe salva|Сохранённая команда|Equipo guardado
+TEXT-BASED MATCH ENGINE|ENJIN PERLAWANAN TEKS|テキスト形式の試合エンジン|محرك مباريات نصي|文字比赛引擎|MOTEUR DE MATCH TEXTUEL|TEXTBASIERTE SPIELSIMULATION|텍스트 경기 엔진|MOTOR DE PARTIDA EM TEXTO|ТЕКСТОВЫЙ ДВИЖОК МАТЧА|MOTOR DE PARTIDO EN TEXTO
+CHOOSE YOUR SQUADS|PILIH SKUAD ANDA|チームを選択|اختر تشكيلتيك|选择球队|CHOISISSEZ VOS EFFECTIFS|KADER AUSWÄHLEN|선수단 선택|ESCOLHA OS ELENCOS|ВЫБЕРИТЕ СОСТАВЫ|ELIGE TUS PLANTILLAS
+Your saved teams are stored only in this browser.|Pasukan tersimpan hanya disimpan dalam pelayar ini.|保存チームはこのブラウザーにのみ保存されます。|تُحفظ فرقك في هذا المتصفح فقط.|球队仅保存在此浏览器中。|Vos équipes sont conservées uniquement dans ce navigateur.|Teams werden nur in diesem Browser gespeichert.|팀은 이 브라우저에만 저장됩니다.|As equipes ficam salvas apenas neste navegador.|Команды хранятся только в этом браузере.|Los equipos se guardan solo en este navegador.
+Saved squads load from the existing auction save and Standalone Team Builder storage. SAVE TO BUILDER updates the standalone builder squad.|Skuad dimuatkan daripada simpanan lelongan dan pembina pasukan. SIMPAN KE PEMBINA mengemas kini skuad pembina.|オークションと単独ビルダーの保存データからチームを読み込みます。保存ボタンは単独ビルダーのチームを更新します。|تُحمّل الفرق من حفظ المزاد ومنشئ الفريق. يحدّث زر الحفظ تشكيلة المنشئ.|从拍卖和独立阵容编辑器存档加载球队。保存按钮将更新编辑器球队。|Les effectifs proviennent des sauvegardes des enchères et du créateur. Enregistrer remplace l’équipe du créateur.|Kader stammen aus Auktion und Team-Editor. Speichern aktualisiert den Kader im Editor.|경매 및 독립 빌더 저장 데이터에서 불러옵니다. 저장 버튼은 빌더 선수단을 갱신합니다.|Os elencos vêm do leilão e do criador. Salvar atualiza a equipe do criador.|Составы загружаются из аукциона и конструктора. Сохранение обновляет команду конструктора.|Las plantillas se cargan de la subasta y el creador. Guardar actualiza el equipo del creador.
+Live Battle Sim match|Perlawanan Battle Sim langsung|Battle Simのライブ試合|مباراة Battle Sim مباشرة|Battle Sim 实时比赛|Match Battle Sim en direct|Live-Spiel in Battle Sim|Battle Sim 실시간 경기|Partida Battle Sim ao vivo|Текущий матч Battle Sim|Partido Battle Sim en directo
+Configure squads, manage tactics and simulate text-based football matches in Battle Sim.|Tetapkan skuad, urus taktik dan simulasikan perlawanan bola sepak teks dalam Battle Sim.|Battle Simでチームと戦術を設定し、テキスト形式のサッカーをシミュレートします。|أعد الفرق والخطط وحاكِ مباريات كرة قدم نصية في Battle Sim.|在 Battle Sim 中设置球队、管理战术并模拟文字足球比赛。|Configurez vos équipes et tactiques pour des matchs de football textuels dans Battle Sim.|Konfiguriere Teams und Taktiken für textbasierte Fußballspiele in Battle Sim.|Battle Sim에서 선수단과 전술을 설정하고 텍스트 축구 경기를 시뮬레이션하세요.|Configure elencos e táticas e simule futebol em texto no Battle Sim.|Настройте составы и тактику для текстовых футбольных матчей в Battle Sim.|Configura plantillas y tácticas y simula partidos de fútbol de texto en Battle Sim.
+Replace the sent-off player to continue the match.|Ganti pemain dibuang untuk meneruskan perlawanan.|退場した選手を交代して試合を続けます。|استبدل اللاعب المطرود لمتابعة المباراة.|替换被罚下球员以继续比赛。|Remplacez le joueur expulsé pour continuer.|Ersetze den verwiesenen Spieler, um fortzufahren.|퇴장 선수를 교체해 경기를 계속하세요.|Substitua o expulso para continuar.|Замените удалённого игрока, чтобы продолжить.|Reemplaza al expulsado para continuar.
+Choose an available reserve to complete the mandatory substitution.|Pilih simpanan tersedia untuk melengkapkan penggantian wajib.|出場可能な控えを選んで必須交代を完了します。|اختر بديلًا متاحًا لإتمام التبديل الإلزامي.|选择可用替补完成强制换人。|Choisissez un remplaçant disponible pour le remplacement obligatoire.|Wähle eine verfügbare Reserve für den Pflichtwechsel.|가능한 후보를 선택해 필수 교체를 완료하세요.|Escolha um reserva disponível para a substituição obrigatória.|Выберите доступного запасного для обязательной замены.|Elige un suplente disponible para la sustitución obligatoria.
+Choose which starter this reserve should replace, then press SWAP.|Pilih pemain utama untuk diganti, kemudian tekan TUKAR.|交代する先発を選んでから入れ替えを押します。|اختر الأساسي المستبدل ثم اضغط تبديل.|选择要替换的首发，然后按交换。|Choisissez le titulaire à remplacer, puis appuyez sur ÉCHANGER.|Wähle den zu ersetzenden Spieler und drücke TAUSCHEN.|교체할 선발을 선택한 후 교환을 누르세요.|Escolha o titular a substituir e pressione TROCAR.|Выберите основного игрока и нажмите ОБМЕН.|Elige al titular que sustituir y pulsa CAMBIAR.
+Enter a name before saving this team.|Masukkan nama sebelum menyimpan pasukan ini.|保存前にチーム名を入力してください。|أدخل اسمًا قبل حفظ الفريق.|保存球队前请输入名称。|Saisissez un nom avant de sauvegarder.|Gib vor dem Speichern einen Namen ein.|저장하기 전에 팀 이름을 입력하세요.|Digite um nome antes de salvar.|Введите имя перед сохранением.|Introduce un nombre antes de guardar.
+Unable to save this squad. Check browser storage and player availability.|Tidak dapat menyimpan skuad. Semak storan pelayar dan ketersediaan pemain.|保存できません。ブラウザーの保存領域と選手の利用可否を確認してください。|تعذر حفظ التشكيلة. تحقق من تخزين المتصفح وتوفر اللاعبين.|无法保存阵容。请检查浏览器存储与球员可用性。|Sauvegarde impossible. Vérifiez le stockage et la disponibilité des joueurs.|Speichern fehlgeschlagen. Prüfe Browserspeicher und Spielerverfügbarkeit.|저장할 수 없습니다. 브라우저 저장소와 선수 사용 가능 여부를 확인하세요.|Não foi possível salvar. Verifique o armazenamento e os jogadores disponíveis.|Не удалось сохранить. Проверьте хранилище браузера и доступность игроков.|No se pudo guardar. Revisa el almacenamiento y la disponibilidad de jugadores.
+Squad saved to Team Builder.|Skuad disimpan ke Pembina Pasukan.|チームをビルダーに保存しました。|حُفظت التشكيلة في منشئ الفريق.|阵容已保存至球队编辑器。|Effectif enregistré dans le créateur.|Kader im Team-Editor gespeichert.|선수단을 팀 빌더에 저장했습니다.|Elenco salvo no criador.|Состав сохранён в конструкторе.|Plantilla guardada en el creador.
+A player has been sent off. Select a replacement before proceeding.|Seorang pemain dibuang. Pilih pengganti sebelum meneruskan.|退場者が出ました。交代選手を選んでください。|طُرد لاعب. اختر بديلًا قبل المتابعة.|有球员被罚下，请先选择替补。|Un joueur est expulsé. Choisissez un remplaçant avant de continuer.|Ein Spieler wurde verwiesen. Wähle vor dem Fortsetzen einen Ersatz.|선수가 퇴장했습니다. 계속하기 전에 교체 선수를 선택하세요.|Um jogador foi expulso. Escolha um substituto antes de continuar.|Игрок удалён. Выберите замену перед продолжением.|Un jugador ha sido expulsado. Elige un sustituto antes de continuar.
+Half-time. Adjust tactics or make substitutions before the second half.|Rehat separuh masa. Laraskan taktik atau buat penggantian sebelum separuh masa kedua.|ハーフタイムです。後半前に戦術や交代を調整できます。|استراحة الشوطين. عدّل الخطط أو أجرِ تبديلات قبل الشوط الثاني.|中场休息。可在下半场前调整战术或换人。|Mi-temps. Ajustez les tactiques ou les remplacements avant la reprise.|Halbzeit. Passe Taktik und Wechsel vor der zweiten Hälfte an.|하프타임입니다. 후반전 전에 전술을 조정하거나 교체하세요.|Intervalo. Ajuste a tática ou faça substituições antes do segundo tempo.|Перерыв. Настройте тактику или замены перед вторым таймом.|Descanso. Ajusta las tácticas o realiza cambios antes del segundo tiempo.
+Goal confirmed. Proceed to the restart.|Gol disahkan. Teruskan ke sepak mula semula.|ゴール確定。再開へ進んでください。|الهدف مؤكد. تابع لاستئناف اللعب.|进球确认，继续重新开球。|But confirmé. Passez à la reprise.|Tor bestätigt. Weiter zum Wiederanstoß.|득점 확인. 경기 재개로 진행하세요.|Gol confirmado. Prossiga para a saída.|Гол засчитан. Перейдите к возобновлению.|Gol confirmado. Continúa para reanudar.
+The goalkeeper has possession. Proceed to the next sequence.|Penjaga gol menguasai bola. Teruskan ke urutan seterusnya.|GKがボールを保持しています。次のプレーへ進んでください。|الكرة مع الحارس. تابع إلى التسلسل التالي.|门将控球，继续下一段比赛。|Le gardien a le ballon. Passez à la séquence suivante.|Der Torwart hat den Ball. Weiter zur nächsten Sequenz.|골키퍼가 공을 갖고 있습니다. 다음 시퀀스로 진행하세요.|O goleiro tem a bola. Prossiga para a próxima sequência.|Мяч у вратаря. Перейдите к следующему эпизоду.|El portero tiene el balón. Continúa a la siguiente secuencia.
+Play is paused. Make substitutions or adjust tactics before proceeding.|Permainan dijeda. Buat penggantian atau laraskan taktik sebelum meneruskan.|試合中断中。交代や戦術調整後に進んでください。|اللعب متوقف. أجرِ تبديلات أو عدّل الخطط قبل المتابعة.|比赛暂停。可在继续前换人或调整战术。|Jeu en pause. Faites vos changements avant de continuer.|Spiel pausiert. Wechsle oder passe die Taktik vor dem Fortsetzen an.|경기 중단. 계속하기 전에 교체하거나 전술을 조정하세요.|Jogo pausado. Faça substituições ou ajuste a tática antes de continuar.|Игра приостановлена. Выполните замены или настройте тактику.|Juego en pausa. Haz cambios o ajusta las tácticas antes de continuar.
+Feed delay|Sela suapan|ログ表示間隔|فاصل عرض الأحداث|动态间隔|Délai du fil|Verzögerung im Spielverlauf|피드 간격|Intervalo dos lances|Интервал ленты|Intervalo del relato
+DRAW|SERI|引き分け|تعادل|平局|MATCH NUL|UNENTSCHIEDEN|무승부|EMPATE|НИЧЬЯ|EMPATE
+LIVE|LANGSUNG|ライブ|مباشر|实时|EN DIRECT|LIVE|진행 중|AO VIVO|В ЭФИРЕ|EN DIRECTO
+PAUSED|DIJEDA|一時停止中|متوقف|已暂停|EN PAUSE|PAUSIERT|일시정지|PAUSADO|ПАУЗА|EN PAUSA
+BEST LINK|PAUTAN TERBAIK|最高の連係|أفضل رابط|最佳连线|MEILLEUR LIEN|BESTE VERBINDUNG|최고 연계|MELHOR LIGAÇÃO|ЛУЧШАЯ СВЯЗЬ|MEJOR ENLACE
+LINKS|PAUTAN|連係|الروابط|连线|LIENS|VERBINDUNGEN|연계|LIGAÇÕES|СВЯЗИ|ENLACES
+RANDOM TEAM|PASUKAN RAWAK|ランダムチーム|فريق عشوائي|随机球队|ÉQUIPE ALÉATOIRE|ZUFÄLLIGES TEAM|무작위 팀|EQUIPE ALEATÓRIA|СЛУЧАЙНАЯ КОМАНДА|EQUIPO ALEATORIO
+SAVED TEAM|PASUKAN TERSIMPAN|保存チーム|فريق محفوظ|已保存球队|ÉQUIPE SAUVEGARDÉE|GESPEICHERTES TEAM|저장된 팀|EQUIPE SALVA|СОХРАНЁННАЯ КОМАНДА|EQUIPO GUARDADO
+ADD STARTERS|TAMBAH PEMAIN UTAMA|先発を追加|أضف الأساسيين|添加首发|AJOUTER DES TITULAIRES|STARTSPIELER HINZUFÜGEN|선발 추가|ADICIONAR TITULARES|ДОБАВЬТЕ ОСНОВНЫХ|AÑADIR TITULARES
+`.trim().split('\n').map(line=>line.split('|'));
+extra.push(['PLAYER OF THE MATCH','PEMAIN TERBAIK PERLAWANAN','マン・オブ・ザ・マッチ','أفضل لاعب في المباراة','全场最佳球员','JOUEUR DU MATCH','SPIELER DES SPIELS','경기 최우수 선수','MELHOR EM CAMPO','ИГРОК МАТЧА','JUGADOR DEL PARTIDO']);
+extra.push(['LATEST FIRST','TERKINI DAHULU','新しい順','الأحدث أولًا','最新优先','PLUS RÉCENTS D’ABORD','NEUESTE ZUERST','최신순','MAIS RECENTES PRIMEIRO','СНАЧАЛА НОВЫЕ','MÁS RECIENTES PRIMERO']);
+extra.push(['{player} FLOW','FLOW {player}','{player} FLOW','FLOW {player}','{player} FLOW','FLOW {player}','FLOW {player}','{player} FLOW','FLOW {player}','FLOW {player}','FLOW {player}']);
+extra.push(['Shots','Sepakan','シュート','تسديدات','射门','Tirs','Schüsse','슈팅','Chutes','Удары','Tiros']);
+extra.push(['Passes','Hantaran','パス','تمريرات','传球','Passes','Pässe','패스','Passes','Передачи','Pases']);
+extra.push(['Tackles','Terjahan','タックル','افتكاكات','抢断','Tacles','Zweikämpfe','태클','Desarmes','Отборы','Entradas']);
+extra.push(['Saves','Selamatan','セーブ','تصديات','扑救','Arrêts','Paraden','선방','Defesas','Сейвы','Paradas']);
+extra.push(['Ints','Pintasan','奪取','اعتراضات','拦截','Interceptions','Abgefangen','가로채기','Interceptações','Перехваты','Intercepciones']);
+extra.push(['{team} formation','Formasi {team}','{team}の配置','تشكيل {team}','{team} 阵型','Formation de {team}','Formation von {team}','{team} 포메이션','Formação de {team}','Схема {team}','Formación de {team}']);
+extra.push(['Seconds between notable events','Saat antara peristiwa','イベントの表示間隔（秒）','ثوانٍ بين الأحداث','事件显示间隔（秒）','Secondes entre les événements','Sekunden zwischen Ereignissen','이벤트 간격(초)','Segundos entre eventos','Секунды между событиями','Segundos entre eventos']);
+const messages=Object.fromEntries(rows.concat(extra).map(([key,...values])=>{if(values.length!==10)throw Error('Incomplete Battle Sim translation: '+key);return[key,Object.fromEntries(languages.map((lang,i)=>[lang,values[i]]))];}));
+for(const [label,key] of [['Battle Sim Initializer','MATCH CONFIGURATION'],['Battle Sim Live Match','LIVE'],['Battle Sim Results','MATCH REPORT']])messages[label]=Object.fromEntries(languages.map(lang=>[lang,'Battle Sim · '+messages[key][lang]]));
+// Football PASS/SAVE must never replace Auction PASS or a storage SAVE action.
+const inherited=window.BLD_MESSAGES||{},existing=new Set(Object.keys(inherited).map(key=>key.toLowerCase()));
+window.BLD_MESSAGES=Object.freeze({...inherited,...Object.fromEntries(Object.entries(messages).filter(([key])=>!existing.has(key.toLowerCase())))});
+window.BLD_BATTLE_MESSAGES=Object.freeze(messages);
+window.BattleCopy=function(key,values={}){const lang=window.SiteI18n?.language||'en',text=lang!=='en'&&messages[key]?.[lang]||window.SiteI18n?.text(key)||key;return text.replace(/\{(\w+)\}/g,(_,name)=>{const value=String(values[name]??'');return lang==='ar'?'\u2068'+value+'\u2069':value;});};
+window.BattleText=function(key,text){
+ let m;if(key.startsWith('// '))return '// '+text(key.slice(3));
+ for(const [pattern,template,names] of [[/^(\d+) EVENTS$/,'{count} EVENTS',['count']],[/^(\d+) STARTERS$/,'{count} STARTERS',['count']],[/^(\d+) AVAILABLE$/,'{count} AVAILABLE',['count']],[/^TEAM (\d+)$/,'TEAM {number}',['number']],[/^(.+) WIN$/,'{team} WIN',['team']],[/^([\d-]+) FORMATION$/,'{formation} FORMATION',['formation']]]){
+  m=key.match(pattern);if(m)return window.BattleCopy(template,Object.fromEntries(names.map((name,i)=>[name,m[i+1]])));
+ }
+ if(key.includes(' · '))return key.split(' · ').map(part=>text(part)).join(' · ');
+ if(key.includes(' — '))return key.split(' — ').map(part=>text(part)).join(' — ');
+ if(key.includes(' // '))return key.split(' // ').map(part=>text(part)).join(' // ');
+ m=key.match(/^(.*?)( \d+(?:\/\d+|%|Y|R)?(?:.*)?)$/);if(m){const label=text(m[1]);if(label!==m[1])return label+m[2];}
+ m=key.match(/^(.+) flow$/);if(m)return window.BattleCopy('{player} FLOW',{player:m[1]});
+ m=key.match(/^(.+) · PLAYER RATINGS$/);if(m)return m[1]+' · '+text('PLAYER RATINGS');
+ return null;
+};
+})();

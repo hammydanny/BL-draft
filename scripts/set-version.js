@@ -37,11 +37,15 @@ function stale(version=currentVersion()){return Object.entries(expected(version)
 const MANIFEST='scripts/release-manifest.json';
 // Every file a returning browser may hold from an earlier visit under this version.
 function cachedAssets(){
-    const files=new Set();
+    const files=new Set(['js/characters.generated.js']);
     for(const file of walk(root).filter(file=>file.endsWith('.html'))){
-        const source=read(path.relative(root,file)),dir=path.dirname(file);
+        const source=read(path.relative(root,file));
+        const documentUrl=new URL(path.relative(root,file).split(path.sep).join('/'),'https://release.invalid/BL-draft/');
+        const baseHref=source.match(/<base\b[^>]*href="([^"]+)"/i)?.[1];
+        const baseUrl=baseHref?new URL(baseHref,documentUrl):documentUrl;
         for(const [,url] of source.matchAll(/(?:src|href)="([^"?#]+)\?v=/g)){
-            const target=url.startsWith('/BL-draft/')?path.join(root,url.slice(10)):url.startsWith('/')?null:path.resolve(dir,url);
+            const resolved=new URL(url,baseUrl);
+            const target=resolved.origin===documentUrl.origin&&resolved.pathname.startsWith('/BL-draft/')?path.join(root,decodeURIComponent(resolved.pathname.slice(10))):null;
             if(target&&target.startsWith(root)&&fs.existsSync(target))files.add(path.relative(root,target).split(path.sep).join('/'));
         }
     }

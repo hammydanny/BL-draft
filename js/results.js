@@ -165,17 +165,17 @@ function showAuctionComplete(){
 function openBattleSimFromResults(){
     const snapshot={
         source:"auction-results",timestamp:Date.now(),
-        team1:{name:team1.name,color:team1.color,players:signedPlayers(team1).map(function(p){return {
+        team1:{name:team1.name,color:team1.color,players:team1.players.map(function(p){return {
             id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
             positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
         };})},
-        team2:{name:team2.name,color:team2.color,players:signedPlayers(team2).map(function(p){return {
+        team2:{name:team2.name,color:team2.color,players:team2.players.map(function(p){return {
             id:p.id,name:p.name,image:p.image||"",primaryPosition:p.primaryPosition||p.position||"CM",
             positions:Array.isArray(p.positions)?p.positions.slice():[],stats:Object.assign({},p.stats||{})
         };})},
         formations:{1:formationByTeam[1]||"4-3-3",2:formationByTeam[2]||"4-3-3"},
-        // Blue Lock Man is an Auction-only keeper; Battle Sim receives the drafted squads.
-        assignments:Object.fromEntries([1,2].map(n=>[n,Object.fromEntries(Object.entries(formationAssignments[n]||{}).filter(([,id])=>!isBlueLockManId(id)))]))
+        // Preserve the exact drafted XI, including each team’s canonical special keeper.
+        assignments:Object.fromEntries([1,2].map(n=>[n,Object.fromEntries(Object.entries(formationAssignments[n]||{}))]))
     };
     try{sessionStorage.setItem("blBattleSimLaunchV1",JSON.stringify(snapshot));}
     catch(error){showSiteError("This browser could not transfer the drafted squads. Battle Sim will open with new teams.","BATTLE SIM HANDOFF");}

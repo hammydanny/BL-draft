@@ -1,5 +1,18 @@
 # BLUE LOCK DRAFT
 
+Current release: **v0.8.0 ALPHA**. [Release report](docs/release-v0.8.0.md).
+
+Battle Sim includes exact formation boards, localized match commentary, canonical
+Blue Lock Man goalkeepers, persistent sequence progression and match reports.
+Character modules ship as one deterministic bundle; edit the individual sources
+and run `node scripts/bundle-characters.js` before versioning.
+
+The homepage distinguishes reviewed canon coverage from manga publication status.
+A daily official-source check retains the last confirmed value; confirming the
+global latest publication currently requires manual official-source verification
+because the accessible English catalog is partial. See the release report and
+[maintenance guide](DEVELOPMENT.md) before updating chapter data.
+
 **Blue Lock Draft** is an unofficial, fan-made Blue Lock football team-building simulator.
 
 Build two custom squads, select your player pool, compete in a local auction, manage your budget, and then arrange your completed roster into tactical formations.

@@ -1,0 +1,54 @@
+/* v0.8: a shared match dossier, with tactical geometry kept in its own LTR space. */
+.chapter-status{display:flex;flex-wrap:wrap;align-items:center;gap:18px 32px;padding:18px 22px;margin:22px 0;border-block:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-primary)}
+.chapter-status>div{display:grid;gap:5px}.chapter-status span{font-size:11px;font-weight:700;letter-spacing:.09em;color:var(--text-secondary)}.chapter-status strong{font:800 22px 'Barlow Condensed',sans-serif}.chapter-status a{margin-inline-start:auto;color:var(--accent);font-size:12px}
+.battle-sim-page{max-width:1680px;margin:auto;padding:24px clamp(12px,2vw,32px) 48px}
+.bs-intro-row{padding-block:8px 24px;border-bottom:1px solid var(--border-subtle);margin-bottom:24px;align-items:center}
+.bs-team-grid{gap:24px}.bs-team-card{padding:22px;background:var(--bg-surface);box-shadow:none;border-top:3px solid var(--bs-team-color)}
+.bs-team-card-heading{align-items:start;flex-direction:column;gap:10px;padding-bottom:18px;border-bottom:1px solid var(--border-subtle)}
+.bs-team-card-heading h2{font-size:32px}.bs-source-row{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}.bs-field{min-width:0}.bs-select,.bs-name-input{min-width:0;max-width:100%;font-size:13px;min-height:44px}
+.bs-setup-formation-pitch,.bs-mini-pitch{direction:ltr!important;container-type:inline-size;background:repeating-linear-gradient(0deg,#103c32 0 12.5%,#123f35 12.5% 25%);border:1px solid #789b8d;box-shadow:none}
+.football-pitch.bs-setup-formation-pitch{--pitch-height:clamp(480px,42vw,600px);height:var(--pitch-height);min-height:var(--pitch-height)}
+.bs-setup-formation-player,body.bs-game-route .bs-formation-player{width:17%;max-width:86px;min-width:0;gap:3px;padding:4px 2px;background:#091a19f5;border:1px solid #52786a;border-radius:3px;box-shadow:0 2px 4px #0004}
+.bs-setup-formation-player>strong,body.bs-game-route .bs-formation-player-name{font-size:clamp(9px,2.1cqw,12px);line-height:1.15}
+.bs-setup-formation-portrait{width:32px;height:32px;flex-basis:32px}.bs-setup-formation-avatar{width:32px;height:32px;border-width:2px;box-shadow:none}.bs-setup-formation-ovr{font-size:11px;min-width:18px;height:17px;right:-5px;box-shadow:none}
+.bs-setup-formation-role{font-size:10px;color:#c8ddd5}.bs-chem-line{stroke-width:.42;opacity:.6;filter:none}.bs-chem-line.neutral{stroke:var(--chem-neutral,#83928c);stroke-dasharray:1 1;opacity:.4}.bs-setup-chemistry-key i.neutral{background:var(--chem-neutral,#83928c)}
+.bs-setup-chemistry-panel{padding:16px;margin-block:16px;background:var(--bg-surface-raised);box-shadow:none}.bs-setup-chemistry-key{font-size:11px}.bs-setup-chemistry-featured>div{padding:10px}.bs-setup-chemistry-featured .risk{border-color:var(--border-subtle)}
+.bs-starter-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.bs-player-row{padding:9px}.bs-player-name-line strong,.bs-player-copy>strong{font-size:13px}.bs-player-subline{font-size:11px}.bs-roster-section-heading{margin-top:24px}.bs-reserve-row{flex-wrap:wrap;gap:10px;padding:10px}.bs-reserve-row .bs-player-copy{flex:1;min-width:100px}.bs-mini-button{min-height:40px;font-size:12px}
+body.bs-game-route .bs-match-layout{grid-template-columns:minmax(280px,1fr) minmax(340px,1.25fr) minmax(280px,1fr);gap:18px}
+.bs-match-scorebar{position:relative;top:auto;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;padding:20px 24px;border-top:3px solid var(--accent);background:var(--bg-surface);box-shadow:none;margin-bottom:20px}
+.bs-score-names{justify-content:center;max-width:100%;gap:18px;min-width:0}.bs-match-clock strong{font-size:38px}.bs-match-clock span,.bs-match-meta{font-size:12px}.bs-result-final-score{font-size:54px;white-space:nowrap}
+body.bs-game-route .bs-mini-pitch{height:540px;min-height:540px;margin-block:16px}.bs-match-team-panel .bs-kicker{font-size:11px}.bs-match-team-panel .bs-team-possession-label{font-size:11px}
+body.bs-game-route .bs-formation-player .bs-stamina-ring{--portrait-size:24px!important;width:30px;height:30px}.bs-formation-player-meta,body.bs-game-route .bs-formation-player-meta{font-size:9px}.bs-formation-player-meta>span{display:none}.bs-match-chemistry-metrics,.bs-match-chemistry-featured{font-size:11px}.bs-match-tactics summary{font-size:13px;padding-block:8px}
+.bs-pitch-panel{display:none}/* The exact formation boards carry tactical positioning; the feed carries movement. */
+body.bs-game-route .bs-live-feed-panel{min-height:480px;background:var(--bg-surface)}body.bs-game-route .bs-live-feed{height:clamp(400px,60vh,700px);max-height:750px;padding:12px;overflow-anchor:auto}
+body.bs-game-route .bs-live-feed .bs-feed-event{padding:14px 16px;margin-bottom:10px;box-shadow:none;animation:none;background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-inline-start:3px solid var(--bs-event-team-color,var(--accent))}
+.bs-feed-event--goal{border-inline-start-color:var(--success)!important}.bs-feed-event--yellow-card{border-inline-start-color:#b28a12!important}.bs-feed-event--red-card{border-inline-start-color:var(--danger,#ce4155)!important}.bs-feed-event--flow-activation{border-inline-start-color:#9675cb!important}.bs-feed-event--substitution{border-inline-start-style:dashed!important}
+.bs-event-description{font-size:14px;line-height:1.6}.bs-event-type,.bs-event-time{font-size:12px}.bs-event-analysis{gap:6px}.bs-event-stat-comparison,.bs-event-success{font-size:11px}.bs-event-actors{flex-wrap:wrap}.bs-event-actor-name{font-size:11px}
+.bs-match-actions{padding:14px;background:var(--bg-surface);gap:10px}.bs-match-actions .bs-button{min-height:44px;font-size:12px}.bs-button:disabled{opacity:.5;filter:grayscale(1);cursor:wait;box-shadow:none;transform:none}.bs-stoppage-panel{padding:18px;border-color:var(--accent);background:var(--bg-surface-raised);box-shadow:none}.bs-stoppage-panel p{font-size:13px}
+.bs-result-hero{padding:32px;background:var(--bg-surface);border-top:3px solid var(--accent)}.bs-result-hero h2{font-size:clamp(32px,4vw,60px)}.bs-result-verdict{font-size:16px}.bs-result-team-card,.bs-ratings-team{padding:20px}.bs-result-metric span{font-size:12px}.bs-result-metric strong{font-size:24px}.bs-ratings-table{font-size:13px}.bs-ratings-table th{font-size:12px}.bs-ratings-table tbody tr:first-child{background:color-mix(in srgb,var(--bs-team-color) 9%,transparent)}
+.bs-button:focus-visible,.bs-select:focus-visible,.bs-mini-button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+[dir=rtl] .bs-setup-formation-player,[dir=rtl] .bs-formation-player{direction:rtl}[dir=rtl] .bs-score-names{direction:ltr}
+@media(max-width:1180px){body.bs-game-route .bs-match-layout{grid-template-columns:repeat(2,minmax(0,1fr))}.bs-center-stage{grid-column:1/-1;grid-row:2}body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-column:2;grid-row:1}body.bs-game-route .bs-mini-pitch,body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child .bs-mini-pitch{height:540px;min-height:540px}}
+@media(max-width:780px){.bs-team-grid{gap:18px}.bs-team-card{padding:14px}.bs-source-row{grid-template-columns:1fr}.bs-setup-formation-pitch{height:440px}.bs-match-scorebar{grid-template-columns:1fr;gap:12px;padding:16px}.bs-score-names{gap:8px}.bs-score-names .bs-result-team-name{font-size:19px}.bs-result-final-score{font-size:40px}.bs-match-meta{text-align:center}.bs-match-clock{flex-direction:row;justify-content:center}.bs-match-clock strong{font-size:28px}body.bs-game-route .bs-match-layout{grid-template-columns:minmax(0,1fr)}.bs-center-stage{grid-row:1;grid-column:1}body.bs-game-route .bs-match-layout>.bs-match-team-panel:last-child{grid-row:auto;grid-column:1}.bs-match-actions{display:grid;grid-template-columns:1fr 1fr}.bs-match-actions .bs-button{width:auto;min-width:0}.bs-match-actions .bs-button--primary{grid-column:1/-1}.bs-event-description{font-size:13px}.bs-result-hero{padding:22px 12px}.bs-starter-list{grid-template-columns:1fr 1fr}.bs-player-row .bs-portrait{width:28px;height:32px}.bs-player-name-line{flex-wrap:wrap}.chapter-status{padding:14px;gap:16px}.chapter-status a{margin:0}}
+@media(prefers-reduced-motion:reduce){.battle-sim-page *,body.bs-game-route *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.bs-formation-ovr{position:absolute;right:-3px;top:18px;min-width:18px;padding:2px;background:#102b26;color:#e3ede9;border:1px solid #52786a;font-size:10px;font-weight:800}
+.bs-formation-player:after{content:none!important}
+.bs-score-names .bs-result-team-name{color:var(--text-primary)}
+.bs-event-time,.bs-kicker{color:var(--accent-text)}
+.bs-event-count{color:var(--text-secondary)}
+.bs-stoppage-panel h2{color:var(--warning)}
+.bs-event-success{color:var(--success)}
+.bs-result-verdict{color:var(--success)!important}
+.bs-chem-line{filter:none!important}
+.bs-chem-line.chemical{stroke:var(--chem-chemical)}.bs-chem-line.elite{stroke:var(--chem-elite)}.bs-chem-line.strong{stroke:var(--chem-strong)}.bs-chem-line.link{stroke:var(--chem-link)}.bs-chem-line.negative{stroke:var(--chem-weak)}
+[data-theme=light] .bs-match-chemistry-head strong,[data-theme=light] .bs-team-possession-label,[data-theme=light] .bs-result-team-name,[data-theme=light] .bs-ratings-team h3{color:var(--text-primary)!important}
+[data-theme=light] .bs-setup-chemistry-featured b.chemical{color:#796000}[data-theme=light] .bs-setup-chemistry-featured b.elite{color:#067344}[data-theme=light] .bs-setup-chemistry-featured b.strong{color:#006bbd}[data-theme=light] .bs-setup-chemistry-featured b.link{color:#6550a0}
+.bs-setup-chemistry-metric,.bs-setup-chemistry-featured>div{background:var(--bg-surface);border-color:var(--border-subtle)}
+[data-theme=light] .bs-setup-chemistry-score>strong{color:var(--accent)}
+
+body.bs-game-route .bs-formation-player{gap:2px;padding:3px 2px}
+body.bs-game-route .bs-formation-avatar .bs-flow-meter{height:30px}
+body.bs-game-route .bs-formation-player .bs-player-card-state{position:absolute;top:-7px;left:-2px;margin:0;max-width:90%;font-size:8px}
+
+.bs-standout{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin:22px auto!important;padding:14px;border-block:1px solid var(--border-subtle);color:var(--text-primary)!important}.bs-standout span{font-size:11px;letter-spacing:.08em;color:var(--text-secondary)}.bs-standout strong{font-size:16px}.bs-standout b{color:var(--success);font-size:22px}

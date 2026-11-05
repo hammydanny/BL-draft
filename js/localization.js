@@ -25,6 +25,7 @@
         if(key.startsWith('FORMATION // '))return source.replace('FORMATION // ',text('FORMATION')+' // ');
         const entry=catalog[key]||catalog[key.toUpperCase()]||folded.get(key.toLocaleLowerCase('en'));
         let translated=entry?.[language];
+        if(!translated&&window.BattleText&&document.getElementById('battle-sim-screen'))translated=window.BattleText(key,text);
         if(translated?.trim().toLocaleLowerCase("en")===key.toLocaleLowerCase("en"))translated=undefined;
         const historyAction=key.match(/^(Undo|Redo) (.+)$/);
         if(historyAction)translated=(catalog[historyAction[1]+' {action}']?.[language]||historyAction[1]+' {action}').replace('{action}',text(historyAction[2]));
@@ -83,7 +84,7 @@
         const parent=node.parentElement;if(!parent||(parent.closest(ignore)&&!parent.closest('.character-profile-quote'))||parent.closest(nameAreas))return;
         if(parent.closest('.player-nationality'))return; // Country/representation proper names.
         if(parent.matches('.formation-team-tabs button'))return; // Direct custom team-name text only.
-        const source=original(node),output=headingText(node)??text(source);
+        const source=original(node),output=parent.hasAttribute('data-battle-message')?(language==='en'?parent.dataset.battleEnglish:window.BattleCopy(parent.dataset.battleMessage,JSON.parse(parent.dataset.battleValues||'{}'))):headingText(node)??text(source);
         // Mark text owners without moving DOM nodes or reversing the page grids.
         // Known source text stays marked when switching back to English.
         if(output!==source||parent.hasAttribute('data-i18n-text'))parent.setAttribute('data-i18n-text','');

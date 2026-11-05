@@ -1,5 +1,28 @@
 # Development and releases
 
+## v0.8 maintenance
+
+- Character data remains in `js/players/<character>/player.js` and `reference.js`.
+  After editing those sources, run `node scripts/bundle-characters.js` before
+  versioning. `--check` and preflight reject a stale `js/characters.generated.js`.
+  Preserve the loader's folder order and player-before-reference order.
+- Battle Sim regressions: `node scripts/battle-sim-tests.js`. Allocation and
+  character-loading comparisons: `node scripts/benchmark-battle-sim.js` (Node
+  synthetic DOM/VM timings, not browser paint timings).
+- Chapter maintenance: `.github/workflows/latest-chapter.yml` checks the official
+  source daily. The partial English catalog cannot establish the latest Japanese
+  release, so automatic numeric updates are currently withheld. To confirm a new
+  global latest chapter, use manual dispatch after reviewing an official source,
+  supply the number/optional integer part and date, and attest that it is already
+  published and newest. Explicitly verify jumps greater than three chapters.
+- `data/latest-chapter.json` alone changes for a publication update; no app release
+  is needed. Never advance `APP_SUPPORTED_CHAPTER` through that workflow. Run
+  `node scripts/chapter-tracker-tests.js` for schema/source/failure regressions.
+  See `docs/release-v0.8.0.md` for source limitations and browser verification.
+  The deployed client reads this file from public `main` via GitHub raw content,
+  with the Pages copy and last-good browser data as fallbacks: GITHUB_TOKEN pushes
+  do not trigger branch-based Pages builds. Allow for raw-content CDN propagation.
+
 `main` is the stable, public GitHub Pages branch. Build and test releases in a
 local checkout or development/release branch before merging reviewed work into
 `main`. Experimental changes should not become public deployments immediately.
