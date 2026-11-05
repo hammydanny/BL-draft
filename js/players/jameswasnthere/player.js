@@ -5,7 +5,7 @@ const PLAYER_89_DATA = {
   name: "Jameswasnthere",
   debutChapter: 1,
   appearanceOrder: 89,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/jameswasnthere.png",
   primaryPosition: "CF",
   positions: ["CF", "RW", "LW"],
   secretCharacter: true,
