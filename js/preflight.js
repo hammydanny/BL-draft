@@ -1030,6 +1030,18 @@ check('Jon uses the updated white portrait under the versioned character loader'
     assert(read('js/players-loader.js').includes('const version = "'+versions.currentVersion()+'"'),'Character modules load with the current version');
     assert(read('js/player-images.js').includes('resolved.searchParams.set("v",APP_VERSION)'),'Portraits load with the current version');
 });
+check('Raf and Jameswasnthere use their uploaded portraits in the generated bundle',()=>{
+    const bundle=read('js/characters.generated.js');
+    for(const [folder,id,image] of [['raf',87,'images/raf.png'],['jameswasnthere',89,'images/jameswasnthere.png']]){
+        const source=read('js/players/'+folder+'/player.js');
+        assert(source.includes('secretCharacter: true'),folder+' remains a secret character');
+        assert.equal(source.match(/image:\s*"([^"]+)"/)?.[1],image,folder+' source uses its uploaded portrait');
+        const start=bundle.indexOf('const PLAYER_'+id+'_DATA = {'),end=bundle.indexOf('\n};',start);
+        assert(start>=0&&end>start&&bundle.slice(start,end).includes('image: "'+image+'"'),'Generated bundle uses '+folder+' uploaded portrait');
+        const file=path.join(root,image);
+        assert(fs.existsSync(file)&&fs.statSync(file).size>1000,folder+' uploaded portrait exists');
+    }
+});
 check('All secret-character chemistry uses one authoritative source',()=>{
     const chemistry=read('js/chemistry.js'),reference=read('js/player-reference.js');
     const secretModules=['qazicutie','hdannyy','syaafi','jon','floppy-willy','raf','oka','jameswasnthere'];
