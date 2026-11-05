@@ -5,7 +5,7 @@ const PLAYER_87_DATA = {
   name: "raf",
   debutChapter: 1,
   appearanceOrder: 87,
-  image: "images/secret-character-placeholder.svg",
+  image: "images/raf.png",
   primaryPosition: "CF",
   positions: ["CF", "LW", "RW"],
   secretCharacter: true,
