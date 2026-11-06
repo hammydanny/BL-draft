@@ -1,5 +1,22 @@
 # Development and releases
 
+## Battle Sim presentation correction (review build 0.8.1.1)
+
+- `docs/release-v0.8.1.md` records the changes, measured limits and outstanding
+  real-browser release gate. Main had already used 0.8.1 for portrait fixes.
+- Events carry versioned compact presentation views; engine state remains authoritative.
+  Rendering must use `displayState()`. Do not expose queued events through side panels,
+  clocks, counts, colors or positions. Old saves without views reveal existing history
+  together; exact historical positions cannot be reconstructed.
+- `progressionState()` owns readiness for Proceed, stoppages and replacements.
+  Pause and feed-speed changes must preserve the pending event's remaining fraction.
+- `node scripts/battle-presentation-tests.js` is part of preflight. Its checked-in
+  fixtures retain the pre-correction engine/RNG and per-tick meter behavior, including
+  shallow CI checkouts. Do not re-record them to hide gameplay/data changes.
+- `scripts/battle-dom-tests.js` optionally exercises the full DOM flow with linkedom.
+  `scripts/browser-battle-sim.js` is the separate Playwright/browser acceptance runner.
+  Optional QA dependencies stay outside the production application.
+
 ## v0.8 maintenance
 
 - Character data remains in `js/players/<character>/player.js` and `reference.js`.

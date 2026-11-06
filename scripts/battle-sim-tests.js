@@ -8,8 +8,9 @@ function battleContext(source=fs.readFileSync(path.join(root,'js/battle-sim.js')
  context.setTimeout=(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;};context.clearTimeout=id=>timers.delete(id);
  context.updateRoute=()=>{};context.getRouteFromLocation=()=> 'battleSimGame';
  const hook=`globalThis.bs={normalizeTeam,resolveSharedPlayer,resolveSharedRoster,serializeTeam,runtimeTeam,keeper,seeded,createMatch,snapshotMatch,hydrateMatch,playerTick,kickoff,resolvePass,resolveShot,resolveDribble,resolveRestart,teamChemistrySnapshot,formationPoint,formationSlots,sequenceReady,continueMatch,runSequence,substitute,replaceSetupStarter,fastForwardMatch,toggleManualPause,finish,saveTeamToSharedStandalone,
- matchTeamPanel,updateTeamPanel,eventMessage,setMatch:s=>match=s,setTeams:t=>setupTeams=t,setFeed:(q,t=null,p=null)=>{feedQueue=q;feedTimer=t;stoppageTimer=p;},get:()=>match,quiet:()=>{renderMatch=()=>{};showResults=()=>{};},getTimers:()=>[runnerTimer,feedTimer,stoppageTimer]};`;
- vm.runInContext(source.replace('document.addEventListener("DOMContentLoaded",function()',hook+'\ndocument.addEventListener("DOMContentLoaded",function()'),context);
+ matchTeamPanel,updateTeamPanel,eventMessage,showResults,capturePresentation,validPresentation,displayState,projectPitch,renderMatch,renderPitch,renderFeed,renderStoppage,scheduleFeedEvent,presentationSettled,progressionState,handleInput,addPoints,addEvent,active,clearFeedQueue,setMatch:s=>match=s,setTeams:t=>setupTeams=t,setFeed:(q,t=null,p=null)=>{feedQueue=q;feedTimer=t;stoppageTimer=p;},get:()=>match,quiet:()=>{renderMatch=()=>{};renderEvent=e=>({id:e.id});showResults=()=>{};},getTimers:()=>[runnerTimer,feedTimer,stoppageTimer]};`;
+ const compatibleHook=hook.replace(/\b(capturePresentation|validPresentation|displayState|projectPitch|progressionState)(?=,)/g,name=>name+':typeof '+name+'===\"function\"?'+name+':null');
+ vm.runInContext(source.replace('document.addEventListener("DOMContentLoaded",function()',compatibleHook+'\ndocument.addEventListener("DOMContentLoaded",function()'),context);
  return {context,run,timers,bs:context.bs};
 }
 function runBattleSimTests(){
@@ -57,7 +58,7 @@ function runBattleSimTests(){
  assert.equal(timers.size,0,'fast forward clears timers');
  console.log('PASS Battle Sim: progression gates feed/timers/presentation/half-time/substitution/pause/full-time, double clicks and fast-forward');
  function advance(s){if(s.status==='paused'){
-  if(s.requiredSub){bs.setMatch(s);const req=s.requiredSub,t=s.teams[req.teamNumber],reserve=t.roster.find(p=>!Object.values(t.assignment).includes(p.id)&&!p.sentOff);if(reserve)assert(bs.substitute(t,req.slot,reserve.id));else s.requiredSub=null;}
+  if(s.requiredSub){bs.setMatch(s);s.presentedEventId=s.events.length;const req=s.requiredSub,t=s.teams[req.teamNumber],reserve=t.roster.find(p=>!Object.values(t.assignment).includes(p.id)&&!p.sentOff);if(reserve)assert(bs.substitute(t,req.slot,reserve.id));else s.requiredSub=null;}
   if(s.phase==='halfTime'){s.phase='secondHalf';bs.kickoff(s,2);}else if(s.pending?.type==='kickoff')bs.kickoff(s,s.pending.teamNumber);else if(s.pending)s.forced={...s.pending};s.status='playing';s.stoppage='';
  }
  if(s.timeSeconds>=5400){bs.finish(s);return;}
@@ -79,7 +80,7 @@ function runBattleSimTests(){
  for(const type of ['interception','turnover','save']){const copy=bs.eventMessage({type,actors:[{name:'Losing attacker'},{name:'Winning defender'},{name:'Interceptor'}]});assert.equal(copy.values.player,type==='interception'?'Interceptor':'Winning defender');}
 
  // A substitute holding the ball must hand possession to the incoming player.
- state=bs.createMatch();bs.setMatch(state);state.status='paused';const team=state.teams[1],slot='1',out=team.roster.find(p=>p.id===team.assignment[slot]),reserve=team.roster.find(p=>!Object.values(team.assignment).includes(p.id));state.possession=1;state.carrierId=out.id;
+ state=bs.createMatch();bs.setMatch(state);state.status='paused';state.presentedEventId=state.events.length;const team=state.teams[1],slot='1',out=team.roster.find(p=>p.id===team.assignment[slot]),reserve=team.roster.find(p=>!Object.values(team.assignment).includes(p.id));state.possession=1;state.carrierId=out.id;
  assert(bs.substitute(team,slot,reserve.id));assert.equal(state.carrierId,reserve.id);assert(!bs.substitute(team,'2',reserve.id));
  console.log('PASS Battle Sim: 24 seeded full matches preserve subsequent state after restore, statistics, stamina/Flow, unique events and substitution possession');
  // Execute bundle and original modules in separate shared classic scopes.

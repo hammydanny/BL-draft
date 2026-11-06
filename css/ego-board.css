@@ -63,7 +63,7 @@ html[data-theme="light"] .play-view-screen .primary-button{color:#fff}
 .ego-toast{position:fixed;z-index:80;inset-inline-end:16px;bottom:16px;max-width:min(360px,calc(100vw - 32px));display:grid;gap:8px;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity var(--motion-enter),transform var(--motion-enter)}
 .ego-toast.is-visible{opacity:1;transform:none}
 .ego-toast p{margin:0;padding:12px 14px;border:1px solid var(--ego-gold,#f2c94c);border-inline-start:4px solid #f2c94c;background:var(--bg-surface-raised);box-shadow:var(--shadow-strong);display:grid;gap:2px}
-.ego-toast span{font:800 11px "Rajdhani",sans-serif;letter-spacing:1px;color:#f2c94c}.ego-toast strong{font:900 20px "Barlow Condensed",sans-serif}.ego-toast small{color:var(--text-secondary)}
+.ego-toast span{font:800 11px "Rajdhani",sans-serif;letter-spacing:1px;color:var(--warning)}.ego-toast strong{font:900 20px "Barlow Condensed",sans-serif}.ego-toast small{color:var(--text-secondary)}
 /* Draft Challenges */
 .challenge-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .challenge-summary div{padding:12px 14px;border:1px solid var(--border-strong);background:var(--bg-surface)}

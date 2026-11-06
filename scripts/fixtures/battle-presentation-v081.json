@@ -1,0 +1,78 @@
+{
+  "baseline": "2c91974f34e0b79fe6d52e974f6d1606b6395d28",
+  "note": "Seeded tick-by-tick Flow/stamina/player statistics and full final engine snapshots before presentation changes. No canonical data changes.",
+  "matches": [
+    {
+      "seed": 1,
+      "ticks": 369,
+      "timeline": "2821044390cb4ca132714a1a7c716058f7ff6461fbb91afea7e61ddc72147d42",
+      "final": "a01f7ca89c0fad158f5687344ce29311ee5010949e114da76eeba440d94bf5c4"
+    },
+    {
+      "seed": 2,
+      "ticks": 362,
+      "timeline": "54239ce23b4c4ec4ba126c1188ec51dab5bae4a9c5f026a71100db0da2994263",
+      "final": "91d8f5d1effb6e3bfd7a18c893241a1cdc28967709296f40ad4b863e8a01a827"
+    },
+    {
+      "seed": 3,
+      "ticks": 357,
+      "timeline": "b62a3662234f871d7cd3aad7c6e37a85e0e763dc5991b6d5a08603026559df2f",
+      "final": "0722a981fb6e72aaf8fc035290984e585e046630167137f75a45c72cfca315b1"
+    },
+    {
+      "seed": 4,
+      "ticks": 361,
+      "timeline": "06fd333fa5a62f096bc0bff8a553d8863d86f560b5540c6499cc63f4817f2a31",
+      "final": "e67c70d2bc23a56780a738522eaae03923174181c306e2854ff6077085b0991a"
+    },
+    {
+      "seed": 5,
+      "ticks": 358,
+      "timeline": "4274a9053df0c77bfea3cb5062f88af1fd6a86a112c0ff3a34e69da31539bfce",
+      "final": "92a0c8be50b9d926cf7ff589faba6ee43eca87274aa33609d6e431b647e89b96"
+    },
+    {
+      "seed": 6,
+      "ticks": 360,
+      "timeline": "baf774aad846cc67348fb0778e7a708d4e8fea054701a1db31a1a13632d161cb",
+      "final": "994b7516b72fd5220c670b3f22963247a8952cce8a0038c29b7018d7abaaf11b"
+    },
+    {
+      "seed": 7,
+      "ticks": 370,
+      "timeline": "36ef573801f56e2c1bcd544a074658e92e7a519967b0c651d9a8c11d73a5d602",
+      "final": "ccab149c90e5007138f13d0665f099a89968e2d16a379defad6e2709106eae71"
+    },
+    {
+      "seed": 8,
+      "ticks": 360,
+      "timeline": "358e2a653af86a9c7c50bf4d28ac64a2be62c8f4561a83b33749942b77f7dc7e",
+      "final": "8537ef243ffcdddcf1b3424d111195b72c427b0ca0a9b0510b1278c1a749fedb"
+    },
+    {
+      "seed": 9,
+      "ticks": 360,
+      "timeline": "1f130a8ca1c6bd385009d85a64152368c27da0fd3052eae58c6bd882907c7c7c",
+      "final": "c6158f1c89cb233c24f9c69562ad4cbb6e420b250478b72c8fa57ed4dcdc3b34"
+    },
+    {
+      "seed": 10,
+      "ticks": 358,
+      "timeline": "700aeb84a9da0256b8a035a8c0d1c3b17bdc48b175d3fe48ec30ca7454ef007c",
+      "final": "b24d7b3a60aa6418220c3cfdbdcc7e7c5f4348b77ead9c4b6de572a0e8f0fe12"
+    },
+    {
+      "seed": 11,
+      "ticks": 372,
+      "timeline": "edac9c0faceb4ed6fb336b88d2f209a03eb6bd69ae7cbf54e8e1764ef759b5a3",
+      "final": "a7b8024d0d7b0c64cd337431396f85f611836d327e324087bf974b4b68807752"
+    },
+    {
+      "seed": 12,
+      "ticks": 361,
+      "timeline": "f983f013c982bd2f8e5370485564f79c94094cfe80daa8dd6df43cf6d041ea6a",
+      "final": "b6eba854e5187f3a00966af6b516e71ec0af9a4d49f5a8721063de0a51cdb812"
+    }
+  ]
+}
