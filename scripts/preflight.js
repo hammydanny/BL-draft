@@ -43,4 +43,5 @@ require('./v074-tests.js').runV074Tests();
 require('./bundle-characters.js').check()||assert.fail('Stale character bundle');
 require('./battle-sim-tests.js').runBattleSimTests();
 require('./battle-presentation-tests.js').runPresentationTests();
+require('./battle-refinement-tests.js').runRefinementTests();
 require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});

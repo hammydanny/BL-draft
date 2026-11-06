@@ -6,7 +6,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
 const base=process.argv[2]||'http://127.0.0.1:8765/',output=path.resolve(process.argv[3]||'/tmp/bld-browser-qa');
-const sizes=[[320,640],[390,844],[430,932],[932,430],[1024,768],[1280,720],[1440,900],[1920,1080]];
+const sizes=[[1366,768],[320,640],[390,844],[430,932],[932,430],[1024,768],[1280,720],[1440,900],[1920,1080]];
 async function main(){
  fs.mkdirSync(output,{recursive:true});
  const browser=await chromium.launch({headless:true,...(process.env.BLD_CHROMIUM?{executablePath:process.env.BLD_CHROMIUM}:{})});
