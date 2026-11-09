@@ -163,3 +163,119 @@ body.bs-game-route .bs-formation-player .bs-setup-formation-role{font-size:9px}
  body.bs-game-route .bs-live-ovr b{font-size:13px}
 }
 @media(prefers-reduced-motion:reduce){body.bs-game-route .bs-formation-player .bs-mini-flow-horizontal .bs-flow-meter-fill{transition:none}}
+
+/* v0.8.3 — sketch-matched tactical mini-cards: circular avatar on the left,
+   role + LIVE OVR top-right, uninterrupted horizontal Flow bar at the bottom. */
+body.bs-game-route .bs-mini-pitch{height:clamp(335px,31vw,380px);min-height:335px}
+body.bs-game-route .bs-mini-pitch .bs-formation-player--compact{
+  width:clamp(51px,16cqw,65px);height:clamp(57px,17cqw,69px);
+  max-width:none;min-width:0;min-height:0;box-sizing:border-box;
+  padding:5px 3px 5px;display:flex;flex-direction:column;
+  justify-content:space-between;align-items:stretch;gap:3px;
+  background:#081a18f5;border:1px solid color-mix(in srgb,var(--bs-team-color) 42%,#608478);
+  border-radius:5px;overflow:visible;
+}
+body.bs-game-route .bs-mini-card-face{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(19px,.82fr);
+  align-items:center;gap:1px;min-width:0;width:100%;flex:1;
+}
+body.bs-game-route .bs-mini-card-avatar{
+  display:flex;justify-content:center;align-items:center;min-width:0;
+  width:100%;height:100%;
+}
+body.bs-game-route .bs-mini-card-avatar .bs-stamina-ring{
+  --portrait-size:25px!important;
+  box-sizing:border-box!important;
+  width:30px!important;height:30px!important;
+  min-width:30px!important;max-width:30px!important;
+  min-height:30px!important;max-height:30px!important;
+  aspect-ratio:1/1!important;flex:0 0 30px!important;
+  padding:3px!important;margin:0!important;overflow:hidden;
+  border-radius:50%!important;
+}
+body.bs-game-route .bs-mini-card-avatar .bs-stamina-ring::before{
+  inset:2px!important;border-radius:50%!important;
+}
+body.bs-game-route .bs-mini-card-avatar .bs-stamina-portrait{
+  box-sizing:border-box!important;display:block!important;flex:none!important;
+  width:24px!important;height:24px!important;min-width:24px!important;
+  min-height:24px!important;max-width:24px!important;max-height:24px!important;
+  aspect-ratio:1/1!important;border-radius:50%!important;
+  object-fit:cover!important;object-position:center top!important;
+}
+body.bs-game-route .bs-mini-card-info{
+  min-width:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;height:100%;
+}
+body.bs-game-route .bs-mini-card-role{
+  font:800 clamp(8px,1.5cqw,11px)/1 'Barlow Condensed',sans-serif;
+  letter-spacing:.04em;color:#e8fff4;white-space:nowrap;
+}
+body.bs-game-route .bs-mini-pitch .bs-live-ovr{
+  display:flex;flex:0 0 auto;align-items:center;gap:0;min-width:0;
+  justify-content:center;flex-direction:column;line-height:1;
+}
+body.bs-game-route .bs-mini-pitch .bs-live-ovr>span{
+  font:700 clamp(5px,1.15cqw,7px)/1 'Barlow Condensed',sans-serif;
+  color:#c9dcd6;white-space:nowrap;letter-spacing:-.025em;
+}
+body.bs-game-route .bs-mini-pitch .bs-live-ovr>b{
+  font:900 clamp(13px,2.4cqw,18px)/1 'Barlow Condensed',sans-serif;
+  color:hsl(var(--stamina-hue,120) 84% 51%);white-space:nowrap;
+  text-shadow:0 1px 2px #000c;
+}
+body.bs-game-route .bs-mini-pitch .bs-mini-flow-horizontal{
+  display:block;width:100%;max-width:none;box-sizing:border-box;flex:0 0 7px;
+  height:7px;min-height:7px;margin:0;align-self:stretch;
+  border-radius:99px;overflow:hidden;background:#0d2e2e;
+  border:1px solid #6f8a83;
+}
+body.bs-game-route .bs-mini-pitch .bs-mini-flow-horizontal .bs-flow-meter-fill{
+  left:0;bottom:0;right:auto;top:0;width:var(--flow,0%);height:100%;
+  background:linear-gradient(90deg,#177ac9,#74d6fb);border-radius:inherit;
+}
+body.bs-game-route .bs-mini-pitch .bs-mini-flow-horizontal.is-full .bs-flow-meter-fill{background:#43eab4}
+body.bs-game-route .bs-mini-pitch .bs-visually-hidden{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;
+  margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;border:0!important;
+}
+body.bs-game-route .bs-mini-pitch .bs-formation-player--compact .bs-player-card-state{
+  position:absolute;right:-4px;top:-5px;font-size:7px;padding:1px 2px;
+}
+/* Live pitch retains its marker dimensions; only replace numbers with portraits. */
+body.bs-game-route .bs-live-player{
+  box-sizing:border-box;border:2px solid var(--bs-team-color);border-radius:50%!important;
+  background:#0c2729;box-shadow:0 0 0 2px #f5ffff,0 2px 5px #001811b0;
+  overflow:visible;isolation:isolate;
+}
+body.bs-game-route .bs-live-player[data-team="2"]{border-radius:50%!important}
+body.bs-game-route .bs-live-player .bs-live-player-portrait{
+  position:absolute;inset:0;display:block;width:100%;height:100%;
+  box-sizing:border-box;aspect-ratio:1/1;border-radius:50%!important;
+  object-fit:cover;object-position:center top;z-index:1;
+}
+body.bs-game-route .bs-live-player.is-keeper{
+  border-color:var(--bs-team-color);
+  box-shadow:0 0 0 2px #ffe275,0 2px 5px #001811b0;
+}
+body.bs-game-route .bs-live-player .bs-live-keeper-tag{
+  position:absolute;z-index:4;top:-17px;left:50%;
+  transform:translateX(-50%);padding:0 3px;border-radius:3px;
+  font:900 10px/13px 'Barlow Condensed',sans-serif;
+  color:#132324;background:#ffe275;border:1px solid #fff3aa;
+  white-space:nowrap;box-shadow:0 1px 4px #0018118a;
+}
+body.bs-game-route .bs-live-player .bs-live-keeper-tag[hidden]{display:none!important}
+body.bs-game-route .bs-live-player.is-carrier{z-index:5;outline:2px solid #fff2b1;outline-offset:4px}
+body.bs-game-route .bs-live-player.is-flowing::before{z-index:0}
+@media(max-width:1240px){
+ body.bs-game-route .bs-mini-pitch{height:370px;min-height:340px}
+}
+@media(max-width:780px){
+ body.bs-game-route .bs-mini-pitch{height:clamp(335px,92vw,380px);min-height:335px}
+ body.bs-game-route .bs-mini-card-avatar .bs-stamina-ring{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+ body.bs-game-route .bs-mini-flow-horizontal .bs-flow-meter-fill{transition:none}
+}
