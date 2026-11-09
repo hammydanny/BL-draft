@@ -455,7 +455,7 @@ function resolveDribble(state,carrier){
  const team=state.teams[carrier.teamNumber],before=point(carrier),toward=targetGoal(team.number),width=clamp((team.strategy.width-50)/50,-1,1);
  const target={x:toward.x,y:clamp(carrier.y+width*(preferredWideLane(carrier)-50)*.24,6,94)},stride=dribbleMeters(carrier);
  const factor=Math.min(1,stride/Math.max(.01,distance(before,target))),desired={x:before.x+(target.x-before.x)*factor,y:before.y+(target.y-before.y)*factor};
- const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M);
+ const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,carrier)<=TACKLE_RADIUS_M);
  const def=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
  const score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.30-(def?effective(def,"def")*.54:0)-Math.max(0,defenders.length-1)*8;
  const chance=sigmoid((score+13)/18);
