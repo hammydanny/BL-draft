@@ -128,6 +128,46 @@ function runBattleSimTests(){
    assert(event.probability<.95,"a contested average pass must not be almost guaranteed");
   }
  }
+ // Passing pressure and the feed include defenders near both the passer and receiver.
+ {
+  const state=bs.createMatch();bs.setMatch(state);
+  const passer=bs.active(state.teams[1]).find(p=>p.role!=="GK");
+  const receiver=bs.active(state.teams[1]).find(p=>p.id!==passer.id&&p.role!=="GK");
+  const markers=bs.active(state.teams[2]).filter(p=>p.role!=="GK");
+  bs.setPosition(passer,{x:42,y:50});bs.setPosition(receiver,{x:46,y:50});
+  bs.setPosition(markers[0],{x:42,y:50});bs.setPosition(markers[1],{x:46,y:50});
+  markers.slice(2).forEach(p=>bs.setPosition(p,{x:99,y:99}));
+  state.random=()=>0;bs.resolvePass(state,passer,{passKind:"short",receiverId:receiver.id});
+  const event=state.events.at(-1);
+  assert.equal(event.type,"pass");
+  assert.equal(event.nearbyDefenders.length,2,"pass considers defenders near either endpoint");
+  assert.equal(event.nearbyDefenders.filter(d=>d.selected).length,1,"one random defender is marked for the DEF roll");
+  assert(event.nearbyDefenders.every(d=>Number.isFinite(d.distance)&&d.def>=0&&d.def<=100));
+ }
+ // Dribble events retain every nearby defender, not only the random defender used for DEF.
+ {
+  const state=bs.createMatch();bs.setMatch(state);
+  const carrier=bs.active(state.teams[1]).find(p=>p.role!=="GK");
+  const markers=bs.active(state.teams[2]).filter(p=>p.role!=="GK");
+  bs.setPosition(carrier,{x:42,y:50});bs.setPosition(markers[0],{x:47,y:50});bs.setPosition(markers[1],{x:47,y:51});
+  markers.slice(2).forEach(p=>bs.setPosition(p,{x:99,y:99}));
+  state.random=()=>.99;bs.resolveDribble(state,carrier);
+  const event=state.events.at(-1);
+  assert(["dribble","turnover"].includes(event.type));
+  assert.equal(event.nearbyDefenders.length,2,"dribble feed lists every nearby defender");
+  assert.equal(event.nearbyDefenders.filter(d=>d.selected).length,1);
+ }
+ // Shot attempts store a dedicated straight route from the shooter to the attacking goal.
+ {
+  const state=bs.createMatch();bs.setMatch(state);
+  const shooter=bs.active(state.teams[1]).find(p=>p.role!=="GK");
+  bs.setPosition(shooter,{x:72,y:43});state.random=()=>0;
+  bs.resolveShot(state,shooter,false);
+  const event=state.events.find(e=>e.type==="shot-attempt");
+  assert(event?.shotRoute,"shot attempt includes a separate pitch route");
+  assert.deepEqual(JSON.parse(JSON.stringify(event.shotRoute.from)),{x:72,y:43});
+  assert.deepEqual(JSON.parse(JSON.stringify(event.shotRoute.to)),{x:99,y:50});
+ }
  // Failed shots have four equally sized outcome bands.
  {
   const expected=["corner","save","rebound","goal-kick"];

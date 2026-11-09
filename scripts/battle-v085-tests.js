@@ -37,12 +37,22 @@ function runBattleV085Tests(){
  assert(b.active(k.teams[1]).filter(p=>p.id!==taker.id&&b.inOpponentBox(1,p)).length>=5,'corner attackers fill box');
  const shortReceiver=b.active(k.teams[1]).find(p=>String(p.id)===String(chosen));
  assert(shortReceiver&&b.distance(shortReceiver,taker)<20,'short-corner receiver near taker');
+ const coords=()=>[1,2].flatMap(n=>k.teams[n].roster.map(p=>[n,p.id,p.x,p.y]));
  const goalKick={type:'goal-kick',teamNumber:1,point:{x:4,y:50},zone:2,routine:'direct',goalKickTaker:'gk'};
+ const beforeKeeperGoalKick=coords();
  k.pending=goalKick;b.stagePendingSetPiece(k);assert.equal(b.setPieceTaker(k,goalKick).role,'GK');
- goalKick.goalKickTaker='outfield';goalKick.takerId=b.active(k.teams[1]).find(p=>p.role==='ST').id;
- b.stagePendingSetPiece(k);
+ assert.deepEqual(coords(),beforeKeeperGoalKick,'goal-kick staging preserves every player position');
+ goalKick.goalKickTaker='outfield';goalKick.takerId=b.active(k.teams[1]).find(p=>p.role==='ST').id;goalKick.staged=false;
+ const beforeOutfieldGoalKick=coords();b.stagePendingSetPiece(k);
  assert.equal(b.setPieceTaker(k,goalKick).role,'ST');
- const out=b.setPieceTaker(k,goalKick);assert(out.x<=16,'outfield goal-kick taker moves back to own goal before kick');
+ const out=b.setPieceTaker(k,goalKick);
+ assert.deepEqual([out.x,out.y],beforeOutfieldGoalKick.find(p=>p[0]===1&&p[1]===out.id).slice(2),'outfield taker remains in place for a goal kick');
+ assert.deepEqual(coords(),beforeOutfieldGoalKick,'outfield goal-kick staging preserves every player position');
+ k.random=()=>0;const beforeGoalKickRestart=coords();b.resolveRestart(k,goalKick);
+ assert.deepEqual(coords(),beforeGoalKickRestart,'resolving a goal kick does not reposition players');
+ const goalKickPass=k.events.at(-1);
+ assert(goalKickPass.passRoute,'goal kick still launches a recorded pass');
+ assert.deepEqual(JSON.parse(JSON.stringify(goalKickPass.passRoute.from)),{x:4,y:50},'goal-kick pass begins at the restart spot');
  assert.equal(b.setPieceSkill(goalKick),'gk');
  const free={type:'free-kick',teamNumber:2,point:{x:17,y:50},zone:3,routine:'pass'};
  k.pending=free;b.stagePendingSetPiece(k);assert.equal(b.setPieceSkill(free),'pas');
@@ -53,6 +63,7 @@ function runBattleV085Tests(){
   assert.equal(s.status,'finished','full time seed '+seed);
   assert(s.events.every(ev=>!ev.presentation||b.validPresentation(ev.presentation,s)),'presentation snapshots seed '+seed);
   assert(s.events.filter(ev=>ev.passRoute).every(ev=>['long','short'].includes(ev.passRoute.kind)),'valid pass routes');
+  assert(s.events.filter(ev=>ev.type==='shot-attempt').every(ev=>ev.shotRoute&&ev.shotRoute.from&&ev.shotRoute.to),'shot attempts include goal-directed routes');
   shots.push(s.teams[1].stats.shots+s.teams[2].stats.shots);goals.push(s.score[1]+s.score[2]);
  }
  const totalShots=shots.reduce((a,c)=>a+c,0),totalGoals=goals.reduce((a,c)=>a+c,0);

@@ -249,6 +249,14 @@ body.bs-game-route .bs-match-meta{grid-column:3;justify-self:end;text-align:righ
 .bs-feed-event{border-left-color:var(--bs-event-team-color,#5b7a91)}
 .bs-feed-event.is-notable{border-left-color:var(--bs-event-team-color,#65c4ff)}
 .bs-event-analysis{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-event-nearby-defenders{display:grid;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border-subtle,#203b54)}
+.bs-event-nearby-heading{color:var(--text-secondary,#9bb2c9);font:900 10px "Barlow Condensed",sans-serif;letter-spacing:.1em}
+.bs-event-nearby-list{display:flex;flex-wrap:wrap;gap:6px}
+.bs-event-nearby-player{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:5px 8px;border:1px solid var(--border-subtle,#2a4a64);border-radius:6px;background:var(--bg-surface,#07111c);font-size:10px}
+.bs-event-nearby-player.is-selected{border-color:#e7c66e;background:color-mix(in srgb,#e7c66e 12%,var(--bg-surface,#07111c))}
+.bs-event-nearby-name{color:var(--text-primary,#eaf2ff);font-weight:900}
+.bs-event-nearby-meta{color:var(--text-secondary,#9bb2c9);font-variant-numeric:tabular-nums}
+.bs-event-nearby-selected{color:#ffe08a;font-size:8px;font-weight:900;letter-spacing:.06em}
 .bs-event-stat-comparison,.bs-event-success{display:inline-flex;align-items:center;justify-content:center;padding:5px 8px;border:1px solid var(--border-subtle,#2a4a64);border-radius:5px;background:color-mix(in srgb,var(--bg-surface,#07111c) 70%,var(--bs-event-team-color,#65c4ff) 30%);font-size:11px;font-weight:900;letter-spacing:.035em;color:var(--text-primary,#eaf2ff);font-variant-numeric:tabular-nums}
 .bs-event-success{border-color:color-mix(in srgb,#80dab3 45%,var(--border-subtle,#2a4a64));color:#a6f3c9}
 .bs-formation-avatar{display:flex;align-items:center;justify-content:center;gap:4px;min-height:30px}
