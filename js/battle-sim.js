@@ -427,9 +427,10 @@ function resolvePass(state,carrier,opts={}){
  const chem=passingChemistry(carrier,receiver);
  const passingStat=opts.goalKick?effective(carrier,"gk"):effective(carrier,"pas");
  const accuracyPenalty=Math.max(0,metres-(kind==="long"?34:15))*(kind==="long"?.33:.48);
- let chance=!defenders.length?1:clamp(sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
-   effective(defender,"def")*.46+14-accuracyPenalty-defenders.length*4.4)/18),.07,.95);
- if(opts.guaranteed||opts.kickoff)chance=1;
+ const defenderSkill=defender?effective(defender,"def"):60;
+ let chance=clamp(sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
+   defenderSkill*.46+14-accuracyPenalty-defenders.length*4.4)/18),.07,.95);
+ if(opts.kickoff)chance=Math.max(chance,.90);
  const route={kind,from,to,chemistry:chem};team.stats.attempted++;carrier.match.passesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"pass");addPoints(carrier,.035);team.stats.passes++;carrier.match.passes++;
@@ -458,7 +459,7 @@ function resolveDribble(state,carrier){
  const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M);
  const def=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
  const score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.30-(def?effective(def,"def")*.54:0)-Math.max(0,defenders.length-1)*8;
- const chance=!defenders.length?1:clamp(sigmoid((score+13)/18),.08,.95);
+ const chance=clamp(sigmoid((score+13)/18),.08,.95);
  carrier.match.dribblesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);moveToward(carrier,target,stride);setBall(state,carrier);state.lastPasser=null;
@@ -474,6 +475,12 @@ function resolveDribble(state,carrier){
   addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,description:def.name+" wins the ball from "+carrier.name+".",
    comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:effective(def,"def")},
    probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,def]});
+ }else{
+  drain(carrier,false,"dribble");addPoints(carrier,-.08);
+  addEvent(state,{type:"play",teamNumber:team.number,notable:true,
+   description:carrier.name+" miscontrols the ball while dribbling into open space.",
+   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:0},
+   probability:1-chance,probabilityLabel:"DRIBBLE ERROR",actors:[carrier]});
  }
 }
 function recoverLoose(state,where,attackingNumber){
@@ -687,7 +694,7 @@ function simulateTick(state){
  setBall(state,carrier);
  if(state.kickoffPassPending){
   state.kickoffPassPending=false;
-  resolvePass(state,carrier,{passKind:"short",kickoff:true,guaranteed:true});
+  resolvePass(state,carrier,{passKind:"short",kickoff:true});
   ensureTickEvent(state,eventsBefore);return;
  }
  if(carrier.role==="GK"){resolvePass(state,carrier,{passKind:"short"});ensureTickEvent(state,eventsBefore);return;}
