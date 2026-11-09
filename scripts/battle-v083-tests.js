@@ -62,6 +62,7 @@ function runBattleV083Tests(){
   shots.push(shotCount);goals.push(goalCount);results.push(s.score[1]+'-'+s.score[2]);
  }
  const totalShots=shots.reduce((a,c)=>a+c,0),totalGoals=goals.reduce((a,c)=>a+c,0),scoreless=goals.filter(n=>n===0).length;
+ console.log('v0.8.6 16-match balance sample:',totalShots,'shots,',totalGoals,'goals,',scoreless,'scoreless');
  assert(totalShots>=100,'attacks must produce meaningful shot frequency, not 0-0 forever: '+shots);
  assert(totalGoals>=8,'goals must be possible in real-roster full matches: '+goals);
  assert(totalGoals<=96,'avoid excessive scoring');

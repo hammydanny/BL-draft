@@ -497,7 +497,10 @@ function resolveShot(state,shooter,penalty,ultimate){
  const angle=penalty?0:Math.abs(shooter.y-50)*.0038;
  const specialBonus=!penalty&&isagi(shooter)?Math.min(.10,isagiNearDefenders(state,shooter,shooter)*.025):0;
  const boxBoost=metres<12?.17:metres<21?.12:metres<30?.065:0;
- const goalChance=ultimate?1:clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle,0,penalty?.96:.82);
+ const rawChance=clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle,0,penalty?.96:.82);
+ // Canon strikers frequently exceed 90 SHO; temper conversion (not shot
+ // frequency or player ranking) to avoid 6+ goals every match.
+ const goalChance=ultimate?1:penalty?rawChance:clamp(rawChance*.58,.015,.55);
  const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
  addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
   description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+" shoots from "+Math.round(metres)+"m!",
