@@ -139,44 +139,82 @@ function seeded(seed,restoreState){
 // Compact event-boundary views contain only mutable match data, never another roster.
 // The engine stays authoritative; rendering cannot consume its future state or RNG.
 function capturePresentation(state){
- return{v:1,timeSeconds:state.timeSeconds,phase:state.phase,score:{...state.score},possession:state.possession,ballZone:state.ballZone,carrierId:state.carrierId,
-  teams:Object.fromEntries([1,2].map(n=>[n,{assignment:{...state.teams[n].assignment},players:state.teams[n].roster.map(p=>[p.id,p.zone,p.stamina,p.flow,p.role,p.yellows,!!p.sentOff,p.match.points])}]))};
+ return{v:2,timeSeconds:state.timeSeconds,phase:state.phase,score:{...state.score},possession:state.possession,
+  ball:{...point(state.ball||state.ballZone)},ballZone:state.ballZone,carrierId:state.carrierId,
+  teams:Object.fromEntries([1,2].map(n=>[n,{assignment:{...state.teams[n].assignment},
+   players:state.teams[n].roster.map(p=>[p.id,p.zone,p.stamina,p.flow,p.role,p.yellows,!!p.sentOff,p.match.points,p.x,p.y])}]))};
 }
 function validPresentation(view,state){
- return !!view&&view.v===1&&Number.isFinite(view.timeSeconds)&&view.timeSeconds>=0&&view.timeSeconds<=FULL&&["firstHalf","halfTime","secondHalf","fullTime"].includes(view.phase)&&[1,2].includes(view.possession)&&!!ZONES[view.ballZone]&&[1,2].every(n=>{
-  const t=view.teams?.[n],team=state.teams[n];return Number.isInteger(view.score?.[n])&&view.score[n]>=0&&view.score[n]<=state.score[n]&&t&&t.assignment&&Array.isArray(t.players)&&t.players.length===team.roster.length&&new Set(t.players.map(p=>p[0])).size===team.roster.length&&t.players.every(p=>Array.isArray(p)&&playerIn(team,p[0])&&!!ZONES[p[1]]&&Number.isFinite(p[2])&&p[2]>=0&&p[2]<=100&&Number.isFinite(p[3])&&p[3]>=0&&p[3]<=100&&typeof p[4]==="string"&&Number.isInteger(p[5])&&p[5]>=0&&typeof p[6]==="boolean"&&Number.isFinite(p[7]))&&Object.entries(t.assignment).every(([slot,id])=>team.slots[Number(slot)]&&playerIn(team,id))&&new Set(Object.values(t.assignment)).size===Object.keys(t.assignment).length;
+ if(!view||![1,2].includes(view.v)||!Number.isFinite(view.timeSeconds)||view.timeSeconds<0||view.timeSeconds>FULL||
+  !["firstHalf","halfTime","secondHalf","fullTime"].includes(view.phase)||![1,2].includes(view.possession)||!ZONES[view.ballZone])return false;
+ if(view.v===2&&(!view.ball||!Number.isFinite(view.ball.x)||!Number.isFinite(view.ball.y)||view.ball.x<0||view.ball.x>100||view.ball.y<0||view.ball.y>100))return false;
+ return[1,2].every(n=>{
+  const t=view.teams?.[n],team=state.teams[n];
+  return Number.isInteger(view.score?.[n])&&view.score[n]>=0&&view.score[n]<=state.score[n]&&t&&t.assignment&&
+   Array.isArray(t.players)&&t.players.length===team.roster.length&&new Set(t.players.map(p=>p[0])).size===team.roster.length&&
+   t.players.every(p=>Array.isArray(p)&&playerIn(team,p[0])&&!!ZONES[p[1]]&&Number.isFinite(p[2])&&p[2]>=0&&p[2]<=100&&
+    Number.isFinite(p[3])&&p[3]>=0&&p[3]<=100&&typeof p[4]==="string"&&Number.isInteger(p[5])&&p[5]>=0&&
+    typeof p[6]==="boolean"&&Number.isFinite(p[7])&&(view.v===1||(Number.isFinite(p[8])&&p[8]>=0&&p[8]<=100&&Number.isFinite(p[9])&&p[9]>=0&&p[9]<=100)))&&
+   Object.entries(t.assignment).every(([slot,id])=>team.slots[Number(slot)]&&playerIn(team,id))&&
+   new Set(Object.values(t.assignment)).size===Object.keys(t.assignment).length;
  })&&(view.carrierId==null||!!playerIn(state.teams[view.possession],view.carrierId));
 }
 function displayState(state=match){
- if(!state)return null;
- const view=state.events[(state.presentedEventId||0)-1]?.presentation||state.events[0]?.presentation;
+ if(!state)return null;const view=state.events[(state.presentedEventId||0)-1]?.presentation||state.events[0]?.presentation;
  if(!view)return state;
- return{...state,...view,teams:Object.fromEntries([1,2].map(n=>{
-  const team=state.teams[n],shown=view.teams[n],players=new Map(shown.players.map(p=>[p[0],p]));
-  return[n,{...team,assignment:shown.assignment,roster:team.roster.map(p=>{const a=players.get(p.id);return{...p,zone:a[1],stamina:a[2],flow:a[3],role:a[4],yellows:a[5],sentOff:a[6],match:{...p.match,points:a[7]}};})}];
- }))};
+ return{...state,...view,ball:view.v===2?{...view.ball}:legacyPoint(view.ballZone),
+  teams:Object.fromEntries([1,2].map(n=>{
+   const team=state.teams[n],shown=view.teams[n],players=new Map(shown.players.map(p=>[p[0],p]));
+   return[n,{...team,assignment:shown.assignment,roster:team.roster.map(p=>{
+    const a=players.get(p.id),legacy=legacyPoint(a[1]);return{...p,zone:a[1],stamina:a[2],flow:a[3],role:a[4],yellows:a[5],sentOff:a[6],
+      x:view.v===2?a[8]:legacy.x,y:view.v===2?a[9]:legacy.y,match:{...p.match,points:a[7]}};
+   })}];
+  }))};
 }
-function snapshotMatch(state){if(!state)return null;const copy=Object.assign({},state,{randomState:state.random&&state.random.getState?state.random.getState():state.randomState,runnerActive:false});delete copy.random;copy.presentationVersion=1;copy.events=state.events.map(e=>{if(e.id>=(state.presentedEventId||1))return e;const previous={...e};delete previous.presentation;return previous;});copy.teams=Object.fromEntries([1,2].map(n=>{const team=Object.assign({},state.teams[n]);delete team._bsChemistryCache;delete team._bsChemistrySignature;return[n,team];}));return copy;}
+function snapshotMatch(state){
+ if(!state)return null;const copy={...state,randomState:state.random&&state.random.getState?state.random.getState():state.randomState,runnerActive:false};
+ delete copy.random;copy.presentationVersion=2;
+ copy.events=state.events.map(e=>{if(e.id>=(state.presentedEventId||1))return e;const previous={...e};delete previous.presentation;return previous;});
+ copy.teams=Object.fromEntries([1,2].map(n=>{const team={...state.teams[n]};delete team._bsChemistryCache;delete team._bsChemistrySignature;return[n,team];}));
+ return copy;
+}
 function hydrateMatch(snapshot){
  try{
-  if(snapshot?.presentationVersion!=null&&snapshot.presentationVersion!==1)return null;
-  if(!snapshot||!snapshot.teams||!Array.isArray(snapshot.events)||snapshot.events.length>20000||!["playing","paused","finished"].includes(snapshot.status)||!["firstHalf","halfTime","secondHalf","fullTime"].includes(snapshot.phase)||!Number.isFinite(snapshot.timeSeconds)||snapshot.timeSeconds<0||snapshot.timeSeconds>FULL||!Number.isInteger(snapshot.seed)||!Number.isInteger(snapshot.randomState))return null;
-  if(![1,2].includes(snapshot.possession)||!ZONES[snapshot.ballZone]||!Number.isInteger(snapshot.tick)||snapshot.tick<0||![1,2].every(n=>Number.isInteger(snapshot.score?.[n])&&snapshot.score[n]>=0))return null;
-  if(!snapshot.events.every((e,i)=>e&&e.id===i+1&&typeof e.type==="string"&&typeof e.description==="string"&&Array.isArray(e.actors)&&Array.isArray(e.dialogue)&&e.actors.every(a=>resolveSharedPlayer(a,0))))return null;
+  if(snapshot?.presentationVersion!=null&&![1,2].includes(snapshot.presentationVersion))return null;
+  if(!snapshot||!snapshot.teams||!Array.isArray(snapshot.events)||snapshot.events.length>20000||
+   !["playing","paused","finished"].includes(snapshot.status)||!["firstHalf","halfTime","secondHalf","fullTime"].includes(snapshot.phase)||
+   !Number.isFinite(snapshot.timeSeconds)||snapshot.timeSeconds<0||snapshot.timeSeconds>FULL||
+   !Number.isInteger(snapshot.seed)||!Number.isInteger(snapshot.randomState))return null;
+  if(![1,2].includes(snapshot.possession)||!ZONES[snapshot.ballZone]||!Number.isInteger(snapshot.tick)||snapshot.tick<0||
+   ![1,2].every(n=>Number.isInteger(snapshot.score?.[n])&&snapshot.score[n]>=0))return null;
+  if(!snapshot.events.every((e,i)=>e&&e.id===i+1&&typeof e.type==="string"&&typeof e.description==="string"&&Array.isArray(e.actors)&&
+   Array.isArray(e.dialogue)&&e.actors.every(a=>resolveSharedPlayer(a,0))))return null;
   for(const n of [1,2]){
-   const team=snapshot.teams[n];if(!team||!Array.isArray(team.roster)||!team.assignment||!team.stats||!Array.isArray(team.slots)||team.slots.length!==11||!team.strategy||!STRATEGIES.every(d=>Number.isFinite(team.strategy[d.key])))return null;
+   const team=snapshot.teams[n];
+   if(!team||!Array.isArray(team.roster)||!team.assignment||!team.stats||!Array.isArray(team.slots)||team.slots.length!==11||!team.strategy||
+    !STRATEGIES.every(d=>Number.isFinite(team.strategy[d.key])))return null;
    const normalized=normalizeTeam(team,n);
    if(normalized.roster.length!==team.roster.length||new Set(Object.values(team.assignment).map(idOf)).size!==Object.keys(team.assignment).length)return null;
-   team.roster=team.roster.map((p,i)=>{const canonical=resolveSharedPlayer(p,i);if(!canonical||!p.match||!Number.isFinite(p.stamina)||!Number.isFinite(p.flow)||!ZONES[p.zone])throw Error("Invalid saved player");return Object.assign({},p,canonical);});
+   team.roster=team.roster.map((p,i)=>{
+    const canonical=resolveSharedPlayer(p,i);
+    if(!canonical||!p.match||!Number.isFinite(p.stamina)||!Number.isFinite(p.flow)||!ZONES[p.zone])throw Error("Invalid saved player");
+    const player={...p,...canonical},legacy=legacyPoint(p.zone);
+    if(snapshot.presentationVersion===2&&(!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<0||p.x>100||p.y<0||p.y>100))throw Error("Invalid coordinates");
+    player.x=Number.isFinite(p.x)?p.x:legacy.x;player.y=Number.isFinite(p.y)?p.y:legacy.y;
+    player.homeX=Number.isFinite(p.homeX)?p.homeX:player.x;player.homeY=Number.isFinite(p.homeY)?p.homeY:player.y;
+    return player;
+   });
    if(!Object.entries(team.assignment).every(([slot,id])=>Number.isInteger(Number(slot))&&Number(slot)>=0&&Number(slot)<team.slots.length&&playerIn(team,id)))return null;
    if(team.roster.some(p=>isSpecialKeeper(p)&&idOf(team.assignment[String(team.slots.findIndex(s=>s.label==="GK"))])!==p.id))return null;
    delete team._bsChemistryCache;delete team._bsChemistrySignature;
   }
-  const state=Object.assign({},snapshot);state.random=seeded(state.seed,state.randomState);delete state.randomState;state.runnerActive=false;state.presentedEventId=Math.floor(clamp(Number(state.presentedEventId)||0,0,state.events.length));
-  // Old saves have no event positions. Reveal their existing history together rather
-  // than falsely replaying earlier commentary against the final engine positions.
-  if(snapshot.presentationVersion!==1&&state.events.some(e=>!e.presentation)){state.presentedEventId=state.events.length;state.events.forEach(e=>delete e.presentation);if(state.events.length)state.events.at(-1).presentation=capturePresentation(state);}
-  else if(!state.events.filter(e=>e.id>=Math.max(1,state.presentedEventId)).every(e=>validPresentation(e.presentation,state)))return null;
+  const state={...snapshot};state.random=seeded(state.seed,state.randomState);delete state.randomState;state.runnerActive=false;
+  state.ball=state.ball&&Number.isFinite(state.ball.x)&&Number.isFinite(state.ball.y)?state.ball:legacyPoint(state.ballZone);
+  state.presentedEventId=Math.floor(clamp(Number(state.presentedEventId)||0,0,state.events.length));
+  if(snapshot.presentationVersion==null&&state.events.some(e=>!e.presentation)){
+   state.presentedEventId=state.events.length;state.events.forEach(e=>delete e.presentation);
+   if(state.events.length)state.events.at(-1).presentation=capturePresentation(state);
+  }else if(!state.events.filter(e=>e.id>=Math.max(1,state.presentedEventId)).every(e=>validPresentation(e.presentation,state)))return null;
   return state;
  }catch(e){return null;}
 }
@@ -194,21 +232,46 @@ function portraitWithStamina(parent,p,size){
  const img=make("img","bs-stamina-portrait");img.src=portraitSource(p);img.alt=p.name||"Player";img.width=px;img.height=px;img.loading="lazy";
  img.onerror=function(){img.onerror=null;if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")img.src=PLAYER_IMAGE_FALLBACK;};put(ring,img);put(parent,ring);return ring;
 }
-function distance(a,b){if(!ZONES[a]||!ZONES[b])return 99;return Math.abs(ZONES[a].x-ZONES[b].x)+Math.abs(ZONES[a].y-ZONES[b].y);}
-function neighbors(zone){return Object.keys(ZONES).map(Number).filter(n=>distance(zone,n)===1);}
-function stepToward(state,zone,target,teamNumber){const ns=neighbors(zone);if(!ns.length)return zone;const d=Math.min.apply(null,ns.map(n=>distance(n,target)));let best=ns.filter(n=>distance(n,target)===d);if(teamNumber){const f=best.filter(n=>progress(teamNumber,n)>=progress(teamNumber,zone));if(f.length&&state.random()<.7)best=f;}return randomPick(best,state.random);}
-function progress(number,zone){return number===1?ZONES[zone].y/5:(5-ZONES[zone].y)/5;}
-function targetGoal(number){return number===1?17:2;}
-function ownGoal(number){return number===1?2:17;}
-function slotZone(number,slot){const x=clamp(Math.round((Number(slot.x)||50)/50),0,2);let y=clamp(Math.floor((100-(Number(slot.y)||50))/20),0,5);if(number===2)y=5-y;return GRID[y][x];}
+/* Spatial engine: the old 18 zone IDs are retained ONLY to migrate v0.8.1 saves.
+   All live decisions use physical metre distances on a continuous 105m x 68m pitch. */
+const PITCH_LENGTH=105,PITCH_WIDTH=68,RECEIVE_PRESSURE_M=9,TACKLE_RADIUS_M=7;
+function legacyPoint(zone){const z=ZONES[zone]||ZONES[7];return{x:8+z.y*16.8,y:17+z.x*33};}
+function point(value){if(value&&typeof value==="object"&&Number.isFinite(value.x)&&Number.isFinite(value.y))return{x:value.x,y:value.y};if(value&&typeof value==="object"&&Number.isFinite(value.zone))return legacyPoint(value.zone);if(Number.isInteger(value)&&ZONES[value])return legacyPoint(value);return{x:50,y:50};}
+function distance(a,b){const x=point(a),y=point(b);return Math.hypot((x.x-y.x)*PITCH_LENGTH/100,(x.y-y.y)*PITCH_WIDTH/100);}
+function zoneAt(pos){const a=point(pos);let chosen=7,best=Infinity;for(const key of Object.keys(ZONES)){const d=distance(a,legacyPoint(Number(key)));if(d<best){best=d;chosen=Number(key);}}return chosen;}
+function setPosition(p,pos){const q=point(pos);p.x=clamp(q.x,2,98);p.y=clamp(q.y,5,95);if(p.role==="GK"){p.x=p.teamNumber===1?clamp(p.x,3,16):clamp(p.x,84,97);p.y=clamp(p.y,21,79);}p.zone=zoneAt(p);return p;}
+function setBall(state,pos){const q=point(pos);state.ball={x:clamp(q.x,1,99),y:clamp(q.y,2,98)};state.ballZone=zoneAt(state.ball);}
+function formationStart(number,slot){const depth=clamp(100-(Number(slot.y)||50),0,100);return{x:number===1?6+depth*.42:94-depth*.42,y:clamp(Number(slot.x)||50,6,94)};}
+function moveToward(p,target,limit){const from=point(p),to=point(target),dx=(to.x-from.x)*PITCH_LENGTH/100,dy=(to.y-from.y)*PITCH_WIDTH/100,dist=Math.hypot(dx,dy);if(dist<.001)return p;const fraction=Math.min(1,Math.max(0,limit)/dist);return setPosition(p,{x:from.x+(to.x-from.x)*fraction,y:from.y+(to.y-from.y)*fraction});}
+function progress(number,where){const q=point(where);return number===1?q.x/100:(100-q.x)/100;}
+function targetGoal(number){return{x:number===1?99:1,y:50};}
+function ownGoal(number){return{x:number===1?4:96,y:50};}
+function slotZone(number,slot){return zoneAt(formationStart(number,slot));}
+function inOpponentBox(number,where){const q=point(where);return(number===1?q.x>=83:q.x<=17)&&q.y>=20&&q.y<=80;}
+function dribbleMeters(p){return clamp(.85+effective(p,"spd")*.068,1.4,8.2);}
+function offBallOrder(state){const carrier=state.teams[state.possession]&&playerIn(state.teams[state.possession],state.carrierId);return[...active(state.teams[1]),...active(state.teams[2])].filter(p=>!carrier||p.id!==carrier.id||p.teamNumber!==carrier.teamNumber).sort((a,b)=>effective(b,"spd")-effective(a,"spd")||a.teamNumber-b.teamNumber||idOf(a.id).localeCompare(idOf(b.id)));}
+function movementMeters(p){return clamp(.75+effective(p,"spd")*.051,1.25,6.1);}
+function receiverPressure(state,number,where){return opposing(state,number).filter(p=>p.role!=="GK"&&distance(p,where)<=RECEIVE_PRESSURE_M).length;}
+function keeperTarget(state,p){const ball=point(state.ball);const home=ownGoal(p.teamNumber);return{x:home.x+(p.teamNumber===1?1.8:-1.8),y:clamp(50+(ball.y-50)*.28,28,72)};}
 function active(team){const ids=new Set(Object.values(team.assignment).map(idOf));return team.roster.filter(p=>ids.has(idOf(p.id))&&!p.sentOff);}
 function bench(team){const ids=new Set(Object.values(team.assignment).map(idOf));return team.roster.filter(p=>!ids.has(idOf(p.id))&&!p.sentOff);}
 function keeper(team){const list=active(team);return list.find(p=>p.role==="GK")||list.slice().sort((a,b)=>b.stats.gk-a.stats.gk)[0]||null;}
-function runtimeTeam(config,number){const team={number:number,name:config.name,color:config.color,roster:config.roster.map((raw,i)=>{const p=cleanPlayer(raw,i);return Object.assign(p,{teamNumber:number,stamina:100,flow:0,flowFullTicks:0,movementProgress:0,zone:ownGoal(number),homeZone:ownGoal(number),role:p.primaryPosition,yellows:0,sentOff:false,match:{goals:0,assists:0,shots:0,onTarget:0,passes:0,passesAttempted:0,dribbles:0,dribblesAttempted:0,tackles:0,interceptions:0,fouls:0,saves:0,yellows:0,redCards:0,points:0,rating:6}});}),formation:config.formation,slots:config.slots.map(s=>Object.assign({},s)),assignment:Object.assign({},config.assignment),strategy:Object.assign({},config.strategy),stats:{poss:0,shots:0,onTarget:0,passes:0,attempted:0,tackles:0,interceptions:0,fouls:0,corners:0,saves:0,turnovers:0,goals:0,yellowCards:0,redCards:0}};Object.keys(team.assignment).forEach(k=>{const p=playerIn(team,team.assignment[k]),s=team.slots[Number(k)];if(p&&s){p.role=s.label;p.zone=slotZone(number,s);p.homeZone=p.zone;}});team.roster.filter(p=>!Object.values(team.assignment).map(idOf).includes(idOf(p.id))).forEach(p=>p.role="BENCH");const g=keeper(team);if(g){g.role="GK";g.zone=ownGoal(number);g.homeZone=g.zone;}return team;}
+function runtimeTeam(config,number){
+ const team={number,name:config.name,color:config.color,roster:config.roster.map((raw,i)=>{
+  const p=cleanPlayer(raw,i);return Object.assign(p,{teamNumber:number,stamina:100,flow:0,flowFullTicks:0,movementProgress:0,
+   x:number===1?8:92,y:50,homeX:number===1?8:92,homeY:50,zone:slotZone(number,{x:50,y:90}),
+   role:p.primaryPosition,yellows:0,sentOff:false,match:{goals:0,assists:0,shots:0,onTarget:0,passes:0,passesAttempted:0,dribbles:0,dribblesAttempted:0,tackles:0,interceptions:0,fouls:0,saves:0,yellows:0,redCards:0,points:0,rating:6}});
+ }),formation:config.formation,slots:config.slots.map(q=>({...q})),assignment:{...config.assignment},strategy:{...config.strategy},
+ stats:{poss:0,shots:0,onTarget:0,passes:0,attempted:0,tackles:0,interceptions:0,fouls:0,corners:0,saves:0,turnovers:0,goals:0,yellowCards:0,redCards:0}};
+ Object.keys(team.assignment).forEach(k=>{const p=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!p||!slot)return;p.role=slot.label;const home=slot.label==="GK"?ownGoal(number):formationStart(number,slot);p.homeX=home.x;p.homeY=home.y;setPosition(p,home);});
+ team.roster.filter(p=>!Object.values(team.assignment).map(idOf).includes(idOf(p.id))).forEach(p=>{p.role="BENCH";setPosition(p,ownGoal(number));});
+ const g=keeper(team);if(g){g.role="GK";const home=ownGoal(number);g.homeX=home.x;g.homeY=home.y;setPosition(g,home);}
+ return team;
+}
 function playerIn(team,id){return team.roster.find(p=>idOf(p.id)===idOf(id))||null;}
 function effective(p,k){return(Number(p.stats[k])||1)*(.7+.3*clamp(p.stamina,0,100)/100);}
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
-function isagiNearDefenders(state,p,zone){return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d.zone,zone)<=1).length;}
+function isagiNearDefenders(state,p,where){return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=RECEIVE_PRESSURE_M).length;}
 function isagiChemistryDialogue(actor,partner,event){const striker=isagi(actor)?actor:isagi(partner)?partner:null,other=striker===actor?partner:actor;if(!striker||!other)return[];const lines=striker.battleSim.chemistryDialogue&&striker.battleSim.chemistryDialogue[other.name],text=lines&&lines[event];return text?[{playerId:striker.id,text:striker.name+": "+String.fromCharCode(34)+text+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*24),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
 function drain(p,success,action){const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
@@ -224,99 +287,226 @@ function dialogue(state,p,kind,good){
  return{playerId:p.id,text:p.name+": "+String.fromCharCode(34)+randomPick(lines[kind]||lines.pass,state.random)+String.fromCharCode(34)};
 }
 function opposing(state,number){return active(state.teams[number===1?2:1]);}
-function defenderNear(state,number,zone){const list=opposing(state,number).filter(p=>p.role!=="GK");list.sort((a,b)=>(distance(a.zone,zone)*12-effective(a,"def")*.42-effective(a,"spd")*.2)-(distance(b.zone,zone)*12-effective(b,"def")*.42-effective(b,"spd")*.2));return list[0]||keeper(state.teams[number===1?2:1]);}
-function preferredWideLane(p){
- const role=String(p&&p.role||"").toUpperCase();
- if(/^(LB|LWB|LM|LW|LWF|LF|LS|LCM|LCB)$/.test(role))return 0;
- if(/^(RB|RWB|RM|RW|RWF|RF|RS|RCM|RCB)$/.test(role))return 2;
- return null;
-}
+function defenderNear(state,number,where){const list=opposing(state,number).filter(p=>p.role!=="GK");list.sort((a,b)=>(distance(a,where)*1.7-effective(a,"def")*.13-effective(a,"spd")*.05)-(distance(b,where)*1.7-effective(b,"def")*.13-effective(b,"spd")*.05));return list[0]||keeper(state.teams[number===1?2:1]);}
+function preferredWideLane(p){const role=String(p&&p.role||"").toUpperCase();if(/^(LB|LWB|LM|LW|LWF|LF|LS|LCM|LCB)$/.test(role))return 24;if(/^(RB|RWB|RM|RW|RWF|RF|RS|RCM|RCB)$/.test(role))return 76;return 50;}
 function moveOffBall(state){
- [1,2].forEach(n=>{
-  const team=state.teams[n],attacking=state.possession===n,widthBias=clamp((team.strategy.width-50)/50,0,1);
-  active(team).forEach(p=>{
-   if(p.id===state.carrierId||p.role==="GK")return;
-   const runner=/ST|CF|FW|LW|RW|SS/.test(p.role),wideRole=preferredWideLane(p)!=null;
-   const intentChance=clamp(.075+(attacking?(runner?.065:.025):.035)+(attacking?team.strategy.tempo:team.strategy.pressing)/100*.045+(attacking?widthBias*(wideRole?.06:.02):0),.06,.26);
-   if(state.random()>=intentChance)return;
-   const target=attacking&&(runner||progress(n,p.zone)>.56)?targetGoal(n):state.ballZone;
-   let next=null;
-   if(attacking&&widthBias>0){
-    const preferred=preferredWideLane(p),x=ZONES[p.zone].x,row=ZONES[p.zone].y;
-    const lateral=neighbors(p.zone).filter(z=>ZONES[z].y===row&&ZONES[z].x!==x);
-    if(preferred!=null&&x!==preferred&&lateral.length&&state.random()<.24+widthBias*.62){
-     next=lateral.slice().sort((a,b)=>Math.abs(ZONES[a].x-preferred)-Math.abs(ZONES[b].x-preferred))[0];
-    }else if(preferred==null&&runner&&x===1&&widthBias>.45&&state.random()<widthBias*.46&&lateral.length){
-     next=randomPick(lateral,state.random);
-    }
-   }
-   if(next==null)next=stepToward(state,p.zone,target,attacking?n:null);
-   if(next===p.zone){p.movementProgress=0;return;}
-   p.movementProgress=clamp((p.movementProgress||0)+effective(p,"spd")/75,0,2);
-   if(p.movementProgress>=1){p.zone=next;p.movementProgress-=1;}
-  });
+ const ball=point(state.ball),runners=offBallOrder(state);
+ // Everyone off the ball acts EVERY tick, in descending effective Speed order.
+ runners.forEach(p=>{
+  if(p.role==="GK"){moveToward(p,keeperTarget(state,p),Math.min(2.2,movementMeters(p)*.56));return;}
+  const t=state.teams[p.teamNumber],attacking=state.possession===t.number,runner=/ST|CF|FW|LW|RW|SS/.test(p.role),defender=/CB|LB|RB|DM|LWB|RWB/.test(p.role);
+  const home={x:p.homeX,y:p.homeY},w=clamp((t.strategy.width-50)/50,-.7,.7);
+  let target;
+  if(attacking){
+   const advance=runner?17:defender?3:11,forward=t.number===1?1:-1;
+   target={x:clamp(ball.x+forward*advance,4,96),y:clamp(home.y+(ball.y-50)*.26+w*(preferredWideLane(p)-50)*.5,7,93)};
+   target.x=clamp(target.x*.66+home.x*.34,4,96);
+  }else{
+   const hunt=distance(p,ball)<(10+t.strategy.pressing*.19),forward=t.number===1?1:-1;
+   if(hunt){target={x:ball.x-forward*2,y:ball.y};}
+   else target={x:clamp(home.x+(ball.x-50)*.26+forward*(t.strategy.line-50)*.10,4,96),y:clamp(home.y+(ball.y-50)*.26,7,93)};
+  }
+  // A tiny deterministic adjustment prevents stationary players without inventing actions.
+  if(distance(p,target)<.35){const phase=(state.tick+Number(p.id)||state.tick)*.7;target={x:p.x+Math.sin(phase)*.3,y:p.y+Math.cos(phase)*.4};}
+  moveToward(p,target,movementMeters(p));
  });
 }
-function receiverChoice(state,team,carrier){const list=active(team).filter(p=>p.id!==carrier.id&&p.role!=="GK");if(!list.length)return null;const p0=progress(team.number,carrier.zone);const ranked=list.map(p=>({p:p,s:(progress(team.number,p.zone)-p0)*(1+team.strategy.directness/100*1.6)-distance(carrier.zone,p.zone)*.24+(effective(p,"off")-75)/180+(effective(p,"spd")-75)/220+(ZONES[p.zone]&&ZONES[p.zone].x!==1?clamp((team.strategy.width-50)/50,0,1)*1.35:0)+(state.random()-.5)*.35})).sort((a,b)=>b.s-a.s);return randomPick(ranked.slice(0,Math.min(4,ranked.length)),state.random).p;}
-function targetZone(state,teamNumber,from,to){if(from!==to&&distance(from,to)<=1)return to;return stepToward(state,from,to===from?targetGoal(teamNumber):to,teamNumber);}
-function checkFoul(state,teamNumber,carrier,defender,zone){
- if(!carrier||!defender||state.random()>=.018+state.teams[defender.teamNumber].strategy.pressing/100*.025)return false;
- const defendingTeam=state.teams[defender.teamNumber];
- defender.match.fouls++;defendingTeam.stats.fouls++;addPoints(defender,-.12);
- const type=zone===targetGoal(teamNumber)?"penalty":"free-kick";
- state.pending={type:type,teamNumber:teamNumber,zone:zone,takerId:carrier.id,routine:"direct"};
- state.possession=teamNumber;state.carrierId=carrier.id;state.ballZone=zone;
- addEvent(state,{type:"foul",teamNumber:teamNumber,zone:zone,notable:true,
-  description:defender.name+" fouls "+carrier.name+". "+(type==="penalty"?"Penalty awarded.":"Free kick awarded."),
-  actors:[defender,carrier],dialogue:[{playerId:carrier.id,text:carrier.name+': "Foul! I was through!"'}]});
- const yellowChance=.12+defendingTeam.strategy.pressing/100*.10;
- if(state.random()<yellowChance){
-  defender.yellows++;defender.match.yellows=defender.yellows;defendingTeam.stats.yellowCards++;addPoints(defender,-.08);
-  addEvent(state,{type:"yellow-card",teamNumber:defender.teamNumber,zone:zone,notable:true,
-   description:defender.name+" receives a yellow card ("+defender.yellows+"/3).",actors:[defender],
-   dialogue:[{playerId:defender.id,text:defender.name+': "I was going for the ball!"'}]});
+function receiverChoice(state,team,carrier){
+ const options=active(team).filter(p=>p.id!==carrier.id&&p.role!=="GK");if(!options.length)return null;
+ const ranked=options.map(p=>{
+  const metres=distance(carrier,p),pressure=receiverPressure(state,team.number,p),forward=progress(team.number,p)-progress(team.number,carrier);
+  const value=forward*(8+team.strategy.directness*.11)-Math.max(0,metres-18)*.045-pressure*.85+(effective(p,"off")-70)*.035+
+   (state.random()-.5)*1.35;
+  return{p,value};
+ }).sort((a,b)=>b.value-a.value);
+ return randomPick(ranked.slice(0,Math.min(4,ranked.length)),state.random).p;
+}
+function targetZone(state,number,from,to){return point(to);}
+function checkFoul(state,teamNumber,carrier,defender,where){
+ if(!carrier||!defender||distance(carrier,defender)>TACKLE_RADIUS_M||state.random()>=.018+state.teams[defender.teamNumber].strategy.pressing*.00025)return false;
+ const defending=state.teams[defender.teamNumber],location=point(where||carrier),penalty=inOpponentBox(teamNumber,location),type=penalty?"penalty":"free-kick";
+ defender.match.fouls++;defending.stats.fouls++;addPoints(defender,-.12);
+ state.pending={type,teamNumber,zone:zoneAt(location),point:location,takerId:carrier.id,routine:"direct"};
+ state.possession=teamNumber;state.carrierId=carrier.id;setBall(state,location);
+ addEvent(state,{type:"foul",teamNumber,notable:true,description:defender.name+" fouls "+carrier.name+". "+(penalty?"Penalty awarded.":"Free kick awarded."),actors:[defender,carrier]});
+ if(state.random()<.12+defending.strategy.pressing*.001){
+  defender.yellows++;defender.match.yellows=defender.yellows;defending.stats.yellowCards++;addPoints(defender,-.08);
+  addEvent(state,{type:"yellow-card",teamNumber:defender.teamNumber,notable:true,description:defender.name+" receives a yellow card ("+defender.yellows+"/3).",actors:[defender]});
   if(defender.yellows>=3){
-   defender.sentOff=true;defender.match.redCards++;defendingTeam.stats.redCards++;addPoints(defender,-.25);
-   const slot=Object.keys(defendingTeam.assignment).find(k=>idOf(defendingTeam.assignment[k])===idOf(defender.id));
-   const canReplace=slot!=null&&bench(defendingTeam).length>0;
+   defender.sentOff=true;defender.match.redCards++;defending.stats.redCards++;addPoints(defender,-.25);
+   const slot=Object.keys(defending.assignment).find(k=>idOf(defending.assignment[k])===idOf(defender.id));
+   const canReplace=slot!=null&&bench(defending).length>0;
    state.requiredSub=canReplace?{teamNumber:defender.teamNumber,slot:String(slot),playerId:defender.id}:null;
-   const consequence=canReplace?" A replacement must be selected before play resumes.":" No reserve is available; the team will continue short-handed.";
-   addEvent(state,{type:"red-card",teamNumber:defender.teamNumber,zone:zone,notable:true,
-    description:defender.name+" receives a third yellow and is sent off."+consequence,
-    actors:[defender],dialogue:[{playerId:defender.id,text:defender.name+': "You have got to be kidding me!"'}]});
+   addEvent(state,{type:"red-card",teamNumber:defender.teamNumber,notable:true,description:defender.name+" is sent off."+(canReplace?" A replacement is required.":""),actors:[defender]});
   }
  }
- pause(state,state.requiredSub?"RED CARD — SUBSTITUTION REQUIRED":type==="penalty"?"PENALTY":"FREE KICK");
- return true;
+ pause(state,state.requiredSub?"RED CARD — SUBSTITUTION REQUIRED":penalty?"PENALTY":"FREE KICK");return true;
 }
-function resolvePass(state,carrier,opts){opts=opts||{};const team=state.teams[carrier.teamNumber],receiver=receiverChoice(state,team,carrier);if(!receiver){const z=stepToward(state,carrier.zone,targetGoal(team.number),team.number);carrier.zone=z;state.ballZone=z;addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" carries the ball forward.",actors:[carrier]});return;}const zone=targetZone(state,team.number,carrier.zone,receiver.zone),defender=defenderNear(state,team.number,zone),dist=distance(carrier.zone,zone),lane=dist<=1?9:dist<=2?3:-5,space=!opposing(state,team.number).some(p=>p.role!=="GK"&&distance(p.zone,zone)<=1),speed=clamp((effective(receiver,"spd")-(defender?effective(defender,"spd"):70))*.18,-11,11),pressure=defender?Math.max(0,2-distance(defender.zone,zone))*team.strategy.pressing/100*2.5:0;let chance=sigmoid((effective(carrier,"pas")-(defender?effective(defender,"def"):60)+lane+speed+(space?2:-2)-pressure+(isagi(carrier)&&distance(carrier.zone,zone)<=1?1.3:0))/17);if(opts.guaranteed)chance=1;team.stats.attempted++;carrier.match.passesAttempted++;if(state.random()<chance){drain(carrier,true,"pass");addPoints(carrier,.025);team.stats.passes++;carrier.match.passes++;const old=progress(team.number,carrier.zone);receiver.zone=zone;state.ballZone=zone;state.carrierId=receiver.id;state.possession=team.number;state.lastPasser=carrier.id;const forward=progress(team.number,zone)>old,notable=!!opts.setPiece||(forward&&progress(team.number,zone)>=.48)||state.random()<.10;addEvent(state,{type:opts.setPiece?"set-piece":"pass",teamNumber:team.number,zone:zone,notable:notable,description:carrier.name+" completes a pass to "+receiver.name+(forward?", advancing play.":"."),comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:defender?effective(defender,"def"):60},probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver],dialogue:notable?[dialogue(state,carrier,"pass",true),dialogue(state,receiver,"receive",true)].concat(isagiChemistryDialogue(carrier,receiver,"pass")):[]});if(!opts.guaranteed&&defender&&state.random()<.012+team.strategy.pressing/100*.018)checkFoul(state,team.number,receiver,defender,zone);}else{drain(carrier,false,"pass");addPoints(carrier,-.16);team.stats.turnovers++;const opp=state.teams[team.number===1?2:1],interceptor=defender||randomPick(active(opp).filter(p=>p.role!=="GK"),state.random);if(interceptor&&checkFoul(state,team.number,carrier,interceptor,zone))return;if(interceptor){interceptor.match.interceptions++;addPoints(interceptor,.15);opp.stats.interceptions++;interceptor.zone=zone;}state.lastPasser=null;state.possession=opp.number;state.carrierId=interceptor?interceptor.id:(active(opp)[0]&&active(opp)[0].id);state.ballZone=zone;addEvent(state,{type:"interception",teamNumber:opp.number,zone:zone,notable:true,description:(interceptor?interceptor.name:"The defence")+" intercepts "+carrier.name+"'s pass. Possession changes.",comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:defender?effective(defender,"def"):60},probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver,interceptor],dialogue:interceptor?[dialogue(state,interceptor,"defend",true)]:[]});}}
-function resolveDribble(state,carrier){const team=state.teams[carrier.teamNumber],widthBias=clamp((team.strategy.width-55)/45,0,1),current=ZONES[carrier.zone],wideTargets=current&&current.x===1&&widthBias>0&&state.random()<widthBias*.62?neighbors(carrier.zone).filter(z=>ZONES[z].y===current.y&&ZONES[z].x!==current.x):[],target=wideTargets.length?randomPick(wideTargets,state.random):targetGoal(team.number),zone=stepToward(state,carrier.zone,target,team.number),defs=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p.zone,zone)<=1).sort((a,b)=>(effective(b,"def")+effective(b,"spd")*.22)-(effective(a,"def")+effective(a,"spd")*.22)),def=defs[0]||defenderNear(state,team.number,zone),crowd=defs.length===0?7:defs.length===1?0:Math.min(16,(defs.length-1)*5),speed=def?clamp((effective(carrier,"spd")-effective(def,"spd"))*(defs.length?.2:.32),-12,14):7,chance=sigmoid((effective(carrier,"dri")-(def?effective(def,"def"):55)+speed-crowd)/17);carrier.match.dribblesAttempted++;if(state.random()<chance){drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);carrier.zone=zone;state.ballZone=zone;const notable=!!def&&distance(def.zone,zone)<=1||progress(team.number,zone)>=.65||state.random()<.17;addEvent(state,{type:"dribble",teamNumber:team.number,zone:zone,notable:notable,description:carrier.name+(def?" beats "+def.name:" moves into space")+" and carries the ball forward.",comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):55},probability:chance,probabilityLabel:"DRIBBLE SUCCESS",actors:def?[carrier,def]:[carrier],dialogue:notable?[dialogue(state,carrier,"dribble",true)]:[]});state.lastPasser=null;if(def&&state.random()<.012+team.strategy.pressing/100*.015)checkFoul(state,team.number,carrier,def,zone);}else{drain(carrier,false,"dribble");addPoints(carrier,-.19);const opp=state.teams[team.number===1?2:1];if(def&&checkFoul(state,team.number,carrier,def,zone))return;if(def){def.match.tackles++;addPoints(def,.18);opp.stats.tackles++;def.zone=zone;}state.lastPasser=null;state.possession=opp.number;state.carrierId=def?def.id:(active(opp)[0]&&active(opp)[0].id);state.ballZone=zone;addEvent(state,{type:"turnover",teamNumber:opp.number,zone:zone,notable:true,description:(def?def.name+" wins the tackle":"The defence recovers")+" after "+carrier.name+"'s dribble. Possession changes.",comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):55},probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,def],dialogue:(def?[dialogue(state,def,"defend",true)]:[]).concat(isagi(carrier)?[dialogue(state,carrier,"dribble",false)]:[])});}}
-function recoverLoose(state,zone,attackingNumber){const options=[];[1,2].forEach(n=>active(state.teams[n]).forEach(p=>{if(p.role==="GK")return;const d=distance(p.zone,zone);if(d<=3){const skill=n===attackingNumber?effective(p,"off"):effective(p,"def");options.push({p:p,s:effective(p,"spd")*.58+skill*.28-d*18+state.random()*8});}}));options.sort((a,b)=>b.s-a.s);if(!options.length)return null;const p=options[0].p;addPoints(p,.08);p.zone=zone;state.lastPasser=null;state.possession=p.teamNumber;state.carrierId=p.id;state.ballZone=zone;addEvent(state,{type:"rebound",teamNumber:p.teamNumber,zone:zone,notable:true,description:p.name+" reaches the rebound first and takes possession.",actors:[p],dialogue:[dialogue(state,p,"defend",true)]});return p;}
-function resolveShot(state,shooter,penalty,ultimate){const team=state.teams[shooter.teamNumber],defteam=state.teams[team.number===1?2:1],gk=keeper(defteam),progression=progress(team.number,shooter.zone),near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p.zone,shooter.zone)),99),pressure=near<=1?8:near===2?3:0,base=penalty?.76:shooter.zone===targetGoal(team.number)?.28:progression>=.82?.19:progression>=.65?.105:.035,shoot=effective(shooter,"sho"),goalkeeperStat=gk?effective(gk,"gk"):45,baseGoalChance=penalty?sigmoid((shoot-goalkeeperStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(goalkeeperStat-75)/26-pressure/36),statMatchupChance=sigmoid((shoot-85)/5+(75-goalkeeperStat)/7+.8),isagiBonus=!penalty&&isagi(shooter)?Math.min(.12,isagiNearDefenders(state,shooter,shooter.zone)*.025):0,metavisionBonus=!penalty&&isagi(shooter)&&near<=2?.015:0,goalChance=ultimate?1:clamp(penalty?baseGoalChance:Math.max(baseGoalChance,statMatchupChance)+isagiBonus+metavisionBonus,0,penalty?.96:.92),saveChance=ultimate?0:penalty?1-goalChance-.045:Math.min(1-goalChance-.015,clamp(.17+sigmoid((goalkeeperStat-shoot)/22)*.54,.16,.68)),roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;addEvent(state,{type:"shot-attempt",teamNumber:team.number,zone:shooter.zone,notable:true,description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+(isagi(shooter)?" uses Direct Shot!":" takes a shot at goal."),comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:[shooter],dialogue:ultimate?[{playerId:shooter.id,text:shooter.name+": "+String.fromCharCode(34)+String(ultimate.dialogue||"Two-Gun Volley!")+String.fromCharCode(34)}]:[isagi(shooter)?{playerId:shooter.id,text:shooter.name+": "+String.fromCharCode(34)+"Direct Shot!"+String.fromCharCode(34)}:dialogue(state,shooter,"shot-attempt",true),...(isagi(shooter)?[dialogue(state,shooter,"shot-attempt",true)]:[])]});drain(shooter,roll<goalChance,"shot");const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;if(roll<goalChance){team.stats.onTarget++;team.stats.goals++;shooter.match.onTarget++;shooter.match.goals++;addPoints(shooter,1.35);if(assister){assister.match.assists++;addPoints(assister,.68);}state.score[team.number]++;addEvent(state,{type:"goal",teamNumber:team.number,zone:shooter.zone,notable:true,description:"GOAL! "+shooter.name+" scores for "+team.name+(assister?" after a pass from "+assister.name:"")+".",comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter],dialogue:ultimate?[]:[dialogue(state,shooter,"shot",true)].concat(assister?isagiChemistryDialogue(shooter,assister,"goal"):[])});if(isagi(shooter)){shooter.match.specials=(shooter.match.specials||0)+1;if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;}state.pending={type:"kickoff",teamNumber:team.number===1?2:1,zone:7};state.lastPasser=null;resetPositions(state);pause(state,"GOAL");return;}if(roll<goalChance+saveChance){team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;state.possession=defteam.number;state.carrierId=gk.id;gk.zone=ownGoal(defteam.number);state.ballZone=gk.zone;}const caught=state.random()<.64;addEvent(state,{type:"save",teamNumber:defteam.number,zone:state.ballZone,notable:true,description:(gk?gk.name:"The goalkeeper")+(caught?" catches ":" parries ")+shooter.name+"'s shot. The sequence stops.",comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter,gk],dialogue:gk?[dialogue(state,gk,"save",true)]:[]});if(!caught)recoverLoose(state,shooter.zone,team.number);state.lastPasser=null;pause(state,caught?"SAVE":"SAVE / REBOUND");return;}addPoints(shooter,-.08);const corner=state.random()<(progression>=.78?.23:.12);addEvent(state,{type:corner?"corner":"goal-kick",teamNumber:corner?team.number:defteam.number,zone:shooter.zone,notable:true,description:shooter.name+(corner?" forces a corner.":" sends the shot off target. Goal kick to "+defteam.name+"."),comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter],dialogue:[dialogue(state,shooter,"shot",false)]});if(corner)team.stats.corners++;state.pending={type:corner?"corner":"goal-kick",teamNumber:corner?team.number:defteam.number,zone:corner?targetGoal(team.number):ownGoal(defteam.number),takerId:null,routine:corner?"cross":"short"};state.possession=state.pending.teamNumber;state.carrierId=null;state.ballZone=state.pending.zone;state.lastPasser=null;pause(state,corner?"CORNER":"GOAL KICK");}
-function chooseShot(state,carrier){const t=state.teams[carrier.teamNumber],pr=progress(t.number,carrier.zone);if(pr<.58)return false;const defenders=opposing(state,t.number).filter(p=>p.role!=="GK"),near=defenders.reduce((v,p)=>Math.min(v,distance(p.zone,carrier.zone)),99),expected=sigmoid(logit(carrier.zone===targetGoal(t.number)?.28:pr>.8?.19:.1)+(effective(carrier,"sho")-75)/30),threshold=clamp(.1+(100-t.strategy.tempo)/100*.1+(100-t.strategy.directness)/100*.08,.06,.3),urge=t.strategy.tempo/100*.08+Math.max(0,effective(carrier,"sho")-75)/100*.08;return expected>threshold+(near<=1?.07:0)||(state.random()<urge&&pr>=.72);}
-function resetPositions(state){[1,2].forEach(n=>{const t=state.teams[n];t.roster.forEach(p=>{const k=Object.keys(t.assignment).find(i=>idOf(t.assignment[i])===idOf(p.id));if(k!=null&&t.slots[Number(k)]){p.role=t.slots[Number(k)].label;p.homeZone=slotZone(n,t.slots[Number(k)]);}p.zone=p.homeZone??ownGoal(n);});const g=keeper(t);if(g){g.role="GK";g.zone=ownGoal(n);g.homeZone=g.zone;}});state.ballZone=7;}
-function kickoff(state,n){state.pending=null;resetPositions(state);const team=state.teams[n],options=active(team).filter(p=>p.role!=="GK").sort((a,b)=>distance(a.zone,7)-distance(b.zone,7)||b.stats.off-a.stats.off),p=options[0]||keeper(team);state.possession=n;state.carrierId=p?p.id:null;state.ballZone=7;if(p)p.zone=7;state.stoppage="";}
-function resolveRestart(state,pending){state.lastPasser=null;const t=state.teams[pending.teamNumber],taker=playerIn(t,pending.takerId)||active(t).slice().sort((a,b)=>b.stats.pas-a.stats.pas)[0];if(!taker)return;state.possession=t.number;state.carrierId=taker.id;state.ballZone=pending.zone;taker.zone=pending.zone;if(pending.type==="penalty"){resolveShot(state,taker,true);return;}if(pending.type==="goal-kick"||pending.routine==="short"||pending.routine==="pass"){resolvePass(state,taker,{setPiece:true,guaranteed:pending.type==="goal-kick"});return;}if(pending.type==="corner"){const receiver=receiverChoice(state,t,taker);if(receiver)receiver.zone=t.number===1?14:5;resolvePass(state,taker,{setPiece:true});return;}resolveShot(state,taker,false);}
+function resolvePass(state,carrier,opts){
+ opts=opts||{};const team=state.teams[carrier.teamNumber],receiver=receiverChoice(state,team,carrier);
+ if(!receiver){moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" moves with the ball.",actors:[carrier]});return;}
+ const metres=distance(carrier,receiver),target=point(receiver),pressure=receiverPressure(state,team.number,receiver),
+  defender=defenderNear(state,team.number,receiver),defDistance=defender?distance(defender,receiver):99;
+ const distancePenalty=Math.max(0,metres-11)*.42,closePressure=pressure*3.6,
+  defensiveMatch=defDistance<16?effective(defender,"def")*.42:16;
+ let chance=sigmoid((effective(carrier,"pas")*.64+effective(receiver,"off")*.18-defensiveMatch+9-distancePenalty-closePressure)/19);
+ if(opts.guaranteed)chance=1;
+ team.stats.attempted++;carrier.match.passesAttempted++;
+ if(state.random()<chance){
+  drain(carrier,true,"pass");addPoints(carrier,.025);team.stats.passes++;carrier.match.passes++;
+  const forward=progress(team.number,receiver)>progress(team.number,carrier);
+  setBall(state,receiver);state.carrierId=receiver.id;state.possession=team.number;state.lastPasser=carrier.id;
+  addEvent(state,{type:opts.setPiece?"set-piece":"pass",teamNumber:team.number,notable:true,
+   description:carrier.name+" completes a "+Math.round(metres)+"m pass to "+receiver.name+(forward?", advancing play.":"."),comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:defender?effective(defender,"def"):60},
+   probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver]});
+  if(!opts.guaranteed&&defDistance<TACKLE_RADIUS_M&&state.random()<.018)checkFoul(state,team.number,receiver,defender,receiver);
+ }else{
+  drain(carrier,false,"pass");addPoints(carrier,-.16);team.stats.turnovers++;
+  const opp=state.teams[team.number===1?2:1],interceptor=defender||active(opp).find(p=>p.role!=="GK");
+  if(interceptor&&defDistance<TACKLE_RADIUS_M&&checkFoul(state,team.number,carrier,interceptor,carrier))return;
+  if(interceptor){interceptor.match.interceptions++;addPoints(interceptor,.15);opp.stats.interceptions++;moveToward(interceptor,target,Math.min(distance(interceptor,target),movementMeters(interceptor)));}
+  state.lastPasser=null;state.possession=opp.number;state.carrierId=interceptor?interceptor.id:(active(opp)[0]&&active(opp)[0].id);
+  if(interceptor)setBall(state,interceptor);else setBall(state,target);
+  addEvent(state,{type:"interception",teamNumber:opp.number,notable:true,
+   description:(interceptor?interceptor.name:"The defence")+" intercepts "+carrier.name+"'s pass.",comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:interceptor?effective(interceptor,"def"):60},
+   probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver,interceptor]});
+ }
+}
+function resolveDribble(state,carrier){
+ const team=state.teams[carrier.teamNumber],before=point(carrier),toward=targetGoal(team.number),width=clamp((team.strategy.width-50)/50,-1,1);
+ const target={x:toward.x,y:clamp(carrier.y+width*(preferredWideLane(carrier)-50)*.24,6,94)};
+ const stride=dribbleMeters(carrier);
+ const desired={x:before.x+(target.x-before.x)*Math.min(1,stride/Math.max(.01,distance(before,target))),y:before.y+(target.y-before.y)*Math.min(1,stride/Math.max(.01,distance(before,target)))};
+ const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M)
+  .sort((a,b)=>distance(a,desired)-distance(b,desired));
+ const def=defenders[0]||null,crowd=defenders.length,score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.3-(def?effective(def,"def")*.56:17)-Math.max(0,crowd-1)*7;
+ const chance=sigmoid((score+14)/18);carrier.match.dribblesAttempted++;
+ if(state.random()<chance){
+  drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);moveToward(carrier,target,stride);setBall(state,carrier);state.lastPasser=null;
+  addEvent(state,{type:"dribble",teamNumber:team.number,notable:true,description:carrier.name+(def?" beats "+def.name:" attacks the space")+" and moves "+Math.round(distance(before,carrier))+"m forward.",
+   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):55},probability:chance,probabilityLabel:"DRIBBLE SUCCESS",actors:def?[carrier,def]:[carrier]});
+  if(def&&state.random()<.018)checkFoul(state,team.number,carrier,def,carrier);
+ }else{
+  drain(carrier,false,"dribble");addPoints(carrier,-.19);
+  const opp=state.teams[team.number===1?2:1],tackler=def||defenderNear(state,team.number,carrier);
+  if(tackler&&distance(tackler,carrier)<=TACKLE_RADIUS_M&&checkFoul(state,team.number,carrier,tackler,carrier))return;
+  if(tackler){tackler.match.tackles++;addPoints(tackler,.18);opp.stats.tackles++;moveToward(tackler,carrier,movementMeters(tackler));}
+  state.lastPasser=null;state.possession=opp.number;state.carrierId=tackler?tackler.id:(active(opp)[0]&&active(opp)[0].id);
+  if(tackler)setBall(state,tackler);
+  addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,description:(tackler?tackler.name:"The defence")+" wins the ball from "+carrier.name+".",
+   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:tackler?effective(tackler,"def"):55},probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,tackler]});
+ }
+}
+function recoverLoose(state,where,attackingNumber){
+ const target=point(where),options=[];[1,2].forEach(n=>active(state.teams[n]).forEach(p=>{
+  if(p.role==="GK")return;const d=distance(p,target);if(d>24)return;const skill=n===attackingNumber?effective(p,"off"):effective(p,"def");
+  options.push({p,value:effective(p,"spd")*.52+skill*.25-d*1.5+state.random()*5});
+ }));
+ options.sort((a,b)=>b.value-a.value);if(!options.length)return null;
+ const p=options[0].p;moveToward(p,target,movementMeters(p));addPoints(p,.08);state.lastPasser=null;state.possession=p.teamNumber;state.carrierId=p.id;setBall(state,p);
+ addEvent(state,{type:"rebound",teamNumber:p.teamNumber,notable:true,description:p.name+" reaches the rebound first.",actors:[p]});return p;
+}
+function resolveShot(state,shooter,penalty,ultimate){
+ const team=state.teams[shooter.teamNumber],defteam=state.teams[team.number===1?2:1],gk=keeper(defteam);
+ const metres=distance(shooter,targetGoal(team.number)),near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p,shooter)),99),
+  pressure=near<4?10:near<TACKLE_RADIUS_M?6:near<11?2:0;
+ const base=penalty?.76:metres<9?.28:metres<17?.19:metres<27?.10:metres<37?.035:.008;
+ const shoot=effective(shooter,"sho"),goalkeeperStat=gk?effective(gk,"gk"):45;
+ const baseGoalChance=penalty?sigmoid((shoot-goalkeeperStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(goalkeeperStat-75)/26-pressure/36);
+ const statMatchupChance=sigmoid((shoot-85)/5+(75-goalkeeperStat)/7+.8);
+ const anglePenalty=penalty?0:Math.abs(shooter.y-50)*.004;
+ const isagiBonus=!penalty&&isagi(shooter)?Math.min(.12,isagiNearDefenders(state,shooter,shooter)*.025):0;
+ const goalChance=ultimate?1:clamp(penalty?baseGoalChance:Math.max(baseGoalChance,Math.min(statMatchupChance,base+.24))+isagiBonus-anglePenalty,0,penalty?.96:.82);
+ const saveChance=ultimate?0:penalty?Math.max(0,1-goalChance-.045):Math.min(1-goalChance-.015,clamp(.17+sigmoid((goalkeeperStat-shoot)/22)*.54,.16,.68));
+ const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
+ addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
+  description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+(isagi(shooter)?" uses Direct Shot!":" takes a shot from "+Math.round(metres)+"m."),
+  comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},
+  probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:[shooter]});
+ drain(shooter,roll<goalChance,"shot");
+ const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
+ if(roll<goalChance){
+  team.stats.onTarget++;team.stats.goals++;shooter.match.onTarget++;shooter.match.goals++;addPoints(shooter,1.35);
+  if(assister){assister.match.assists++;addPoints(assister,.68);}
+  state.score[team.number]++;setBall(state,targetGoal(team.number));
+  addEvent(state,{type:"goal",teamNumber:team.number,notable:true,
+   description:"GOAL! "+shooter.name+" scores for "+team.name+(assister?" assisted by "+assister.name:"")+".",
+   comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},
+   probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
+  if(isagi(shooter)){shooter.match.specials=(shooter.match.specials||0)+1;if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;}
+  state.pending={type:"kickoff",teamNumber:team.number===1?2:1,zone:7,point:{x:50,y:50}};
+  state.lastPasser=null;resetPositions(state);pause(state,"GOAL");return;
+ }
+ if(roll<goalChance+saveChance){
+  team.stats.onTarget++;shooter.match.onTarget++;
+  if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
+  const caught=state.random()<.64;
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The goalkeeper")+(caught?" catches ":" parries ")+shooter.name+"'s shot.",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter,gk]});
+  if(!caught)recoverLoose(state,shooter,team.number);
+  state.lastPasser=null;pause(state,caught?"SAVE":"SAVE / REBOUND");return;
+ }
+ addPoints(shooter,-.08);
+ const corner=state.random()<.16+(metres<18?.08:0);
+ const spot=corner?{x:team.number===1?98:2,y:shooter.y<50?3:97}:ownGoal(defteam.number);
+ if(corner)team.stats.corners++;
+ state.pending={type:corner?"corner":"goal-kick",teamNumber:corner?team.number:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,routine:corner?"cross":"short"};
+ state.possession=state.pending.teamNumber;state.carrierId=null;setBall(state,spot);state.lastPasser=null;
+ addEvent(state,{type:corner?"corner":"goal-kick",teamNumber:state.pending.teamNumber,notable:true,
+  description:shooter.name+(corner?" forces a corner.":" misses the target. Goal kick for "+defteam.name+"."),
+  comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter]});
+ pause(state,corner?"CORNER":"GOAL KICK");
+}
+function chooseShot(state,carrier){
+ const t=state.teams[carrier.teamNumber],metres=distance(carrier,targetGoal(t.number));if(metres>37)return false;
+ const defenders=opposing(state,t.number).filter(p=>p.role!=="GK"),near=defenders.reduce((v,p)=>Math.min(v,distance(p,carrier)),99);
+ const expected=sigmoid(logit(metres<12?.22:metres<22?.12:.04)+(effective(carrier,"sho")-75)/30);
+ const threshold=clamp(.1+(100-t.strategy.tempo)*.001+(100-t.strategy.directness)*.0008,.06,.3),urge=t.strategy.tempo*.0008+Math.max(0,effective(carrier,"sho")-75)*.0008;
+ return expected>threshold+(near<TACKLE_RADIUS_M?.07:0)||(state.random()<urge&&metres<26);
+}
+function resetPositions(state){
+ [1,2].forEach(n=>{const team=state.teams[n];team.roster.forEach(p=>{
+  const k=Object.keys(team.assignment).find(i=>idOf(team.assignment[i])===idOf(p.id));
+  if(k!=null&&team.slots[Number(k)]){const slot=team.slots[Number(k)];p.role=slot.label;const start=slot.label==="GK"?ownGoal(n):formationStart(n,slot);p.homeX=start.x;p.homeY=start.y;setPosition(p,start);}
+ });const g=keeper(team);if(g){g.role="GK";setPosition(g,ownGoal(n));}
+ });setBall(state,{x:50,y:50});
+}
+function kickoff(state,n){
+ state.pending=null;resetPositions(state);
+ const team=state.teams[n],center={x:50,y:50},options=active(team).filter(p=>p.role!=="GK").sort((a,b)=>distance(a,center)-distance(b,center)||effective(b,"off")-effective(a,"off"));
+ const p=options[0]||keeper(team);
+ state.possession=n;state.carrierId=p?p.id:null;setBall(state,center);
+ if(p)setPosition(p,{x:n===1?49.5:50.5,y:50});
+ state.stoppage="";
+}
+function resolveRestart(state,pending){
+ state.lastPasser=null;const t=state.teams[pending.teamNumber],target=pending.point?point(pending.point):legacyPoint(pending.zone);
+ let taker=playerIn(t,pending.takerId);
+ if(!taker||taker.sentOff){taker=pending.type==="goal-kick"?keeper(t):active(t).filter(p=>p.role!=="GK").sort((a,b)=>distance(a,target)-distance(b,target))[0]||keeper(t);}
+ if(!taker)return;state.possession=t.number;state.carrierId=taker.id;setPosition(taker,target);setBall(state,taker);
+ if(pending.type==="penalty"){resolveShot(state,taker,true);return;}
+ if(pending.type==="goal-kick"||pending.routine==="short"||pending.routine==="pass"){resolvePass(state,taker,{setPiece:true,guaranteed:pending.type==="goal-kick"});return;}
+ if(pending.type==="corner"){resolvePass(state,taker,{setPiece:true});return;}
+ resolveShot(state,taker,false);
+}
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;
- state.tick++;
- const phaseEnd=state.phase==="firstHalf"?HALF:FULL;
- const fakeSeconds=10+Math.floor(state.random()*11);
- state.timeSeconds=Math.min(phaseEnd,state.timeSeconds+fakeSeconds);
- [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>=30){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}));
+ const eventsBefore=state.events.length;state.tick++;
+ const limit=state.phase==="firstHalf"?HALF:FULL;
+ state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
+ for(const n of [1,2])for(const p of state.teams[n].roster){if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>=30){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  moveOffBall(state);
- if(state.forced){const f=state.forced;state.forced=null;state.pending=null;resolveRestart(state,f);ensureTickEvent(state,eventsBefore,"A set-piece sequence unfolds.");return;}
+ if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
  const t=state.teams[state.possession],carrier=t&&playerIn(t,state.carrierId);
- if(!t||!carrier){const n=state.possession===1?2:1,p=active(state.teams[n]).find(p=>p.role!=="GK")||keeper(state.teams[n]);state.possession=n;state.carrierId=p&&p.id;if(p)p.zone=state.ballZone;ensureTickEvent(state,eventsBefore,"Possession turns over as both teams reorganize.");return;}
- carrier.zone=state.ballZone;
- if(carrier.role==="GK"||carrier.id===(keeper(t)&&keeper(t).id)){resolvePass(state,carrier,{});ensureTickEvent(state,eventsBefore);return;}
+ if(!t||!carrier||carrier.sentOff){const n=state.possession===1?2:1,p=active(state.teams[n]).find(p=>p.role!=="GK")||keeper(state.teams[n]);state.possession=n;state.carrierId=p?.id;if(p)setBall(state,p);ensureTickEvent(state,eventsBefore);return;}
+ setBall(state,carrier);
+ if(carrier.role==="GK"){resolvePass(state,carrier,{});ensureTickEvent(state,eventsBefore);return;}
  const ultimate=carrier.battleSim?.ultimates?.find(ability=>ability.id==="two-gun-volley");
- if(isagi(carrier)&&carrier.flow>=100&&ultimate&&distance(carrier.zone,targetGoal(t.number))<=2){resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
+ if(isagi(carrier)&&carrier.flow>=100&&ultimate&&distance(carrier,targetGoal(t.number))<=24){resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
  if(chooseShot(state,carrier)){resolveShot(state,carrier,false);ensureTickEvent(state,eventsBefore);return;}
- const pr=progress(t.number,carrier.zone),close=opposing(state,t.number).filter(p=>p.role!=="GK"&&distance(p.zone,carrier.zone)<=1).length,dribble=clamp(.4+(t.strategy.tempo-50)/250+(close>1?-.08:.06),.22,.67);
- if(state.random()<dribble||pr<.25&&close===0)resolveDribble(state,carrier);else resolvePass(state,carrier,{});
+ const near=receiverPressure(state,t.number,carrier),dribble=clamp(.40+(t.strategy.tempo-50)/250+(near>1?-.08:.06),.22,.67);
+ if(state.random()<dribble||(progress(t.number,carrier)<.25&&near===0))resolveDribble(state,carrier);else resolvePass(state,carrier,{});
  ensureTickEvent(state,eventsBefore);
 }
 function playerTick(state){
@@ -489,11 +679,11 @@ function stoppageReady(state=match){return ["stoppage","substitution"].includes(
 function panelSignature(team){return JSON.stringify([team.formation,team.slots,team.assignment,team.roster.filter(p=>p.sentOff).map(p=>p.id),stoppageReady(),stoppageReady()&&match.requiredSub]);}
 function updateTeamPanel(panel,team,state=match){
  const possession=panel.querySelector(".bs-team-possession-label");if(possession)possession.textContent=state.possession===team.number?"IN POSSESSION":"OUT OF POSSESSION";
- if(!panel._playerBindings)panel._playerBindings=Array.from(panel.querySelectorAll("[data-player-id]")).map(marker=>({marker,ring:marker.querySelector(".bs-stamina-ring"),meter:marker.querySelector(".bs-flow-meter"),rating:marker.querySelector(".bs-rating-value"),position:marker.querySelector(".bs-position-rating--position b"),live:marker.querySelector(".bs-position-rating--live b")}));
+ if(!panel._playerBindings)panel._playerBindings=Array.from(panel.querySelectorAll("[data-player-id]")).map(marker=>({marker,ring:marker.querySelector(".bs-stamina-ring"),meter:marker.querySelector(".bs-flow-meter"),rating:marker.querySelector(".bs-rating-value"),live:marker.querySelector(".bs-live-ovr b"),liveWrap:marker.querySelector(".bs-live-ovr")}));
  const roster=new Map(team.roster.map(p=>[p.id,p])),ratings=positionRatings(team);
- panel._playerBindings.forEach(({marker,ring,meter,rating,position,live})=>{
+ panel._playerBindings.forEach(({marker,ring,meter,rating,live,liveWrap})=>{
   const p=roster.get(marker.dataset.playerId);if(!p)return;
-  marker.title=ratingTooltip(team,p,ratings);const ovr=playerOVR(team,p,ratings);if(position&&ovr&&position.textContent!==String(ovr.position))position.textContent=ovr.position;if(live&&ovr&&live.textContent!==String(ovr.live))live.textContent=ovr.live;
+  marker.title=ratingTooltip(team,p,ratings);const ovr=playerOVR(team,p,ratings);if(live&&ovr&&live.textContent!==String(ovr.live))live.textContent=ovr.live;if(liveWrap)liveWrap.style.setProperty("--stamina-hue",String(Math.round(clamp(p.stamina,0,100)*1.2)));
   if(ring){ring.style.setProperty("--stamina",clamp(p.stamina,0,100)+"%");ring.style.setProperty("--stamina-hue",Math.round(p.stamina*1.2));}
   if(meter){meter.style.setProperty("--flow",p.flow+"%");meter.setAttribute("aria-valuenow",Math.round(p.flow));meter.title=p.name+" · FLOW "+Math.round(p.flow)+"%";meter.classList.toggle("is-full",p.flow>=100);}
   if(rating&&rating.textContent!==ratingNow(p).toFixed(2)){rating.textContent=ratingNow(p).toFixed(2);rating.style.color=ratingColor(ratingNow(p));}
@@ -513,37 +703,54 @@ function matchTeamPanel(number,state=displayState()){
  const tactics=make("details","bs-match-tactics");put(tactics,make("summary","","ADJUST TACTICS"));put(tactics,stratControls(number,t,true));put(aside,tactics);const dossier=make("details","bs-team-dossier");dossier.open=window.matchMedia?window.matchMedia("(min-width: 781px)").matches:true;put(dossier,make("summary","","FORMATION & SQUAD"));Array.from(aside.children).slice(3).forEach(child=>put(dossier,child));put(aside,dossier);return aside;
 }
 function renderMiniFormation(number,state=displayState()){
- const team=state.teams[number],pitch=make("div","bs-mini-pitch");pitch.setAttribute("aria-label",(window.BattleCopy?window.BattleCopy("{team} formation",{team:team.name}):team.name+" formation"));put(pitch,make("div","bs-mini-pitch-markings"));appendFormationChemistryLines(pitch,team,number===1,"bs-mini-chemistry-lines",liveFormationPoint);
+ const team=state.teams[number],pitch=make("div","bs-mini-pitch");
+ pitch.setAttribute("aria-label",(window.BattleCopy?window.BattleCopy("{team} formation",{team:team.name}):team.name+" formation"));
+ put(pitch,make("div","bs-mini-pitch-markings"));
+ appendFormationChemistryLines(pitch,team,number===1,"bs-mini-chemistry-lines",liveFormationPoint);
+ const ratings=positionRatings(team);
  Object.keys(team.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{
   const p=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!slot)return;
-  if(!p||(p&&p.sentOff)){
+  if(!p||p.sentOff){
    const req=match.requiredSub;
    if(!(stoppageReady()&&req&&req.teamNumber===number&&String(req.slot)===String(k)))return;
-   const empty=make("div","bs-formation-player bs-formation-player--vacant");positionMarker(empty,slot,number===1,liveFormationPoint);empty.dataset.slot=k;empty.style.setProperty("--bs-team-color",team.color);
-   empty.setAttribute("data-swap-slot",k);empty.setAttribute("data-swap-team",number);empty.title="Drop a reserve here to replace the sent-off player";
-   put(empty,make("strong","bs-formation-player-name","VACANT"));put(empty,make("span","bs-formation-player-meta","DROP RESERVE"));put(pitch,empty);return;
+   const empty=make("div","bs-formation-player bs-formation-player--vacant");
+   positionMarker(empty,slot,number===1,liveFormationPoint);empty.dataset.slot=k;empty.style.setProperty("--bs-team-color",team.color);
+   empty.setAttribute("data-swap-slot",k);empty.setAttribute("data-swap-team",number);
+   put(empty,make("strong","bs-formation-player-name","VACANT"));put(pitch,empty);return;
   }
-  const card=make("div","bs-formation-player");if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);card.title="Drop a reserve here to substitute";}
-  positionMarker(card,slot,number===1,liveFormationPoint);card.dataset.slot=k;card.dataset.playerId=p.id;card.style.setProperty("--bs-team-color",team.color);
-  const avatar=make("div","bs-formation-avatar");portraitWithStamina(avatar,p,40);put(avatar,flowMeter(p.flow,p.name));put(card,make("span","bs-setup-formation-role",slot.label));put(card,avatar);put(card,make("strong","bs-formation-player-name",p.name));put(card,positionOVRMarkup(team,p));const performance=make("span","bs-match-rating");put(performance,make("span","","MATCH RATING"));put(performance,make("strong","bs-rating-value",ratingNow(p).toFixed(2)));put(card,performance);
-  if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",p.sentOff?"RED CARD":"YC "+p.yellows);c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(card,c);}
-  card.title=ratingTooltip(team,p);put(pitch,card);
- });return pitch;
+  const card=make("div","bs-formation-player");
+  if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);card.title="Drop a reserve here to substitute";}
+  positionMarker(card,slot,number===1,liveFormationPoint);
+  card.dataset.slot=k;card.dataset.playerId=p.id;card.style.setProperty("--bs-team-color",team.color);
+  const profile=make("div","bs-mini-player-profile");
+  portraitWithStamina(profile,p,26);
+  const ratingsForPlayer=playerOVR(team,p,ratings);
+  const live=make("span","bs-live-ovr");live.title=ratingTooltip(team,p,ratings);
+  live.style.setProperty("--stamina-hue",String(Math.round(clamp(p.stamina,0,100)*1.2)));
+  put(live,make("span","",window.BattleCopy?window.BattleCopy("LIVE OVR"):"LIVE OVR"));put(live,make("b","",ratingsForPlayer?.live??Math.round(p.stats.ovr)));
+  put(profile,live);
+  put(card,make("span","bs-setup-formation-role",slot.label));
+  put(card,profile);
+  const meter=flowMeter(p.flow,p.name);meter.classList.add("bs-mini-flow-horizontal");put(card,meter);
+  put(card,make("strong","bs-formation-player-name",p.name));
+  if(p.yellows>0)put(card,make("span","bs-player-card-state is-yellow-card","YC "+p.yellows));
+  card.title=ratingTooltip(team,p,ratings);put(pitch,card);
+ });
+ return pitch;
 }
-// Horizontal field: Team 1 attacks right, Team 2 left. These are projections
-// of zones, not invented engine coordinates. Stable ordering separates crowds.
 function projectPitch(state){
- const groups=new Map(),points=new Map();
- [1,2].forEach(n=>active(state.teams[n]).forEach(p=>{const group=groups.get(p.zone)||[];group.push(p);groups.set(p.zone,group);}));
- groups.forEach((players,zone)=>{
-  players.sort((a,b)=>a.teamNumber-b.teamNumber||a.id.localeCompare(b.id));
-  const z=ZONES[zone],cols=Math.min(4,Math.ceil(Math.sqrt(players.length))),rows=Math.ceil(players.length/cols);
-  players.forEach((p,i)=>{
-   const halfX=(cols-1)*2.05,halfY=(rows-1)*3.05,centerX=clamp(8+z.y*16.8,4.5+halfX,95.5-halfX),centerY=clamp(17+z.x*33,7+halfY,93-halfY);
-   const x=centerX+(i%cols-(cols-1)/2)*4.1,y=centerY+(Math.floor(i/cols)-(rows-1)/2)*6.1;
-   points.set(p.teamNumber+":"+p.id,{x:clamp(x,4.5,95.5),y:clamp(y,7,93),p,crowded:players.length>6});
-  });
- });return points;
+ const points=new Map(),placed=[];
+ // Physics coordinates are authoritative; only near-overlapping markers get a
+ // deterministic sub-metre visual separation so no active player disappears.
+ for(const n of [1,2])for(const p of active(state.teams[n])){
+  const q=point(p),key=n+":"+p.id;let x=clamp(q.x,4.5,95.5),y=clamp(q.y,7,93),crowded=false;
+  for(let tries=0;tries<12&&placed.some(a=>Math.hypot((x-a.x)*1.05,(y-a.y)*.68)<1.75);tries++){
+   crowded=true;const theta=((tries*137.5+(Number(p.id)||p.name.length)*13)%360)*Math.PI/180;
+   x=clamp(q.x+Math.cos(theta)*(1.6+tries*.28),4.5,95.5);y=clamp(q.y+Math.sin(theta)*(2.2+tries*.38),7,93);
+  }
+  points.set(key,{x,y,p,crowded});placed.push({x,y});
+ }
+ return points;
 }
 function buildLivePitch(pitch){
  const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 1050 680");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("class","bs-field-lines");svg.setAttribute("aria-hidden","true");
@@ -565,11 +772,9 @@ function renderPitch(state=displayState()){
   marker.classList.toggle("is-carrier",state.possession===p.teamNumber&&state.carrierId===p.id);marker.classList.toggle("is-keeper",p.role==="GK");marker.classList.toggle("is-crowded",crowded);marker.classList.toggle("is-involved",actors.has(key));marker.classList.toggle("is-flowing",p.flow>=100);
   marker.title=p.name+" · "+p.role;marker.setAttribute("aria-label",p.name+" · "+p.role);
  });
- const carrier=points.get(state.possession+":"+state.carrierId),z=ZONES[state.ballZone];
- let target=carrier?{x:carrier.x+1.8,y:carrier.y+2.6}:{x:8+z.y*16.8,y:17+z.x*33};
+ const carrier=points.get(state.possession+":"+state.carrierId);
+ let target={...point(state.ball||state.ballZone)};
  if(event?.type==="goal")target={x:event.teamNumber===1?98:2,y:50};
- // A shot attempt stops at the shooter; its destination is revealed only by
- // the subsequent goal/save/rebound event. Never animate a guessed outcome.
  ui.ball.style.setProperty("--x",clamp(target.x,2,98));ui.ball.style.setProperty("--y",clamp(target.y,4,96));
  if(eventId!==ui.lastEvent){
   const previous=ui.target||target;Object.entries({x1:previous.x,y1:previous.y,x2:target.x,y2:target.y}).forEach(([k,v])=>ui.line.setAttribute(k,v));
@@ -757,7 +962,7 @@ function substitute(team,slot,reserveId){
  const p=playerIn(team,reserveId),out=playerIn(team,team.assignment[String(slot)]);
  if((!fastForwarding&&!stoppageReady())||!p||!out||p.sentOff||isSpecialKeeper(p)||isSpecialKeeper(out)||!team.slots[Number(slot)]||active(team).some(x=>idOf(x.id)===idOf(p.id)))return false;
  if(idOf(match.carrierId)===idOf(out.id)&&match.possession===team.number)match.carrierId=p.id;
- p.zone=out.zone;p.homeZone=out.homeZone;p.role=team.slots[Number(slot)]?team.slots[Number(slot)].label:"CM";
+ setPosition(p,out);p.homeX=out.homeX;p.homeY=out.homeY;p.homeZone=out.homeZone;p.role=team.slots[Number(slot)]?team.slots[Number(slot)].label:"CM";
  p.movementProgress=0;p.stamina=Math.max(p.stamina,92);team.assignment[String(slot)]=p.id;out.role="BENCH";out.homeZone=out.zone;
  if(match.requiredSub&&match.requiredSub.teamNumber===team.number&&String(match.requiredSub.slot)===String(slot))match.requiredSub=null;
  addEvent(match,{type:"substitution",teamNumber:team.number,notable:true,zone:p.zone,description:team.name+" substitute "+p.name+" for "+out.name+".",actors:[p,out],dialogue:[{playerId:p.id,text:p.name+": \"I am ready.\""}]});
