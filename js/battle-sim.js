@@ -548,7 +548,7 @@ function resolveShot(state,shooter,penalty,ultimate){
  }
  const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
  state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
- addEvent(state,{type:"goal-kick",teamNumber:team.number,notable:true,description:shooter.name+" misses. Goal kick for "+defteam.name+".",actors:[shooter]});pause(state,"GOAL KICK");
+ addEvent(state,{type:"goal-kick",teamNumber:defteam.number,notable:true,description:shooter.name+" misses. Goal kick for "+defteam.name+".",actors:[shooter]});pause(state,"GOAL KICK");
 }
 function chooseShot(state,carrier){
  const team=state.teams[carrier.teamNumber],metres=distance(carrier,targetGoal(team.number));

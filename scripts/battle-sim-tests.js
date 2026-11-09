@@ -122,7 +122,7 @@ function runBattleSimTests(){
  }
  // Failed shots have four equally sized outcome bands.
  {
-  const expected=["corner","save","save","goal-kick"];
+  const expected=["corner","save","rebound","goal-kick"];
   for(let i=0;i<4;i++){const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK");bs.setPosition(p,{x:40,y:50});const rolls=[.999999,(i+.5)/4];state.random=()=>rolls.shift()??.5;bs.resolveShot(state,p,false);assert.equal(state.events.at(-1).type,expected[i],"failed shot outcome "+i);if(i===1)assert.equal(state.pending?.type,"goal-kick","clean save restarts with a goal kick");}
  }
  // A substitute holding the ball must hand possession to the incoming player.
