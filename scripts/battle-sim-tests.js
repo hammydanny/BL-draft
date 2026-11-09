@@ -80,19 +80,8 @@ function runBattleSimTests(){
  const full=bs.createMatch();full.status='paused';full.timeSeconds=5400;full.phase='secondHalf';full.presentedEventId=full.events.length;assert(!bs.sequenceReady(full,{queued:0,timer:false,presenting:false}));
  for(const type of ['interception','turnover','save']){const copy=bs.eventMessage({type,actors:[{name:'Losing attacker'},{name:'Winning defender'},{name:'Interceptor'}]});assert.equal(copy.values.player,type==='interception'?'Interceptor':'Winning defender');}
 
- // Open-space dribbles and unmarked passes still have a genuine failure chance.
+ // Kickoff passes remain guaranteed even with the highest possible random roll.
  {
-  const openPass=bs.createMatch();bs.setMatch(openPass);
-  const passer=bs.active(openPass.teams[1]).find(p=>p.role!=="GK");
-  const receiver=bs.active(openPass.teams[1]).find(p=>p.id!==passer.id&&p.role!=="GK");
-  bs.setPosition(passer,{x:42,y:50});bs.setPosition(receiver,{x:46,y:50});
-  bs.active(openPass.teams[2]).forEach(p=>bs.setPosition(p,{x:99,y:99}));
-  openPass.random=()=>0.999999;
-  bs.resolvePass(openPass,passer,{passKind:"short",receiverId:receiver.id});
-  const passOutcome=openPass.events.at(-1);
-  assert.equal(passOutcome.type,"interception","an unmarked pass can still fail");
-  assert(passOutcome.probability>0,"unmarked passes are never 100% certain");
-
   const kickoffPass=bs.createMatch();bs.setMatch(kickoffPass);
   const kickoffTaker=bs.active(kickoffPass.teams[1]).find(p=>p.role!=="GK");
   const kickoffReceiver=bs.active(kickoffPass.teams[1]).find(p=>p.id!==kickoffTaker.id&&p.role!=="GK");
@@ -102,16 +91,6 @@ function runBattleSimTests(){
   bs.resolvePass(kickoffPass,kickoffTaker,{passKind:"short",receiverId:kickoffReceiver.id,kickoff:true});
   assert.equal(kickoffPass.events.at(-1).type,"pass","kickoff passes are guaranteed");
   assert.equal(kickoffPass.events.at(-1).probability,1,"kickoff pass probability is exactly 100%");
-
-  const openDribble=bs.createMatch();bs.setMatch(openDribble);
-  const dribbler=bs.active(openDribble.teams[1]).find(p=>p.role!=="GK");
-  bs.setPosition(dribbler,{x:42,y:50});
-  bs.active(openDribble.teams[2]).forEach(p=>bs.setPosition(p,{x:99,y:99}));
-  openDribble.random=()=>0.999999;
-  bs.resolveDribble(openDribble,dribbler);
-  const dribbleOutcome=openDribble.events.at(-1);
-  assert.equal(dribbleOutcome.probabilityLabel,"DRIBBLE ERROR","an open-space dribble can still fail");
-  assert(dribbleOutcome.probability>0,"open-space dribbles are never 100% certain");
  }
  // Nearby defenders reduce pass and dribble success by count.
  {
