@@ -635,7 +635,7 @@ function runSequence(state){
 }
 function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});return s;}
 
-const INTRO_REVEAL_MS=340;
+const INTRO_REVEAL_MS=760;
 function clearMatchIntroTimer(){if(introTimer!==null){clearTimeout(introTimer);introTimer=null;}}
 function matchIntroStarters(team){
  const starters=Object.keys(team.assignment||{}).sort((a,b)=>Number(a)-Number(b)).map(slot=>{const p=playerIn(team,team.assignment[slot]);return p?{player:p,slot:team.slots[Number(slot)]||BASE_SLOTS[Number(slot)]||{label:""}}:null;}).filter(Boolean);
@@ -690,18 +690,18 @@ function showMatchIntroTeam(number){
  featureRole.id="bs-intro-feature-role";featureOVR.id="bs-intro-feature-ovr";put(meta,featureRole);put(meta,featureOVR);put(copy,meta);put(spotlight,copy);put(composition,spotlight);put(content,composition);
  const progress=byId("bs-intro-progress-fill");if(progress){progress.classList.remove("is-running");progress.style.setProperty("--intro-duration",((starters.length*INTRO_REVEAL_MS+700)/1000)+"s");void progress.offsetWidth;progress.classList.add("is-running");}
  overlay.classList.remove("is-team-changing");void overlay.offsetWidth;overlay.classList.add("is-team-changing");
- let index=0;const reveal=()=>{introTimer=null;if(!match||!byId("bs-broadcast-intro"))return;spotlightMatchIntroPlayer(index,starters);index++;if(index<starters.length)introTimer=setTimeout(reveal,INTRO_REVEAL_MS);else introTimer=setTimeout(()=>{introTimer=null;if(number===1)showMatchIntroTeam(2);else showMatchIntroFinish();},700);};
- introTimer=setTimeout(reveal,160);
+ let index=0;const reveal=()=>{introTimer=null;if(!match||!byId("bs-broadcast-intro"))return;spotlightMatchIntroPlayer(index,starters);index++;if(index<starters.length)introTimer=setTimeout(reveal,INTRO_REVEAL_MS);else introTimer=setTimeout(()=>{introTimer=null;if(number===1)showMatchIntroTeam(2);else showMatchIntroFinish();},1100);};
+ introTimer=setTimeout(reveal,420);
 }
 function showMatchIntroFinish(){
- if(!match)return;clearMatchIntroTimer();const content=byId("bs-intro-content");if(!content)return;
+ if(!match)return;clearMatchIntroTimer();const content=byId("bs-intro-content");if(!content)return;content.replaceChildren();const overlay=byId("bs-broadcast-intro");if(overlay){overlay.classList.add("bs-intro-fulltime");overlay.dataset.team="final";}
  const heading=make("div","bs-intro-finish-heading");put(heading,make("span","bs-kicker","ALL LINE-UPS CONFIRMED"));put(heading,make("h2","","MATCH READY"));put(heading,make("p","","Two teams. One kick-off. Let the match begin."));put(content,heading);
  const showdown=make("div","bs-intro-showdown");
  [1,2].forEach(number=>{const team=match.teams[number],card=make("section","bs-intro-showdown-team");card.style.setProperty("--bs-intro-team-color",team.color);put(card,make("span","bs-kicker","TEAM 0"+number));put(card,make("strong","",team.name));put(card,make("span","bs-intro-showdown-formation",team.formation+" · "+matchIntroStarters(team).length+" STARTERS"));put(showdown,card);});
  const vs=make("span","bs-intro-showdown-vs","VS");showdown.insertBefore(vs,showdown.children[1]);put(content,showdown);
  const kickoff=make("div","bs-intro-kickoff-call");put(kickoff,make("strong","","KICK-OFF"));put(kickoff,make("span","","THE LIVE MATCH STARTS NOW"));put(content,kickoff);
  const progress=byId("bs-intro-progress-fill");if(progress){progress.classList.remove("is-running");progress.style.setProperty("--intro-duration","1.2s");void progress.offsetWidth;progress.classList.add("is-running");}
- introTimer=setTimeout(()=>{introTimer=null;finishMatchIntro();},1200);
+ introTimer=setTimeout(()=>{introTimer=null;finishMatchIntro();},2200);
 }
 function finishMatchIntro(){
  clearMatchIntroTimer();if(!match)return;match.introPending=false;storeActiveMatch();const overlay=byId("bs-broadcast-intro");if(overlay)overlay.remove();renderMatch();

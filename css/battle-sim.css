@@ -443,3 +443,70 @@ body.bs-game-route .bs-live-feed .bs-event-actor{
 @media(max-width:1050px){.bs-intro-composition{grid-template-columns:minmax(170px,.62fr) minmax(250px,1fr)}.bs-intro-spotlight{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:220px}.bs-intro-feature-visual,.bs-intro-feature-image{min-height:220px}.bs-intro-feature-copy{align-content:center;margin:0;padding:20px;background:#081522}}
 @media(max-width:650px){.bs-broadcast-intro{display:block;padding:0}.bs-intro-frame{width:100%;max-height:none;min-height:100dvh;border:0}.bs-intro-topbar{min-height:52px;gap:9px;padding:8px 12px}.bs-intro-network-mark{width:32px;height:32px;flex-basis:32px;font-size:11px}.bs-intro-network strong{font-size:14px}.bs-intro-network span{font-size:8px}.bs-intro-content{padding:12px}.bs-intro-team-heading h2{font-size:34px}.bs-intro-composition{grid-template-columns:minmax(0,1fr);gap:10px}.bs-intro-pitch{height:270px}.bs-intro-lineup-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}.bs-intro-player-row{grid-template-columns:19px 27px minmax(0,1fr) 24px;gap:4px;min-height:29px;padding:3px}.bs-intro-player-name{font-size:10px}.bs-intro-player-role{font-size:8px;min-height:18px}.bs-intro-player-ovr{font-size:11px}.bs-intro-spotlight{grid-column:auto;grid-template-columns:minmax(0,1fr);grid-template-rows:225px auto;min-height:0}.bs-intro-feature-visual,.bs-intro-feature-image{min-height:225px}.bs-intro-feature-copy{margin-top:-22px;padding:10px 12px}.bs-intro-footer{position:sticky;bottom:0;z-index:3;flex-wrap:wrap;padding:10px 12px}.bs-intro-footer-label{flex:1;min-width:0;font-size:8px}.bs-intro-footer .bs-button{min-width:128px;padding:11px 12px}.bs-intro-showdown{gap:8px}.bs-intro-showdown-team{padding:13px 8px;gap:7px}.bs-intro-showdown-team strong{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.bs-intro-live i,.bs-intro-player-row,.bs-intro-team-heading,.bs-intro-composition{animation:none!important}.bs-intro-player-row{opacity:1;transform:none}.bs-intro-progress-fill.is-running{animation:none!important;transform:scaleX(1)}}
+
+/* BATTLE SIM V0.8.5 // slower lineup reveal, no top stripes, viewport-fitted presentation */
+.bs-broadcast-intro{overflow:hidden;padding:0;min-height:0;height:100dvh}
+.bs-broadcast-intro:after,.bs-intro-frame:before{display:none!important}
+.bs-intro-frame{width:100%;height:100dvh;max-height:100dvh;grid-template-rows:52px minmax(0,1fr) auto;border:0}
+.bs-intro-content{min-height:0;overflow:hidden;padding:clamp(10px,1.35vw,18px);scrollbar-width:none}
+.bs-intro-content::-webkit-scrollbar,.bs-broadcast-intro::-webkit-scrollbar{display:none}
+.bs-intro-composition{height:calc(100% - 74px);min-height:0;grid-template-columns:minmax(150px,.65fr) minmax(245px,1fr) minmax(245px,1fr);gap:clamp(8px,1vw,14px)}
+.bs-intro-pitch-panel,.bs-intro-lineup-panel,.bs-intro-spotlight{min-height:0;height:100%}
+.bs-intro-pitch-panel,.bs-intro-lineup-panel{padding:9px}
+.bs-intro-pitch{height:calc(100% - 27px);min-height:0}
+.bs-intro-lineup-list{gap:3px}
+.bs-intro-player-row{min-height:0;height:clamp(25px,4.2vh,36px);gap:5px;padding:2px 5px}
+.bs-intro-player-name{font-size:clamp(10px,.9vw,13px)}
+.bs-intro-spotlight{grid-column:auto;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+.bs-intro-feature-visual{min-height:0;height:100%}
+.bs-intro-feature-image{min-height:0;height:100%;object-fit:contain;object-position:center bottom}
+.bs-intro-feature-copy{margin-top:-28px;padding:10px 12px}
+.bs-intro-footer{min-height:52px;padding:9px 18px}
+.bs-intro-fulltime .bs-intro-content{display:grid;grid-template-rows:auto minmax(0,1fr) auto;align-content:stretch;justify-items:stretch;gap:clamp(10px,2vh,22px);padding:clamp(14px,3vh,32px) clamp(16px,5vw,72px)}
+.bs-intro-fulltime .bs-intro-finish-heading{align-self:center;margin:0;text-align:center}
+.bs-intro-fulltime .bs-intro-finish-heading h2{font-size:clamp(46px,8vw,104px);margin:8px 0}
+.bs-intro-fulltime .bs-intro-showdown{width:100%;height:100%;max-width:1250px;justify-self:center;gap:clamp(14px,4vw,64px)}
+.bs-intro-fulltime .bs-intro-showdown-team{height:100%;min-height:0;align-content:center;justify-items:center;gap:clamp(12px,2.5vh,28px);padding:clamp(16px,4vw,54px)}
+.bs-intro-fulltime .bs-intro-showdown-team strong{font-size:clamp(28px,5.5vw,72px)}
+.bs-intro-fulltime .bs-intro-showdown-formation{font-size:clamp(10px,1.3vw,16px)}
+.bs-intro-fulltime .bs-intro-showdown-vs{font-size:clamp(32px,5vw,66px)}
+.bs-intro-fulltime .bs-intro-kickoff-call{align-self:center;margin:0}
+.bs-intro-fulltime .bs-intro-kickoff-call strong{font-size:clamp(25px,3vw,42px)}
+@media(max-width:1050px){
+ .bs-intro-composition{grid-template-columns:minmax(140px,.58fr) minmax(230px,1fr);grid-template-rows:minmax(0,1fr) minmax(150px,.55fr)}
+ .bs-intro-spotlight{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+ .bs-intro-feature-visual{height:100%;min-height:0}.bs-intro-feature-image{height:100%;min-height:0}
+ .bs-intro-feature-copy{align-content:center;margin:0;padding:16px}
+}
+@media(max-width:650px){
+ .bs-intro-frame{grid-template-rows:44px minmax(0,1fr) auto}
+ .bs-intro-topbar{min-height:44px;padding:5px 10px}.bs-intro-network-mark{width:29px;height:29px;flex-basis:29px}
+ .bs-intro-content{padding:8px}.bs-intro-team-heading{margin-bottom:7px;padding-bottom:7px}
+ .bs-intro-team-heading h2{font-size:clamp(23px,6vw,32px)}.bs-intro-team-heading p{font-size:8px}
+ .bs-intro-formation-tag{padding:5px 8px;font-size:12px}
+ .bs-intro-composition{height:calc(100% - 61px);grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);grid-template-rows:minmax(0,1fr) minmax(90px,.42fr);gap:6px}
+ .bs-intro-pitch-panel,.bs-intro-lineup-panel{padding:6px}.bs-intro-panel-heading{margin-bottom:5px}
+ .bs-intro-panel-heading strong{font-size:10px}.bs-intro-panel-heading span{font-size:7px}
+ .bs-intro-pitch{height:calc(100% - 20px)}.bs-intro-pitch-player{width:20px;height:20px;font-size:8px}
+ .bs-intro-lineup-list{grid-template-columns:minmax(0,1fr);gap:2px}
+ .bs-intro-player-row{grid-template-columns:17px 24px minmax(0,1fr) 20px;height:clamp(19px,3.25vh,27px);gap:3px;padding:1px 2px}
+ .bs-intro-player-number{font-size:8px}.bs-intro-player-role{min-height:15px;font-size:7px}
+ .bs-intro-player-name{font-size:clamp(8px,2.1vw,10px)}.bs-intro-player-ovr{font-size:9px}
+ .bs-intro-spotlight{grid-column:1/-1;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-rows:minmax(0,1fr);min-height:0}
+ .bs-intro-feature-visual{min-height:0}.bs-intro-feature-image{min-height:0;object-fit:contain}
+ .bs-intro-feature-copy{align-content:center;padding:7px;margin:0}.bs-intro-feature-kicker{font-size:8px}
+ .bs-intro-feature-name{font-size:clamp(16px,4.4vw,23px)}
+ .bs-intro-feature-meta span,.bs-intro-feature-meta b{font-size:9px}
+ .bs-intro-footer{min-height:45px;padding:6px 9px;gap:5px}.bs-intro-footer-label{font-size:7px}
+ .bs-intro-footer .bs-button{min-width:105px;padding:8px;font-size:10px}
+ .bs-intro-fulltime .bs-intro-content{grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:16px 10px}
+ .bs-intro-fulltime .bs-intro-finish-heading h2{font-size:clamp(36px,11vw,58px)}
+ .bs-intro-fulltime .bs-intro-finish-heading p{font-size:9px}
+ .bs-intro-fulltime .bs-intro-showdown{gap:7px}
+ .bs-intro-fulltime .bs-intro-showdown-team{padding:12px 5px;gap:12px}
+ .bs-intro-fulltime .bs-intro-showdown-team strong{font-size:clamp(18px,5vw,27px)}
+ .bs-intro-fulltime .bs-intro-showdown-formation{font-size:8px}
+ .bs-intro-fulltime .bs-intro-showdown-vs{font-size:24px}
+ .bs-intro-fulltime .bs-intro-kickoff-call strong{font-size:24px}
+}
+@media(prefers-reduced-motion:reduce){.bs-intro-live i{animation:none}}
