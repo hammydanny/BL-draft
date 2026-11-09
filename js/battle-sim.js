@@ -971,6 +971,11 @@ function renderStoppage(){
  const shouldShow=stoppageReady(),wasHidden=root.hidden;root.hidden=!shouldShow;
  if(!shouldShow){root.classList.remove("bs-stoppage-pop");return;}
  const required=match.requiredSub;
+ // Long-range free kicks are passing situations: do not label their taker SHO
+ // when the engine will distribute rather than attempt an unrealistic shot.
+ const freeKick=match.pending;
+ if(freeKick?.type==="free-kick"&&distance(point(freeKick.point||legacyPoint(freeKick.zone)),targetGoal(freeKick.teamNumber))>38)
+  freeKick.routine="pass";
  const signature=JSON.stringify([match.stoppage,match.pending,required]);if(!wasHidden&&root.dataset.stoppageSignature===signature)return;root.dataset.stoppageSignature=signature;
  byId("bs-stoppage-title").textContent=match.stoppage||"PLAY PAUSED";
  byId("bs-stoppage-title").dataset.battleMessage=match.stoppage||"PLAY PAUSED";byId("bs-stoppage-title").dataset.battleEnglish=match.stoppage||"PLAY PAUSED";
@@ -989,7 +994,7 @@ function renderStoppage(){
   if(pending.type==="penalty")option(routine,"direct","Take the penalty");
   else if(pending.type==="goal-kick"){option(routine,"short","Short distribution");option(routine,"direct","Long distribution");}
   else if(pending.type==="corner"){option(routine,"cross","Cross into the box");option(routine,"short","Short corner");}
-  else{option(routine,"direct","Direct shot");option(routine,"pass","Play a pass");}
+  else{if(distance(point(pending.point||legacyPoint(pending.zone)),targetGoal(pending.teamNumber))<=38)option(routine,"direct","Direct shot");option(routine,"pass","Play a pass");}
   routine.value=pending.routine||"direct";put(routineLabel,routine);put(controls,routineLabel);
  }
  if(required){
