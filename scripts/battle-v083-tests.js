@@ -13,8 +13,8 @@ function runBattleV083Tests(){
   [{type:'free-kick',routine:'direct'},'sho'],
   [{type:'corner',routine:'cross'},'pas'],
   [{type:'corner',routine:'short'},'pas'],
-  [{type:'goal-kick',routine:'direct'},'pas'],
-  [{type:'goal-kick',routine:'short'},'pas'],
+  [{type:'goal-kick',routine:'direct'},'gk'],
+  [{type:'goal-kick',routine:'short'},'gk'],
   [{type:'penalty',routine:'direct'},'sho']
  ])assert.equal(b.setPieceSkill(pending),expected);
  const corner=b.createMatch();b.setMatch(corner);

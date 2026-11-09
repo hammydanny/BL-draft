@@ -279,3 +279,30 @@ body.bs-game-route .bs-live-player.is-flowing::before{z-index:0}
 @media(prefers-reduced-motion:reduce){
  body.bs-game-route .bs-mini-flow-horizontal .bs-flow-meter-fill{transition:none}
 }
+
+/* v0.8.5 — virtual pitch presentation, team chemistry trajectories and Flow */
+body.bs-game-route .bs-ball-trail path{
+  fill:none;stroke:#eaf2ff;stroke-width:.42;stroke-linecap:round;
+  stroke-linejoin:round;stroke-dasharray:1.2 .85;opacity:.98;
+  filter:drop-shadow(0 0 .5px #000b);transition:stroke 160ms linear;
+}
+body.bs-game-route .bs-mini-pitch .bs-live-ovr>span{display:none!important}
+body.bs-game-route .bs-mini-pitch .bs-live-ovr>b{
+  font-size:clamp(15px,2.8cqw,19px);line-height:1;
+}
+body.bs-game-route .bs-live-player.is-flowing{
+  filter:drop-shadow(0 0 5px #44dcff) drop-shadow(0 0 9px #3db7fe);
+}
+body.bs-game-route .bs-live-player.is-flowing::before{
+  content:"";position:absolute;inset:-5px;border:2px solid #54ecff;
+  border-radius:50%;z-index:0;box-shadow:0 0 8px 3px #3ba9ff8b;
+  animation:bs-flow-halo 1.35s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes bs-flow-halo{from{opacity:.55;transform:scale(.94)}to{opacity:1;transform:scale(1.1)}}
+body.bs-game-route .bs-mini-pitch .bs-formation-player--compact{min-height:0}
+body.bs-game-route .bs-source-row [data-team-source]{min-width:185px;flex:1 1 230px}
+body.bs-game-route [data-refresh-saved-teams]{flex:0 0 auto}
+@media(prefers-reduced-motion:reduce){
+ body.bs-game-route .bs-live-player.is-flowing::before{animation:none;opacity:.85}
+}

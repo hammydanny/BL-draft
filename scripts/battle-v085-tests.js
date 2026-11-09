@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {battleContext}=require('./battle-sim-tests.js');
+const {advance}=require('./battle-presentation-tests.js');
+function runBattleV085Tests(){
+ const h=battleContext();h.bs.quiet();const b=h.bs;
+ const teams=h.run(`[1,2].map(n=>bs.normalizeTeam({name:'Part 2 '+n,roster:[blueLockManFor(n),...players.filter(p=>!p.secretCharacter).slice((n-1)*20,(n-1)*20+14)],assignment:{0:9100+n}},n))`);
+ b.setTeams(teams);
+ const m=b.createMatch();b.setMatch(m);
+ const player=b.active(m.teams[1]).find(p=>p.role!=='GK'),original={x:player.x,y:player.y};
+ assert(Math.abs(b.virtualPoint(original).x-original.x*10.5)<.0001,'virtual pitch dimensions');
+ assert(Math.abs(b.renderPoint(original).x-original.x)<.0001,'render transform inverse');
+ assert.equal(m.kickoffPassPending,true);
+ b.playerTick(m);
+ assert(m.events.some(e=>e.type==='pass'),'kickoff uses a real pass');
+ assert.equal(m.possession,1,'kickoff cannot be intercepted');
+ assert(m.events.some(e=>e.passRoute),'pass event contains physical path data');
+ const target=b.active(m.teams[1]).filter(p=>p.id!==player.id&&p.role!=='GK')[0];
+ b.setPosition(player,{x:46,y:50});b.setPosition(target,{x:55,y:50});
+ for(const defender of b.active(m.teams[2]))if(defender.role!=='GK')b.setPosition(defender,{x:90,y:85});
+ m.possession=1;m.carrierId=player.id;b.setBall(m,player);
+ const before=m.teams[1].stats.passes;b.resolvePass(m,player,{passKind:'short',receiverId:target.id,setPiece:true});
+ assert.equal(m.teams[1].stats.passes,before+1,'unguarded pass is guaranteed');
+ assert.equal(m.carrierId,target.id,'unguarded receiver obtains possession');
+ const e=m.events.at(-1);assert.equal(e.passRoute.kind,'short');
+ assert.equal(typeof b.chemistryPassColor(e.passRoute.chemistry),'string');
+ assert(b.pickPassReceiver(m,m.teams[1],player,'short'), 'short-pass receiver selection');
+ assert(b.pickPassReceiver(m,m.teams[1],player,'long'), 'long-pass receiver selection fallback');
+ const k=b.createMatch();b.setMatch(k);
+ const corner={type:'corner',teamNumber:1,point:{x:98,y:4},zone:15,routine:'short'};
+ k.pending=corner;b.stagePendingSetPiece(k);
+ assert(corner.staged,'set piece staged at stoppage, not on next tick');
+ const taker=b.setPieceTaker(k,corner);assert(k.carrierId===taker.id);
+ assert(k.events.at(-1).presentation.players===undefined,'stoppage snapshot updated using full schema');
+ const chosen=corner.shortReceiverId;assert(chosen);
+ assert(b.active(k.teams[1]).filter(p=>p.id!==taker.id&&b.inOpponentBox(1,p)).length>=5,'corner attackers fill box');
+ const shortReceiver=b.active(k.teams[1]).find(p=>String(p.id)===String(chosen));
+ assert(shortReceiver&&b.distance(shortReceiver,taker)<20,'short-corner receiver near taker');
+ const goalKick={type:'goal-kick',teamNumber:1,point:{x:4,y:50},zone:2,routine:'direct',goalKickTaker:'gk'};
+ k.pending=goalKick;b.stagePendingSetPiece(k);assert.equal(b.setPieceTaker(k,goalKick).role,'GK');
+ goalKick.goalKickTaker='outfield';goalKick.takerId=b.active(k.teams[1]).find(p=>p.role==='ST').id;
+ b.stagePendingSetPiece(k);
+ assert.equal(b.setPieceTaker(k,goalKick).role,'ST');
+ const out=b.setPieceTaker(k,goalKick);assert(out.x<=16,'outfield goal-kick taker moves back to own goal before kick');
+ assert.equal(b.setPieceSkill(goalKick),'gk');
+ const free={type:'free-kick',teamNumber:2,point:{x:17,y:50},zone:3,routine:'pass'};
+ k.pending=free;b.stagePendingSetPiece(k);assert.equal(b.setPieceSkill(free),'pas');
+ const shots=[],goals=[],zeroes=[];
+ for(let seed=1;seed<=16;seed++){
+  const s=b.createMatch();s.seed=seed;s.random=b.seeded(seed);b.setMatch(s);
+  let ticks=0;while(s.status!=='finished'&&ticks++<1000)advance(h,s);
+  assert.equal(s.status,'finished','full time seed '+seed);
+  assert(s.events.every(ev=>!ev.presentation||b.validPresentation(ev.presentation,s)),'presentation snapshots seed '+seed);
+  assert(s.events.filter(ev=>ev.passRoute).every(ev=>['long','short'].includes(ev.passRoute.kind)),'valid pass routes');
+  shots.push(s.teams[1].stats.shots+s.teams[2].stats.shots);goals.push(s.score[1]+s.score[2]);
+ }
+ const totalShots=shots.reduce((a,c)=>a+c,0),totalGoals=goals.reduce((a,c)=>a+c,0);
+ assert(totalShots>=125,'hype match engine creates opportunities');assert(totalGoals>=12&&totalGoals<=140,'balanced scoring, got '+totalGoals);assert(goals.filter(g=>g===0).length<=8,'avoid 0-0 regression');
+ const source=fs.readFileSync(path.join(__dirname,'../js/battle-sim.js'),'utf8');
+ assert(source.includes('number===2,"bs-mini-chemistry-lines"'),'team 2 formation vertically flipped with chemistry');
+ assert(!source.slice(source.indexOf('function renderMiniFormation('),source.indexOf('function renderMiniFormation(')+2800).includes('make("span","","LIVE OVR")'),'no LIVE OVR text in tactical markers');
+ assert(source.includes('bs-goal-kick-taker-mode'),'distinct GK/outfield set-piece option');
+ assert(source.includes('0.1,5')||source.includes('.1,5'),'0.1s feed delay minimum');
+ console.log('PASS v0.8.5: '+shots.length+' seeded matches, '+totalShots+' shots, '+totalGoals+' goals; kickoff, spatial pitch, short/long pass and chemistry, pre-staged set pieces, corner and goal-kick takers, team 2 flip');
+}
+if(require.main===module)runBattleV085Tests();module.exports={runBattleV085Tests};

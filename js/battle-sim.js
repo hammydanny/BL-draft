@@ -1,6 +1,7 @@
 /* BATTLE SIM // Generic football simulation and text UI. */
 (function () {
 "use strict";
+const BATTLE_TEAM_LIBRARY_KEY="blBattleSimTeamLibraryV1";
 const AUCTION_STORAGE_KEY="blAuctionSaveV2", STANDALONE_STORAGE_KEY="blStandaloneBuilderV1", LAUNCH_KEY="blBattleSimLaunchV1", RESULT_KEY="blBattleSimLastResultV1", ACTIVE_MATCH_KEY="blBattleSimActiveMatchV1", SETUP_RETURN_KEY="blBattleSimSetupReturnV1";
 const HALF=2700,FULL=5400,TICK_DELAY=45,MAX_SEQUENCE=10000,BLUE="#19a7ff",RED="#ff315d";
 const GRID=[[0,2,1],[3,4,5],[6,7,8],[9,10,11],[12,13,14],[15,17,16]];
@@ -74,7 +75,7 @@ function loadSavedTeams(){
  const out=[];
  let auction=readSharedStorage(AUCTION_STORAGE_KEY);
  try{if(auction&&typeof normalizeAuctionSave==="function")auction=normalizeAuctionSave(auction);}catch(e){auction=null;}
- if(auction&&auction.gameActive===true&&auction.team1&&auction.team2){
+ if(auction&&auction.team1&&auction.team2){
   [1,2].forEach(number=>{
    const raw=auction["team"+number]||{};
    const refs=Array.isArray(raw.players)?raw.players:Array.isArray(raw.playerIds)?raw.playerIds:Array.isArray(raw.roster)?raw.roster:[];
@@ -99,6 +100,16 @@ function loadSavedTeams(){
    out.push({id:team.savedId,name:team.name+" · STANDALONE BUILDER",createdAt:"",team:team});
   }
  }
+ const library=readSharedStorage(BATTLE_TEAM_LIBRARY_KEY);
+ if(Array.isArray(library))library.slice(-20).forEach(item=>{
+  if(!item||typeof item!=="object"||!Array.isArray(item.playerIds))return;
+  const roster=resolveSharedRoster(item.playerIds);if(!roster.length)return;
+  const team=normalizeTeam({name:item.name,color:item.color,formation:item.formation,roster,
+    assignment:item.assignment,strategy:item.strategy,source:"saved",savedId:idOf(item.id)},3);
+  if(team.roster.length!==roster.length)return;
+  team.source="saved";team.savedId=idOf(item.id);
+  out.push({id:team.savedId,name:team.name+" · SAVED SQUAD",createdAt:item.createdAt||"",team});
+ });
  return out;
 }
 function saveTeamToSharedStandalone(team,name){
@@ -124,6 +135,12 @@ function saveTeamToSharedStandalone(team,name){
    poolHidden:!!previous.poolHidden
   };
   localStorage.setItem(STANDALONE_STORAGE_KEY,JSON.stringify(saved));
+  try{
+   const library=readSharedStorage(BATTLE_TEAM_LIBRARY_KEY),list=Array.isArray(library)?library.filter(x=>x&&Array.isArray(x.playerIds)).slice(-19):[];
+   list.push({id:"battle-squad-"+Date.now(),name:saved.name,color:saved.color,playerIds:saved.playerIds,
+    formation:saved.formation,assignment:saved.assignment,strategy:{...team.strategy},createdAt:new Date().toISOString()});
+   localStorage.setItem(BATTLE_TEAM_LIBRARY_KEY,JSON.stringify(list));
+  }catch(e){}
   return true;
  }catch(e){return false;}
 }
@@ -235,9 +252,40 @@ function portraitWithStamina(parent,p,size){
 /* Spatial engine: the old 18 zone IDs are retained ONLY to migrate v0.8.1 saves.
    All live decisions use physical metre distances on a continuous 105m x 68m pitch. */
 const PITCH_LENGTH=105,PITCH_WIDTH=68,RECEIVE_PRESSURE_M=9,TACKLE_RADIUS_M=7;
+const VIRTUAL_PITCH={width:1050,height:680}; // physics-only pixel plane, never rendered
+const LONG_PASS_MIN_M=PITCH_WIDTH*2/3; // minimum ~45.3 metres (2/3 virtual pitch height)
+const SHORT_PASS_MAX_M=36;
+function virtualPoint(p){const v=point(p);return{x:v.x*VIRTUAL_PITCH.width/100,y:v.y*VIRTUAL_PITCH.height/100};}
+function renderPoint(p){const v=virtualPoint(p);return{x:100*v.x/VIRTUAL_PITCH.width,y:100*v.y/VIRTUAL_PITCH.height};}
+function passingChemistry(a,b){
+ const rel=typeof chemistryRelation==="function"?chemistryRelation(a,b):null;
+ return rel&&Number.isFinite(rel.score)?clamp(rel.score,0,100):65;
+}
+function chemistryPassColor(score){
+ return score>=95?"#53f6d1":score>=90?"#57a7ff":score>=82?"#54e78a":score>=70?"#a6dcff":score>=65?"#e7f2f5":"#ff6a7f";
+}
+function choosePassKind(state,team,carrier,opts={}){
+ if(opts.passKind==="short"||opts.passKind==="long")return opts.passKind;
+ const mates=active(team).filter(p=>p.id!==carrier.id&&p.role!=="GK");
+ const far=mates.some(p=>distance(carrier,p)>=LONG_PASS_MIN_M),near=mates.some(p=>distance(carrier,p)<=SHORT_PASS_MAX_M);
+ const wantsLong=far&&state.random()<clamp(.10+(team.strategy.directness||50)*.006,.14,.78);
+ return wantsLong||(!near&&far)?"long":"short";
+}
+function pickPassReceiver(state,team,carrier,kind,opts={}){
+ const mates=active(team).filter(p=>p.id!==carrier.id&&p.role!=="GK");
+ if(opts.setPiece&&opts.receiverId){const special=mates.find(p=>idOf(p.id)===idOf(opts.receiverId));if(special)return special;}
+ const filtered=mates.filter(p=>kind==="long"?distance(carrier,p)>=LONG_PASS_MIN_M:distance(carrier,p)<=SHORT_PASS_MAX_M);
+ const allowed=filtered.length?filtered:mates;
+ if(opts.receiverId){const r=allowed.find(p=>idOf(p.id)===idOf(opts.receiverId));if(r)return r;}
+ if(!allowed.length)return null;
+ const ranked=allowed.map(p=>{const d=distance(carrier,p),chem=passingChemistry(carrier,p),pressure=receiverPressure(state,team.number,p),adv=progress(team.number,p)-progress(team.number,carrier);
+ return{p,value:adv*(6+team.strategy.directness*.08)+chem*.09-pressure*1.9-Math.max(0,d-(kind==="long"?60:18))*.13+state.random()*1.2};}).sort((a,b)=>b.value-a.value);
+ return ranked[0].p;
+}
+
 function legacyPoint(zone){const z=ZONES[zone]||ZONES[7];return{x:8+z.y*16.8,y:17+z.x*33};}
 function point(value){if(value&&typeof value==="object"&&Number.isFinite(value.x)&&Number.isFinite(value.y))return{x:value.x,y:value.y};if(value&&typeof value==="object"&&Number.isFinite(value.zone))return legacyPoint(value.zone);if(Number.isInteger(value)&&ZONES[value])return legacyPoint(value);return{x:50,y:50};}
-function distance(a,b){const x=point(a),y=point(b);return Math.hypot((x.x-y.x)*PITCH_LENGTH/100,(x.y-y.y)*PITCH_WIDTH/100);}
+function distance(a,b){const p=virtualPoint(a),q=virtualPoint(b);return Math.hypot((p.x-q.x)*PITCH_LENGTH/VIRTUAL_PITCH.width,(p.y-q.y)*PITCH_WIDTH/VIRTUAL_PITCH.height);}
 function zoneAt(pos){const a=point(pos);let chosen=7,best=Infinity;for(const key of Object.keys(ZONES)){const d=distance(a,legacyPoint(Number(key)));if(d<best){best=d;chosen=Number(key);}}return chosen;}
 function setPosition(p,pos){const q=point(pos);p.x=clamp(q.x,2,98);p.y=clamp(q.y,5,95);if(p.role==="GK"){p.x=p.teamNumber===1?clamp(p.x,3,16):clamp(p.x,84,97);p.y=clamp(p.y,21,79);}p.zone=zoneAt(p);return p;}
 function setBall(state,pos){const q=point(pos);state.ball={x:clamp(q.x,1,99),y:clamp(q.y,2,98)};state.ballZone=zoneAt(state.ball);}
@@ -275,8 +323,26 @@ function isagiNearDefenders(state,p,where){return opposing(state,p.teamNumber).f
 function isagiChemistryDialogue(actor,partner,event){const striker=isagi(actor)?actor:isagi(partner)?partner:null,other=striker===actor?partner:actor;if(!striker||!other)return[];const lines=striker.battleSim.chemistryDialogue&&striker.battleSim.chemistryDialogue[other.name],text=lines&&lines[event];return text?[{playerId:striker.id,text:striker.name+": "+String.fromCharCode(34)+text+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
 function drain(p,success,action){const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
-function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:(options.dialogue||[]).map(d=>({playerId:idOf(d.playerId),text:String(d.text||"")}))};if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);state.events.push(event);return event;}
-function pause(state,reason){state.status="paused";state.stoppage=reason||"PLAY PAUSED";}
+function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:(options.dialogue||[]).map(d=>({playerId:idOf(d.playerId),text:String(d.text||"")}))};if(options.passRoute){
+  const r=options.passRoute;
+  event.passRoute={kind:r.kind==="long"?"long":"short",from:point(r.from),to:point(r.to),chemistry:clamp(Number(r.chemistry)||65,0,100)};
+ }
+ if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);state.events.push(event);return event;}
+
+function stagePendingSetPiece(state){
+ const pending=state?.pending;
+ if(!pending||!["free-kick","corner","penalty","goal-kick"].includes(pending.type))return;
+ const taker=setPieceTaker(state,pending);if(!taker)return;
+ arrangeSetPiece(state,pending,taker);pending.staged=true;
+ // Update only the stoppage event's presentation. No unrevealed future action
+ // is simulated or shown by choosing a taker/routine.
+ if(!fastForwarding&&state.events.length)state.events[state.events.length-1].presentation=capturePresentation(state);
+}
+function pause(state,reason){
+ state.status="paused";state.stoppage=reason||"PLAY PAUSED";
+ stagePendingSetPiece(state);
+}
+
 function dialogue(state,p,kind,good){
  if(isagi(p)){
   const profile=p.battleSim.dialogue||{},key=kind==="dribble"&&!good?"dribbleFail":kind==="shot"&&!good?"shotMiss":kind==="shot"&&good?"goal":kind==="shot-attempt"?"shotAttempt":kind;
@@ -351,61 +417,63 @@ function checkFoul(state,teamNumber,carrier,defender,where){
  }
  pause(state,state.requiredSub?"RED CARD — SUBSTITUTION REQUIRED":penalty?"PENALTY":"FREE KICK");return true;
 }
-function resolvePass(state,carrier,opts){
- opts=opts||{};const team=state.teams[carrier.teamNumber],receiver=opts.receiverId?playerIn(team,opts.receiverId):receiverChoice(state,team,carrier);
- if(!receiver){moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" moves with the ball.",actors:[carrier]});return;}
- const metres=distance(carrier,receiver),target=point(receiver),pressure=receiverPressure(state,team.number,receiver),
-  defender=defenderNear(state,team.number,receiver),defDistance=defender?distance(defender,receiver):99;
- const distancePenalty=Math.max(0,metres-12)*.40,closePressure=pressure*3.6,
-  defensiveMatch=defDistance<16?effective(defender,"def")*.42:16;
- let chance=sigmoid((effective(carrier,"pas")*.61+effective(receiver,"off")*.23-defensiveMatch+16-distancePenalty-closePressure)/18);
- if(opts.guaranteed)chance=1;
- team.stats.attempted++;carrier.match.passesAttempted++;
+function resolvePass(state,carrier,opts={}){
+ const team=state.teams[carrier.teamNumber],kind=choosePassKind(state,team,carrier,opts);
+ const receiver=pickPassReceiver(state,team,carrier,kind,opts);
+ if(!receiver){moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" carries the ball.",actors:[carrier]});return;}
+ const from=point(carrier),to=point(receiver),metres=distance(carrier,receiver),pressure=receiverPressure(state,team.number,receiver);
+ const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,receiver)<=RECEIVE_PRESSURE_M);
+ const defender=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
+ const chem=passingChemistry(carrier,receiver);
+ const passingStat=opts.goalKick?effective(carrier,"gk"):effective(carrier,"pas");
+ const accuracyPenalty=Math.max(0,metres-(kind==="long"?34:15))*(kind==="long"?.33:.48);
+ let chance=!defenders.length?1:clamp(sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
+   effective(defender,"def")*.46+14-accuracyPenalty-defenders.length*4.4)/18),.07,.95);
+ if(opts.guaranteed||opts.kickoff)chance=1;
+ const route={kind,from,to,chemistry:chem};team.stats.attempted++;carrier.match.passesAttempted++;
  if(state.random()<chance){
-  drain(carrier,true,"pass");addPoints(carrier,.025);team.stats.passes++;carrier.match.passes++;
-  const forward=progress(team.number,receiver)>progress(team.number,carrier);
+  drain(carrier,true,"pass");addPoints(carrier,.035);team.stats.passes++;carrier.match.passes++;
   setBall(state,receiver);state.carrierId=receiver.id;state.possession=team.number;state.lastPasser=carrier.id;
   addEvent(state,{type:opts.setPiece?"set-piece":"pass",teamNumber:team.number,notable:true,
-   description:carrier.name+" completes a "+Math.round(metres)+"m pass to "+receiver.name+(forward?", advancing play.":"."),comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:defender?effective(defender,"def"):60},
-   probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver]});
-  if(!opts.guaranteed&&defDistance<TACKLE_RADIUS_M&&state.random()<.018)checkFoul(state,team.number,receiver,defender,receiver);
+   description:carrier.name+(kind==="long"?" launches a long ball ":" passes ")+Math.round(metres)+"m to "+receiver.name+".",
+   comparison:{attackerLabel:opts.goalKick?"GK":"PAS",attackerValue:passingStat,defenderLabel:"DEF",defenderValue:defender?effective(defender,"def"):60},
+   probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver],passRoute:route});
  }else{
-  drain(carrier,false,"pass");addPoints(carrier,-.16);team.stats.turnovers++;
-  const opp=state.teams[team.number===1?2:1],interceptor=defDistance<17?defender:active(opp).filter(p=>p.role!=="GK").sort((a,b)=>distance(a,receiver)-distance(b,receiver))[0];
-  if(interceptor&&defDistance<TACKLE_RADIUS_M&&checkFoul(state,team.number,carrier,interceptor,carrier))return;
-  if(interceptor){interceptor.match.interceptions++;addPoints(interceptor,.15);opp.stats.interceptions++;moveToward(interceptor,target,movementMeters(interceptor));}
-  state.lastPasser=null;state.possession=opp.number;state.carrierId=interceptor?interceptor.id:(active(opp)[0]&&active(opp)[0].id);
-  if(interceptor)setBall(state,interceptor);else setBall(state,target);
+  drain(carrier,false,"pass");addPoints(carrier,-.12);team.stats.turnovers++;
+  const opp=state.teams[team.number===1?2:1],interceptor=defender||opposing(state,team.number).filter(p=>p.role!=="GK").sort((a,b)=>distance(a,receiver)-distance(b,receiver))[0];
+  if(!interceptor){setBall(state,receiver);return;}
+  moveToward(interceptor,to,movementMeters(interceptor));
+  interceptor.match.interceptions++;addPoints(interceptor,.16);opp.stats.interceptions++;
+  state.lastPasser=null;state.possession=opp.number;state.carrierId=interceptor.id;setBall(state,interceptor);
   addEvent(state,{type:"interception",teamNumber:opp.number,notable:true,
-   description:(interceptor?interceptor.name:"The defence")+" intercepts "+carrier.name+"'s pass.",comparison:{attackerLabel:"PAS",attackerValue:effective(carrier,"pas"),defenderLabel:"DEF",defenderValue:interceptor?effective(interceptor,"def"):60},
-   probability:chance,probabilityLabel:"PASS SUCCESS",actors:[carrier,receiver,interceptor]});
+   description:interceptor.name+" cuts out "+carrier.name+"'s "+kind+" pass.",
+   comparison:{attackerLabel:opts.goalKick?"GK":"PAS",attackerValue:passingStat,defenderLabel:"DEF",defenderValue:effective(interceptor,"def")},
+   probability:1-chance,probabilityLabel:"INTERCEPTION CHANCE",actors:[carrier,interceptor],passRoute:route});
  }
 }
 function resolveDribble(state,carrier){
  const team=state.teams[carrier.teamNumber],before=point(carrier),toward=targetGoal(team.number),width=clamp((team.strategy.width-50)/50,-1,1);
- const target={x:toward.x,y:clamp(carrier.y+width*(preferredWideLane(carrier)-50)*.24,6,94)};
- const stride=dribbleMeters(carrier);
- const desired={x:before.x+(target.x-before.x)*Math.min(1,stride/Math.max(.01,distance(before,target))),y:before.y+(target.y-before.y)*Math.min(1,stride/Math.max(.01,distance(before,target)))};
- const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M)
-  .sort((a,b)=>distance(a,desired)-distance(b,desired));
- const def=defenders[0]||null,crowd=defenders.length,score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.3-(def?effective(def,"def")*.56:17)-Math.max(0,crowd-1)*7;
- const chance=sigmoid((score+14)/18);carrier.match.dribblesAttempted++;
+ const target={x:toward.x,y:clamp(carrier.y+width*(preferredWideLane(carrier)-50)*.24,6,94)},stride=dribbleMeters(carrier);
+ const factor=Math.min(1,stride/Math.max(.01,distance(before,target))),desired={x:before.x+(target.x-before.x)*factor,y:before.y+(target.y-before.y)*factor};
+ const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M);
+ const def=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
+ const score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.30-(def?effective(def,"def")*.54:0)-Math.max(0,defenders.length-1)*8;
+ const chance=!defenders.length?1:clamp(sigmoid((score+13)/18),.08,.95);
+ carrier.match.dribblesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);moveToward(carrier,target,stride);setBall(state,carrier);state.lastPasser=null;
-  addEvent(state,{type:"dribble",teamNumber:team.number,notable:true,description:carrier.name+(def?" beats "+def.name:" attacks the space")+" and moves "+Math.round(distance(before,carrier))+"m forward.",
-   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):55},probability:chance,probabilityLabel:"DRIBBLE SUCCESS",actors:def?[carrier,def]:[carrier]});
-  if(def&&state.random()<.018)checkFoul(state,team.number,carrier,def,carrier);
- }else{
-  drain(carrier,false,"dribble");addPoints(carrier,-.19);
-  const opp=state.teams[team.number===1?2:1],tackler=def;
-  // A defender across the pitch cannot magically win possession.
-  if(!tackler){setBall(state,carrier);state.lastPasser=null;addEvent(state,{type:"dribble",teamNumber:team.number,description:carrier.name+" loses control briefly but recovers the ball.",actors:[carrier]});return;}
-  if(tackler&&distance(tackler,carrier)<=TACKLE_RADIUS_M&&checkFoul(state,team.number,carrier,tackler,carrier))return;
-  if(tackler){tackler.match.tackles++;addPoints(tackler,.18);opp.stats.tackles++;moveToward(tackler,carrier,movementMeters(tackler));}
-  state.lastPasser=null;state.possession=opp.number;state.carrierId=tackler?tackler.id:(active(opp)[0]&&active(opp)[0].id);
-  if(tackler)setBall(state,tackler);
-  addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,description:(tackler?tackler.name:"The defence")+" wins the ball from "+carrier.name+".",
-   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:tackler?effective(tackler,"def"):55},probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,tackler]});
+  addEvent(state,{type:"dribble",teamNumber:team.number,notable:true,description:carrier.name+(def?" beats "+def.name:" accelerates into open space")+" over "+Math.round(distance(before,carrier))+"m.",
+   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):0},
+   probability:chance,probabilityLabel:"DRIBBLE SUCCESS",actors:def?[carrier,def]:[carrier]});
+ }else if(def){
+  drain(carrier,false,"dribble");addPoints(carrier,-.18);
+  const opp=state.teams[team.number===1?2:1];
+  if(distance(def,carrier)<=TACKLE_RADIUS_M&&checkFoul(state,team.number,carrier,def,carrier))return;
+  def.match.tackles++;addPoints(def,.18);opp.stats.tackles++;moveToward(def,carrier,movementMeters(def));
+  state.lastPasser=null;state.possession=opp.number;state.carrierId=def.id;setBall(state,def);
+  addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,description:def.name+" wins the ball from "+carrier.name+".",
+   comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:effective(def,"def")},
+   probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,def]});
  }
 }
 function recoverLoose(state,where,attackingNumber){
@@ -419,63 +487,89 @@ function recoverLoose(state,where,attackingNumber){
 }
 function resolveShot(state,shooter,penalty,ultimate){
  const team=state.teams[shooter.teamNumber],defteam=state.teams[team.number===1?2:1],gk=keeper(defteam);
- const metres=distance(shooter,targetGoal(team.number)),near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p,shooter)),99),
-  pressure=near<4?10:near<TACKLE_RADIUS_M?6:near<11?2:0;
- const base=penalty?.76:metres<9?.28:metres<17?.19:metres<27?.10:metres<37?.035:.008;
- const shoot=effective(shooter,"sho"),goalkeeperStat=gk?effective(gk,"gk"):45;
- const baseGoalChance=penalty?sigmoid((shoot-goalkeeperStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(goalkeeperStat-75)/26-pressure/36);
- const statMatchupChance=sigmoid((shoot-85)/5+(75-goalkeeperStat)/7+.8);
- const anglePenalty=penalty?0:Math.abs(shooter.y-50)*.004;
- const isagiBonus=!penalty&&isagi(shooter)?Math.min(.12,isagiNearDefenders(state,shooter,shooter)*.025):0;
- const goalChance=ultimate?1:clamp(penalty?baseGoalChance:Math.max(baseGoalChance,Math.min(statMatchupChance,base+.24))+isagiBonus-anglePenalty,0,penalty?.96:.82);
- const saveChance=ultimate?0:penalty?Math.max(0,1-goalChance-.045):Math.min(1-goalChance-.015,clamp(.17+sigmoid((goalkeeperStat-shoot)/22)*.54,.16,.68));
+ const metres=distance(shooter,targetGoal(team.number));
+ const near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p,shooter)),99);
+ const pressure=near<4?10:near<TACKLE_RADIUS_M?6:near<11?2:0;
+ const base=penalty?.76:metres<9?.31:metres<17?.23:metres<27?.13:metres<37?.055:.023;
+ const shoot=effective(shooter,"sho"),gkStat=gk?effective(gk,"gk"):45;
+ const mainChance=penalty?sigmoid((shoot-gkStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(gkStat-75)/26-pressure/36);
+ const matchup=sigmoid((shoot-85)/5+(75-gkStat)/7+.8);
+ const angle=penalty?0:Math.abs(shooter.y-50)*.0038;
+ const specialBonus=!penalty&&isagi(shooter)?Math.min(.10,isagiNearDefenders(state,shooter,shooter)*.025):0;
+ const boxBoost=metres<12?.17:metres<21?.12:metres<30?.065:0;
+ const goalChance=ultimate?1:clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle,0,penalty?.96:.82);
  const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
  addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
-  description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+(isagi(shooter)?" uses Direct Shot!":" takes a shot from "+Math.round(metres)+"m."),
-  comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},
+  description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+" shoots from "+Math.round(metres)+"m!",
+  comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
   probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:[shooter]});
  drain(shooter,roll<goalChance,"shot");
  const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
+ state.lastPasser=null;
  if(roll<goalChance){
   team.stats.onTarget++;team.stats.goals++;shooter.match.onTarget++;shooter.match.goals++;addPoints(shooter,1.35);
   if(assister){assister.match.assists++;addPoints(assister,.68);}
   state.score[team.number]++;setBall(state,targetGoal(team.number));
   addEvent(state,{type:"goal",teamNumber:team.number,notable:true,
    description:"GOAL! "+shooter.name+(shooter.flow>=100?" strikes in FLOW":" scores")+" for "+team.name+(assister?" assisted by "+assister.name:"")+".",
-   comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},
+   comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
    probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
   if(isagi(shooter)){shooter.match.specials=(shooter.match.specials||0)+1;if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;}
-  state.pending={type:"kickoff",teamNumber:team.number===1?2:1,zone:7,point:{x:50,y:50}};
-  state.lastPasser=null;resetPositions(state);pause(state,"GOAL");return;
- }
- if(roll<goalChance+saveChance){
-  team.stats.onTarget++;shooter.match.onTarget++;
-  if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
-  const caught=state.random()<.64;
-  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The goalkeeper")+(caught?" catches ":" parries ")+shooter.name+"'s shot.",
-   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter,gk]});
-  if(!caught)recoverLoose(state,shooter,team.number);
-  state.lastPasser=null;pause(state,caught?"SAVE":"SAVE / REBOUND");return;
+  state.pending={type:"kickoff",teamNumber:defteam.number,zone:7,point:{x:50,y:50}};
+  resetPositions(state);pause(state,"GOAL");return;
  }
  addPoints(shooter,-.08);
- const corner=state.random()<.16+(metres<18?.08:0);
- const spot=corner?{x:team.number===1?98:2,y:shooter.y<50?3:97}:ownGoal(defteam.number);
- if(corner)team.stats.corners++;
- state.pending={type:corner?"corner":"goal-kick",teamNumber:corner?team.number:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,routine:corner?"cross":"short"};
- state.possession=state.pending.teamNumber;state.carrierId=null;setBall(state,spot);state.lastPasser=null;
- addEvent(state,{type:corner?"corner":"goal-kick",teamNumber:state.pending.teamNumber,notable:true,
-  description:shooter.name+(corner?" forces a corner.":" misses the target. Goal kick for "+defteam.name+"."),
-  comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:goalkeeperStat},probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter]});
- pause(state,corner?"CORNER":"GOAL KICK");
+ // Failed shots are distributed among similarly meaningful outcomes. More GK
+ // ability increases clean catches and reduces uncontrolled rebounds.
+ const quality=clamp((gkStat-70)/30,-1,1),outcome=state.random();
+ const cornerWeight=penalty?.13:.28-quality*.025;
+ const cleanWeight=(penalty?.37:.33)+quality*.08;
+ const reboundWeight=(penalty?.34:.31)-quality*.055;
+ if(outcome<cornerWeight){
+  const spot={x:team.number===1?98:2,y:shooter.y<50?3:97};
+  team.stats.corners++;
+  state.pending={type:"corner",teamNumber:team.number,zone:zoneAt(spot),point:spot,takerId:null,routine:"cross"};
+  state.possession=team.number;state.carrierId=null;setBall(state,spot);
+  addEvent(state,{type:"corner",teamNumber:team.number,notable:true,description:shooter.name+"'s strike is deflected behind. Corner to "+team.name+".",actors:[shooter,gk]});
+  pause(state,"CORNER");return;
+ }
+ if(outcome<cornerWeight+cleanWeight){
+  team.stats.onTarget++;shooter.match.onTarget++;
+  if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly.",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
+   probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter,gk]});
+  pause(state,"SAVE");return;
+ }
+ if(outcome<cornerWeight+cleanWeight+reboundWeight){
+  team.stats.onTarget++;shooter.match.onTarget++;
+  if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
+  const pointNearGoal={x:team.number===1?91:9,y:clamp(shooter.y+state.random()*10-5,26,74)};
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" parries "+shooter.name+"'s shot into danger!",actors:[shooter,gk]});
+  const recovered=recoverLoose(state,pointNearGoal,team.number);
+  if(!recovered&&gk){state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
+  pause(state,"SAVE / REBOUND");return;
+ }
+ // A narrow miss, including penalties off the woodwork, can stay alive.
+ if(penalty&&state.random()<.6){
+  addEvent(state,{type:"rebound",teamNumber:team.number,notable:true,description:shooter.name+"'s penalty hits the frame! The ball is still live.",actors:[shooter]});
+  recoverLoose(state,{x:team.number===1?90:10,y:clamp(shooter.y+state.random()*9-4.5,30,70)},team.number);
+  pause(state,"REBOUND");return;
+ }
+ const spot=ownGoal(defteam.number);
+ state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
+ state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
+ addEvent(state,{type:"goal-kick",teamNumber:defteam.number,notable:true,description:shooter.name+" misses narrowly. Goal kick for "+defteam.name+".",actors:[shooter]});
+ pause(state,"GOAL KICK");
 }
 function chooseShot(state,carrier){
  const team=state.teams[carrier.teamNumber],metres=distance(carrier,targetGoal(team.number));
- if(metres>36)return false;
+ if(metres>43)return false;
  const pressure=receiverPressure(state,team.number,carrier),shoot=effective(carrier,"sho");
- const urge=(metres<12?.78:metres<21?.55:metres<31?.31:.14)
-   +clamp((shoot-75)*.007,-.12,.14)+(team.strategy.tempo-50)*.0015-pressure*.035+
-   (carrier.flow>=100?.13:0);
- return state.random()<clamp(urge,.07,.88);
+ const urge=(metres<12?.93:metres<21?.83:metres<30?.32:metres<37?.12:.025)
+   +clamp((shoot-75)*.007,-.12,.14)+(team.strategy.tempo-50)*.0015-pressure*.03+
+   (carrier.flow>=100?.14:0);
+ return state.random()<clamp(urge,.1,.92);
 }
 function resetPositions(state){
  [1,2].forEach(n=>{const team=state.teams[n];team.roster.forEach(p=>{
@@ -490,107 +584,92 @@ function kickoff(state,n){
  const p=options[0]||keeper(team);
  state.possession=n;state.carrierId=p?p.id:null;setBall(state,center);
  if(p)setPosition(p,{x:n===1?49.5:50.5,y:50});
- state.stoppage="";
+ state.kickoffPassPending=true;state.stoppage="";
 }
-
 function setPieceUsesPass(pending){
  return pending.type==="goal-kick"||pending.type==="corner"||
  (pending.type==="free-kick"&&pending.routine==="pass");
 }
-function setPieceSkill(pending){return setPieceUsesPass(pending)?"pas":"sho";}
+function setPieceSkill(pending){return pending.type==="goal-kick"?"gk":setPieceUsesPass(pending)?"pas":"sho";}
 function setPieceTaker(state,pending){
- const team=state.teams[pending.teamNumber],skill=setPieceSkill(pending),special=pending.type==="goal-kick";
- const eligible=active(team).filter(p=>special||p.role!=="GK");
- const valid=eligible.find(p=>idOf(p.id)===idOf(pending.takerId));
- return valid||eligible.slice().sort((a,b)=>
-  (special&&b.role==="GK"?180:0)+effective(b,skill)-(special&&a.role==="GK"?180:0)-effective(a,skill))[0]||keeper(team);
+ const team=state.teams[pending.teamNumber],gk=keeper(team);
+ if(pending.type==="goal-kick"&&pending.goalKickTaker!=="outfield")return gk;
+ const eligible=active(team).filter(p=>pending.type!=="goal-kick"||p.role!=="GK");
+ const picked=eligible.find(p=>idOf(p.id)===idOf(pending.takerId));if(picked)return picked;
+ const skill=setPieceSkill(pending);
+ return eligible.slice().sort((a,b)=>effective(b,skill)-effective(a,skill))[0]||gk;
 }
 function arrangeSetPiece(state,pending,taker){
  const team=state.teams[pending.teamNumber],opposition=state.teams[team.number===1?2:1];
  const dir=team.number===1?1:-1,spot=point(pending.point||legacyPoint(pending.zone));
+ const rand=seeded(((state.seed>>>0)^(state.tick*2654435761)^(pending.type==="corner"?0x2468:0x1357))>>>0);
  let restart={...spot};
  if(pending.type==="penalty")restart={x:team.number===1?89.5:10.5,y:50};
  if(pending.type==="goal-kick")restart=ownGoal(team.number);
- if(pending.type==="corner")restart={x:team.number===1?98:2,y:spot.y<50?4:96};
+ if(pending.type==="corner")restart={x:team.number===1?98:2,y:rand()<.5?4:96};
  setPosition(taker,restart);setBall(state,taker);state.carrierId=taker.id;state.possession=team.number;
- const attackers=active(team).filter(p=>p.id!==taker.id&&p.role!=="GK")
-  .sort((a,b)=>effective(b,"off")+effective(b,"sho")*.3-effective(a,"off")-effective(a,"sho")*.3);
+ const attackers=active(team).filter(p=>p.id!==taker.id&&p.role!=="GK").sort((a,b)=>(effective(b,"off")+effective(b,"sho")*.3)-(effective(a,"off")+effective(a,"sho")*.3));
  const defenders=active(opposition).filter(p=>p.role!=="GK").sort((a,b)=>effective(b,"def")-effective(a,"def"));
+ const within=(low,high)=>clamp(low+rand()*(high-low),low,high);
  attackers.forEach((p,i)=>{
   let x=p.homeX,y=p.homeY;
   if(pending.type==="corner"){
-   // More than half the attacking outfield players crash the box.
-   x=i<6?(team.number===1?clamp(89+i*.6,88,96):clamp(11-i*.6,4,12)):(team.number===1?76:24);
-   y=i<6?32+(i%3)*15+(Math.floor(i/3)*4):25+(i%4)*17;
-  }else if(pending.type==="penalty"){
-   x=team.number===1?76+(i%3):24-(i%3);
-   y=30+(i%5)*10;
-  }else if(pending.type==="free-kick"){
-   const box=inOpponentBox(team.number,spot),deep=progress(team.number,spot)>.55;
-   x=team.number===1?clamp(spot.x+(i<5?11:deep?3:-4),4,96):clamp(spot.x-(i<5?11:deep?3:-4),4,96);
-   y=clamp(28+(i%5)*12,7,93);
-   if(box&&i<4)x=team.number===1?91:9;
-  }else if(pending.type==="goal-kick"){
-   x=team.number===1?19+(i%5)*7:81-(i%5)*7;
-   y=16+(i%5)*15;
-  }
+   if(i<7){x=team.number===1?within(87,96):within(4,13);y=within(25,75);}
+   else{x=team.number===1?within(72,82):within(18,28);y=within(12,88);}
+  }else if(pending.type==="penalty"){x=team.number===1?76+(i%3):24-(i%3);y=30+(i%5)*10;}
+  else if(pending.type==="free-kick"){const deep=progress(team.number,spot)>.55;x=team.number===1?clamp(spot.x+(i<5?11:deep?3:-4),4,96):clamp(spot.x-(i<5?11:deep?3:-4),4,96);y=clamp(28+(i%5)*12,7,93);}
+  else if(pending.type==="goal-kick"){x=team.number===1?19+(i%5)*7:81-(i%5)*7;y=16+(i%5)*15;}
   setPosition(p,{x,y});
  });
  defenders.forEach((p,i)=>{
   let x=p.homeX,y=p.homeY;
-  if(pending.type==="corner"){
-   x=team.number===1?92-(i%3)*2:8+(i%3)*2;
-   y=30+(i%5)*11;
-  }else if(pending.type==="penalty"){
-   x=team.number===1?80-(i%3):20+(i%3);
-   y=24+(i%6)*10;
-  }else if(pending.type==="free-kick"){
-   const wall=i<3&&distance(spot,targetGoal(team.number))<36;
-   x=wall?spot.x+dir*8:(team.number===1?85-(i%3)*5:15+(i%3)*5);
-   y=wall?clamp(spot.y+(i-1)*5,7,93):25+(i%5)*13;
-  }else if(pending.type==="goal-kick"){
-   x=team.number===1?62+(i%3)*5:38-(i%3)*5;
-   y=14+(i%6)*13;
-  }
+  if(pending.type==="corner"){x=team.number===1?within(87,96):within(4,13);y=within(25,75);}
+  else if(pending.type==="penalty"){x=team.number===1?80-(i%3):20+(i%3);y=24+(i%6)*10;}
+  else if(pending.type==="free-kick"){const wall=i<3&&distance(spot,targetGoal(team.number))<36;
+   x=wall?spot.x+dir*8:(team.number===1?85-(i%3)*5:15+(i%3)*5);y=wall?clamp(spot.y+(i-1)*5,7,93):25+(i%5)*13;
+  }else if(pending.type==="goal-kick"){x=team.number===1?62+(i%3)*5:38-(i%3)*5;y=14+(i%6)*13;}
   setPosition(p,{x,y});
  });
+ if(pending.type==="corner"&&pending.routine==="short"){
+  const mate=attackers[Math.floor(rand()*attackers.length)],opponent=defenders[Math.floor(rand()*defenders.length)];
+  if(mate){setPosition(mate,{x:clamp(restart.x-dir*10,3,97),y:clamp(restart.y+(restart.y<50?9:-9),7,93)});pending.shortReceiverId=mate.id;}
+  if(opponent)setPosition(opponent,{x:clamp(restart.x-dir*13,3,97),y:clamp(restart.y+(restart.y<50?12:-12),7,93)});
+ }else delete pending.shortReceiverId;
  const gk=keeper(opposition);if(gk)setPosition(gk,ownGoal(opposition.number));
- return {team,taker,spot:restart,attackers,defenders};
+ return{team,taker,spot:restart,attackers,defenders};
 }
 function setPieceReceiver(state,pending,taker){
- const team=state.teams[pending.teamNumber];
- const list=active(team).filter(p=>p.role!=="GK"&&p.id!==taker.id);
+ const team=state.teams[pending.teamNumber],list=active(team).filter(p=>p.role!=="GK"&&p.id!==taker.id);
  if(!list.length)return null;
- if(pending.type==="corner"&&pending.routine!=="short")
-  return list.slice().sort((a,b)=>effective(b,"off")*.6+effective(b,"sho")*.4-effective(a,"off")*.6-effective(a,"sho")*.4)[0];
- if(pending.type==="corner"&&pending.routine==="short")
-  return list.slice().sort((a,b)=>distance(a,taker)-distance(b,taker))[0];
+ if(pending.type==="corner"&&pending.routine==="short")return list.find(p=>idOf(p.id)===idOf(pending.shortReceiverId))||list.slice().sort((a,b)=>distance(a,taker)-distance(b,taker))[0];
+ if(pending.type==="corner")return list.slice().sort((a,b)=>(effective(b,"off")*.6+effective(b,"sho")*.4)-(effective(a,"off")*.6+effective(a,"sho")*.4))[0];
  if(pending.type==="free-kick")return list.slice().sort((a,b)=>progress(team.number,b)-progress(team.number,a))[0];
- if(pending.type==="goal-kick")
-  return list.slice().sort((a,b)=>(progress(team.number,a)-.36)**2-(progress(team.number,b)-.36)**2)[0];
+ if(pending.type==="goal-kick"){
+  if(pending.routine==="direct")return list.slice().sort((a,b)=>distance(b,taker)-distance(a,taker))[0];
+  return list.slice().sort((a,b)=>distance(a,taker)-distance(b,taker))[0];
+ }
  return null;
 }
-
-
 function resolveRestart(state,pending){
- state.lastPasser=null;
- const team=state.teams[pending.teamNumber],taker=setPieceTaker(state,pending);if(!taker)return;
- const staged=arrangeSetPiece(state,pending,taker);
+ state.lastPasser=null;const team=state.teams[pending.teamNumber],taker=setPieceTaker(state,pending);
+ if(!taker)return;
+ // Formations were already staged on stoppage; only stage here for old saves.
+ if(!pending.staged)arrangeSetPiece(state,pending,taker);
+ state.possession=team.number;state.carrierId=taker.id;setBall(state,taker);
  if(pending.type==="penalty"){resolveShot(state,taker,true);return;}
  if(setPieceUsesPass(pending)){
   const receiver=setPieceReceiver(state,pending,taker);
-  resolvePass(state,taker,{setPiece:true,receiverId:receiver?.id||null,guaranteed:pending.type==="goal-kick"&&pending.routine==="short"});
+  resolvePass(state,taker,{setPiece:true,receiverId:receiver?.id,goalKick:pending.type==="goal-kick",
+   passKind:pending.type==="corner"?(pending.routine==="short"?"short":"long"):pending.type==="goal-kick"?(pending.routine==="short"?"short":"long"):"short",
+   guaranteed:pending.type==="goal-kick"&&pending.routine==="short"&&taker.role==="GK"});
   return;
  }
- // Direct free kick is a shot, unless the taker is too far away to score.
- if(pending.type==="free-kick"&&distance(taker,targetGoal(team.number))>38){
+ if(pending.type==="free-kick"&&distance(taker,targetGoal(team.number))>40){
   const receiver=setPieceReceiver(state,{...pending,routine:"pass"},taker);
-  resolvePass(state,taker,{setPiece:true,receiverId:receiver?.id||null});
-  return;
+  resolvePass(state,taker,{setPiece:true,receiverId:receiver?.id,passKind:"short"});return;
  }
  resolveShot(state,taker,false);
 }
-
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
  const eventsBefore=state.events.length;state.tick++;
@@ -603,7 +682,12 @@ function simulateTick(state){
  const t=state.teams[state.possession],carrier=t&&playerIn(t,state.carrierId);
  if(!t||!carrier||carrier.sentOff){const n=state.possession===1?2:1,p=active(state.teams[n]).find(p=>p.role!=="GK")||keeper(state.teams[n]);state.possession=n;state.carrierId=p?.id;if(p)setBall(state,p);ensureTickEvent(state,eventsBefore);return;}
  setBall(state,carrier);
- if(carrier.role==="GK"){resolvePass(state,carrier,{});ensureTickEvent(state,eventsBefore);return;}
+ if(state.kickoffPassPending){
+  state.kickoffPassPending=false;
+  resolvePass(state,carrier,{passKind:"short",kickoff:true,guaranteed:true});
+  ensureTickEvent(state,eventsBefore);return;
+ }
+ if(carrier.role==="GK"){resolvePass(state,carrier,{passKind:"short"});ensureTickEvent(state,eventsBefore);return;}
  const ultimate=carrier.battleSim?.ultimates?.find(ability=>ability.id==="two-gun-volley");
  if(isagi(carrier)&&carrier.flow>=100&&ultimate&&distance(carrier,targetGoal(t.number))<=24){resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
  if(chooseShot(state,carrier)){resolveShot(state,carrier,false);ensureTickEvent(state,eventsBefore);return;}
@@ -801,7 +885,15 @@ function renderMatchChemistry(team){
  if(pair)put(panel,pair);return panel;
 }
 
-function renderTeamCard(number){const t=setupTeams[number-1],card=make("section","bs-team-card");card.style.setProperty("--bs-team-color",t.color);card.setAttribute("data-team-card",number);const head=make("div","bs-team-card-heading");put(head,make("span","bs-kicker","TEAM 0"+number+" // MATCH SQUAD"));put(head,make("h2","",t.name));put(card,head);const identity=make("div","bs-team-identity"),name=make("input","bs-name-input");name.type="text";name.maxLength=32;name.value=t.name;name.setAttribute("data-team-name",number);labelField(identity,"Team name",name);const color=make("input","bs-color-input");color.type="color";color.value=t.color;color.setAttribute("data-team-color",number);labelField(identity,"Colour",color);put(card,identity);const source=make("div","bs-source-row"),sourceSelect=make("select","bs-select");sourceSelect.setAttribute("data-team-source",number);option(sourceSelect,"auction","Use drafted auction team",!launchSnapshot);option(sourceSelect,"saved","Use a saved team",!savedTeams.length);option(sourceSelect,"random","Generate a random team",false);sourceSelect.value=t.source==="auction"&&launchSnapshot?"auction":t.source==="saved"&&savedTeams.some(item=>idOf(item.id)===idOf(t.savedId))?"saved":"random";labelField(source,"Squad source",sourceSelect);const saved=make("select","bs-select");saved.setAttribute("data-saved-team",number);option(saved,"",savedTeams.length?"Choose saved team…":"No saved teams yet",!savedTeams.length);savedTeams.forEach(item=>option(saved,item.id,item.name));saved.value=savedTeams.some(item=>idOf(item.id)===idOf(t.savedId))?idOf(t.savedId):"";const savedLabel=labelField(source,"Saved team",saved);savedLabel.hidden=sourceSelect.value!=="saved";const formationSelect=make("select","bs-select");formationSelect.setAttribute("data-team-formation",number);Object.keys(FORMATIONS).forEach(f=>option(formationSelect,f,f));formationSelect.value=t.formation;labelField(source,"FORMATION",formationSelect);put(card,source);put(card,renderSetupFormation(t));put(card,renderSetupChemistry(t));
+function renderTeamCard(number){const t=setupTeams[number-1],card=make("section","bs-team-card");card.style.setProperty("--bs-team-color",t.color);card.setAttribute("data-team-card",number);const head=make("div","bs-team-card-heading");put(head,make("span","bs-kicker","TEAM 0"+number+" // MATCH SQUAD"));put(head,make("h2","",t.name));put(card,head);const identity=make("div","bs-team-identity"),name=make("input","bs-name-input");name.type="text";name.maxLength=32;name.value=t.name;name.setAttribute("data-team-name",number);labelField(identity,"Team name",name);const color=make("input","bs-color-input");color.type="color";color.value=t.color;color.setAttribute("data-team-color",number);labelField(identity,"Colour",color);put(card,identity);const source=make("div","bs-source-row"),sourceSelect=make("select","bs-select");
+sourceSelect.setAttribute("data-team-source",number);
+option(sourceSelect,"random","Generate random squad");
+if(launchSnapshot)option(sourceSelect,"auction","Use current auction team");
+savedTeams.forEach(item=>option(sourceSelect,"saved:"+idOf(item.id),"LOAD SAVED: "+item.name));
+sourceSelect.value=t.source==="auction"&&launchSnapshot?"auction":t.source==="saved"&&savedTeams.some(item=>idOf(item.id)===idOf(t.savedId))?"saved:"+idOf(t.savedId):"random";
+labelField(source,"CHOOSE SQUAD",sourceSelect);
+const refresh=make("button","bs-mini-button","REFRESH SAVES");refresh.type="button";refresh.setAttribute("data-refresh-saved-teams","");put(source,refresh);
+const formationSelect=make("select","bs-select");formationSelect.setAttribute("data-team-formation",number);Object.keys(FORMATIONS).forEach(f=>option(formationSelect,f,f));formationSelect.value=t.formation;labelField(source,"FORMATION",formationSelect);put(card,source);put(card,renderSetupFormation(t));put(card,renderSetupChemistry(t));
 const lineupHead=make("div","bs-roster-section-heading");put(lineupHead,make("h3","","STARTING LINE-UP"));put(lineupHead,make("span","",Object.keys(t.assignment).length+" STARTERS"));put(card,lineupHead);const starters=make("div","bs-starter-list");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const p=playerIn(t,t.assignment[k]),slot=t.slots[Number(k)];if(!p||!slot)return;const row=make("div","bs-player-row");portrait(row,p,38);const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",slot.label));put(copy,line);put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)+" · SPD "+Math.round(p.stats.spd)));put(row,copy);put(starters,row);});put(card,starters);
 const reservePlayers=t.roster.filter(p=>!Object.values(t.assignment).map(idOf).includes(idOf(p.id))),reserveHead=make("div","bs-roster-section-heading");put(reserveHead,make("h3","","RESERVES"));put(reserveHead,make("span","",reservePlayers.length+" AVAILABLE"));put(card,reserveHead);const reserveList=make("div","bs-reserve-list");if(!reservePlayers.length)put(reserveList,make("p","bs-empty-note","No reserves on this roster."));reservePlayers.forEach(p=>{const row=make("div","bs-reserve-row");portrait(row,p,32);const copy=make("div","bs-player-copy");put(copy,make("strong","",p.name));put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)));put(row,copy);const select=make("select","bs-select bs-swap-select");select.setAttribute("aria-label","Replace starter…");select.setAttribute("data-reserve-slot",number);select.setAttribute("data-reserve-player",p.id);option(select,"","Swap for…",false);Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const starter=playerIn(t,t.assignment[k]);option(select,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+(starter?starter.name:"Empty"));});put(row,select);button(row,"SWAP","bs-mini-button",{"data-swap-player":p.id,"data-swap-team":number});put(reserveList,row);});put(card,reserveList);
 const tactic=make("div","bs-roster-section-heading");put(tactic,make("h3","","TEAM STRATEGY"));put(tactic,make("span","","0–100"));put(card,tactic);put(card,stratControls(number,t,false));const save=make("div","bs-save-team-row"),saveName=make("input","bs-name-input");saveName.type="text";saveName.maxLength=32;saveName.value=t.name;saveName.setAttribute("data-save-name",number);saveName.placeholder="Name this saved team";saveName.setAttribute("aria-label","Name this saved team");put(save,saveName);button(save,"SAVE TO BUILDER","bs-button bs-button--secondary",{"data-save-team":number});put(card,save);return card;}
@@ -812,7 +904,7 @@ function renderInit(){
  const root=byId("bs-team-grid");root.replaceChildren();setupTeams.forEach((t,i)=>put(root,renderTeamCard(i+1)));
  const labels={auction:"AUCTION DRAFT",saved:"SAVED TEAM",random:"RANDOM TEAM"};
  byId("bs-source-status").textContent=setupTeams.map((t,i)=>"TEAM "+(i+1)+" · "+(labels[t.source]||"SAVED TEAM")).join(" // ");
- byId("bs-setup-help").textContent="Saved squads load from the existing auction save and Standalone Team Builder storage. SAVE TO BUILDER updates the standalone builder squad.";window.SiteI18n?.apply(byId("bs-setup-view"));
+ byId("bs-setup-help").textContent="Choose a team directly from CHOOSE SQUAD, including Team Builder, Auction, and saved squads. REFRESH SAVES finds newly saved teams. SAVE TO BUILDER also keeps a named copy for Battle Sim.";window.SiteI18n?.apply(byId("bs-setup-view"));
 }
 // Reuse Builder contribution/chemistry with canonical players. Cache only the
 // stable lineup component; stamina always comes from the revealed player view.
@@ -882,7 +974,7 @@ function renderMiniFormation(number,state=displayState()){
  const team=state.teams[number],pitch=make("div","bs-mini-pitch");
  pitch.setAttribute("aria-label",(window.BattleCopy?window.BattleCopy("{team} formation",{team:team.name}):team.name+" formation"));
  put(pitch,make("div","bs-mini-pitch-markings"));
- appendFormationChemistryLines(pitch,team,number===1,"bs-mini-chemistry-lines",liveFormationPoint);
+ appendFormationChemistryLines(pitch,team,number===2,"bs-mini-chemistry-lines",liveFormationPoint);
  const ratings=positionRatings(team);
  Object.keys(team.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{
   const p=playerIn(team,team.assignment[k]),slot=team.slots[Number(k)];if(!slot)return;
@@ -890,13 +982,13 @@ function renderMiniFormation(number,state=displayState()){
    const req=match.requiredSub;
    if(!(stoppageReady()&&req&&req.teamNumber===number&&String(req.slot)===String(k)))return;
    const empty=make("div","bs-formation-player bs-formation-player--vacant");
-   positionMarker(empty,slot,number===1,liveFormationPoint);empty.dataset.slot=k;empty.style.setProperty("--bs-team-color",team.color);
+   positionMarker(empty,slot,number===2,liveFormationPoint);empty.dataset.slot=k;empty.style.setProperty("--bs-team-color",team.color);
    empty.setAttribute("data-swap-slot",k);empty.setAttribute("data-swap-team",number);
    put(empty,make("strong","bs-formation-player-name","VACANT"));put(pitch,empty);return;
   }
   const card=make("div","bs-formation-player bs-formation-player--compact");
   if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);}
-  positionMarker(card,slot,number===1,liveFormationPoint);
+  positionMarker(card,slot,number===2,liveFormationPoint);
   card.dataset.slot=k;card.dataset.playerId=p.id;card.style.setProperty("--bs-team-color",team.color);
   const face=make("div","bs-mini-card-face"),picture=make("div","bs-mini-card-avatar");
   portraitWithStamina(picture,p,27);put(face,picture);
@@ -904,7 +996,7 @@ function renderMiniFormation(number,state=displayState()){
   const ovr=playerOVR(team,p,ratings);
   live.title=ratingTooltip(team,p,ratings);
   live.style.setProperty("--stamina-hue",String(Math.round(clamp(p.stamina,0,100)*1.2)));
-  put(live,make("span","",window.BattleCopy?window.BattleCopy("LIVE OVR"):"LIVE OVR"));put(live,make("b","",ovr?.live??Math.round(p.stats.ovr)));
+  put(live,make("b","",ovr?.live??Math.round(p.stats.ovr)));
   put(info,role);put(info,live);put(face,info);put(card,face);
   const meter=flowMeter(p.flow,p.name);meter.classList.add("bs-mini-flow-horizontal");put(card,meter);
   // The compact sketch deliberately omits a visible name; full identity is
@@ -917,13 +1009,14 @@ function renderMiniFormation(number,state=displayState()){
 }
 function projectPitch(state){
  const points=new Map(),placed=[];
- // Physics coordinates are authoritative; only near-overlapping markers get a
- // deterministic sub-metre visual separation so no active player disappears.
+ // Independent physics pixel plane -> displayed percentage plane. Visual collision
+ // adjustments NEVER mutate the physical coordinates or action calculations.
  for(const n of [1,2])for(const p of active(state.teams[n])){
-  const q=point(p),key=n+":"+p.id;let x=clamp(q.x,4.5,95.5),y=clamp(q.y,7,93),crowded=false;
+  const q=renderPoint(p),key=n+":"+p.id;let x=clamp(q.x,4.5,95.5),y=clamp(q.y,7,93),crowded=false;
   for(let tries=0;tries<12&&placed.some(a=>Math.hypot((x-a.x)*1.05,(y-a.y)*.68)<1.75);tries++){
    crowded=true;const theta=((tries*137.5+(Number(p.id)||p.name.length)*13)%360)*Math.PI/180;
-   x=clamp(q.x+Math.cos(theta)*(1.6+tries*.28),4.5,95.5);y=clamp(q.y+Math.sin(theta)*(2.2+tries*.38),7,93);
+   x=clamp(q.x+Math.cos(theta)*(1.6+tries*.28),4.5,95.5);
+   y=clamp(q.y+Math.sin(theta)*(2.2+tries*.38),7,93);
   }
   points.set(key,{x,y,p,crowded});placed.push({x,y});
  }
@@ -934,7 +1027,7 @@ function buildLivePitch(pitch){
  const shape=(tag,attrs)=>{const e=document.createElementNS(svg.namespaceURI,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));put(svg,e);};
  shape("rect",{x:26,y:22,width:998,height:636,rx:2});shape("path",{d:"M525 22V658 M26 138H185V542H26 M1024 138H865V542H1024 M26 247H82V433H26 M1024 247H968V433H1024 M26 298H6V382H26 M1024 298H1044V382H1024 M185 271A92 92 0 0 1 185 409 M865 271A92 92 0 0 0 865 409"});shape("circle",{cx:525,cy:340,r:88});
  [[525,340],[130,340],[920,340]].forEach(([cx,cy])=>shape("circle",{cx,cy,r:3,fill:"currentColor"}));put(pitch,svg);
- const trail=document.createElementNS(svg.namespaceURI,"svg");trail.setAttribute("viewBox","0 0 100 100");trail.setAttribute("preserveAspectRatio","none");trail.setAttribute("class","bs-ball-trail");trail.setAttribute("aria-hidden","true");const line=document.createElementNS(svg.namespaceURI,"line");put(trail,line);put(pitch,trail);
+ const trail=document.createElementNS(svg.namespaceURI,"svg");trail.setAttribute("viewBox","0 0 100 100");trail.setAttribute("preserveAspectRatio","none");trail.setAttribute("class","bs-ball-trail");trail.setAttribute("aria-hidden","true");const line=document.createElementNS(svg.namespaceURI,"path");line.setAttribute("fill","none");line.setAttribute("stroke-linecap","round");put(trail,line);put(pitch,trail);
  const ball=make("span","bs-live-ball","⚽");ball.setAttribute("aria-hidden","true");put(pitch,ball);
  pitch._live={markers:new Map(),ball,line,lastEvent:0};
 }
@@ -958,12 +1051,18 @@ function renderPitch(state=displayState()){
   marker.title=p.name+" · "+p.role;marker.setAttribute("aria-label",p.name+" · "+p.role);
  });
  const carrier=points.get(state.possession+":"+state.carrierId);
- let target={...point(state.ball||state.ballZone)};
+ let target=renderPoint(state.ball||state.ballZone);
  if(event?.type==="goal")target={x:event.teamNumber===1?98:2,y:50};
  ui.ball.style.setProperty("--x",clamp(target.x,2,98));ui.ball.style.setProperty("--y",clamp(target.y,4,96));
  if(eventId!==ui.lastEvent){
-  const previous=ui.target||target;Object.entries({x1:previous.x,y1:previous.y,x2:target.x,y2:target.y}).forEach(([k,v])=>ui.line.setAttribute(k,v));
-  pitch.dataset.action=event?.type||"kickoff";ui.line.style.opacity=event&&["pass","set-piece","goal","save","interception","turnover","rebound"].includes(event.type)?"1":"0";
+  const route=event?.passRoute;
+  if(route&&["pass","set-piece","interception"].includes(event.type)){
+   const a=renderPoint(route.from),b=renderPoint(route.to),dx=b.x-a.x,dy=b.y-a.y,span=Math.max(1,Math.hypot(dx,dy));
+   const curve=Math.min(20,span*.22),middle={x:(a.x+b.x)/2-dy/span*curve,y:(a.y+b.y)/2+dx/span*curve};
+   const path=route.kind==="long"?["M",a.x,a.y,"Q",middle.x,middle.y,b.x,b.y].join(" "):["M",a.x,a.y,"L",b.x,b.y].join(" ");
+   ui.line.setAttribute("d",path);ui.line.style.stroke=chemistryPassColor(route.chemistry);ui.line.style.opacity="1";
+  }else ui.line.style.opacity="0";
+  pitch.dataset.action=event?.type||"kickoff";
   ui.target=target;ui.lastEvent=eventId;
  }
  const possession=byId("bs-possession-status");if(possession)possession.textContent="POSSESSION: "+state.teams[state.possession].name;
@@ -1048,7 +1147,7 @@ function renderStoppage(){
  // Long-range free kicks are passing situations: do not label their taker SHO
  // when the engine will distribute rather than attempt an unrealistic shot.
  const freeKick=match.pending;
- if(freeKick?.type==="free-kick"&&distance(point(freeKick.point||legacyPoint(freeKick.zone)),targetGoal(freeKick.teamNumber))>38)
+ if(freeKick?.type==="free-kick"&&distance(point(freeKick.point||legacyPoint(freeKick.zone)),targetGoal(freeKick.teamNumber))>40)
   freeKick.routine="pass";
  const signature=JSON.stringify([match.stoppage,match.pending,required]);if(!wasHidden&&root.dataset.stoppageSignature===signature)return;root.dataset.stoppageSignature=signature;
  byId("bs-stoppage-title").textContent=match.stoppage||"PLAY PAUSED";
@@ -1056,19 +1155,19 @@ function renderStoppage(){
  byId("bs-stoppage-description").textContent=required?"A player has been sent off. Select a replacement before proceeding.":match.stoppage==="HALF TIME"?"Half-time. Adjust tactics or make substitutions before the second half.":match.stoppage==="GOAL"?"Goal confirmed. Proceed to the restart.":match.stoppage==="SAVE"?"The goalkeeper has possession. Proceed to the next sequence.":"Play is paused. Make substitutions or adjust tactics before proceeding.";
  const controls=byId("bs-set-piece-controls");controls.replaceChildren();const pending=match.pending;
  if(pending&&["penalty","free-kick","corner","goal-kick"].includes(pending.type)){
-  const team=match.teams[pending.teamNumber],takerLabel=make("label","bs-field");put(takerLabel,make("span","bs-field-label","Set-piece taker"));
+  const team=match.teams[pending.teamNumber];if(pending.type==="goal-kick"){const modeLabel=make("label","bs-field");put(modeLabel,make("span","bs-field-label","Goal kick taker"));const mode=make("select","bs-select");mode.id="bs-goal-kick-taker-mode";option(mode,"gk","Goalkeeper (default)");option(mode,"outfield","Choose an outfield player");mode.value=pending.goalKickTaker==="outfield"?"outfield":"gk";put(modeLabel,mode);put(controls,modeLabel);}const takerLabel=make("label","bs-field");put(takerLabel,make("span","bs-field-label","Set-piece taker"));
   const taker=make("select","bs-select");taker.id="bs-set-piece-taker";
   const skill=setPieceSkill(pending),isGoalKick=pending.type==="goal-kick";
-  active(team).filter(p=>isGoalKick||p.role!=="GK")
-   .slice().sort((a,b)=>((isGoalKick&&b.role==="GK")?150:0)+b.stats[skill]-((isGoalKick&&a.role==="GK")?150:0)-a.stats[skill])
+  active(team).filter(p=>isGoalKick?(pending.goalKickTaker==="outfield"?p.role!=="GK":p.role==="GK"):p.role!=="GK")
+   .slice().sort((a,b)=>effective(b,skill)-effective(a,skill))
    .forEach(p=>option(taker,p.id,p.name+" · "+skill.toUpperCase()+" "+Math.round(effective(p,skill))));
-  if(pending.takerId!=null)taker.value=idOf(pending.takerId);put(takerLabel,taker);put(controls,takerLabel);
+  const selected=setPieceTaker(match,pending);if(selected)taker.value=idOf(selected.id);put(takerLabel,taker);put(controls,takerLabel);
   const routineLabel=make("label","bs-field");put(routineLabel,make("span","bs-field-label","Routine"));
   const routine=make("select","bs-select");routine.id="bs-set-piece-routine";
   if(pending.type==="penalty")option(routine,"direct","Take the penalty");
   else if(pending.type==="goal-kick"){option(routine,"short","Short distribution");option(routine,"direct","Long distribution");}
   else if(pending.type==="corner"){option(routine,"cross","Cross into the box");option(routine,"short","Short corner");}
-  else{if(distance(point(pending.point||legacyPoint(pending.zone)),targetGoal(pending.teamNumber))<=38)option(routine,"direct","Direct shot");option(routine,"pass","Play a pass");}
+  else{if(distance(point(pending.point||legacyPoint(pending.zone)),targetGoal(pending.teamNumber))<=40)option(routine,"direct","Direct shot");option(routine,"pass","Play a pass");}
   routine.value=pending.routine||"direct";put(routineLabel,routine);put(controls,routineLabel);
  }
  if(required){
@@ -1219,7 +1318,7 @@ function handleDragEnd(){
 }
 function handleClick(event){
  const b=event.target.closest("button");if(!b)return;
- if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
+ if(b.hasAttribute("data-refresh-saved-teams")){savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=savedTeams.length?"Saved teams refreshed. Select a squad from CHOOSE SQUAD.":"No saved squads found yet. Save one in Team Builder first.";}else if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
  else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
  else if(b.id==="bs-return-setup"||b.id==="bs-return-setup-results"){
   if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({teams:setupTeams.map(serializeTeam)}));}catch(e){}}
@@ -1229,8 +1328,23 @@ function handleClick(event){
  else if(b.hasAttribute("data-swap-player")){const n=Number(b.getAttribute("data-swap-team")),card=b.closest("[data-team-card]"),sel=card&&card.querySelector('[data-reserve-player="'+b.getAttribute("data-swap-player")+'"]');if(!sel||sel.value===""){byId("bs-setup-help").textContent="Choose which starter this reserve should replace, then press SWAP.";return;}if(replaceSetupStarter(setupTeams[n-1],sel.value,b.getAttribute("data-swap-player")))renderInit();}
  else if(b.hasAttribute("data-save-team")){const n=Number(b.getAttribute("data-save-team")),card=b.closest("[data-team-card]"),input=card&&card.querySelector('[data-save-name="'+n+'"]'),t=setupTeams[n-1],oldName=t.name,name=String(input&&input.value||t.name).trim().slice(0,32);if(!name){byId("bs-setup-help").textContent="Enter a name before saving this team.";return;}t.name=name;if(!saveTeamToSharedStandalone(t,name)){t.name=oldName;byId("bs-setup-help").textContent="Unable to save this squad. Check browser storage and player availability.";return;}t.savedId="standalone-global-xi";t.source="saved";savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent="Squad saved to Team Builder."; }else if(b.hasAttribute("data-sub-in")){const n=Number(b.getAttribute("data-sub-team")),rid=b.getAttribute("data-sub-in"),team=match&&match.teams[n],row=b.closest(".bs-bench-player"),sel=row&&row.querySelector("[data-sub-target-for]");if(!team||match.status!=="paused")return;let slot=sel&&sel.value;if(slot==="")slot=Object.keys(team.assignment).find(k=>{const p=playerIn(team,team.assignment[k]);return p&&p.role!=="GK";});if(slot!=null&&substitute(team,slot,rid))renderMatch();}
 }
-function handleChange(event){const t=event.target;if(t.id==="bs-required-sub-player"&&match?.requiredSub){match.requiredSub.reserveId=t.value;storeActiveMatch();return;}if(match?.pending&&(t.id==="bs-set-piece-taker"||t.id==="bs-set-piece-routine")){match.pending[t.id==="bs-set-piece-taker"?"takerId":"routine"]=t.value;storeActiveMatch();if(t.id==="bs-set-piece-routine")renderStoppage();return;}if(t.matches("[data-team-formation]")){const n=Number(t.getAttribute("data-team-formation")),team=setupTeams[n-1];if(FORMATIONS[t.value]){setupTeams[n-1]=normalizeTeam(Object.assign({},team,{formation:t.value,slots:formationSlots(t.value)}),n);renderInit();}return;}if(t.matches("[data-team-source]")){const n=Number(t.getAttribute("data-team-source")),source=t.value;if(source==="auction"&&launchSnapshot){setupTeams[n-1]=snapshotTeam(n===1?launchSnapshot.team1:launchSnapshot.team2,n,launchSnapshot);}else if(source==="random")setupTeams[n-1]=randomTeam(n,setupTeams[n-1]);else if(source==="saved"&&savedTeams.length){const current=setupTeams[n-1],saved=savedTeams.find(item=>idOf(item.id)===idOf(current.savedId))||savedTeams[0];setupTeams[n-1]=normalizeTeam(saved.team,n);setupTeams[n-1].source="saved";setupTeams[n-1].savedId=idOf(saved.id);}renderInit();}else if(t.matches("[data-saved-team]")){const n=Number(t.getAttribute("data-saved-team")),saved=savedTeams.find(x=>idOf(x.id)===idOf(t.value));if(saved){setupTeams[n-1]=normalizeTeam(saved.team,n);setupTeams[n-1].source="saved";setupTeams[n-1].savedId=saved.id;renderInit();}}else if(t.matches("[data-archive-filter]")||t.id==="bs-archive-filter")renderArchive();else if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;if(match)storeActiveMatch();}}
-function handleInput(event){const t=event.target;if(t&&t.id==="bs-feed-delay"){const oldDelay=feedDelayMs;suspendFeed();feedDelayMs=clamp(Number(t.value)||1,0.25,5)*1000;if(feedRemaining!==null)feedRemaining=feedRemaining/oldDelay*feedDelayMs;const out=byId("bs-feed-delay-value");if(out)out.textContent=feedDelayLabel(feedDelayMs);scheduleFeedEvent();return;}if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
+function handleChange(event){const t=event.target;if(t.id==="bs-required-sub-player"&&match?.requiredSub){match.requiredSub.reserveId=t.value;storeActiveMatch();return;}if(match?.pending&&["bs-set-piece-taker","bs-set-piece-routine","bs-goal-kick-taker-mode"].includes(t.id)){
+ const pending=match.pending;
+ if(t.id==="bs-goal-kick-taker-mode"){pending.goalKickTaker=t.value==="outfield"?"outfield":"gk";pending.takerId=null;}
+ else if(t.id==="bs-set-piece-taker")pending.takerId=t.value;
+ else pending.routine=t.value;
+ stagePendingSetPiece(match);storeActiveMatch();renderMatch();return;}if(t.matches("[data-team-formation]")){const n=Number(t.getAttribute("data-team-formation")),team=setupTeams[n-1];if(FORMATIONS[t.value]){setupTeams[n-1]=normalizeTeam(Object.assign({},team,{formation:t.value,slots:formationSlots(t.value)}),n);renderInit();}return;}if(t.matches("[data-team-source]")){
+ const n=Number(t.getAttribute("data-team-source")),source=t.value;
+ if(source==="auction"&&launchSnapshot)setupTeams[n-1]=snapshotTeam(n===1?launchSnapshot.team1:launchSnapshot.team2,n,launchSnapshot);
+ else if(source==="random")setupTeams[n-1]=randomTeam(n,setupTeams[n-1]);
+ else if(source.startsWith("saved:")){
+  savedTeams=loadSavedTeams();
+  const chosen=savedTeams.find(item=>idOf(item.id)===source.slice(6));
+  if(chosen){setupTeams[n-1]=normalizeTeam(chosen.team,n);setupTeams[n-1].source="saved";setupTeams[n-1].savedId=idOf(chosen.id);}
+ }
+ renderInit();
+}else if(t.matches("[data-archive-filter]")||t.id==="bs-archive-filter")renderArchive();else if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;if(match)storeActiveMatch();}}
+function handleInput(event){const t=event.target;if(t&&t.id==="bs-feed-delay"){const oldDelay=feedDelayMs;suspendFeed();feedDelayMs=clamp(Number(t.value)||1,.1,5)*1000;if(feedRemaining!==null)feedRemaining=feedRemaining/oldDelay*feedDelayMs;const out=byId("bs-feed-delay-value");if(out)out.textContent=feedDelayLabel(feedDelayMs);scheduleFeedEvent();return;}if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
 function init(){
  if(initialized||!byId("battle-sim-screen"))return;initialized=true;savedTeams=loadSavedTeams();
  const bsEarlyAccessStatus=byId("battle-sim-screen")?.querySelector(".page-context-status");
