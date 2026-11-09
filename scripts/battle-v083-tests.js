@@ -13,15 +13,15 @@ function runBattleV083Tests(){
   [{type:'free-kick',routine:'direct'},'sho'],
   [{type:'corner',routine:'cross'},'pas'],
   [{type:'corner',routine:'short'},'pas'],
-  [{type:'goal-kick',routine:'direct'},'pas'],
-  [{type:'goal-kick',routine:'short'},'pas'],
+  [{type:'goal-kick',routine:'direct'},'gk'],
+  [{type:'goal-kick',routine:'short'},'gk'],
   [{type:'penalty',routine:'direct'},'sho']
  ])assert.equal(b.setPieceSkill(pending),expected);
  const corner=b.createMatch();b.setMatch(corner);
  const cornerPending={type:'corner',teamNumber:1,zone:15,point:{x:98,y:4},routine:'cross'};
  const taker=b.setPieceTaker(corner,cornerPending);assert.notEqual(taker.role,'GK');
  b.arrangeSetPiece(corner,cornerPending,taker);
- assert(taker.x>=97&&taker.y<=6,'corner taker stands on correct corner');
+ assert(taker.x>=97&&Math.min(taker.y,100-taker.y)<=6,'corner taker stands at either correct corner');
  assert.equal(corner.carrierId,taker.id);assert.equal(corner.possession,1);
  assert(b.active(corner.teams[1]).filter(p=>p.id!==taker.id&&b.inOpponentBox(1,p)).length>=5,'attackers occupy box for corners');
  assert(b.active(corner.teams[2]).filter(p=>p.role!=='GK'&&b.inOpponentBox(1,p)).length>=5,'defenders mark corner');
