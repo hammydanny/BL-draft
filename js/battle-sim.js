@@ -427,10 +427,9 @@ function resolvePass(state,carrier,opts={}){
  const chem=passingChemistry(carrier,receiver);
  const passingStat=opts.goalKick?effective(carrier,"gk"):effective(carrier,"pas");
  const accuracyPenalty=Math.max(0,metres-(kind==="long"?34:15))*(kind==="long"?.33:.48);
- const defenderSkill=defender?effective(defender,"def"):60;
- let chance=clamp(sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
-   defenderSkill*.46+14-accuracyPenalty-defenders.length*4.4)/18),.07,.95);
- if(opts.kickoff)chance=Math.max(chance,.90);
+ const defenderSkill=defender?effective(defender,"def"):0;
+ const chance=opts.kickoff?1:sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
+   defenderSkill*.46+14-accuracyPenalty-defenders.length*4.4)/18);
  const route={kind,from,to,chemistry:chem};team.stats.attempted++;carrier.match.passesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"pass");addPoints(carrier,.035);team.stats.passes++;carrier.match.passes++;
@@ -459,7 +458,7 @@ function resolveDribble(state,carrier){
  const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,desired)<=TACKLE_RADIUS_M);
  const def=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
  const score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.30-(def?effective(def,"def")*.54:0)-Math.max(0,defenders.length-1)*8;
- const chance=clamp(sigmoid((score+13)/18),.08,.95);
+ const chance=sigmoid((score+13)/18);
  carrier.match.dribblesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);moveToward(carrier,target,stride);setBall(state,carrier);state.lastPasser=null;
@@ -504,10 +503,8 @@ function resolveShot(state,shooter,penalty,ultimate){
  const angle=penalty?0:Math.abs(shooter.y-50)*.0038;
  const specialBonus=!penalty&&isagi(shooter)?Math.min(.10,isagiNearDefenders(state,shooter,shooter)*.025):0;
  const boxBoost=metres<12?.17:metres<21?.12:metres<30?.065:0;
- const rawChance=clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle,0,penalty?.96:.82);
- // Canon strikers frequently exceed 90 SHO; temper conversion (not shot
- // frequency or player ranking) to avoid 6+ goals every match.
- const goalChance=ultimate?1:penalty?rawChance:clamp(rawChance*.58,.015,.55);
+ const rawChance=clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle,0,1);
+ const goalChance=ultimate?1:rawChance;
  const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
  addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
   description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+" shoots from "+Math.round(metres)+"m!",
@@ -529,48 +526,29 @@ function resolveShot(state,shooter,penalty,ultimate){
   resetPositions(state);pause(state,"GOAL");return;
  }
  addPoints(shooter,-.08);
- // Failed shots are distributed among similarly meaningful outcomes. More GK
- // ability increases clean catches and reduces uncontrolled rebounds.
- const quality=clamp((gkStat-70)/30,-1,1),outcome=state.random();
- const cornerWeight=penalty?.13:.28-quality*.025;
- const cleanWeight=(penalty?.37:.33)+quality*.08;
- const reboundWeight=(penalty?.34:.31)-quality*.055;
- if(outcome<cornerWeight){
-  const spot={x:team.number===1?98:2,y:shooter.y<50?3:97};
-  team.stats.corners++;
+ // Every failed shot has an equal 25% chance of each outcome.
+ const outcome=state.random();
+ if(outcome<.25){
+  const spot={x:team.number===1?98:2,y:shooter.y<50?3:97};team.stats.corners++;
   state.pending={type:"corner",teamNumber:team.number,zone:zoneAt(spot),point:spot,takerId:null,routine:"cross"};
   state.possession=team.number;state.carrierId=null;setBall(state,spot);
-  addEvent(state,{type:"corner",teamNumber:team.number,notable:true,description:shooter.name+"'s strike is deflected behind. Corner to "+team.name+".",actors:[shooter,gk]});
-  pause(state,"CORNER");return;
+  addEvent(state,{type:"corner",teamNumber:team.number,notable:true,description:shooter.name+"'s strike is deflected behind. Corner to "+team.name+".",actors:[shooter,gk]});pause(state,"CORNER");return;
  }
- if(outcome<cornerWeight+cleanWeight){
-  team.stats.onTarget++;shooter.match.onTarget++;
-  if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
-  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly.",
-   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
-   probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter,gk]});
-  pause(state,"SAVE");return;
+ if(outcome<.5){
+  team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;}
+  const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
+  state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly. Goal kick.",comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk]});pause(state,"SAVE / GOAL KICK");return;
  }
- if(outcome<cornerWeight+cleanWeight+reboundWeight){
-  team.stats.onTarget++;shooter.match.onTarget++;
-  if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
-  const pointNearGoal={x:team.number===1?91:9,y:clamp(shooter.y+state.random()*10-5,26,74)};
+ if(outcome<.75){
+  team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
+  const loose={x:team.number===1?91:9,y:clamp(shooter.y+state.random()*10-5,26,74)};
   addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" parries "+shooter.name+"'s shot into danger!",actors:[shooter,gk]});
-  const recovered=recoverLoose(state,pointNearGoal,team.number);
-  if(!recovered&&gk){state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}
-  pause(state,"SAVE / REBOUND");return;
+  const recovered=recoverLoose(state,loose,team.number);if(!recovered&&gk){state.possession=defteam.number;state.carrierId=gk.id;setBall(state,gk);}pause(state,"SAVE / REBOUND");return;
  }
- // A narrow miss, including penalties off the woodwork, can stay alive.
- if(penalty&&state.random()<.6){
-  addEvent(state,{type:"rebound",teamNumber:team.number,notable:true,description:shooter.name+"'s penalty hits the frame! The ball is still live.",actors:[shooter]});
-  recoverLoose(state,{x:team.number===1?90:10,y:clamp(shooter.y+state.random()*9-4.5,30,70)},team.number);
-  pause(state,"REBOUND");return;
- }
- const spot=ownGoal(defteam.number);
- state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
+ const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
  state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
- addEvent(state,{type:"goal-kick",teamNumber:defteam.number,notable:true,description:shooter.name+" misses narrowly. Goal kick for "+defteam.name+".",actors:[shooter]});
- pause(state,"GOAL KICK");
+ addEvent(state,{type:"goal-kick",teamNumber:team.number,notable:true,description:shooter.name+" misses. Goal kick for "+defteam.name+".",actors:[shooter]});pause(state,"GOAL KICK");
 }
 function chooseShot(state,carrier){
  const team=state.teams[carrier.teamNumber],metres=distance(carrier,targetGoal(team.number));

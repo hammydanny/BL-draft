@@ -100,7 +100,8 @@ function runBattleSimTests(){
   bs.active(kickoffPass.teams[2]).forEach(p=>bs.setPosition(p,{x:99,y:99}));
   kickoffPass.random=()=>0.999999;
   bs.resolvePass(kickoffPass,kickoffTaker,{passKind:"short",receiverId:kickoffReceiver.id,kickoff:true});
-  assert.equal(kickoffPass.events.at(-1).type,"interception","kickoff passes are safer, not guaranteed");
+  assert.equal(kickoffPass.events.at(-1).type,"pass","kickoff passes are guaranteed");
+  assert.equal(kickoffPass.events.at(-1).probability,1,"kickoff pass probability is exactly 100%");
 
   const openDribble=bs.createMatch();bs.setMatch(openDribble);
   const dribbler=bs.active(openDribble.teams[1]).find(p=>p.role!=="GK");
@@ -111,6 +112,18 @@ function runBattleSimTests(){
   const dribbleOutcome=openDribble.events.at(-1);
   assert.equal(dribbleOutcome.probabilityLabel,"DRIBBLE ERROR","an open-space dribble can still fail");
   assert(dribbleOutcome.probability>0,"open-space dribbles are never 100% certain");
+ }
+ // Nearby defenders reduce pass and dribble success by count.
+ {
+  const makePass=near=>{const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK"),r=bs.active(state.teams[1]).find(x=>x.id!==p.id&&x.role!=="GK");bs.setPosition(p,{x:42,y:50});bs.setPosition(r,{x:46,y:50});bs.active(state.teams[2]).filter(x=>x.role!=="GK").forEach((d,i)=>bs.setPosition(d,near&&i<2?{x:46,y:50}:{x:99,y:99}));state.random=()=>.5;bs.resolvePass(state,p,{passKind:"short",receiverId:r.id});const e=state.events.at(-1);return e.type==="pass"?e.probability:1-e.probability;};
+  assert(makePass(false)>makePass(true),"nearby defenders reduce pass success probability");
+  const makeDribble=count=>{const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK");bs.setPosition(p,{x:42,y:50});bs.active(state.teams[2]).filter(x=>x.role!=="GK").forEach((d,i)=>bs.setPosition(d,i<count?{x:47,y:50}:{x:99,y:99}));state.random=()=>.5;bs.resolveDribble(state,p);const e=state.events.at(-1);return e.type==="dribble"?e.probability:1-e.probability;};
+  assert(makeDribble(0)>makeDribble(2),"multiple nearby defenders reduce dribble success probability");
+ }
+ // Failed shots have four equally sized outcome bands.
+ {
+  const expected=["corner","save","save","goal-kick"];
+  for(let i=0;i<4;i++){const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK");bs.setPosition(p,{x:40,y:50});const rolls=[.999999,(i+.5)/4];state.random=()=>rolls.shift()??.5;bs.resolveShot(state,p,false);assert.equal(state.events.at(-1).type,expected[i],"failed shot outcome "+i);if(i===1)assert.equal(state.pending?.type,"goal-kick","clean save restarts with a goal kick");}
  }
  // A substitute holding the ball must hand possession to the incoming player.
  state=bs.createMatch();bs.setMatch(state);state.status='paused';state.presentedEventId=state.events.length;const team=state.teams[1],slot='1',out=team.roster.find(p=>p.id===team.assignment[slot]),reserve=team.roster.find(p=>!Object.values(team.assignment).includes(p.id));state.possession=1;state.carrierId=out.id;
