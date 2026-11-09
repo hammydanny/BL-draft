@@ -251,7 +251,7 @@ function portraitWithStamina(parent,p,size){
 }
 /* Spatial engine: the old 18 zone IDs are retained ONLY to migrate v0.8.1 saves.
    All live decisions use physical metre distances on a continuous 105m x 68m pitch. */
-const PITCH_LENGTH=105,PITCH_WIDTH=68,RECEIVE_PRESSURE_M=9,TACKLE_RADIUS_M=7;
+const PITCH_LENGTH=105,PITCH_WIDTH=68,RECEIVE_PRESSURE_M=10,TACKLE_RADIUS_M=8;
 const VIRTUAL_PITCH={width:1050,height:680}; // physics-only pixel plane, never rendered
 const LONG_PASS_MIN_M=PITCH_WIDTH*2/3; // minimum ~45.3 metres (2/3 virtual pitch height)
 const SHORT_PASS_MAX_M=36;
@@ -427,9 +427,11 @@ function resolvePass(state,carrier,opts={}){
  const chem=passingChemistry(carrier,receiver);
  const passingStat=opts.goalKick?effective(carrier,"gk"):effective(carrier,"pas");
  const accuracyPenalty=Math.max(0,metres-(kind==="long"?34:15))*(kind==="long"?.33:.48);
- const defenderSkill=defender?effective(defender,"def"):0;
- const chance=opts.kickoff?1:sigmoid((passingStat*.53+effective(receiver,"off")*.15+(chem-65)*.29-
-   defenderSkill*.46+14-accuracyPenalty-defenders.length*4.4)/18);
+ const defenderSkill=defender?effective(defender,"def"):75;
+ // Attribute differences are centred on 75: an even contested pass is a 50/50 action.
+ const passAdvantage=(passingStat-75)*.45+(effective(receiver,"off")-75)*.25+
+   (chem-75)*.30-(defenderSkill-75)*.45-Math.max(0,defenders.length-1)*8-accuracyPenalty;
+ const chance=opts.kickoff||defenders.length===0?1:sigmoid(passAdvantage/18);
  const route={kind,from,to,chemistry:chem};team.stats.attempted++;carrier.match.passesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"pass");addPoints(carrier,.035);team.stats.passes++;carrier.match.passes++;
@@ -457,8 +459,10 @@ function resolveDribble(state,carrier){
  const factor=Math.min(1,stride/Math.max(.01,distance(before,target))),desired={x:before.x+(target.x-before.x)*factor,y:before.y+(target.y-before.y)*factor};
  const defenders=opposing(state,team.number).filter(p=>p.role!=="GK"&&distance(p,carrier)<=TACKLE_RADIUS_M);
  const def=defenders.length?defenders[Math.floor(state.random()*defenders.length)]:null;
- const score=effective(carrier,"dri")+(effective(carrier,"spd")-70)*.30-(def?effective(def,"def")*.54:0)-Math.max(0,defenders.length-1)*8;
- const chance=sigmoid((score+13)/18);
+ // DRI and SPD oppose the selected nearby defender's DEF on the same 75-centred scale.
+ const dribbleAdvantage=(effective(carrier,"dri")-75)*.60+(effective(carrier,"spd")-75)*.40-
+  (def?(effective(def,"def")-75)*.50:0)-Math.max(0,defenders.length-1)*8;
+ const chance=defenders.length===0?1:sigmoid(dribbleAdvantage/18);
  carrier.match.dribblesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,.07);moveToward(carrier,target,stride);setBall(state,carrier);state.lastPasser=null;

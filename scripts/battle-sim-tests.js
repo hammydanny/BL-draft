@@ -96,8 +96,37 @@ function runBattleSimTests(){
  {
   const makePass=near=>{const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK"),r=bs.active(state.teams[1]).find(x=>x.id!==p.id&&x.role!=="GK");bs.setPosition(p,{x:42,y:50});bs.setPosition(r,{x:46,y:50});bs.active(state.teams[2]).filter(x=>x.role!=="GK").forEach((d,i)=>bs.setPosition(d,near&&i<2?{x:46,y:50}:{x:99,y:99}));state.random=()=>.5;bs.resolvePass(state,p,{passKind:"short",receiverId:r.id});const e=state.events.at(-1);return e.type==="pass"?e.probability:1-e.probability;};
   assert(makePass(false)>makePass(true),"nearby defenders reduce pass success probability");
+  assert.equal(makePass(false),1,"passes with no nearby defenders are guaranteed");
   const makeDribble=count=>{const state=bs.createMatch();bs.setMatch(state);const p=bs.active(state.teams[1]).find(x=>x.role!=="GK");bs.setPosition(p,{x:42,y:50});bs.active(state.teams[2]).filter(x=>x.role!=="GK").forEach((d,i)=>bs.setPosition(d,i<count?{x:47,y:50}:{x:99,y:99}));state.random=()=>.5;bs.resolveDribble(state,p);const e=state.events.at(-1);return e.type==="dribble"?e.probability:1-e.probability;};
   assert(makeDribble(0)>makeDribble(2),"multiple nearby defenders reduce dribble success probability");
+  assert.equal(makeDribble(0),1,"dribbles into space with no nearby defenders are guaranteed");
+  // A 75 DRI player should not have an almost-certain dribble against an 85 DEF marker.
+  {
+   const state=bs.createMatch();bs.setMatch(state);
+   const attacker=bs.active(state.teams[1]).find(p=>p.role!=="GK");
+   const marker=bs.active(state.teams[2]).find(p=>p.role!=="GK");
+   attacker.stats.dri=75;attacker.stats.spd=75;marker.stats.def=85;
+   bs.setPosition(attacker,{x:42,y:50});
+   bs.active(state.teams[2]).filter(p=>p.role!=="GK").forEach(p=>bs.setPosition(p,p.id===marker.id?{x:47,y:50}:{x:99,y:99}));
+   state.random=()=>0;bs.resolveDribble(state,attacker);
+   const event=state.events.at(-1);
+   assert.equal(event.type,"dribble","deterministic success roll exposes the calculated dribble chance");
+   assert(event.probability<.95,"a 75 DRI player must not exceed 95% against an 85 DEF nearby defender");
+  }
+  // Pass success also uses the receiver's OFF, chemistry, defender count and one nearby DEF roll.
+  {
+   const state=bs.createMatch();bs.setMatch(state);
+   const passer=bs.active(state.teams[1]).find(p=>p.role!=="GK");
+   const receiver=bs.active(state.teams[1]).find(p=>p.id!==passer.id&&p.role!=="GK");
+   const marker=bs.active(state.teams[2]).find(p=>p.role!=="GK");
+   passer.stats.pas=75;receiver.stats.off=75;marker.stats.def=85;
+   bs.setPosition(passer,{x:42,y:50});bs.setPosition(receiver,{x:46,y:50});
+   bs.active(state.teams[2]).filter(p=>p.role!=="GK").forEach(p=>bs.setPosition(p,p.id===marker.id?{x:46,y:50}:{x:99,y:99}));
+   state.random=()=>0;bs.resolvePass(state,passer,{passKind:"short",receiverId:receiver.id});
+   const event=state.events.at(-1);
+   assert.equal(event.type,"pass","deterministic success roll exposes the calculated pass chance");
+   assert(event.probability<.95,"a contested average pass must not be almost guaranteed");
+  }
  }
  // Failed shots have four equally sized outcome bands.
  {
