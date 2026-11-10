@@ -321,12 +321,76 @@ function runtimeTeam(config,number){
  return team;
 }
 function playerIn(team,id){return team.roster.find(p=>idOf(p.id)===idOf(id))||null;}
-function effective(p,k){const stamina=clamp(p.stamina,0,100),flow=p.flow>=100&&k!=="ovr"&&k!=="gk"?1.085:1;return(Number(p.stats[k])||1)*(.7+.3*stamina/100)*flow;}
+const FLOW_STAT_MULTIPLIER=1.085;
+function isFlowing(p){return !!p&&Number(p.flow)>=100;}
+function hasBall(p,state=match){
+ const team=state&&state.teams&&state.teams[p.teamNumber];
+ return !!team&&Number(state.possession)===Number(p.teamNumber)&&idOf(state.carrierId)===idOf(p.id);
+}
+function battleSimPassiveMultiplier(p,k,state=match){
+ if(!p||!p.battleSim||!state||!state.teams)return 1;
+ let multiplier=1;
+ (Array.isArray(p.battleSim.passives)?p.battleSim.passives:[]).forEach(passive=>{
+  if(passive&&passive.condition==="off-ball"&&!hasBall(p,state)){
+   const bonus=Number(passive.statBonuses&&passive.statBonuses[k]);
+   if(Number.isFinite(bonus)&&bonus>0)multiplier*=1+bonus;
+  }
+ });
+ return multiplier;
+}
+function effective(p,k,state=match){
+ const flowing=isFlowing(p);
+ const staminaMultiplier=flowing?1:(.7+.3*clamp(p.stamina,0,100)/100);
+ const flowMultiplier=flowing?FLOW_STAT_MULTIPLIER:1;
+ return(Number(p.stats[k])||1)*staminaMultiplier*flowMultiplier*battleSimPassiveMultiplier(p,k,state);
+}
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
-function isagiNearDefenders(state,p,where){return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=RECEIVE_PRESSURE_M).length;}
+function battleSimRuntimeState(p){
+ if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
+ if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
+ if(!Array.isArray(p.battleSimState.usedUltimates))p.battleSimState.usedUltimates=[];
+ return p.battleSimState;
+}
+function battleSimNearbyDefenders(state,p,where,range=RECEIVE_PRESSURE_M){
+ return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=range).length;
+}
+function activateBattleSimSpecial(state,p,trigger){
+ const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.specials)?p.battleSim.specials:[];
+ for(const ability of abilities){
+  if(!ability||ability.trigger!==trigger)continue;
+  const runtime=battleSimRuntimeState(p),id=idOf(ability.id);
+  if(Number(runtime.cooldowns[id]||0)>Number(state.tick||0))continue;
+  runtime.cooldowns[id]=Number(state.tick||0)+Math.max(0,Number(ability.cooldownTicks)||0);
+  return ability;
+ }
+ return null;
+}
+function hasJustReceivedPass(state,p){
+ const passerId=state&&state.lastPasser;
+ if(passerId==null||idOf(passerId)===idOf(p.id))return false;
+ const team=state.teams&&state.teams[p.teamNumber];
+ return !!team&&!!playerIn(team,passerId);
+}
+function activateBattleSimUltimate(state,p){
+ const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.ultimates)?p.battleSim.ultimates:[];
+ const runtime=battleSimRuntimeState(p);
+ for(const ability of abilities){
+  if(!ability)continue;
+  const id=idOf(ability.id),condition=ability.condition||{};
+  if(ability.oncePerMatch&&runtime.usedUltimates.includes(id))continue;
+  if(condition.duringFlow&&!isFlowing(p))continue;
+  if(condition.receivedPass&&!hasJustReceivedPass(state,p))continue;
+  if(ability.oncePerMatch)runtime.usedUltimates.push(id);
+  return ability;
+ }
+ return null;
+}
+function battleSimAbilityDialogue(p,ability){
+ return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
+}
 function isagiChemistryDialogue(actor,partner,event){const striker=isagi(actor)?actor:isagi(partner)?partner:null,other=striker===actor?partner:actor;if(!striker||!other)return[];const lines=striker.battleSim.chemistryDialogue&&striker.battleSim.chemistryDialogue[other.name],text=lines&&lines[event];return text?[{playerId:striker.id,text:striker.name+": "+String.fromCharCode(34)+text+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
-function drain(p,success,action){const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
+function drain(p,success,action){if(isFlowing(p))return;const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
 function playerWeaponsText(player){
  const weapons=Array.isArray(player&&player.weapons)?player.weapons:[];
  if(!weapons.length)return "WEAPONS\nNone registered";
@@ -412,7 +476,7 @@ function moveOffBall(state){
   }
   if(distance(p,target)<.3){const phase=(state.tick+Number(p.id||0))*.7;target={x:p.x+Math.sin(phase)*.4,y:p.y+Math.cos(phase)*.5};}
   const old=point(p);moveToward(p,target,movementMeters(p));
-  p.stamina=clamp(p.stamina-distance(old,p)*.007,0,100);
+  if(!isFlowing(p))p.stamina=clamp(p.stamina-distance(old,p)*.007,0,100);
  });
 }
 function receiverChoice(state,team,carrier,options={}){
@@ -548,21 +612,25 @@ function resolveShot(state,shooter,penalty,ultimate){
  const near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p,shooter)),99);
  const pressure=near<4?10:near<TACKLE_RADIUS_M?6:near<11?2:0;
  const base=penalty?.76:metres<9?.31:metres<17?.23:metres<27?.13:metres<37?.055:.023;
- const shoot=effective(shooter,"sho"),gkStat=gk?effective(gk,"gk"):45;
+ const special=!penalty&&!ultimate?activateBattleSimSpecial(state,shooter,"shot"):null;
+ const shootMultiplier=Math.max(1,Number(ultimate&&ultimate.statMultipliers&&ultimate.statMultipliers.sho)||1);
+ const shoot=effective(shooter,"sho")*shootMultiplier,gkStat=gk?effective(gk,"gk"):45;
  const mainChance=penalty?sigmoid((shoot-gkStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(gkStat-75)/26-pressure/36);
  const matchup=sigmoid((shoot-85)/5+(75-gkStat)/7+.8);
  const angle=penalty?0:Math.abs(shooter.y-50)*.0038;
- const specialBonus=!penalty&&isagi(shooter)?Math.min(.10,isagiNearDefenders(state,shooter,shooter)*.025):0;
+ const bonus=special&&special.successChanceBonus?special.successChanceBonus:null;
+ const nearbyCount=bonus?battleSimNearbyDefenders(state,shooter,shooter,Math.max(0,Number(bonus.rangeMeters)||RECEIVE_PRESSURE_M)):0;
+ const specialBonus=bonus?Math.min(Math.max(0,Number(bonus.maxBonus)||0),nearbyCount*Math.max(0,Number(bonus.perNearbyDefender)||0)):0;
  const boxBoost=metres<12?.17:metres<21?.12:metres<30?.065:0;
  const distancePenalty=penalty?0:Math.max(0,metres-18)*.0055;
  const rawChance=clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle-distancePenalty,0,1);
- const goalChance=ultimate?1:rawChance;
- const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
- addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
-  description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+" shoots from "+Math.round(metres)+"m!",
-  comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
-  probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:[shooter],
-  shotRoute:{from:point(shooter),to:targetGoal(team.number)}});
+ const goalChance=rawChance,roll=state.random();team.stats.shots++;shooter.match.shots++;
+ const activeAbility=ultimate||special,abilityDialogue=battleSimAbilityDialogue(shooter,activeAbility);
+ const shotDescription=ultimate?shooter.name+" unleashes "+ultimate.name+"!":special?shooter.name+" uses "+special.name+" from "+Math.round(metres)+"m!":shooter.name+" shoots from "+Math.round(metres)+"m!";
+ addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,description:shotDescription,
+  comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
+  probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter],
+  dialogue:abilityDialogue.length?abilityDialogue:undefined,shotRoute:{from:point(shooter),to:targetGoal(team.number)}});
  drain(shooter,roll<goalChance,"shot");
  const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
  state.lastPasser=null;
@@ -571,10 +639,11 @@ function resolveShot(state,shooter,penalty,ultimate){
   if(assister){assister.match.assists++;addPoints(assister,.68);}
   state.score[team.number]++;setBall(state,targetGoal(team.number));
   addEvent(state,{type:"goal",teamNumber:team.number,notable:true,
-   description:"GOAL! "+shooter.name+(shooter.flow>=100?" strikes in FLOW":" scores")+" for "+team.name+(assister?" assisted by "+assister.name:"")+".",
-   comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
-   probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
-  if(isagi(shooter)){shooter.match.specials=(shooter.match.specials||0)+1;if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;}
+   description:"GOAL! "+shooter.name+(isFlowing(shooter)?" strikes in FLOW":" scores")+" for "+team.name+(assister?" assisted by "+assister.name:"")+".",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
+   probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
+  if(special)shooter.match.specials=(shooter.match.specials||0)+1;
+  if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;
   state.pending={type:"kickoff",teamNumber:defteam.number,zone:7,point:{x:50,y:50}};
   resetPositions(state);pause(state,"GOAL");return;
  }
@@ -591,7 +660,8 @@ function resolveShot(state,shooter,penalty,ultimate){
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;}
   const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
   state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
-  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly. Goal kick.",comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk]});pause(state,"SAVE / GOAL KICK");return;
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly.",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk]});pause(state,"SAVE / GOAL KICK");return;
  }
  if(outcome<.75){
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
@@ -785,9 +855,7 @@ function simulateTick(state){
   ensureTickEvent(state,eventsBefore);return;
  }
  if(carrier.role==="GK"){resolvePass(state,carrier,{passKind:"short"});ensureTickEvent(state,eventsBefore);return;}
- const ultimate=carrier.battleSim?.ultimates?.find(ability=>ability.id==="two-gun-volley");
- if(isagi(carrier)&&carrier.flow>=100&&ultimate&&distance(carrier,targetGoal(t.number))<=24){resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
- if(chooseShot(state,carrier)){resolveShot(state,carrier,false);ensureTickEvent(state,eventsBefore);return;}
+ if(chooseShot(state,carrier)){const ultimate=activateBattleSimUltimate(state,carrier);resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
  const near=receiverPressure(state,t.number,carrier),dribble=clamp(.40+(t.strategy.tempo-50)/250+(near>1?-.08:.06),.22,.67);
  if(state.random()<dribble||(progress(t.number,carrier)<.25&&near===0))resolveDribble(state,carrier);else resolvePass(state,carrier,{});
  ensureTickEvent(state,eventsBefore);
@@ -1034,11 +1102,143 @@ function positionOVRMarkup(team,p){
 }
 function liveFormationPoint(slot,flipY){const p=formationPoint(slot,flipY);return{x:12+(p.x-7)*76/86,y:10+(p.y-9)*80/82};}
 function addPlayerRow(parent,p,team,slotIndex){
- const row=make("div","bs-match-player-row");row.dataset.playerId=p.id;row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
+ const row=make("div","bs-match-player-row");row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
  const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",p.role||"CM"));put(copy,line);
  put(copy,playerMeta(p.stats.ovr,ratingNow(p)));
  if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(copy,c);}
  const track=make("div","bs-stamina-track"),fill=make("span","bs-stamina-fill");fill.style.width=clamp(p.stamina,0,100)+"%";fill.style.background="hsl("+Math.round(clamp(p.stamina,0,100)*1.2)+" 82% 48%)";put(track,fill);put(copy,track);put(row,copy);put(parent,row);
+}
+function battleSimProfileWeapons(player){
+ const data=player&&player.battleSim&&typeof player.battleSim==="object"?player.battleSim:{};
+ return[
+  {type:"PASSIVE",items:Array.isArray(data.passives)?data.passives:[]},
+  {type:"SPECIAL",items:Array.isArray(data.specials)?data.specials:[]},
+  {type:"ULTIMATE",items:Array.isArray(data.ultimates)?data.ultimates:[]}
+ ].flatMap(group=>group.items.map(item=>({
+  type:group.type,
+  name:String(item&& (item.name||item.id)||"Unnamed Battle Sim Weapon"),
+  description:String(item&&item.description||"No description registered.")
+ })));
+}
+function closeMatchPlayerProfile(panel,restoreFocus=true){
+ if(!panel)return;
+ const overlay=panel.querySelector(".bs-player-profile-overlay");
+ if(!overlay)return;
+ const trigger=panel._profileTrigger;
+ overlay.remove();
+ panel._profileTrigger=null;
+ if(trigger)trigger.setAttribute("aria-expanded","false");
+ if(restoreFocus&&trigger&&trigger.isConnected){
+  try{trigger.focus({preventScroll:true});}catch(error){trigger.focus();}
+ }
+}
+function openMatchPlayerProfile(panel,player,trigger){
+ if(!panel||!player)return;
+ closeMatchPlayerProfile(panel,false);
+ panel._profileTrigger=trigger||null;
+ if(trigger)trigger.setAttribute("aria-expanded","true");
+ const overlay=make("section","bs-player-profile-overlay");
+ overlay.setAttribute("role","dialog");
+ overlay.setAttribute("aria-modal","false");
+ overlay.setAttribute("aria-label",player.name+" Battle Sim profile");
+
+ const header=make("header","bs-player-profile-header");
+ const identity=make("div","bs-player-profile-identity");
+ const portrait=make("img","bs-player-profile-portrait");
+ portrait.src=portraitSource(player);
+ portrait.alt=player.name;
+ portrait.loading="lazy";
+ portrait.onerror=function(){
+  portrait.onerror=null;
+  if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")portrait.src=PLAYER_IMAGE_FALLBACK;
+ };
+ put(identity,portrait);
+ const heading=make("div","bs-player-profile-heading");
+ put(heading,make("strong","bs-player-profile-name",player.name));
+ const positions=Array.isArray(player.positions)&&player.positions.length?player.positions:[player.primaryPosition||"—"];
+ put(heading,make("span","bs-player-profile-positions",positions.join(" · ")));
+ put(identity,heading);
+ put(header,identity);
+ button(header,"×","bs-player-profile-close",{"aria-label":"Close player profile","data-close-player-profile":"true"});
+ put(overlay,header);
+
+ const statsSection=make("section","bs-player-profile-stats");
+ put(statsSection,make("h3","bs-player-profile-section-title","BASE STATS"));
+ const grid=make("div","bs-player-profile-stat-grid");
+ const stats=player.stats||{};
+ [["OVR","ovr"],["OFF","off"],["SHO","sho"],["DRI","dri"],["PAS","pas"],["SPD","spd"],["DEF","def"],["GK","gk"]].forEach(([label,key])=>{
+  const cell=make("div","bs-player-profile-stat");
+  put(cell,make("span","",label));
+  const value=Number(stats[key]);
+  put(cell,make("strong","",Number.isFinite(value)?String(Math.round(value)):"—"));
+  put(grid,cell);
+ });
+ put(statsSection,grid);
+ put(overlay,statsSection);
+
+ const weaponSection=make("section","bs-player-profile-weapons");
+ put(weaponSection,make("h3","bs-player-profile-section-title","BATTLE SIM WEAPONS"));
+ const weaponList=make("div","bs-player-profile-weapon-list");
+ const weapons=battleSimProfileWeapons(player);
+ weaponList.style.setProperty("--bs-profile-weapon-count",String(Math.max(1,weapons.length)));
+ if(!weapons.length){
+  put(weaponList,make("p","bs-player-profile-empty","No Battle Sim weapons registered."));
+ }else{
+  weapons.forEach(weapon=>{
+   const item=make("article","bs-player-profile-weapon");
+   const top=make("div","bs-player-profile-weapon-top");
+   put(top,make("strong","bs-player-profile-weapon-name",weapon.name));
+   put(top,make("span","bs-player-profile-weapon-type",weapon.type));
+   put(item,top);
+   put(item,make("p","bs-player-profile-weapon-description",weapon.description));
+   put(weaponList,item);
+  });
+ }
+ put(weaponSection,weaponList);
+ put(overlay,weaponSection);
+ put(panel,overlay);
+ const close=overlay.querySelector(".bs-player-profile-close");
+ if(close)close.focus({preventScroll:true});
+}
+function bindMatchPlayerProfiles(root){
+ if(!root||root._playerProfileEventsBound)return;
+ root._playerProfileEventsBound=true;
+ root.addEventListener("click",event=>{
+  const node=event.target&&event.target.nodeType===1?event.target:event.target&&event.target.parentElement;
+  if(!node)return;
+  const close=node.closest("[data-close-player-profile]");
+  if(close){
+   closeMatchPlayerProfile(close.closest(".bs-match-team-panel"));
+   return;
+  }
+  if(node.closest("button,select,input,textarea,a"))return;
+  const trigger=node.closest(".bs-match-team-panel [data-player-id]");
+  if(!trigger||!root.contains(trigger))return;
+  const panel=trigger.closest(".bs-match-team-panel"),teamNumber=Number(panel.dataset.team);
+  const team=match&&match.teams&&match.teams[teamNumber];
+  const player=team&&playerIn(team,trigger.dataset.playerId);
+  if(player)openMatchPlayerProfile(panel,player,trigger);
+ });
+ root.addEventListener("keydown",event=>{
+  const node=event.target&&event.target.nodeType===1?event.target:event.target&&event.target.parentElement;
+  if(!node)return;
+  if(event.key==="Escape"){
+   const panel=node.closest(".bs-match-team-panel");
+   if(panel&&panel.querySelector(".bs-player-profile-overlay")){
+    event.preventDefault();
+    closeMatchPlayerProfile(panel);
+   }
+   return;
+  }
+  if(event.key!=="Enter"&&event.key!==" ")return;
+  const trigger=node.closest(".bs-match-team-panel .bs-formation-player, .bs-match-team-panel .bs-bench-player, .bs-match-team-panel .bs-match-player-row");
+  if(!trigger||node!==trigger||node.closest("button,select,input,textarea,a"))return;
+  event.preventDefault();
+  const panel=trigger.closest(".bs-match-team-panel"),teamNumber=Number(panel.dataset.team);
+  const team=match&&match.teams&&match.teams[teamNumber];
+  const player=team&&playerIn(team,trigger.dataset.playerId);
+  if(player)openMatchPlayerProfile(panel,player,trigger);
+ });
 }
 function stoppageReady(state=match){return ["stoppage","substitution"].includes(progressionState(state));}
 function panelSignature(team){return JSON.stringify([team.formation,team.slots,team.assignment,team.roster.filter(p=>p.sentOff).map(p=>p.id),stoppageReady(),stoppageReady()&&match.requiredSub]);}
@@ -1059,7 +1259,7 @@ function matchTeamPanel(number,state=displayState()){
  put(aside,make("span","bs-kicker","TEAM 0"+number));put(aside,make("h2","",t.name));
  put(aside,make("span","bs-team-possession-label",state.possession===number?"IN POSSESSION":"OUT OF POSSESSION"));put(aside,renderMiniFormation(number,state));put(aside,renderMatchChemistry(t));
  const benchHead=make("div","bs-panel-subhead");put(benchHead,make("strong","","RESERVES"));put(benchHead,make("span","",bench(t).length));put(aside,benchHead);
- const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.dataset.playerId=p.id;row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,38);put(row,flowMeter(p.flow,p.name));if(stoppageReady()){row.draggable=true;row.setAttribute("data-drag-reserve",p.id);row.setAttribute("data-drag-team",number);row.title="Drag onto a player on the pitch to substitute";}
+ const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,38);put(row,flowMeter(p.flow,p.name));if(stoppageReady()){row.draggable=true;row.setAttribute("data-drag-reserve",p.id);row.setAttribute("data-drag-team",number);row.title="Drag onto a player on the pitch to substitute";}
   const info=make("div","bs-player-copy");put(info,make("strong","",p.name));put(info,playerMeta(p.stats.ovr,ratingNow(p),"bs-player-subline","BASE OVR"));
   if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(info,c);}put(row,info);
   if(stoppageReady()&&!match.requiredSub){const sel=make("select","bs-select bs-swap-select");sel.setAttribute("aria-label","Replace starter…");sel.setAttribute("data-sub-target-for",p.id);option(sel,"","Replace starter…");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const current=playerIn(t,t.assignment[k]);if(current&&current.role!=="GK")option(sel,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+current.name);});put(row,sel);button(row,"SUB IN","bs-mini-button",{"data-sub-in":p.id,"data-sub-team":number});}
@@ -1084,6 +1284,7 @@ function renderMiniFormation(number,state=displayState()){
    put(empty,make("strong","bs-formation-player-name","VACANT"));put(pitch,empty);return;
   }
   const card=make("div","bs-formation-player bs-formation-player--compact");
+  card.setAttribute("role","button");card.tabIndex=0;card.setAttribute("aria-label","View "+p.name+" player profile · "+slot.label);
   if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);}
   positionMarker(card,slot,number===2,liveFormationPoint);
   card.dataset.slot=k;card.dataset.playerId=p.id;card.style.setProperty("--bs-team-color",team.color);
@@ -1100,8 +1301,7 @@ function renderMiniFormation(number,state=displayState()){
   // retained for pointer/keyboard assistive technology and card interaction.
   put(card,make("strong","bs-formation-player-name bs-visually-hidden",p.name));
   if(p.yellows>0)put(card,make("span","bs-player-card-state is-yellow-card","YC "+p.yellows));
-  card.title=p.name+" · "+slot.label+" · "+(ovr?.live??p.stats.ovr)+" LIVE OVR · FLOW "+Math.round(p.flow)+"%\n"+playerWeaponsText(p);
-  card.setAttribute("aria-label",card.title);put(pitch,card);
+  card.title=p.name+" · "+slot.label+" · "+(ovr?.live??p.stats.ovr)+" LIVE OVR · FLOW "+Math.round(p.flow)+"% · Click to view profile";put(pitch,card);
  });return pitch;
 }
 function projectPitch(state){
@@ -1327,6 +1527,7 @@ function renderMatch(){
  byId("bs-match-phase").textContent=state.phase==="secondHalf"?"SECOND HALF":state.phase==="halfTime"?"HALF TIME":state.phase==="fullTime"?"FULL TIME":"FIRST HALF";
  byId("bs-match-status").textContent=match.manualPaused?"PAUSED":stoppageReady()?"STOPPAGE":"LIVE";
  const root=byId("bs-match-team-panels");
+ bindMatchPlayerProfiles(root);
  if(!root.querySelector(".bs-center-stage")){
   root.replaceChildren();put(root,matchTeamPanel(1,state));const center=make("section","bs-center-stage");root.insertBefore(center,root.firstElementChild);put(root,matchTeamPanel(2,state));
   const pp=make("section","bs-pitch-panel"),ph=make("div","bs-panel-topline");put(ph,make("span","bs-kicker","LIVE PITCH"));put(pp,ph);
