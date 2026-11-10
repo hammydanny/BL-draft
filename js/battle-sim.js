@@ -1034,11 +1034,143 @@ function positionOVRMarkup(team,p){
 }
 function liveFormationPoint(slot,flipY){const p=formationPoint(slot,flipY);return{x:12+(p.x-7)*76/86,y:10+(p.y-9)*80/82};}
 function addPlayerRow(parent,p,team,slotIndex){
- const row=make("div","bs-match-player-row");row.dataset.playerId=p.id;row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
+ const row=make("div","bs-match-player-row");row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
  const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",p.role||"CM"));put(copy,line);
  put(copy,playerMeta(p.stats.ovr,ratingNow(p)));
  if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(copy,c);}
  const track=make("div","bs-stamina-track"),fill=make("span","bs-stamina-fill");fill.style.width=clamp(p.stamina,0,100)+"%";fill.style.background="hsl("+Math.round(clamp(p.stamina,0,100)*1.2)+" 82% 48%)";put(track,fill);put(copy,track);put(row,copy);put(parent,row);
+}
+function battleSimProfileWeapons(player){
+ const data=player&&player.battleSim&&typeof player.battleSim==="object"?player.battleSim:{};
+ return[
+  {type:"PASSIVE",items:Array.isArray(data.passives)?data.passives:[]},
+  {type:"SPECIAL",items:Array.isArray(data.specials)?data.specials:[]},
+  {type:"ULTIMATE",items:Array.isArray(data.ultimates)?data.ultimates:[]}
+ ].flatMap(group=>group.items.map(item=>({
+  type:group.type,
+  name:String(item&& (item.name||item.id)||"Unnamed Battle Sim Weapon"),
+  description:String(item&&item.description||"No description registered.")
+ })));
+}
+function closeMatchPlayerProfile(panel,restoreFocus=true){
+ if(!panel)return;
+ const overlay=panel.querySelector(".bs-player-profile-overlay");
+ if(!overlay)return;
+ const trigger=panel._profileTrigger;
+ overlay.remove();
+ panel._profileTrigger=null;
+ if(trigger)trigger.setAttribute("aria-expanded","false");
+ if(restoreFocus&&trigger&&trigger.isConnected){
+  try{trigger.focus({preventScroll:true});}catch(error){trigger.focus();}
+ }
+}
+function openMatchPlayerProfile(panel,player,trigger){
+ if(!panel||!player)return;
+ closeMatchPlayerProfile(panel,false);
+ panel._profileTrigger=trigger||null;
+ if(trigger)trigger.setAttribute("aria-expanded","true");
+ const overlay=make("section","bs-player-profile-overlay");
+ overlay.setAttribute("role","dialog");
+ overlay.setAttribute("aria-modal","false");
+ overlay.setAttribute("aria-label",player.name+" Battle Sim profile");
+
+ const header=make("header","bs-player-profile-header");
+ const identity=make("div","bs-player-profile-identity");
+ const portrait=make("img","bs-player-profile-portrait");
+ portrait.src=portraitSource(player);
+ portrait.alt=player.name;
+ portrait.loading="lazy";
+ portrait.onerror=function(){
+  portrait.onerror=null;
+  if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")portrait.src=PLAYER_IMAGE_FALLBACK;
+ };
+ put(identity,portrait);
+ const heading=make("div","bs-player-profile-heading");
+ put(heading,make("strong","bs-player-profile-name",player.name));
+ const positions=Array.isArray(player.positions)&&player.positions.length?player.positions:[player.primaryPosition||"—"];
+ put(heading,make("span","bs-player-profile-positions",positions.join(" · ")));
+ put(identity,heading);
+ put(header,identity);
+ button(header,"×","bs-player-profile-close",{"aria-label":"Close player profile","data-close-player-profile":"true"});
+ put(overlay,header);
+
+ const statsSection=make("section","bs-player-profile-stats");
+ put(statsSection,make("h3","bs-player-profile-section-title","BASE STATS"));
+ const grid=make("div","bs-player-profile-stat-grid");
+ const stats=player.stats||{};
+ [["OVR","ovr"],["OFF","off"],["SHO","sho"],["DRI","dri"],["PAS","pas"],["SPD","spd"],["DEF","def"],["GK","gk"]].forEach(([label,key])=>{
+  const cell=make("div","bs-player-profile-stat");
+  put(cell,make("span","",label));
+  const value=Number(stats[key]);
+  put(cell,make("strong","",Number.isFinite(value)?String(Math.round(value)):"—"));
+  put(grid,cell);
+ });
+ put(statsSection,grid);
+ put(overlay,statsSection);
+
+ const weaponSection=make("section","bs-player-profile-weapons");
+ put(weaponSection,make("h3","bs-player-profile-section-title","BATTLE SIM WEAPONS"));
+ const weaponList=make("div","bs-player-profile-weapon-list");
+ const weapons=battleSimProfileWeapons(player);
+ weaponList.style.setProperty("--bs-profile-weapon-count",String(Math.max(1,weapons.length)));
+ if(!weapons.length){
+  put(weaponList,make("p","bs-player-profile-empty","No Battle Sim weapons registered."));
+ }else{
+  weapons.forEach(weapon=>{
+   const item=make("article","bs-player-profile-weapon");
+   const top=make("div","bs-player-profile-weapon-top");
+   put(top,make("strong","bs-player-profile-weapon-name",weapon.name));
+   put(top,make("span","bs-player-profile-weapon-type",weapon.type));
+   put(item,top);
+   put(item,make("p","bs-player-profile-weapon-description",weapon.description));
+   put(weaponList,item);
+  });
+ }
+ put(weaponSection,weaponList);
+ put(overlay,weaponSection);
+ put(panel,overlay);
+ const close=overlay.querySelector(".bs-player-profile-close");
+ if(close)close.focus({preventScroll:true});
+}
+function bindMatchPlayerProfiles(root){
+ if(!root||root._playerProfileEventsBound)return;
+ root._playerProfileEventsBound=true;
+ root.addEventListener("click",event=>{
+  const node=event.target&&event.target.nodeType===1?event.target:event.target&&event.target.parentElement;
+  if(!node)return;
+  const close=node.closest("[data-close-player-profile]");
+  if(close){
+   closeMatchPlayerProfile(close.closest(".bs-match-team-panel"));
+   return;
+  }
+  if(node.closest("button,select,input,textarea,a"))return;
+  const trigger=node.closest(".bs-match-team-panel [data-player-id]");
+  if(!trigger||!root.contains(trigger))return;
+  const panel=trigger.closest(".bs-match-team-panel"),teamNumber=Number(panel.dataset.team);
+  const team=match&&match.teams&&match.teams[teamNumber];
+  const player=team&&playerIn(team,trigger.dataset.playerId);
+  if(player)openMatchPlayerProfile(panel,player,trigger);
+ });
+ root.addEventListener("keydown",event=>{
+  const node=event.target&&event.target.nodeType===1?event.target:event.target&&event.target.parentElement;
+  if(!node)return;
+  if(event.key==="Escape"){
+   const panel=node.closest(".bs-match-team-panel");
+   if(panel&&panel.querySelector(".bs-player-profile-overlay")){
+    event.preventDefault();
+    closeMatchPlayerProfile(panel);
+   }
+   return;
+  }
+  if(event.key!=="Enter"&&event.key!==" ")return;
+  const trigger=node.closest(".bs-match-team-panel .bs-formation-player, .bs-match-team-panel .bs-bench-player, .bs-match-team-panel .bs-match-player-row");
+  if(!trigger||node!==trigger||node.closest("button,select,input,textarea,a"))return;
+  event.preventDefault();
+  const panel=trigger.closest(".bs-match-team-panel"),teamNumber=Number(panel.dataset.team);
+  const team=match&&match.teams&&match.teams[teamNumber];
+  const player=team&&playerIn(team,trigger.dataset.playerId);
+  if(player)openMatchPlayerProfile(panel,player,trigger);
+ });
 }
 function stoppageReady(state=match){return ["stoppage","substitution"].includes(progressionState(state));}
 function panelSignature(team){return JSON.stringify([team.formation,team.slots,team.assignment,team.roster.filter(p=>p.sentOff).map(p=>p.id),stoppageReady(),stoppageReady()&&match.requiredSub]);}
@@ -1059,7 +1191,7 @@ function matchTeamPanel(number,state=displayState()){
  put(aside,make("span","bs-kicker","TEAM 0"+number));put(aside,make("h2","",t.name));
  put(aside,make("span","bs-team-possession-label",state.possession===number?"IN POSSESSION":"OUT OF POSSESSION"));put(aside,renderMiniFormation(number,state));put(aside,renderMatchChemistry(t));
  const benchHead=make("div","bs-panel-subhead");put(benchHead,make("strong","","RESERVES"));put(benchHead,make("span","",bench(t).length));put(aside,benchHead);
- const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.dataset.playerId=p.id;row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,38);put(row,flowMeter(p.flow,p.name));if(stoppageReady()){row.draggable=true;row.setAttribute("data-drag-reserve",p.id);row.setAttribute("data-drag-team",number);row.title="Drag onto a player on the pitch to substitute";}
+ const benchList=make("div","bs-match-bench");bench(t).forEach(p=>{const row=make("div","bs-bench-player");row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",t.color);portraitWithStamina(row,p,38);put(row,flowMeter(p.flow,p.name));if(stoppageReady()){row.draggable=true;row.setAttribute("data-drag-reserve",p.id);row.setAttribute("data-drag-team",number);row.title="Drag onto a player on the pitch to substitute";}
   const info=make("div","bs-player-copy");put(info,make("strong","",p.name));put(info,playerMeta(p.stats.ovr,ratingNow(p),"bs-player-subline","BASE OVR"));
   if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(info,c);}put(row,info);
   if(stoppageReady()&&!match.requiredSub){const sel=make("select","bs-select bs-swap-select");sel.setAttribute("aria-label","Replace starter…");sel.setAttribute("data-sub-target-for",p.id);option(sel,"","Replace starter…");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const current=playerIn(t,t.assignment[k]);if(current&&current.role!=="GK")option(sel,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+current.name);});put(row,sel);button(row,"SUB IN","bs-mini-button",{"data-sub-in":p.id,"data-sub-team":number});}
@@ -1084,6 +1216,7 @@ function renderMiniFormation(number,state=displayState()){
    put(empty,make("strong","bs-formation-player-name","VACANT"));put(pitch,empty);return;
   }
   const card=make("div","bs-formation-player bs-formation-player--compact");
+  card.setAttribute("role","button");card.tabIndex=0;card.setAttribute("aria-label","View "+p.name+" player profile · "+slot.label);
   if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);}
   positionMarker(card,slot,number===2,liveFormationPoint);
   card.dataset.slot=k;card.dataset.playerId=p.id;card.style.setProperty("--bs-team-color",team.color);
@@ -1100,8 +1233,7 @@ function renderMiniFormation(number,state=displayState()){
   // retained for pointer/keyboard assistive technology and card interaction.
   put(card,make("strong","bs-formation-player-name bs-visually-hidden",p.name));
   if(p.yellows>0)put(card,make("span","bs-player-card-state is-yellow-card","YC "+p.yellows));
-  card.title=p.name+" · "+slot.label+" · "+(ovr?.live??p.stats.ovr)+" LIVE OVR · FLOW "+Math.round(p.flow)+"%\n"+playerWeaponsText(p);
-  card.setAttribute("aria-label",card.title);put(pitch,card);
+  card.title=p.name+" · "+slot.label+" · "+(ovr?.live??p.stats.ovr)+" LIVE OVR · FLOW "+Math.round(p.flow)+"% · Click to view profile";put(pitch,card);
  });return pitch;
 }
 function projectPitch(state){
@@ -1327,6 +1459,7 @@ function renderMatch(){
  byId("bs-match-phase").textContent=state.phase==="secondHalf"?"SECOND HALF":state.phase==="halfTime"?"HALF TIME":state.phase==="fullTime"?"FULL TIME":"FIRST HALF";
  byId("bs-match-status").textContent=match.manualPaused?"PAUSED":stoppageReady()?"STOPPAGE":"LIVE";
  const root=byId("bs-match-team-panels");
+ bindMatchPlayerProfiles(root);
  if(!root.querySelector(".bs-center-stage")){
   root.replaceChildren();put(root,matchTeamPanel(1,state));const center=make("section","bs-center-stage");root.insertBefore(center,root.firstElementChild);put(root,matchTeamPanel(2,state));
   const pp=make("section","bs-pitch-panel"),ph=make("div","bs-panel-topline");put(ph,make("span","bs-kicker","LIVE PITCH"));put(pp,ph);
