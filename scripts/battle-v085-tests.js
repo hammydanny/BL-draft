@@ -56,7 +56,42 @@ function runBattleV085Tests(){
  assert.equal(b.setPieceSkill(goalKick),'gk');
  const free={type:'free-kick',teamNumber:2,point:{x:17,y:50},zone:3,routine:'pass'};
  k.pending=free;b.stagePendingSetPiece(k);assert.equal(b.setPieceSkill(free),'pas');
- const shots=[],goals=[],zeroes=[];
+   const foulMatch=b.createMatch();b.setMatch(foulMatch);
+  const foulCarrier=b.active(foulMatch.teams[1]).find(p=>p.role!=="GK"),fouler=b.active(foulMatch.teams[2]).find(p=>p.role!=="GK");
+  b.setPosition(foulCarrier,{x:50,y:50});b.setPosition(fouler,{x:50,y:50});foulMatch.random=()=>.99;
+  assert(b.checkFoul(foulMatch,1,foulCarrier,fouler,{x:50,y:50},[],true));
+  b.stagePendingSetPiece(foulMatch);
+  assert.equal(foulMatch.pending.freeKickType,"midfield");assert.equal(foulMatch.pending.routine,"short-pass");
+  const midfieldFreeKickTaker=b.setPieceTaker(foulMatch,foulMatch.pending),nearMate=b.active(foulMatch.teams[1]).find(p=>p.id===foulMatch.pending.shortReceiverId);
+  assert(nearMate&&b.distance(nearMate,midfieldFreeKickTaker)<10,"midfield free kick has a nearby teammate");
+  for(const n of [1,2])for(const p of b.active(foulMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==midfieldFreeKickTaker.id)){
+   assert(p.x>midfieldFreeKickTaker.x,"midfield restart players are in front");
+   if(p.id!==nearMate.id)assert(b.distance(p,midfieldFreeKickTaker)>10,"midfield restart preserves 10m distance");
+  }
+  const boxMatch=b.createMatch();b.setMatch(boxMatch);
+  const boxCarrier=b.active(boxMatch.teams[1]).find(p=>p.role!=="GK"),boxDefender=b.active(boxMatch.teams[2]).find(p=>p.role!=="GK");
+  b.setPosition(boxCarrier,{x:78,y:50});b.setPosition(boxDefender,{x:78,y:50});boxMatch.random=()=>.99;
+  assert(b.checkFoul(boxMatch,1,boxCarrier,boxDefender,{x:78,y:50},[],true));
+  b.stagePendingSetPiece(boxMatch);
+  assert.equal(boxMatch.pending.freeKickType,"attacking");assert.equal(b.setPieceTaker(boxMatch,boxMatch.pending).x,82);
+  assert.equal(b.setPieceSkill(boxMatch.pending),"sho");
+  for(const p of b.active(boxMatch.teams[2]).filter(p=>p.role!=="GK"))assert(b.distance(p,b.setPieceTaker(boxMatch,boxMatch.pending))>10);
+  const penaltyMatch=b.createMatch();b.setMatch(penaltyMatch);
+  const penaltyCarrier=b.active(penaltyMatch.teams[1]).find(p=>p.role!=="GK"),penaltyDefender=b.active(penaltyMatch.teams[2]).find(p=>p.role!=="GK");
+  b.setPosition(penaltyCarrier,{x:90,y:50});b.setPosition(penaltyDefender,{x:90,y:50});penaltyMatch.random=()=>.99;
+  assert(b.checkFoul(penaltyMatch,1,penaltyCarrier,penaltyDefender,{x:90,y:50},[],true));
+  b.stagePendingSetPiece(penaltyMatch);
+  assert.equal(penaltyMatch.pending.type,"penalty");assert.equal(b.setPieceTaker(penaltyMatch,penaltyMatch.pending).x,89.5);
+  for(const n of [1,2])for(const p of b.active(penaltyMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==penaltyCarrier.id))assert(!b.inOpponentBox(1,p));
+  const redMatch=b.createMatch();b.setMatch(redMatch);
+  const carded=b.active(redMatch.teams[2]).find(p=>p.role!=="GK"),attacker=b.active(redMatch.teams[1]).find(p=>p.role!=="GK");
+  b.setPosition(carded,{x:50,y:50});b.setPosition(attacker,{x:50,y:50});carded.yellows=2;carded.match.yellows=2;redMatch.random=()=>0;
+  assert(b.checkFoul(redMatch,1,attacker,carded,{x:50,y:50},[],true));
+  assert(carded.sentOff&&redMatch.requiredSub&&redMatch.status==="paused","third yellow pauses play for a mandatory substitute");
+  const feedRows=Array.from({length:25},()=>({removed:false,remove(){this.removed=true;}}));
+  b.trimLiveFeed({querySelectorAll:()=>feedRows});assert.equal(feedRows.filter(row=>!row.removed).length,20);
+  assert(b.playerWeaponsText(b.resolveSharedPlayer({id:1})).includes("Metavision"));
+const shots=[],goals=[],zeroes=[];
  for(let seed=1;seed<=16;seed++){
   const s=b.createMatch();s.seed=seed;s.random=b.seeded(seed);b.setMatch(s);
   let ticks=0;while(s.status!=='finished'&&ticks++<1000)advance(h,s);
