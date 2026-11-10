@@ -842,7 +842,7 @@ function simulateTick(state){
  const eventsBefore=state.events.length;state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
- for(const n of [1,2])for(const p of state.teams[n].roster){if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>=40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
+ for(const n of [1,2])for(const p of state.teams[n].roster){if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  moveOffBall(state);
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
