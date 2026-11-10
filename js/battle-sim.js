@@ -321,12 +321,76 @@ function runtimeTeam(config,number){
  return team;
 }
 function playerIn(team,id){return team.roster.find(p=>idOf(p.id)===idOf(id))||null;}
-function effective(p,k){const stamina=clamp(p.stamina,0,100),flow=p.flow>=100&&k!=="ovr"&&k!=="gk"?1.085:1;return(Number(p.stats[k])||1)*(.7+.3*stamina/100)*flow;}
+const FLOW_STAT_MULTIPLIER=1.085;
+function isFlowing(p){return !!p&&Number(p.flow)>=100;}
+function hasBall(p,state=match){
+ const team=state&&state.teams&&state.teams[p.teamNumber];
+ return !!team&&Number(state.possession)===Number(p.teamNumber)&&idOf(state.carrierId)===idOf(p.id);
+}
+function battleSimPassiveMultiplier(p,k,state=match){
+ if(!p||!p.battleSim||!state||!state.teams)return 1;
+ let multiplier=1;
+ (Array.isArray(p.battleSim.passives)?p.battleSim.passives:[]).forEach(passive=>{
+  if(passive&&passive.condition==="off-ball"&&!hasBall(p,state)){
+   const bonus=Number(passive.statBonuses&&passive.statBonuses[k]);
+   if(Number.isFinite(bonus)&&bonus>0)multiplier*=1+bonus;
+  }
+ });
+ return multiplier;
+}
+function effective(p,k,state=match){
+ const flowing=isFlowing(p);
+ const staminaMultiplier=flowing?1:(.7+.3*clamp(p.stamina,0,100)/100);
+ const flowMultiplier=flowing?FLOW_STAT_MULTIPLIER:1;
+ return(Number(p.stats[k])||1)*staminaMultiplier*flowMultiplier*battleSimPassiveMultiplier(p,k,state);
+}
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
-function isagiNearDefenders(state,p,where){return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=RECEIVE_PRESSURE_M).length;}
+function battleSimRuntimeState(p){
+ if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
+ if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
+ if(!Array.isArray(p.battleSimState.usedUltimates))p.battleSimState.usedUltimates=[];
+ return p.battleSimState;
+}
+function battleSimNearbyDefenders(state,p,where,range=RECEIVE_PRESSURE_M){
+ return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=range).length;
+}
+function activateBattleSimSpecial(state,p,trigger){
+ const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.specials)?p.battleSim.specials:[];
+ for(const ability of abilities){
+  if(!ability||ability.trigger!==trigger)continue;
+  const runtime=battleSimRuntimeState(p),id=idOf(ability.id);
+  if(Number(runtime.cooldowns[id]||0)>Number(state.tick||0))continue;
+  runtime.cooldowns[id]=Number(state.tick||0)+Math.max(0,Number(ability.cooldownTicks)||0);
+  return ability;
+ }
+ return null;
+}
+function hasJustReceivedPass(state,p){
+ const passerId=state&&state.lastPasser;
+ if(passerId==null||idOf(passerId)===idOf(p.id))return false;
+ const team=state.teams&&state.teams[p.teamNumber];
+ return !!team&&!!playerIn(team,passerId);
+}
+function activateBattleSimUltimate(state,p){
+ const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.ultimates)?p.battleSim.ultimates:[];
+ const runtime=battleSimRuntimeState(p);
+ for(const ability of abilities){
+  if(!ability)continue;
+  const id=idOf(ability.id),condition=ability.condition||{};
+  if(ability.oncePerMatch&&runtime.usedUltimates.includes(id))continue;
+  if(condition.duringFlow&&!isFlowing(p))continue;
+  if(condition.receivedPass&&!hasJustReceivedPass(state,p))continue;
+  if(ability.oncePerMatch)runtime.usedUltimates.push(id);
+  return ability;
+ }
+ return null;
+}
+function battleSimAbilityDialogue(p,ability){
+ return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
+}
 function isagiChemistryDialogue(actor,partner,event){const striker=isagi(actor)?actor:isagi(partner)?partner:null,other=striker===actor?partner:actor;if(!striker||!other)return[];const lines=striker.battleSim.chemistryDialogue&&striker.battleSim.chemistryDialogue[other.name],text=lines&&lines[event];return text?[{playerId:striker.id,text:striker.name+": "+String.fromCharCode(34)+text+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
-function drain(p,success,action){const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
+function drain(p,success,action){if(isFlowing(p))return;const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
 function playerWeaponsText(player){
  const weapons=Array.isArray(player&&player.weapons)?player.weapons:[];
  if(!weapons.length)return "WEAPONS\nNone registered";
@@ -412,7 +476,7 @@ function moveOffBall(state){
   }
   if(distance(p,target)<.3){const phase=(state.tick+Number(p.id||0))*.7;target={x:p.x+Math.sin(phase)*.4,y:p.y+Math.cos(phase)*.5};}
   const old=point(p);moveToward(p,target,movementMeters(p));
-  p.stamina=clamp(p.stamina-distance(old,p)*.007,0,100);
+  if(!isFlowing(p))p.stamina=clamp(p.stamina-distance(old,p)*.007,0,100);
  });
 }
 function receiverChoice(state,team,carrier,options={}){
@@ -548,21 +612,25 @@ function resolveShot(state,shooter,penalty,ultimate){
  const near=opposing(state,team.number).filter(p=>p.role!=="GK").reduce((v,p)=>Math.min(v,distance(p,shooter)),99);
  const pressure=near<4?10:near<TACKLE_RADIUS_M?6:near<11?2:0;
  const base=penalty?.76:metres<9?.31:metres<17?.23:metres<27?.13:metres<37?.055:.023;
- const shoot=effective(shooter,"sho"),gkStat=gk?effective(gk,"gk"):45;
+ const special=!penalty&&!ultimate?activateBattleSimSpecial(state,shooter,"shot"):null;
+ const shootMultiplier=Math.max(1,Number(ultimate&&ultimate.statMultipliers&&ultimate.statMultipliers.sho)||1);
+ const shoot=effective(shooter,"sho")*shootMultiplier,gkStat=gk?effective(gk,"gk"):45;
  const mainChance=penalty?sigmoid((shoot-gkStat)/22+1.28):sigmoid(logit(base)+(shoot-75)/24-(gkStat-75)/26-pressure/36);
  const matchup=sigmoid((shoot-85)/5+(75-gkStat)/7+.8);
  const angle=penalty?0:Math.abs(shooter.y-50)*.0038;
- const specialBonus=!penalty&&isagi(shooter)?Math.min(.10,isagiNearDefenders(state,shooter,shooter)*.025):0;
+ const bonus=special&&special.successChanceBonus?special.successChanceBonus:null;
+ const nearbyCount=bonus?battleSimNearbyDefenders(state,shooter,shooter,Math.max(0,Number(bonus.rangeMeters)||RECEIVE_PRESSURE_M)):0;
+ const specialBonus=bonus?Math.min(Math.max(0,Number(bonus.maxBonus)||0),nearbyCount*Math.max(0,Number(bonus.perNearbyDefender)||0)):0;
  const boxBoost=metres<12?.17:metres<21?.12:metres<30?.065:0;
  const distancePenalty=penalty?0:Math.max(0,metres-18)*.0055;
  const rawChance=clamp(penalty?mainChance:Math.max(mainChance,Math.min(matchup,base+.25))+specialBonus+boxBoost-angle-distancePenalty,0,1);
- const goalChance=ultimate?1:rawChance;
- const roll=ultimate?0:state.random();team.stats.shots++;shooter.match.shots++;
- addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,
-  description:ultimate?shooter.name+" unleashes "+ultimate.name+"!":shooter.name+" shoots from "+Math.round(metres)+"m!",
-  comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
-  probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:[shooter],
-  shotRoute:{from:point(shooter),to:targetGoal(team.number)}});
+ const goalChance=rawChance,roll=state.random();team.stats.shots++;shooter.match.shots++;
+ const activeAbility=ultimate||special,abilityDialogue=battleSimAbilityDialogue(shooter,activeAbility);
+ const shotDescription=ultimate?shooter.name+" unleashes "+ultimate.name+"!":special?shooter.name+" uses "+special.name+" from "+Math.round(metres)+"m!":shooter.name+" shoots from "+Math.round(metres)+"m!";
+ addEvent(state,{type:"shot-attempt",teamNumber:team.number,notable:true,description:shotDescription,
+  comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
+  probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:[shooter],
+  dialogue:abilityDialogue.length?abilityDialogue:undefined,shotRoute:{from:point(shooter),to:targetGoal(team.number)}});
  drain(shooter,roll<goalChance,"shot");
  const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
  state.lastPasser=null;
@@ -571,10 +639,11 @@ function resolveShot(state,shooter,penalty,ultimate){
   if(assister){assister.match.assists++;addPoints(assister,.68);}
   state.score[team.number]++;setBall(state,targetGoal(team.number));
   addEvent(state,{type:"goal",teamNumber:team.number,notable:true,
-   description:"GOAL! "+shooter.name+(shooter.flow>=100?" strikes in FLOW":" scores")+" for "+team.name+(assister?" assisted by "+assister.name:"")+".",
-   comparison:ultimate?null:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
-   probability:goalChance,probabilityLabel:ultimate?"ULTIMATE SUCCESS":"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
-  if(isagi(shooter)){shooter.match.specials=(shooter.match.specials||0)+1;if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;}
+   description:"GOAL! "+shooter.name+(isFlowing(shooter)?" strikes in FLOW":" scores")+" for "+team.name+(assister?" assisted by "+assister.name:"")+".",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},
+   probability:goalChance,probabilityLabel:"GOAL CHANCE",actors:assister?[shooter,assister]:[shooter]});
+  if(special)shooter.match.specials=(shooter.match.specials||0)+1;
+  if(ultimate)shooter.match.ultimates=(shooter.match.ultimates||0)+1;
   state.pending={type:"kickoff",teamNumber:defteam.number,zone:7,point:{x:50,y:50}};
   resetPositions(state);pause(state,"GOAL");return;
  }
@@ -591,7 +660,8 @@ function resolveShot(state,shooter,penalty,ultimate){
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;}
   const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
   state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
-  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly. Goal kick.",comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk]});pause(state,"SAVE / GOAL KICK");return;
+  addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" catches "+shooter.name+"'s shot cleanly.",
+   comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk]});pause(state,"SAVE / GOAL KICK");return;
  }
  if(outcome<.75){
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
@@ -785,9 +855,7 @@ function simulateTick(state){
   ensureTickEvent(state,eventsBefore);return;
  }
  if(carrier.role==="GK"){resolvePass(state,carrier,{passKind:"short"});ensureTickEvent(state,eventsBefore);return;}
- const ultimate=carrier.battleSim?.ultimates?.find(ability=>ability.id==="two-gun-volley");
- if(isagi(carrier)&&carrier.flow>=100&&ultimate&&distance(carrier,targetGoal(t.number))<=24){resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
- if(chooseShot(state,carrier)){resolveShot(state,carrier,false);ensureTickEvent(state,eventsBefore);return;}
+ if(chooseShot(state,carrier)){const ultimate=activateBattleSimUltimate(state,carrier);resolveShot(state,carrier,false,ultimate);ensureTickEvent(state,eventsBefore);return;}
  const near=receiverPressure(state,t.number,carrier),dribble=clamp(.40+(t.strategy.tempo-50)/250+(near>1?-.08:.06),.22,.67);
  if(state.random()<dribble||(progress(t.number,carrier)<.25&&near===0))resolveDribble(state,carrier);else resolvePass(state,carrier,{});
  ensureTickEvent(state,eventsBefore);
