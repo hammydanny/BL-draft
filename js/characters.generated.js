@@ -7,12 +7,12 @@ const ISAGI_PLAYER_DATA = {
         stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 },
         nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}},
         weapons: [
-            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Battle Sim: modestly improves Isagi’s short passing and shot chance when defenders are close.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Battle Sim: increases Isagi’s OFF and SPD by 10% while he is off the ball.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"awareness","name":"Awareness","description":"Notices shifts in player positions, open lanes, danger and passing options before they become obvious.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"adaptability","name":"Adaptability","description":"Revises his plan as new information exposes an opponent’s habits, then combines available skills to exploit the changed situation.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"off-the-ball-movements","name":"Off-the-Ball Movements","description":"Times sharp runs into blind spots and open space to arrive where defenders lose track of him.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"direct-shot","name":"Direct Shot","description":"Meets the incoming ball with a first-time strike, denying defenders the extra moment a controlling touch would give them.","battleSimType":"Special Move","battleSimDescription":"Battle Sim: when Isagi attempts a goal with the ball, increases goal chance by 2.5 percentage points per nearby outfield defender, capped at +12 points. Dialogue: Direct Shot!","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"Threatens a volley with one foot, changes the shooting leg in mid-air and finishes after the defender commits to the first motion.","battleSimType":"Ultimate","battleSimDescription":"Battle Sim: while Isagi has full Flow (100%) and possession within two zones of the opposing goal, instantly fires a guaranteed volley. Goal success is 100% and ignores goalkeeper stats. Dialogue: Two-Gun Volley!","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"direct-shot","name":"Direct Shot","description":"Meets the incoming ball with a first-time strike, denying defenders the extra moment a controlling touch would give them.","battleSimType":"Special Move","battleSimDescription":"Battle Sim: increases shot success chance by 2.5 percentage points per nearby outfield defender, capped at +12 percentage points. Cooldown: 20 ticks.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"Threatens a volley with one foot, changes the shooting leg in mid-air and finishes after the defender commits to the first motion.","battleSimType":"Ultimate","battleSimDescription":"Battle Sim: during Flow, when Isagi receives a pass and attempts a goal, his SHO is doubled. Can be used once per match.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
             {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"Disguises a forward strike before redirecting the ball behind him with a backheel to bypass a closing defender.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
             {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"Finishes first-time with his left foot when a defender closes the angle for his preferred right-footed strike.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
         ]
@@ -22,14 +22,19 @@ const ISAGI_PLAYER_DATA = {
         {
             "id": "metavision",
             "name": "Metavision",
-            "description": "Scans nearby pressure and passing lanes; modestly improves short-pass success and goal chance when defenders are close."
+            "description": "Increases Isagi's OFF and SPD by 10% while he is off the ball.",
+            "condition": "off-ball",
+            "statBonuses": { "off": 0.10, "spd": 0.10 }
         }
     ],
     "specials": [
         {
             "id": "direct-shot",
             "name": "Direct Shot",
-            "description": "When Isagi has possession and attempts a goal, adds 2.5 percentage points to goal chance per opposing outfield defender within one zone, capped at +12 points.",
+            "description": "Increases shot success chance by 2.5 percentage points per nearby outfield defender, up to a maximum bonus of 12 percentage points. Cooldown: 20 ticks.",
+            "trigger": "shot",
+            "cooldownTicks": 20,
+            "successChanceBonus": { "rangeMeters": 10, "perNearbyDefender": 0.025, "maxBonus": 0.12 },
             "dialogue": "Direct Shot!"
         }
     ],
@@ -37,8 +42,11 @@ const ISAGI_PLAYER_DATA = {
         {
             "id": "two-gun-volley",
             "name": "Two-Gun Volley",
-            "description": "When Isagi has possession at full Flow (100%) within two zones of the opposing goal, he instantly volleys toward goal. Guaranteed 100% success; goalkeeper stats cannot affect the result. Dialogue: Two-Gun Volley!",
-            "dialogue": "Two-Gun Volley!"
+            "description": "During Flow, when Isagi receives a pass and attempts a goal, his SHO is doubled. Can be used once per match.",
+            "condition": { "duringFlow": true, "receivedPass": true },
+            "oncePerMatch": true,
+            "statMultipliers": { "sho": 2 },
+            "dialogue": "This is my... Ultimate! Two Gun Volley!"
         }
     ],
     "dialogue": {
