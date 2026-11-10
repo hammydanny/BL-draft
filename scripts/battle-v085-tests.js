@@ -61,11 +61,11 @@ function runBattleV085Tests(){
   b.setPosition(foulCarrier,{x:50,y:50});b.setPosition(fouler,{x:50,y:50});foulMatch.random=()=>.99;
   assert(b.checkFoul(foulMatch,1,foulCarrier,fouler,{x:50,y:50},[],true));
   assert.equal(foulMatch.pending.freeKickType,"midfield");assert.equal(foulMatch.pending.routine,"short-pass");
-  const taker=b.setPieceTaker(foulMatch,foulMatch.pending),nearMate=b.active(foulMatch.teams[1]).find(p=>p.id===foulMatch.pending.shortReceiverId);
-  assert(nearMate&&b.distance(nearMate,taker)<10,"midfield free kick has a nearby teammate");
-  for(const n of [1,2])for(const p of b.active(foulMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==taker.id)){
-   assert(p.x>taker.x,"midfield restart players are in front");
-   if(p.id!==nearMate.id)assert(b.distance(p,taker)>10,"midfield restart preserves 10m distance");
+  const midfieldFreeKickTaker=b.setPieceTaker(foulMatch,foulMatch.pending),nearMate=b.active(foulMatch.teams[1]).find(p=>p.id===foulMatch.pending.shortReceiverId);
+  assert(nearMate&&b.distance(nearMate,midfieldFreeKickTaker)<10,"midfield free kick has a nearby teammate");
+  for(const n of [1,2])for(const p of b.active(foulMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==midfieldFreeKickTaker.id)){
+   assert(p.x>midfieldFreeKickTaker.x,"midfield restart players are in front");
+   if(p.id!==nearMate.id)assert(b.distance(p,midfieldFreeKickTaker)>10,"midfield restart preserves 10m distance");
   }
   const boxMatch=b.createMatch();b.setMatch(boxMatch);
   const boxCarrier=b.active(boxMatch.teams[1]).find(p=>p.role!=="GK"),boxDefender=b.active(boxMatch.teams[2]).find(p=>p.role!=="GK");
