@@ -377,10 +377,10 @@ function activateBattleSimUltimate(state,p){
  for(const ability of abilities){
   if(!ability)continue;
   const id=idOf(ability.id),condition=ability.condition||{};
-  if(ability.oncePerMatch&&runtime.usedUltimates.includes(id))continue;
+  if(ability.oncePerFlow&&runtime.usedUltimates.includes(id))continue;
   if(condition.duringFlow&&!isFlowing(p))continue;
   if(condition.receivedPass&&!hasJustReceivedPass(state,p))continue;
-  if(ability.oncePerMatch)runtime.usedUltimates.push(id);
+  if(ability.oncePerFlow)runtime.usedUltimates.push(id);
   return ability;
  }
  return null;
@@ -389,7 +389,7 @@ function battleSimAbilityDialogue(p,ability){
  return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
 }
 function isagiChemistryDialogue(actor,partner,event){const striker=isagi(actor)?actor:isagi(partner)?partner:null,other=striker===actor?partner:actor;if(!striker||!other)return[];const lines=striker.battleSim.chemistryDialogue&&striker.battleSim.chemistryDialogue[other.name],text=lines&&lines[event];return text?[{playerId:striker.id,text:striker.name+": "+String.fromCharCode(34)+text+String.fromCharCode(34)}]:[];}
-function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;}}}}}
+function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;const runtime=battleSimRuntimeState(p);runtime.usedUltimates=[];runtime.flowActivationCount=(Number(runtime.flowActivationCount)||0)+1;}}}}}
 function drain(p,success,action){if(isFlowing(p))return;const amount=action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2;p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
 function playerWeaponsText(player){
  const weapons=Array.isArray(player&&player.weapons)?player.weapons:[];
@@ -842,7 +842,7 @@ function simulateTick(state){
  const eventsBefore=state.events.length;state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
- for(const n of [1,2])for(const p of state.teams[n].roster){if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>=30){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
+ for(const n of [1,2])for(const p of state.teams[n].roster){if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  moveOffBall(state);
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
@@ -1115,10 +1115,52 @@ function battleSimProfileWeapons(player){
   {type:"SPECIAL",items:Array.isArray(data.specials)?data.specials:[]},
   {type:"ULTIMATE",items:Array.isArray(data.ultimates)?data.ultimates:[]}
  ].flatMap(group=>group.items.map(item=>({
+  id:String(item&&item.id||""),
   type:group.type,
   name:String(item&& (item.name||item.id)||"Unnamed Battle Sim Weapon"),
   description:String(item&&item.description||"No description registered.")
  })));
+}
+function battleSimProfileStatus(player,type,abilityId,state=match){
+ if(!player||!state)return{label:"MATCH STATUS UNAVAILABLE",kind:"inactive"};
+ if(type==="PASSIVE"){
+  const ability=(player.battleSim&&player.battleSim.passives||[]).find(item=>idOf(item.id)===idOf(abilityId));
+  if(ability&&ability.condition==="off-ball"){
+   const active=!hasBall(player,state);
+   return{label:active?"IN EFFECT":"INACTIVE · HAS POSSESSION",kind:active?"active":"inactive"};
+  }
+  return{label:"CONDITIONAL PASSIVE",kind:"inactive"};
+ }
+ if(type==="SPECIAL"){
+  const until=Number(player.battleSimState&&player.battleSimState.cooldowns&&player.battleSimState.cooldowns[abilityId])||0;
+  const ticksLeft=Math.max(0,until-Number(state.tick||0));
+  return ticksLeft>0?{label:"ON COOLDOWN · "+ticksLeft+" TICKS LEFT",kind:"cooldown",ticksLeft}:{label:"READY",kind:"ready",ticksLeft:0};
+ }
+ if(type==="ULTIMATE"){
+  const ability=(player.battleSim&&player.battleSim.ultimates||[]).find(item=>idOf(item.id)===idOf(abilityId));
+  if(ability&&ability.condition&&ability.condition.duringFlow&&!isFlowing(player))return{label:"REQUIRES FLOW",kind:"inactive"};
+  const used=Array.isArray(player.battleSimState&&player.battleSimState.usedUltimates)&&player.battleSimState.usedUltimates.includes(idOf(abilityId));
+  if(used)return{label:"USED THIS FLOW",kind:"used"};
+  if(ability&&ability.condition&&ability.condition.receivedPass&&!hasJustReceivedPass(state,player))return{label:"READY · WAITING FOR PASS",kind:"ready"};
+  return{label:"READY THIS FLOW",kind:"ready"};
+ }
+ return{label:"REGISTERED",kind:"ready"};
+}
+function updateMatchPlayerProfileStatuses(root){
+ if(!root||!match)return;
+ root.querySelectorAll(".bs-player-profile-overlay").forEach(overlay=>{
+  const team=match.teams&&match.teams[Number(overlay.dataset.profileTeamNumber)];
+  const player=team&&playerIn(team,overlay.dataset.profilePlayerId);
+  if(!player)return;
+  overlay.querySelectorAll(".bs-player-profile-weapon[data-profile-ability-id]").forEach(card=>{
+   const statusNode=card.querySelector("[data-profile-ability-status]");
+   if(!statusNode)return;
+   const status=battleSimProfileStatus(player,card.dataset.profileAbilityType,card.dataset.profileAbilityId,match);
+   statusNode.textContent=status.label;
+   statusNode.className="bs-player-profile-weapon-status is-"+status.kind;
+   statusNode.title=status.ticksLeft>0?status.ticksLeft+" match ticks remaining":status.label;
+  });
+ });
 }
 function closeMatchPlayerProfile(panel,restoreFocus=true){
  if(!panel)return;
@@ -1138,6 +1180,7 @@ function openMatchPlayerProfile(panel,player,trigger){
  panel._profileTrigger=trigger||null;
  if(trigger)trigger.setAttribute("aria-expanded","true");
  const overlay=make("section","bs-player-profile-overlay");
+ overlay.dataset.profilePlayerId=idOf(player.id);overlay.dataset.profileTeamNumber=String(player.teamNumber||panel.dataset.team||"");
  overlay.setAttribute("role","dialog");
  overlay.setAttribute("aria-modal","false");
  overlay.setAttribute("aria-label",player.name+" Battle Sim profile");
@@ -1186,10 +1229,12 @@ function openMatchPlayerProfile(panel,player,trigger){
  }else{
   weapons.forEach(weapon=>{
    const item=make("article","bs-player-profile-weapon");
+   item.dataset.profileAbilityId=weapon.id;item.dataset.profileAbilityType=weapon.type;
    const top=make("div","bs-player-profile-weapon-top");
    put(top,make("strong","bs-player-profile-weapon-name",weapon.name));
    put(top,make("span","bs-player-profile-weapon-type",weapon.type));
    put(item,top);
+   const status=make("span","bs-player-profile-weapon-status");status.dataset.profileAbilityStatus="true";put(item,status);
    put(item,make("p","bs-player-profile-weapon-description",weapon.description));
    put(weaponList,item);
   });
@@ -1197,6 +1242,7 @@ function openMatchPlayerProfile(panel,player,trigger){
  put(weaponSection,weaponList);
  put(overlay,weaponSection);
  put(panel,overlay);
+ updateMatchPlayerProfileStatuses(panel);
  const close=overlay.querySelector(".bs-player-profile-close");
  if(close)close.focus({preventScroll:true});
 }
@@ -1546,6 +1592,7 @@ function renderMatch(){
  }
  const fp=root.querySelector(".bs-live-feed-panel");if(fp)fp.style.setProperty("--bs-possession-color",state.teams[state.possession].color);
  renderPitch(state);renderFeed();renderStoppage();
+ updateMatchPlayerProfileStatuses(root);
  updateSequenceControls();
  window.SiteI18n?.apply(byId("bs-match-view"));
  const pause=byId("bs-pause-match");if(pause){pause.disabled=stoppageReady()||match.status==="finished";pause.textContent=match.manualPaused?"RESUME SIM":"PAUSE SIM";}
