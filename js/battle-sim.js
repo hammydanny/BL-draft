@@ -1137,10 +1137,10 @@ function battleSimProfileStatus(player,type,abilityId,state=match){
   return ticksLeft>0?{label:"ON COOLDOWN · "+ticksLeft+" TICKS LEFT",kind:"cooldown",ticksLeft}:{label:"READY",kind:"ready",ticksLeft:0};
  }
  if(type==="ULTIMATE"){
-  const used=Array.isArray(player.battleSimState&&player.battleSimState.usedUltimates)&&player.battleSimState.usedUltimates.includes(idOf(abilityId));
-  if(used)return{label:"USED THIS FLOW",kind:"used"};
   const ability=(player.battleSim&&player.battleSim.ultimates||[]).find(item=>idOf(item.id)===idOf(abilityId));
   if(ability&&ability.condition&&ability.condition.duringFlow&&!isFlowing(player))return{label:"REQUIRES FLOW",kind:"inactive"};
+  const used=Array.isArray(player.battleSimState&&player.battleSimState.usedUltimates)&&player.battleSimState.usedUltimates.includes(idOf(abilityId));
+  if(used)return{label:"USED THIS FLOW",kind:"used"};
   if(ability&&ability.condition&&ability.condition.receivedPass&&!hasJustReceivedPass(state,player))return{label:"READY · WAITING FOR PASS",kind:"ready"};
   return{label:"READY THIS FLOW",kind:"ready"};
  }
