@@ -39,9 +39,9 @@ const ISAGI_PLAYER_DATA = {
         {
             "id": "two-gun-volley",
             "name": "Two-Gun Volley",
-            "description": "During Flow, when Isagi receives a pass and attempts a goal, his SHO is doubled. Can be used once per match.",
+            "description": "During Flow, when Isagi receives a pass and attempts a goal, his SHO is doubled. Can be used once per Flow.",
             "condition": { "duringFlow": true, "receivedPass": true },
-            "oncePerMatch": true,
+            "oncePerFlow": true,
             "statMultipliers": { "sho": 2 },
             "dialogue": "This is my... Ultimate! Two Gun Volley!"
         }
