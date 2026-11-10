@@ -60,6 +60,7 @@ function runBattleV085Tests(){
   const foulCarrier=b.active(foulMatch.teams[1]).find(p=>p.role!=="GK"),fouler=b.active(foulMatch.teams[2]).find(p=>p.role!=="GK");
   b.setPosition(foulCarrier,{x:50,y:50});b.setPosition(fouler,{x:50,y:50});foulMatch.random=()=>.99;
   assert(b.checkFoul(foulMatch,1,foulCarrier,fouler,{x:50,y:50},[],true));
+  b.stagePendingSetPiece(midfieldMatch);
   assert.equal(foulMatch.pending.freeKickType,"midfield");assert.equal(foulMatch.pending.routine,"short-pass");
   const midfieldFreeKickTaker=b.setPieceTaker(foulMatch,foulMatch.pending),nearMate=b.active(foulMatch.teams[1]).find(p=>p.id===foulMatch.pending.shortReceiverId);
   assert(nearMate&&b.distance(nearMate,midfieldFreeKickTaker)<10,"midfield free kick has a nearby teammate");
@@ -71,6 +72,7 @@ function runBattleV085Tests(){
   const boxCarrier=b.active(boxMatch.teams[1]).find(p=>p.role!=="GK"),boxDefender=b.active(boxMatch.teams[2]).find(p=>p.role!=="GK");
   b.setPosition(boxCarrier,{x:78,y:50});b.setPosition(boxDefender,{x:78,y:50});boxMatch.random=()=>.99;
   assert(b.checkFoul(boxMatch,1,boxCarrier,boxDefender,{x:78,y:50},[],true));
+  b.stagePendingSetPiece(attackingMatch);
   assert.equal(boxMatch.pending.freeKickType,"attacking");assert.equal(b.setPieceTaker(boxMatch,boxMatch.pending).x,82);
   assert.equal(b.setPieceSkill(boxMatch.pending),"sho");
   for(const p of b.active(boxMatch.teams[2]).filter(p=>p.role!=="GK"))assert(b.distance(p,b.setPieceTaker(boxMatch,boxMatch.pending))>10);
@@ -78,6 +80,7 @@ function runBattleV085Tests(){
   const penaltyCarrier=b.active(penaltyMatch.teams[1]).find(p=>p.role!=="GK"),penaltyDefender=b.active(penaltyMatch.teams[2]).find(p=>p.role!=="GK");
   b.setPosition(penaltyCarrier,{x:90,y:50});b.setPosition(penaltyDefender,{x:90,y:50});penaltyMatch.random=()=>.99;
   assert(b.checkFoul(penaltyMatch,1,penaltyCarrier,penaltyDefender,{x:90,y:50},[],true));
+  b.stagePendingSetPiece(penaltyMatch);
   assert.equal(penaltyMatch.pending.type,"penalty");assert.equal(b.setPieceTaker(penaltyMatch,penaltyMatch.pending).x,89.5);
   for(const n of [1,2])for(const p of b.active(penaltyMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==penaltyCarrier.id))assert(!b.inOpponentBox(1,p));
   const redMatch=b.createMatch();b.setMatch(redMatch);
