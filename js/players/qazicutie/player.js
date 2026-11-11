@@ -20,7 +20,7 @@ const PLAYER_82_DATA = {
     category: "technical",
     description: "Qazicutie aims at the keeper for a suprise shot. Doesn't work"
   }],
-  stats: { ovr: 74, off: 83, sho: 78, spd: 66, def: 55, pas: 68, dri: 70, gk: 40 },
+  stats: { ovr: 73, off: 83, sho: 75, spd: 64, def: 55, pas: 68, dri: 68, gk: 40 },
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] },
     { name: "3-Headed Succubus", members: ["hdannyy", "floppy_willy", "Qazicutie"] }

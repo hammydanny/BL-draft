@@ -85,7 +85,8 @@ const PLAYER_PROFILE_METADATA = Object.fromEntries(Object.entries({
   "79": PLAYER_79_REFERENCE,
   "87": PLAYER_87_REFERENCE,
   "88": PLAYER_88_REFERENCE,
-  "89": PLAYER_89_REFERENCE
+  "89": PLAYER_89_REFERENCE,
+  "90": PLAYER_90_REFERENCE
 }).filter(([,profile])=>profile));
 
 // Shared category registry: Auction selection and Database browsing use the same data.
@@ -97,7 +98,7 @@ const PLAYER_POOL_CATEGORIES = {
     "new-gen-11":{label:"NEW GENERATION XI",names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Bunny Iglesias","Vivien Hugo","Teddy Knight"]},
     "nel-foreign":{label:"NEL FOREIGN PLAYERS",names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier","Rooke","Renoir"]},
     "japan-world-cup":{label:"JAPAN U-20 WORLD CUP",names:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Meguru Bachira","Hyoma Chigiri","Reo Mikage","Rensuke Kunigami","Eita Otoya","Oliver Aiku","Tabito Karasu","Gin Gagamaru","Jyubei Aryu","Kenyu Yukimiya","Ikki Niko","Yo Hiori","Shuto Sendo","Ranze Kurona","Zantetsu Tsurugi","Gen Fukaku","Jingo Raichi","Jin Kiyora","Nijiro Nanase","Shoei Baro"]},
-    "world-cup-new":{label:"U-20 WC NEWCOMERS",names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes"]},
+    "world-cup-new":{label:"U-20 WC NEWCOMERS",names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes","Exum"]},
     "side-b":{label:"SIDE-B",names:["Seishiro Nagi","Ryosuke Kira","Haneru Shindo","Hajime Nishioka","Shigeo Mizuki","Reiji Hiiragi","Aiki Himizu","Keisuke Wanima","Hibiki Okawa"]}
 };
 const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CATEGORIES).map(([key,data])=>[
@@ -1320,10 +1321,12 @@ const PLAYER_QUOTES=Object.freeze([
 // Internal follow-up review ledger. Missing verification is recorded honestly;
 // it never authorizes a translated, invented or fan-localized visible quote.
 const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
-  "chapterLimit": 364,
+  "chapterLimit": 368,
+  "contentRefresh": {"throughChapter":368,"baseCommit":"5e8aec3","reviewedPlayerIds":[1,7,27,28,31,90],"officialChapterUrl":"https://kmanga.kodansha.com/title/10008/episode/369435","officialExumPost":"https://x.com/KMANGA_KODANSHA/status/2120188483633377661","method":"Official release and Exum introduction checked; surrounding play cross-checked in independent English and Japanese chapter summaries. Existing verified quotes remain unchanged; no claim of full official-English reader access."},
   "baseCommit": "4af894a7019c2268d1c448a2eb9165364d296aed",
-  "sourceAccess": "Manga dialogue/context research was available through chapter 364; many official English readers and the existing subtitle host were inaccessible. All retained quotes retain their previous verification provenance. This is not a claim of full official-English chapter access.",
+  "sourceAccess": "Historical full-roster quotation audit: manga dialogue/context research was available through chapter 364; many official English readers and the existing subtitle host were inaccessible. All retained quotes retain their previous verification provenance. This is not a claim of full official-English chapter access.",
   "players": {
+    "90": {"quoteAction":"none","reason":"Limited appearance; no verified quote added.","mangaCandidates":[368],"aliasAction":"official-name-only"},
     "1": {
       "quoteAction": "retain",
       "reason": "Autonomy and choosing teammates already expresses Isagi’s adaptive ego.",

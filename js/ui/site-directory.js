@@ -94,6 +94,12 @@ function configureTeamBuilderHeader(standalone){
     updateSiteDirectory(formationScreen);
 }
 function runDirectoryAction(action){
+    // Information pages load only the shared chrome, not the game router/state.
+    if(document.body.dataset.sitePage){
+        const button=document.querySelector(`[data-directory-action="${action}"][data-directory-href]`);
+        if(button)window.location.assign(new URL(button.dataset.directoryHref,document.baseURI).href);
+        return;
+    }
     if(action==="battle-sim"){openBattleSimPage();return;}
     // v0.7.3 play views live on the home document; other documents navigate there.
     const views={"challenges":"board","ego-board":"board","draft-challenges":"challenges","draft-duel":"duel","challenge-lab":"lab","ego-record":"record"};
@@ -101,11 +107,6 @@ function runDirectoryAction(action){
     if(action==="daily-draft"&&typeof openDraftChallenges==="function"){openDraftChallenges(true);return;}
     if(action==="vs-cpu"&&typeof openCpuBriefing==="function"){openCpuBriefing();return;}
 
-    if(document.body.dataset.sitePage){
-        const button=document.querySelector(`[data-directory-action="${action}"][data-directory-href]`);
-        if(button)window.location.assign(new URL(button.dataset.directoryHref,document.baseURI).href);
-        return;
-    }
     if(uiState.screen==="setup")saveSetupPreferences();
     else if(uiState.screen==="auction"||uiState.screen==="formation"||uiState.screen==="standalone-builder")saveGame();
     switch(action){

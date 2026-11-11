@@ -21,7 +21,7 @@ const PLAYER_88_DATA = {
     description: "When passing to a teammate, telegraph the trajectory so that it bends around the opposition and lands right at the feet of the receiver, confusing opponents who try to intercept."
   }],
   // LW position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 84, sho: 88, pas: 87, dri: 83, spd: 81, off: 90, def: 70, gk: 55 },
+  stats: { ovr: 85, sho: 90, pas: 87, dri: 83, spd: 81, off: 90, def: 78, gk: 55 },
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] }
   ]

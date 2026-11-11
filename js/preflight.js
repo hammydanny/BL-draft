@@ -157,7 +157,7 @@ check('Data modules initialize in classic shared scope',()=>{
     for(const file of ['js/version.js','js/players.js','js/chemistry.js','js/player-reference.js','js/squad-balance.js','js/formations.js','js/storage.js']){
         vm.runInContext(read(file),sandbox,{filename:file});
     }
-    data=vm.runInContext('({players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_ALIASES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
+    data=vm.runInContext('({APP_SUPPORTED_CHAPTER,players,FORMATIONS,CHEMISTRY_CONTEXTS,CHEMISTRY_SPECIAL_PAIRS,FORMATION_CHEMISTRY_EDGES,SHARED_TEAM_FLOOR_EXCEPTIONS,PLAYER_PROFILE_METADATA,PLAYER_QUOTES,PLAYER_ALIASES,PLAYER_COUNTRIES,PLAYER_POOL_CATEGORIES,PLAYER_POOL_CATEGORY_IDS,CHEMISTRY_REFERENCE_PAIRS,CHEMISTRY_REFERENCE_CONTEXTS,APP_VERSION,APP_VERSION_LABEL,AUCTION_SAVE_SCHEMA_VERSION,STANDALONE_SAVE_SCHEMA_VERSION})',sandbox);
 });
 check('Unique player IDs, required records, numeric stats and image paths',()=>{
     assert(data?.players.length>0,'No players loaded');
@@ -674,7 +674,7 @@ check('v0.6.3 player expansion, conservative estimates and stable chronology',()
         for(const [stat,value] of Object.entries(player.stats))assert(value<=89,`${name}: ${stat} must stay below 90`);
     }
     for(const player of data.players){
-        assert(Number.isInteger(player.debutChapter)&&player.debutChapter>=1&&player.debutChapter<=364,`${player.name}: debut chapter`);
+        assert(Number.isInteger(player.debutChapter)&&player.debutChapter>=1&&player.debutChapter<=data.APP_SUPPORTED_CHAPTER,`${player.name}: debut chapter`);
         assert(Number.isInteger(player.appearanceOrder),`${player.name}: stable appearance order`);
     }
     assert.equal(data.players.find(p=>p.name==='Innocent Onazi').stats.ovr,89);
@@ -927,7 +927,7 @@ const {validateReferenceData,formationFingerprint}=require('../scripts/data-vali
 function referenceValidationInput(){return {
     players:data.players,contexts:data.CHEMISTRY_CONTEXTS,pairs:data.CHEMISTRY_SPECIAL_PAIRS,
     metadata:data.PLAYER_PROFILE_METADATA,categories:data.PLAYER_POOL_CATEGORIES,categoryIds:data.PLAYER_POOL_CATEGORY_IDS,
-    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,aliases:data.PLAYER_ALIASES,countries:data.PLAYER_COUNTRIES,
+    referencePairs:data.CHEMISTRY_REFERENCE_PAIRS,referenceContexts:data.CHEMISTRY_REFERENCE_CONTEXTS,quotes:data.PLAYER_QUOTES,aliases:data.PLAYER_ALIASES,countries:data.PLAYER_COUNTRIES,supportedChapter:data.APP_SUPPORTED_CHAPTER,
     formations:data.FORMATIONS,expectedFormationFingerprint:'b4b138d62909697c9909e6684a0c612fdddd53368c583e0a4628b4e25993f59e',
     assetExists(source){try{const url=new URL(source,baseURI);return url.href.startsWith(baseURI)&&fs.existsSync(path.join(root,decodeURIComponent(url.pathname.slice(new URL(baseURI).pathname.length))));}catch{return false;}}
 };}
@@ -1056,18 +1056,18 @@ check('All secret-character chemistry uses one authoritative source',()=>{
     const counts=new Map();
     for(const entry of entries)counts.set(entry.key,(counts.get(entry.key)||0)+1);
     for(const [key,count] of counts)assert.equal(count,1,'Duplicate secret chemistry pair '+key);
-    for(const pair of [['Kenyu Yukimiya','Jameswasnthere',79],['Yoichi Isagi','Jameswasnthere',80],['Qazicutie','jon',63],['Qazicutie','Syaafi',69],['Qazicutie','oka',65],['hdannyy','raf',90],['floppy_willy','jon',50],['jon','oka',90]]){
+    for(const pair of [['Kenyu Yukimiya','Jameswasnthere',79],['Yoichi Isagi','Jameswasnthere',80],['Qazicutie','jon',63],['Qazicutie','Syaafi',69],['Qazicutie','oka',65],['hdannyy','raf',90],['floppy_willy','jon',65],['jon','oka',90]]){
         const key=[pair[0],pair[1]].sort().join('|'),entry=entries.find(item=>item.key===key);
         assert(entry&&entry.score===pair[2],'Latest secret chemistry missing '+key+' '+pair[2]);
     }
 });
 
-check('Chapter-364 quote boundary, review coverage and new canon aliases remain searchable',()=>{
+check('Supported-chapter quote boundary, review coverage and new canon aliases remain searchable',()=>{
     const app=appContext();app.run(`
         assert.deepEqual(Object.keys(PLAYER_REFERENCE_CONTENT_REVIEW.players).map(Number).sort((a,b)=>a-b),players.filter(p=>!p.secretCharacter).map(p=>p.id).sort((a,b)=>a-b));
         const fixture={...PLAYER_QUOTES.find(q=>q.playerId===49),chapter:364};
         assert.equal(fixture.sourceType,'manga');assert(isVerifiedCanonQuote(fixture));
-        assert(!isVerifiedCanonQuote({...fixture,chapter:365}));
+        assert(!isVerifiedCanonQuote({...fixture,chapter:APP_SUPPORTED_CHAPTER+1}));
         for(const [id,name] of [[1,'Game Master'],[7,'Red Panther'],[16,'The Watchtower'],[49,'Emperor'],[49,'Superstar'],[31,'Pink Devil'],[55,'Royal Messenger'],[56,'Zombie'],[57,'Contrarian']]){
             assert(verifiedPlayerAliases(id).some(alias=>alias.name===name));
             assert(homepagePlayerMatches(name).some(player=>player.id===id));
@@ -1077,11 +1077,12 @@ check('Chapter-364 quote boundary, review coverage and new canon aliases remain 
         assert(markup.includes(esc(fixture.text)));assert(!markup.includes('uniqlo.com'));
         assert(!markup.includes('Licensed English wording')&&!markup.includes('sourceAccess'));
     `);
+    const APP_SUPPORTED_CHAPTER=data.APP_SUPPORTED_CHAPTER;
     const baseline=referenceValidationInput(),fixture={...data.PLAYER_QUOTES.find(q=>q.playerId===49),chapter:364};
     assert.deepEqual(validateReferenceData({...baseline,quotes:[fixture]}),[]);
-    assert(validateReferenceData({...baseline,quotes:[{...fixture,chapter:365}]}).some(error=>error.includes('quote')));
+    assert(validateReferenceData({...baseline,quotes:[{...fixture,chapter:APP_SUPPORTED_CHAPTER+1}]}).some(error=>error.includes('quote')));
     const alias=data.PLAYER_ALIASES[49][0];
-    assert(validateReferenceData({...baseline,aliases:{49:[{...alias,source:{...alias.source,chapter:365}}]}}).some(error=>error.includes('alias')));
+    assert(validateReferenceData({...baseline,aliases:{49:[{...alias,source:{...alias.source,chapter:APP_SUPPORTED_CHAPTER+1}}]}}).some(error=>error.includes('alias')));
 });
 check('Mandatory localization release gate covers current visible update copy in every language',()=>{
     const source=read('js/localization.js');
@@ -1203,9 +1204,9 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
     const app=appContext();app.run(`
         for(const player of players.filter(p=>!p.secretCharacter)){
             const profile=playerRecord(player.id).profile,audit=profile.positionAudit;
-            assert.equal(audit.throughChapter,364);assert(['documented','unresolved'].includes(audit.status));
+            assert(audit.throughChapter>=364&&audit.throughChapter<=APP_SUPPORTED_CHAPTER);assert(['documented','unresolved'].includes(audit.status));
             assert.equal(audit.status==='documented',!!profile.canonPositions?.length);
-            for(const role of profile.canonPositions||[]){assert(/^https:\\/\\//.test(role.sourceUrl));assert(!role.chapter||role.chapter<=364);}
+            for(const role of profile.canonPositions||[]){assert(/^https:\\/\\//.test(role.sourceUrl));assert(!role.chapter||role.chapter<=audit.throughChapter);}
         }
         for(const [id,name]of [[18,'Double Aces of Rajitsu Tech'],[19,'Double Aces of Rajitsu Tech'],[20,'King-of-All-Trades'],[62,'Luminous'],[64,'Butterfly Lashes'],[66,'Iron Man'],[67,'Rainbow Knight']])assert(verifiedPlayerAliases(id).some(a=>a.name===name));
         for(const id of [80,81,82]){assert(playerById(id).secretCharacter);assert(!PLAYER_PROFILE_METADATA[id]?.canonPositions?.length);}
@@ -1220,8 +1221,8 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
         const qazicutie=playerById(82);
         assert.equal(qazicutie.primaryPosition,"CF");
         assert.equal(qazicutie.positions.join(","),"CF,LW,RW");
-        assert.equal(qazicutie.stats.ovr,74);assert.equal(qazicutie.stats.sho,78);assert.equal(qazicutie.stats.pas,68);
-        assert.equal(qazicutie.stats.dri,70);assert.equal(qazicutie.stats.spd,66);
+        assert.equal(qazicutie.stats.ovr,73);assert.equal(qazicutie.stats.sho,75);assert.equal(qazicutie.stats.pas,68);
+        assert.equal(qazicutie.stats.dri,68);assert.equal(qazicutie.stats.spd,64);
         assert.equal(qazicutie.stats.off,83);assert.equal(qazicutie.stats.def,55);assert.equal(qazicutie.stats.gk,40);
         assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Shoei Baro")),85);
         assert.equal(playerChemistry(qazicutie,players.find(p=>p.name==="Ryusei Shido")),75);
@@ -1247,7 +1248,7 @@ check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference pr
     const app=appContext();app.run(`
         const shindo=verifiedPlayerQuotes(60)[0];assert(shindo&&shindo.chapter===327);
         assert.equal(shindo.localization,'project-translation-Japanese-manga');assert(shindo.originalText.includes('新導ハネル'));
-        assert(!isVerifiedCanonQuote({...shindo,originalText:''}));assert(!isVerifiedCanonQuote({...shindo,chapter:365}));
+        assert(!isVerifiedCanonQuote({...shindo,originalText:''}));assert(!isVerifiedCanonQuote({...shindo,chapter:APP_SUPPORTED_CHAPTER+1}));
         assert.equal(normalizeLoreSearch('التكيّف'),normalizeLoreSearch('التكيف'));
         selectedFormationPlayerId=1;formationTeamNumber=0;standaloneBuilderTeam.players=[playerById(1)];
         const info=createPlayerInfoSidebar(standaloneBuilderTeam);assert(info.includes('player-info-name')&&info.includes('Yoichi Isagi'));assert(!info.includes('player-aliases'));

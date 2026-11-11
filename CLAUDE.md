@@ -131,6 +131,10 @@ Always read the current value before work. Do not silently advance the canon cut
 
 Chemistry is a fan-made gameplay system, not an official Blue Lock statistic.
 
+### Permanent character writing
+
+Write timeless scouting profiles covering the character's personality, football philosophy, established strengths and development across the manga. Integrate new evidence proportionally into that identity. Refine existing weapon descriptions when a development reinforces them; add a signature weapon only with sufficient manga evidence. Do not let one performance erase earlier traits, replace established weapons, imply an unsupported permanent position or dominate a profile. Avoid recurring chapter references and chronological recaps in permanent content; keep evidence and chapter context in internal source records. Separate canon-established facts from gameplay interpretation. For limited-appearance characters, prefer a concise verified profile to speculative padding. Present content releases as normal roster and balance updates; show the supported chapter in its indicator or a brief release note.
+
 ---
 
 ## 6. Secret characters are a separate roster

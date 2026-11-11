@@ -62,8 +62,8 @@ window.BLD_MESSAGES=Object.freeze({
     "High-school football":{"ms":"Bola sepak sekolah menengah","ja":"高校サッカー","ar":"كرة القدم المدرسية","zh-CN":"高中足球","fr":"Football au lycée","de":"Schulfußball","ko":"고교 축구","pt":"Futebol escolar","ru":"Школьный футбол","es":"Fútbol de instituto"},
     "World Five assessment":{"ms":"Penilaian World Five","ja":"世界選抜5人との査定試合","ar":"مباراة التقييم ضد الخمسة العالميين","zh-CN":"世界五人组考核赛","fr":"Évaluation face aux cinq mondiaux","de":"Prüfspiel gegen die Weltfünf","ko":"월드 파이브 평가전","pt":"Avaliação contra os cinco mundiais","ru":"Оценочный матч с мировой пятёркой","es":"Evaluación contra los cinco mundiales"},
     "POSITION SOURCE":{"ms":"SUMBER POSISI","ja":"ポジションの出典","ar":"مصدر المركز","zh-CN":"位置来源","fr":"SOURCE DU POSTE","de":"POSITIONSQUELLE","ko":"포지션 출처","pt":"FONTE DA POSIÇÃO","ru":"ИСТОЧНИК ПОЗИЦИИ","es":"FUENTE DEL PUESTO"},
-    "Verified deployments through chapter 364. Gameplay eligibility is unchanged.":{"ms":"Posisi yang dimainkan disahkan sehingga bab 364. Kelayakan posisi dalam permainan kekal sama.","ja":"第364話までに確認できた実戦配置です。ゲーム内の適性には影響しません。","ar":"مراكز لعب موثّقة حتى الفصل 364. أهلية المراكز في اللعبة لم تتغير.","zh-CN":"截至第364话已核实的实际出场位置，不影响游戏中的位置适性。","fr":"Postes occupés vérifiés jusqu’au chapitre 364. La compatibilité en jeu reste inchangée.","de":"Belegte Einsätze bis Kapitel 364. Die Positionseignung im Spiel bleibt unverändert.","ko":"364화까지 확인된 실제 출전 포지션입니다. 게임 내 포지션 적성은 그대로입니다.","pt":"Posições efetivamente ocupadas, verificadas até o capítulo 364. A compatibilidade no jogo permanece igual.","ru":"Подтверждённые позиции в матчах по главу 364. Игровая совместимость не изменена.","es":"Puestos ocupados verificados hasta el capítulo 364. La compatibilidad del juego se mantiene."},
-    "No specific deployment was sufficiently verified through chapter 364. Gameplay badges are not canon evidence.":{"ms":"Tiada posisi khusus yang dapat disahkan dengan bukti mencukupi sehingga bab 364. Lencana permainan bukan bukti kanon.","ja":"第364話までの資料では具体的な実戦配置を十分に確認できませんでした。ゲーム内のバッジは原作の根拠にはなりません。","ar":"لم تُوثَّق أدلة كافية على مركز لعب محدد حتى الفصل 364. شارات اللعبة ليست دليلًا من القصة.","zh-CN":"截至第364话，尚无足够证据核实具体出场位置。游戏位置标记不能作为原作证据。","fr":"Aucun poste précis n’a pu être suffisamment vérifié jusqu’au chapitre 364. Les badges du jeu ne constituent pas une preuve canonique.","de":"Bis Kapitel 364 ließ sich kein konkreter Einsatz ausreichend belegen. Spielabzeichen sind keine Kanonbelege.","ko":"364화까지의 자료에서 구체적인 출전 포지션을 충분히 확인하지 못했습니다. 게임 배지는 원작 근거가 아닙니다.","pt":"Nenhuma posição específica foi suficientemente comprovada até o capítulo 364. Os emblemas do jogo não são evidência canônica.","ru":"По главу 364 недостаточно данных для подтверждения конкретной позиции в матче. Игровые значки не служат каноническим доказательством.","es":"No se pudo verificar con suficientes pruebas un puesto concreto hasta el capítulo 364. Las etiquetas del juego no son pruebas del canon."},
+    "Verified deployments through chapter {chapter}. Gameplay eligibility is unchanged.":{"ms":"Posisi yang dimainkan disahkan sehingga bab {chapter}. Kelayakan posisi dalam permainan kekal sama.","ja":"第{chapter}話までに確認できた実戦配置です。ゲーム内の適性には影響しません。","ar":"مراكز لعب موثّقة حتى الفصل {chapter}. أهلية المراكز في اللعبة لم تتغير.","zh-CN":"截至第{chapter}话已核实的实际出场位置，不影响游戏中的位置适性。","fr":"Postes occupés vérifiés jusqu’au chapitre {chapter}. La compatibilité en jeu reste inchangée.","de":"Belegte Einsätze bis Kapitel {chapter}. Die Positionseignung im Spiel bleibt unverändert.","ko":"{chapter}화까지 확인된 실제 출전 포지션입니다. 게임 내 포지션 적성은 그대로입니다.","pt":"Posições efetivamente ocupadas, verificadas até o capítulo {chapter}. A compatibilidade no jogo permanece igual.","ru":"Подтверждённые позиции в матчах по главу {chapter}. Игровая совместимость не изменена.","es":"Puestos ocupados verificados hasta el capítulo {chapter}. La compatibilidad del juego se mantiene."},
+    "No specific deployment was sufficiently verified through chapter {chapter}. Gameplay badges are not canon evidence.":{"ms":"Tiada posisi khusus yang dapat disahkan dengan bukti mencukupi sehingga bab {chapter}. Lencana permainan bukan bukti kanon.","ja":"第{chapter}話までの資料では具体的な実戦配置を十分に確認できませんでした。ゲーム内のバッジは原作の根拠にはなりません。","ar":"لم تُوثَّق أدلة كافية على مركز لعب محدد حتى الفصل {chapter}. شارات اللعبة ليست دليلًا من القصة.","zh-CN":"截至第{chapter}话，尚无足够证据核实具体出场位置。游戏位置标记不能作为原作证据。","fr":"Aucun poste précis n’a pu être suffisamment vérifié jusqu’au chapitre {chapter}. Les badges du jeu ne constituent pas une preuve canonique.","de":"Bis Kapitel {chapter} ließ sich kein konkreter Einsatz ausreichend belegen. Spielabzeichen sind keine Kanonbelege.","ko":"{chapter}화까지의 자료에서 구체적인 출전 포지션을 충분히 확인하지 못했습니다. 게임 배지는 원작 근거가 아닙니다.","pt":"Nenhuma posição específica foi suficientemente comprovada até o capítulo {chapter}. Os emblemas do jogo não são evidência canônica.","ru":"По главу {chapter} недостаточно данных для подтверждения конкретной позиции в матче. Игровые значки не служат каноническим доказательством.","es":"No se pudo verificar con suficientes pruebas un puesto concreto hasta el capítulo {chapter}. Las etiquetas del juego no son pruebas del canon."},
     "CH. {chapter}":{"ms":"BAB {chapter}","ja":"第{chapter}話","ar":"الفصل {chapter}","zh-CN":"第{chapter}话","fr":"CH. {chapter}","de":"KAP. {chapter}","ko":"{chapter}화","pt":"CAP. {chapter}","ru":"ГЛ. {chapter}","es":"CAP. {chapter}"},
     "JAPAN U-20 · ORIGINAL":{"ms":"JEPUN U-20 · ASAL","ja":"旧日本U-20","ar":"اليابان U-20 · الأصلي","zh-CN":"日本 U-20·原队","fr":"JAPON U-20 · ANCIEN","de":"JAPAN U-20 · ALT","ko":"기존 일본 U-20","pt":"JAPÃO U-20 · ORIGINAL","ru":"ЯПОНИЯ U-20 · ПРЕЖНЯЯ","es":"JAPÓN U-20 · ORIGINAL"},
     "MASTERS":{"ms":"MASTER","ja":"マスター","ar":"المدرّبون","zh-CN":"大师","fr":"MAÎTRES","de":"MASTER","ko":"마스터","pt":"MESTRES","ru":"МАСТЕРА","es":"MAESTROS"},
@@ -457,7 +457,7 @@ window.BLD_MESSAGES=Object.freeze({
     "External links & third-party content":{"ms":"Pautan luar & kandungan pihak ketiga","ja":"外部リンクと第三者の内容","ar":"روابط خارجية ومحتوى طرف ثالث","zh-CN":"外部链接和第三方内容","fr":"Liens externes et contenu de tiers","de":"Externe Links & Inhalte von Dritten","ko":"외부 링크 & 제3자 콘텐츠","pt":"Links externos e conteúdo de terceiros","ru":"Внешние ссылки и контент третьих лиц","es":"Enlaces externos y contenido de terceros"},
     "External links, including GitHub links, lead to independently operated websites. Their content, availability, terms, security and privacy practices are outside this project's control. A link is for convenience and does not imply endorsement.":{"ms":"Pautan luar termasuk GitHub menuju laman yang dikendalikan secara bebas. Kandungan, ketersediaan, terma, keselamatan dan privasinya di luar kawalan projek. Pautan untuk kemudahan, bukan sokongan rasmi.","ja":"GitHubなどの外部リンク先は独立したサイトです。その内容、稼働、規約、安全性、プライバシーは本プロジェクトの管理外で、リンクは便宜のためであり推奨を意味しません。","ar":"تؤدي الروابط الخارجية، ومنها روابط GitHub، إلى مواقع مستقلة التشغيل. محتواها وتوافرها وشروطها وممارسات الأمان والخصوصية فيها خارج سيطرة المشروع. الروابط للتسهيل ولا تعني التأييد.","zh-CN":"外部链接（包括 GitHub）通向独立运营的网站。其内容、可用性、条款、安全与隐私实践不受本项目控制。链接仅为方便访问，不代表认可。","fr":"Les liens externes, y compris les liens GitHub, conduisent à des sites Web exploités indépendamment. Leur contenu, leur disponibilité, leurs conditions, leurs pratiques en matière de sécurité et de confidentialité sont hors du contrôle de ce projet. Un lien est pour la commodité et ne signifie pas l'approbation.","de":"Externe Links, einschließlich GitHub-Links, führen zu unabhängig betriebenen Websites. Ihre Inhalte, Verfügbarkeit, Bedingungen, Sicherheits- und Datenschutzpraktiken liegen außerhalb der Kontrolle dieses Projekts. Ein Link ist für die Bequemlichkeit und bedeutet keine Unterstützung.","ko":"GitHub 링크를 포함한 외부 링크는 독립적으로 운영되는 웹사이트로 이어집니다. 그들의 내용, 사용 가능성, 조건, 보안 및 개인 정보 보호 관행은 이 프로젝트의 통제를 벗어납니다. 링크는 편리함을 위한 것이고 지지를 의미하지는 않습니다.","pt":"Os links externos, incluindo os links GitHub, levam a sites operados de forma independente. O seu conteúdo, disponibilidade, termos, práticas de segurança e privacidade estão fora do controle deste projeto. Um link é para conveniência e não implica endosso.","ru":"Внешние ссылки, в том числе ссылки GitHub, ведут к веб-сайтам, работающим самостоятельно. Их содержание, доступность, условия, безопасность и практики конфиденциальности не подпадают под контроль проекта. Ссылка для удобства и не подразумевает одобрения.","es":"Los enlaces externos, incluidos los enlaces GitHub, conducen a sitios web operados de forma independiente. Su contenido, disponibilidad, términos, prácticas de seguridad y privacidad están fuera del control de este proyecto. Un enlace es para conveniencia y no implica el respaldo."},
     "External websites":{"ms":"Laman luar","ja":"外部サイト","ar":"مواقع خارجية","zh-CN":"外部网站","fr":"Les sites Web externes","de":"Externe Webseiten","ko":"외부 웹사이트","pt":"Sites externos","ru":"Внешние сайты","es":"Sitios web externos"},
-    "FAN MODEL // CANON GAMEPLAY THROUGH CH.364":{"ms":"MODEL PEMINAT // PERMAINAN KANON HINGGA BAB 364","ja":"ファンモデル // 原作参照364話まで","ar":"نموذج صنعه المعجبون // يستند إلى القصة حتى الفصل 364","zh-CN":"粉丝模型 // 原作依据截至第364话","fr":"MODÈLE DE FANS // JEU BASÉ SUR LE CANON JUSQU’AU CH.364","de":"FANMODELL // KANONBASIERTE SPIELDATEN BIS KAP.364","ko":"팬 제작 모델 // 원작 364화까지 반영","pt":"MODELO DE FÃS // JOGO BASEADO NO CÂNONE ATÉ O CAP.364","ru":"ФАНАТСКАЯ МОДЕЛЬ // КАНОН ПО ГЛ.364","es":"MODELO DE FANS // JUEGO BASADO EN EL CANON HASTA EL CAP.364"},
+    "FAN MODEL // CANON GAMEPLAY THROUGH CH.{chapter}":{"ms":"MODEL PEMINAT // PERMAINAN KANON HINGGA BAB {chapter}","ja":"ファンモデル // 原作参照{chapter}話まで","ar":"نموذج صنعه المعجبون // يستند إلى القصة حتى الفصل {chapter}","zh-CN":"粉丝模型 // 原作依据截至第{chapter}话","fr":"MODÈLE DE FANS // JEU BASÉ SUR LE CANON JUSQU’AU CH.{chapter}","de":"FANMODELL // KANONBASIERTE SPIELDATEN BIS KAP.{chapter}","ko":"팬 제작 모델 // 원작 {chapter}화까지 반영","pt":"MODELO DE FÃS // JOGO BASEADO NO CÂNONE ATÉ O CAP.{chapter}","ru":"ФАНАТСКАЯ МОДЕЛЬ // КАНОН ПО ГЛ.{chapter}","es":"MODELO DE FANS // JUEGO BASADO EN EL CANON HASTA EL CAP.{chapter}"},
     "FAN PROJECT // RIGHTS // ORIGINAL WORK":{"ms":"PROJEK PEMINAT // HAK // KARYA ASAL","ja":"ファンプロジェクト // 権利 // 独自制作","ar":"مشروع معجبين // حقوق // عمل أصلي","zh-CN":"粉丝项目 // 权利 // 原创作品","fr":"Projet de fans // Droits // Création originale","de":"Fanprojekt // Rechte // Eigene Arbeit","ko":"팬 프로젝트 // 권리 // 독자적 작업","pt":"Projeto de fãs // Direitos // Trabalho original","ru":"ФАН-ПРОЕКТ // ПРАВА // ОРИГИНАЛЬНАЯ РАБОТА","es":"Proyecto de fans // Derechos // Trabajo original"},
     "FAN-MADE. INDEPENDENT. NON-COMMERCIAL.":{"ms":"BUATAN PEMINAT. BEBAS. BUKAN KOMERSIAL.","ja":"ファン制作。独立。非営利。","ar":"صنع المعجبين. مستقل. غير تجاري.","zh-CN":"粉丝制作。独立。非商业。","fr":"Créé par des fans. Indépendant. Non commercial.","de":"Von Fans erstellt. Unabhängig. Nichtkommerziell.","ko":"팬 제작. 독립. 비상업적.","pt":"Feito por fãs. Independente. Não comercial.","ru":"СОЗДАНО ФАНАТАМИ. НЕЗАВИСИМО. НЕКОММЕРЧЕСКИ.","es":"Hecho por fans. Independiente. No comercial."},
     "FIELD MANUAL":{"ms":"MANUAL PADANG","ja":"プレーマニュアル","ar":"دليل اللعب","zh-CN":"玩法手册","fr":"MANUEL DE JEU","de":"SPIELHANDBUCH","ko":"플레이 가이드","pt":"MANUAL DE JOGO","ru":"РУКОВОДСТВО ПО ИГРЕ","es":"MANUAL DE JUEGO"},
@@ -1685,3 +1685,467 @@ window.BLD_MESSAGE_TEMPLATES=Object.freeze([
     {"pattern":"^PLAYER \\/\\/ DOSSIER (SC-\\d+)$","ms":"PEMAIN // DOSSIER {1}","ja":"選手 // ドシエ {1}","ar":"لاعب // الملف {1}","zh-CN":"球员 // 档案 {1}","fr":"JOUEUR // DOSSIER {1}","de":"SPIELER // PROFIL {1}","ko":"선수 // 프로필 {1}","pt":"JOGADOR // PERFIL {1}","ru":"ИГРОК // ПРОФИЛЬ {1}","es":"JUGADOR // PERFIL {1}"},
     {"pattern":"^PLAYER \\/\\/ (SC-\\d+) \\/\\/ OVR (\\d+)$","ms":"PEMAIN // {1} // OVR {2}","ja":"選手 // {1} // OVR {2}","ar":"لاعب // {1} // OVR {2}","zh-CN":"球员 // {1} // OVR {2}","fr":"JOUEUR // {1} // OVR {2}","de":"SPIELER // {1} // OVR {2}","ko":"선수 // {1} // OVR {2}","pt":"JOGADOR // {1} // OVR {2}","ru":"ИГРОК // {1} // OVR {2}","es":"JUGADOR // {1} // OVR {2}"}
 ].map(({pattern,...languages})=>Object.freeze({pattern:new RegExp(pattern),...languages})));
+
+// Roster and balance content: English source text and all ten translations.
+(function(){
+const entries={
+  "An adaptive striker who turns spatial awareness, metavision and precise off-ball runs into first-time finishes. Courteous away from competition but fiercely egoistic on the pitch, he studies opponents and teammates alike, discards failing plans and commits to the scoring route his reading reveals.": {
+    "ms": "Penyerang adaptif yang menukar kesedaran ruang, metavision dan larian tepat tanpa bola kepada penyudah sentuhan pertama. Bersopan di luar pertandingan tetapi sangat egois di padang, dia mengkaji lawan serta rakan, meninggalkan rancangan yang gagal dan memilih laluan gol berdasarkan bacaannya.",
+    "ja": "空間把握、メタビジョン、正確なオフ・ザ・ボールからダイレクトに決める適応型ストライカー。普段は礼儀正しいが、ピッチでは強烈なエゴを見せる。敵も味方も分析し、通用しない策を捨て、読みから見いだした得点ルートに懸ける。",
+    "ar": "مهاجم متكيف يحول إدراك المساحات والميتافيجن والتحرك الدقيق دون كرة إلى تسديدات مباشرة. مهذب خارج المنافسة وشديد الأنانية في الملعب؛ يدرس خصومه وزملاءه، ويتخلى عن الخطط الفاشلة ويلتزم بمسار التسجيل الذي تكشفه قراءته.",
+    "zh-CN": "善于适应的前锋，将空间感、超越视界与精准无球跑动转化为直接射门。场外谦和，场上却充满自我；他同时研究对手与队友，舍弃失效的方案，果断投入自己读出的得分路线。",
+    "fr": "Un attaquant adaptatif qui transforme perception de l’espace, métavision et appels précis en frappes directes. Courtois hors compétition mais farouchement égoïste sur le terrain, il étudie adversaires et partenaires, abandonne les plans inefficaces et s’engage dans la voie du but révélée par sa lecture.",
+    "de": "Ein anpassungsfähiger Stürmer, der Raumgefühl, Metavision und präzise Laufwege in Direktabschlüsse verwandelt. Abseits des Wettkampfs höflich, auf dem Platz kompromisslos egoistisch: Er analysiert Gegner und Mitspieler, verwirft scheiternde Pläne und verfolgt den erkannten Weg zum Tor.",
+    "ko": "공간 인식, 메타비전, 정확한 오프 더 볼 움직임을 직접 슈팅으로 연결하는 적응형 공격수. 평소에는 예의 바르지만 경기장에서는 강한 에고를 드러낸다. 상대와 동료를 분석하고 실패하는 계획을 버리며 자신이 읽어 낸 득점 경로에 승부를 건다.",
+    "pt": "Um atacante adaptável que transforma percepção espacial, metavision e movimentos precisos sem bola em finalizações de primeira. Educado fora da competição e intensamente egoísta em campo, estuda rivais e colegas, descarta planos falhos e aposta no caminho ao gol que sua leitura revela.",
+    "ru": "Адаптивный нападающий, превращающий чувство пространства, метавидение и точные рывки без мяча в удары с ходу. Вежливый вне соревнований, на поле он яростный эгоист: изучает соперников и партнёров, отбрасывает неудачные планы и выбирает найденный путь к голу.",
+    "es": "Un delantero adaptable que convierte percepción espacial, metavisión y desmarques precisos en remates de primeras. Cortés fuera de la competición y ferozmente egoísta en el campo, estudia a rivales y compañeros, descarta planes fallidos y apuesta por la vía al gol que revela su lectura."
+  },
+  "An uninhibited striker who treats scoring as self-expression. Extraordinary penalty-area awareness and acrobatic finishing let him attack deliveries from awkward angles without a settled stance. He thrives with daring creators, though his instinctive pursuit of a goal can clash with a teammate's calculated movement.": {
+    "ms": "Penyerang bebas yang menjadikan gol sebagai ekspresi diri. Kesedaran luar biasa dalam kotak penalti dan penyudah akrobatik membolehkannya menyambar hantaran dari sudut sukar tanpa posisi stabil. Dia serasi dengan pencipta peluang berani, tetapi naluri golnya boleh bertembung dengan pergerakan terancang rakan.",
+    "ja": "得点を自己表現とする奔放なストライカー。卓越したペナルティエリア内の感覚とアクロバティックな決定力で、不安定な体勢や難しい角度からでもボールを仕留める。大胆な創造者と輝く一方、本能的な得点への執着が味方の計算した動きと衝突することもある。",
+    "ar": "مهاجم جامح يرى التسجيل تعبيرًا عن ذاته. يتيح له إدراكه الاستثنائي داخل المنطقة وإنهاؤه البهلواني مهاجمة الكرات من زوايا صعبة دون وقفة مستقرة. يتألق مع صانعي الفرص الجريئين، لكن اندفاعه الغريزي نحو المرمى قد يصطدم بتحركات زميل محسوبة.",
+    "zh-CN": "将进球视作自我表达的奔放前锋。出色的禁区感知与杂技式终结，让他无需站稳也能从刁钻角度迎球射门。他与大胆的创造者相得益彰，但追逐进球的本能有时会与队友精心计算的跑位冲突。",
+    "fr": "Un attaquant sans retenue pour qui marquer est une forme d’expression. Son instinct exceptionnel dans la surface et ses finitions acrobatiques lui permettent de reprendre des ballons sous des angles difficiles, même en déséquilibre. Il s’épanouit avec des créateurs audacieux, mais son instinct peut heurter les déplacements calculés d’un partenaire.",
+    "de": "Ein ungehemmter Stürmer, der Tore als Selbstausdruck versteht. Außergewöhnliches Strafraumgefühl und akrobatische Abschlüsse ermöglichen ihm Treffer aus schwierigen Winkeln ohne sicheren Stand. Mit mutigen Spielmachern blüht er auf, doch sein Torinstinkt kann mit berechneten Laufwegen eines Mitspielers kollidieren.",
+    "ko": "득점을 자기표현으로 여기는 거침없는 공격수. 뛰어난 페널티 지역 감각과 곡예 같은 마무리로 불안정한 자세와 어려운 각도에서도 공을 노린다. 대담한 창조자와 함께 빛나지만 본능적인 득점 욕구가 동료의 계산된 움직임과 충돌하기도 한다.",
+    "pt": "Um atacante sem freios que vê o gol como expressão pessoal. Percepção excepcional na área e finalização acrobática permitem atacar bolas de ângulos difíceis sem uma postura estável. Brilha com criadores ousados, mas sua busca instintiva pelo gol pode colidir com o movimento calculado de um colega.",
+    "ru": "Раскованный нападающий, для которого гол — самовыражение. Исключительное чувство штрафной и акробатические удары позволяют ему замыкать передачи из неудобных положений без устойчивой опоры. Он раскрывается с дерзкими созидателями, но его голевой инстинкт порой сталкивается с расчётливым движением партнёра.",
+    "es": "Un delantero desinhibido que considera el gol una expresión personal. Su excepcional percepción del área y sus remates acrobáticos le permiten atacar balones desde ángulos difíciles sin una postura estable. Brilla con creadores atrevidos, aunque su instinto goleador puede chocar con el movimiento calculado de un compañero."
+  },
+  "A proud, independent runner who reclaimed his attacking ambition after fearing injury. Explosive pace and controlled high-speed dribbling stretch defensive lines; from wide areas he can cut into his practiced shooting zone or deliver the ball to a teammate attacking the space his run creates.": {
+    "ms": "Pelari bangga dan berdikari yang mendapatkan semula cita-cita menyerangnya selepas takut mengalami kecederaan. Kepantasan eksplosif dan gelecek laju terkawal merenggangkan pertahanan; dari sayap dia boleh memotong ke zon rembatan terlatihnya atau menghantar kepada rakan yang menyerang ruang ciptaan lariannya.",
+    "ja": "けがへの恐れを越えて攻撃への野心を取り戻した、誇り高く自立したランナー。爆発的な速さと制御された高速ドリブルで守備陣を引き伸ばす。サイドから得意の射程へ切り込むだけでなく、自分の走りが生んだ空間へ入る味方にもボールを届ける。",
+    "ar": "عداء فخور ومستقل استعاد طموحه الهجومي بعد الخوف من الإصابة. تمدد سرعته الانفجارية ومراوغته المنضبطة خطوط الدفاع؛ ومن الأطراف يستطيع الدخول إلى منطقة تسديده المتقنة أو إيصال الكرة لزميل يهاجم المساحة التي يصنعها انطلاقه.",
+    "zh-CN": "骄傲且独立的快马，克服对伤病的恐惧后重拾进攻野心。爆发速度与可控的高速盘带拉伸防线；在边路既能内切进入熟练的射门区域，也能将球送给冲入其跑动所制造空间的队友。",
+    "fr": "Un coureur fier et indépendant qui a retrouvé son ambition offensive après la peur de la blessure. Sa vitesse explosive et sa conduite maîtrisée étirent les défenses. Depuis les ailes, il peut rentrer dans sa zone de tir travaillée ou servir un partenaire attaquant l’espace créé par sa course.",
+    "de": "Ein stolzer, eigenständiger Läufer, der nach seiner Verletzungsangst seinen Angriffswillen zurückgewann. Explosives Tempo und kontrolliertes Hochgeschwindigkeitsdribbling ziehen Abwehrlinien auseinander. Von außen dringt er in seine eingeübte Schusszone ein oder bedient Mitspieler im Raum, den sein Lauf öffnet.",
+    "ko": "부상에 대한 두려움을 넘고 공격의 야망을 되찾은 자존심 강한 독립적 주자. 폭발적인 속도와 제어된 고속 드리블로 수비 간격을 벌린다. 측면에서 익숙한 슈팅 구역으로 파고들거나 자신의 질주가 만든 공간을 공략하는 동료에게 공을 보낸다.",
+    "pt": "Um corredor orgulhoso e independente que recuperou a ambição ofensiva após temer lesões. Ritmo explosivo e drible veloz controlado esticam as linhas defensivas; pelos lados, corta para sua zona de chute treinada ou serve um colega atacando o espaço criado por sua corrida.",
+    "ru": "Гордый самостоятельный спринтер, вернувший атакующие амбиции после страха травмы. Взрывная скорость и контролируемый скоростной дриблинг растягивают оборону. С фланга он смещается в отработанную зону удара или доставляет мяч партнёру, атакующему созданное его рывком пространство.",
+    "es": "Un corredor orgulloso e independiente que recuperó su ambición ofensiva tras temer una lesión. Su velocidad explosiva y conducción controlada estiran las defensas; desde la banda puede entrar en su zona de tiro entrenada o servir a un compañero que ataca el espacio creado por su carrera."
+  },
+  "A composed playmaker who reads football with a gamer's precision. Metavision, close control and accurately weighted passes let him connect demanding attacking routes. Rather than serve a striker unquestioningly, he chooses the movement and ambition that justify his delivery, seeking to create the decisive chance himself.": {
+    "ms": "Pembina permainan tenang yang membaca bola sepak dengan ketepatan seorang pemain permainan video. Metavision, kawalan rapat dan hantaran terukur menghubungkan laluan serangan sukar. Dia tidak sekadar mengikut penyerang, sebaliknya memilih pergerakan dan cita-cita yang layak menerima hantarannya untuk mencipta peluang penentu sendiri.",
+    "ja": "ゲームのような精密さでサッカーを読む冷静な司令塔。メタビジョン、繊細なボールコントロール、正確な強さのパスで難しい攻撃ルートをつなぐ。無条件にストライカーへ尽くすのではなく、パスに見合う動きと野心を選び、自ら決定機を創造しようとする。",
+    "ar": "صانع لعب هادئ يقرأ كرة القدم بدقة لاعب ألعاب إلكترونية. تتيح له الميتافيجن والسيطرة القريبة والتمريرات الموزونة وصل مسارات هجومية صعبة. لا يخدم المهاجم دون تفكير، بل يختار التحرك والطموح الجديرين بتمريرته ساعيًا لصنع الفرصة الحاسمة بنفسه.",
+    "zh-CN": "以玩家般的精密判断解读足球的冷静组织者。超越视界、细腻控球与力度精准的传球，使他能连通要求极高的进攻路线。他不会盲从前锋，而会挑选配得上自己传球的跑动与野心，主动创造决定性机会。",
+    "fr": "Un meneur posé qui lit le football avec la précision d’un joueur de jeu vidéo. Métavision, contrôle rapproché et passes dosées relient des circuits offensifs exigeants. Loin de servir aveuglément un buteur, il choisit le mouvement et l’ambition dignes de sa passe pour créer lui-même l’occasion décisive.",
+    "de": "Ein besonnener Spielmacher, der Fußball mit der Präzision eines Gamers liest. Metavision, enge Ballführung und genau dosierte Pässe verbinden anspruchsvolle Angriffswege. Statt einem Stürmer blind zu dienen, wählt er passende Bewegung und Ambition aus, um selbst die entscheidende Chance zu erschaffen.",
+    "ko": "게이머의 정밀함으로 축구를 읽는 침착한 플레이메이커. 메타비전, 섬세한 볼 컨트롤, 정확히 조절한 패스로 까다로운 공격 경로를 연결한다. 공격수를 무조건 따르기보다 자신의 패스에 걸맞은 움직임과 야망을 선택하고 직접 결정적인 기회를 만들려 한다.",
+    "pt": "Um armador sereno que lê o futebol com a precisão de um gamer. Metavision, controle próximo e passes dosados conectam rotas ofensivas exigentes. Em vez de servir um atacante sem questionar, escolhe os movimentos e a ambição que merecem seu passe, buscando criar a chance decisiva por conta própria.",
+    "ru": "Спокойный плеймейкер, читающий футбол с точностью геймера. Метавидение, тонкий контроль и выверенные передачи связывают сложные атакующие маршруты. Он не служит нападающему безоговорочно, а выбирает движение и амбицию, достойные его паса, стремясь самому создать решающий момент.",
+    "es": "Un organizador sereno que lee el fútbol con la precisión de un jugador de videojuegos. Metavisión, control cercano y pases medidos conectan rutas ofensivas exigentes. No sirve a un delantero sin cuestionarlo: elige el movimiento y la ambición que merecen su pase para crear él mismo la ocasión decisiva."
+  },
+  "A sharp-tongued analyst who builds control by identifying weaknesses. Intelligent handwork and shielding protect possession, while selective pressing and disciplined positioning disrupt opposing attacks. As a midfield organizer, he values repeatable advantages and efficient distribution, even when that practical outlook conflicts with more speculative attacking ideas.": {
+    "ms": "Penganalisis tajam lidah yang membina kawalan dengan mengenal pasti kelemahan. Penggunaan tangan dan lindungan badan melindungi bola, manakala tekanan terpilih dan posisi berdisiplin mengganggu serangan lawan. Sebagai pengatur tengah, dia menghargai kelebihan berulang dan hantaran cekap walaupun bertentangan dengan idea serangan lebih berisiko.",
+    "ja": "弱点を見抜いて主導権を築く毒舌の分析家。巧みな手の使い方とキープでボールを守り、選択的なプレスと規律ある位置取りで相手の攻撃を断つ。中盤の統率者として再現性のある優位と効率的な配球を重視し、時に大胆な攻撃思想と対立する。",
+    "ar": "محلل لاذع اللسان يفرض السيطرة بكشف نقاط الضعف. يحمي الاستحواذ بذكاء استخدام اليدين وحجب الكرة، ويعطل هجمات الخصم بضغط انتقائي وتمركز منضبط. كمنظم وسط يفضل المزايا القابلة للتكرار والتوزيع الفعال، حتى حين تتعارض واقعيته مع أفكار هجومية أكثر مجازفة.",
+    "zh-CN": "善于识破弱点并掌控比赛的毒舌分析家。巧妙的手部运用与护球保障球权，选择性压迫和严谨站位则破坏对方进攻。作为中场组织者，他重视可重复的优势与高效分球，即使这份务实会与更冒险的进攻构想冲突。",
+    "fr": "Un analyste à la langue acérée qui prend le contrôle en repérant les faiblesses. Son usage intelligent des bras protège le ballon, tandis que pressing sélectif et placement discipliné perturbent l’adversaire. Organisateur du milieu, il privilégie avantages reproductibles et distribution efficace, même face à des idées offensives plus spéculatives.",
+    "de": "Ein scharfzüngiger Analytiker, der durch erkannte Schwächen Kontrolle gewinnt. Kluger Armeinsatz und Abschirmen sichern den Ball, gezieltes Pressing und disziplinierte Positionierung stören Angriffe. Als Mittelfeldorganisator bevorzugt er wiederholbare Vorteile und effiziente Verteilung, auch wenn diese praktische Sicht mit riskanteren Angriffsideen kollidiert.",
+    "ko": "약점을 찾아 경기를 지배하는 독설가 분석가. 영리한 손기술과 실드로 공을 지키고 선택적인 압박과 절제된 위치 선정으로 상대 공격을 끊는다. 중원 지휘자로서 반복 가능한 이점과 효율적인 배급을 중시하며, 이런 실용적 관점은 더 모험적인 공격 구상과 충돌하기도 한다.",
+    "pt": "Um analista de língua afiada que conquista controle ao identificar fraquezas. Uso inteligente dos braços e proteção de bola preservam a posse; pressão seletiva e posicionamento disciplinado interrompem ataques. Como organizador do meio, valoriza vantagens repetíveis e distribuição eficiente, mesmo quando essa visão prática contraria ideias ofensivas mais arriscadas.",
+    "ru": "Острый на язык аналитик, добивающийся контроля через поиск слабостей. Умелая работа руками и укрывание мяча сохраняют владение, а выборочный прессинг и дисциплинированная позиция срывают атаки. Как организатор полузащиты он ценит воспроизводимые преимущества и эффективный пас, даже споря с более рискованными идеями нападения.",
+    "es": "Un analista mordaz que gana control al identificar debilidades. El uso inteligente de los brazos y la protección del balón conservan la posesión; la presión selectiva y el posicionamiento disciplinado frenan ataques. Como organizador del medio, valora ventajas repetibles y una distribución eficaz, aunque su pragmatismo choque con ideas ofensivas más arriesgadas."
+  },
+  "An England U-20 defensive midfielder specializing in close man-marking. His quick tracking and disciplined distance restrict an attacker's space and freedom of movement.": {
+    "ms": "Pemain tengah bertahan England U-20 yang pakar dalam kawalan rapat seorang lawan. Jejakan pantas dan jarak berdisiplin menyekat ruang serta kebebasan pergerakan penyerang.",
+    "ja": "密着したマンマークを得意とするU-20イングランド代表の守備的MF。素早い追従と適切な間合いで、相手の空間と動きの自由を制限する。",
+    "ar": "لاعب وسط دفاعي في منتخب إنجلترا تحت 20 عامًا، متخصص في الرقابة الفردية اللصيقة. تضيق متابعته السريعة ومسافته المنضبطة مساحة المهاجم وحرية تحركه.",
+    "zh-CN": "擅长贴身盯人的英格兰 U-20 防守型中场。快速跟防与严谨的距离控制限制对方进攻球员的空间和移动自由。",
+    "fr": "Un milieu défensif de l’Angleterre U-20 spécialisé dans le marquage individuel serré. Son suivi rapide et sa gestion disciplinée de la distance réduisent l’espace et la liberté de l’attaquant.",
+    "de": "Ein defensiver Mittelfeldspieler Englands U-20 mit engem Manndeckungsspiel. Schnelles Mitgehen und disziplinierter Abstand begrenzen Raum und Bewegungsfreiheit des Angreifers.",
+    "ko": "밀착 대인 마크에 특화된 잉글랜드 U-20 수비형 미드필더. 빠른 추적과 절제된 간격 유지로 공격수의 공간과 움직임을 제한한다.",
+    "pt": "Um volante da Inglaterra U-20 especializado em marcação individual próxima. O acompanhamento rápido e a distância disciplinada restringem o espaço e a liberdade do atacante.",
+    "ru": "Опорный полузащитник сборной Англии U-20, специализирующийся на плотной персональной опеке. Быстрое сопровождение и точная дистанция ограничивают пространство и свободу нападающего.",
+    "es": "Un mediocentro defensivo de Inglaterra U-20 especializado en el marcaje individual cercano. Su seguimiento rápido y su control de la distancia limitan el espacio y la libertad del atacante."
+  },
+  "Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.": {
+    "ms": "Menyemak bacaannya ketika lawan bertindak, menolak laluan gagal dan menggabungkan kemahiran sebelum memilih peluang gol.",
+    "ja": "相手の対応に合わせて読みを更新し、失敗するルートを除き、使える技術を組み合わせて得点機に懸ける。",
+    "ar": "يحدث قراءته مع استجابة الخصوم، ويستبعد المسارات الفاشلة ويجمع مهاراته قبل الالتزام بفرصة تسجيل.",
+    "zh-CN": "随对手的应对更新判断，排除失败路线，组合现有技能后投入得分机会。",
+    "fr": "Révise sa lecture selon la réaction adverse, élimine les voies vouées à l’échec et combine ses compétences avant de saisir une occasion.",
+    "de": "Passt seine Analyse an gegnerische Reaktionen an, schließt scheiternde Wege aus und verbindet Fähigkeiten vor dem Abschluss.",
+    "ko": "상대의 반응에 맞춰 판단을 바꾸고 실패할 경로를 배제하며 가용 기술을 결합해 득점 기회에 승부를 건다.",
+    "pt": "Revê a leitura conforme os rivais reagem, elimina rotas falhas e combina habilidades antes de apostar numa chance de gol.",
+    "ru": "Корректирует чтение игры по реакции соперников, исключает неудачные пути и сочетает навыки перед выбором голевого шанса.",
+    "es": "Revisa su lectura ante las respuestas rivales, descarta rutas fallidas y combina habilidades antes de apostar por una ocasión."
+  },
+  "Controls the ball at sprinting pace, using changes of direction to beat pressure before choosing a shot or a delivery into the space his run has opened.": {
+    "ms": "Mengawal bola pada kelajuan pecut, menukar arah untuk melepasi tekanan sebelum memilih rembatan atau hantaran ke ruang yang dibuka lariannya.",
+    "ja": "全力疾走でもボールを制御し、方向転換でプレスをかわしてから、シュートか走りで開いた空間への配球を選ぶ。",
+    "ar": "يسيطر على الكرة بسرعة العدو، ويغير الاتجاه لتجاوز الضغط قبل اختيار التسديد أو الإرسال إلى المساحة التي فتحها انطلاقه.",
+    "zh-CN": "冲刺中仍能控制皮球，通过变向摆脱压迫，再选择射门或向自身跑动打开的空间送球。",
+    "fr": "Contrôle le ballon à pleine vitesse et change de direction pour échapper au pressing avant de tirer ou de servir l’espace ouvert par sa course.",
+    "de": "Kontrolliert den Ball im Sprint, überwindet Druck durch Richtungswechsel und wählt dann Schuss oder Zuspiel in den geöffneten Raum.",
+    "ko": "전력 질주 중에도 공을 제어하며 방향 전환으로 압박을 벗어난 뒤 슈팅하거나 질주로 열린 공간에 공을 보낸다.",
+    "pt": "Controla a bola em velocidade de corrida, muda de direção para superar a pressão e escolhe entre chutar e servir o espaço criado pelo avanço.",
+    "ru": "Контролирует мяч на спринте, сменой направления уходит от давления и выбирает удар либо доставку в открытое рывком пространство.",
+    "es": "Controla el balón al esprintar, cambia de dirección para superar la presión y elige entre tirar o enviar al espacio abierto por su carrera."
+  },
+  "Reads the receiver and the defensive line, then weights a pass toward the demanding attacking movement he judges capable of producing a goal.": {
+    "ms": "Membaca penerima dan barisan pertahanan, kemudian mengukur hantaran ke pergerakan serangan sukar yang dinilainya mampu menghasilkan gol.",
+    "ja": "受け手と守備ラインを読み、得点につながると判断した難度の高い攻撃の動きへ、強さを調整したパスを送る。",
+    "ar": "يقرأ المستقبل وخط الدفاع، ثم يضبط تمريرة نحو تحرك هجومي صعب يراه قادرًا على صنع هدف.",
+    "zh-CN": "判断接球者与防线，将力度恰当的传球送向他认为足以创造进球的高要求跑动。",
+    "fr": "Lit le receveur et la ligne défensive, puis dose sa passe vers le mouvement offensif exigeant qu’il estime capable de produire un but.",
+    "de": "Liest Empfänger und Abwehrlinie und dosiert den Pass auf jene anspruchsvolle Angriffsbewegung, der er ein Tor zutraut.",
+    "ko": "수신자와 수비 라인을 읽고 골로 이어질 수 있다고 판단한 까다로운 공격 움직임에 맞춰 패스 강도를 조절한다.",
+    "pt": "Lê o receptor e a linha defensiva e dosa o passe para o movimento ofensivo exigente que considera capaz de gerar um gol.",
+    "ru": "Читает получателя и линию обороны, выверяя пас под сложное атакующее движение, которое считает способным принести гол.",
+    "es": "Lee al receptor y a la línea defensiva y mide el pase hacia el movimiento ofensivo exigente que considera capaz de generar un gol."
+  },
+  "Identifies limitations in an opponent and chooses when to press or hold position, disrupting attacks without abandoning midfield control.": {
+    "ms": "Mengenal pasti kelemahan lawan dan memilih masa untuk menekan atau mengekalkan posisi, mengganggu serangan tanpa kehilangan kawalan tengah.",
+    "ja": "相手の限界を見極め、プレスか待機かを選び、中盤の統制を失わずに攻撃を断つ。",
+    "ar": "يكشف حدود الخصم ويختار توقيت الضغط أو الثبات، معطلًا الهجمات دون التخلي عن السيطرة على الوسط.",
+    "zh-CN": "识别对手的局限，选择施压或保持位置的时机，在维持中场控制的同时破坏进攻。",
+    "fr": "Repère les limites adverses et choisit quand presser ou tenir sa position pour perturber l’attaque sans perdre le contrôle du milieu.",
+    "de": "Erkennt gegnerische Grenzen und wählt Pressing oder Positionshalten, um Angriffe zu stören, ohne die Mittelfeldkontrolle aufzugeben.",
+    "ko": "상대의 한계를 파악하고 압박할 때와 위치를 지킬 때를 골라 중원 통제를 유지하면서 공격을 끊는다.",
+    "pt": "Identifica limitações do rival e escolhe quando pressionar ou manter posição, interrompendo ataques sem abrir mão do controle do meio.",
+    "ru": "Выявляет ограничения соперника и выбирает момент для прессинга или удержания позиции, срывая атаки без потери контроля центра.",
+    "es": "Identifica las limitaciones rivales y elige cuándo presionar o mantener la posición para frenar ataques sin perder el control del medio."
+  },
+  "Closely tracks an opposing attacker, restricts their available space and challenges their movement.": {
+    "ms": "Mengekori penyerang lawan dengan rapat, mengehadkan ruang dan mencabar pergerakannya.",
+    "ja": "相手アタッカーを密着して追い、使える空間を狭めて動きを妨げる。",
+    "ar": "يتابع المهاجم عن قرب، ويحد من المساحة المتاحة له ويعيق تحركه.",
+    "zh-CN": "紧跟对方进攻球员，压缩其可用空间并阻碍移动。",
+    "fr": "Suit l’attaquant de près, réduit son espace disponible et gêne ses déplacements.",
+    "de": "Verfolgt einen Angreifer eng, begrenzt seinen verfügbaren Raum und erschwert seine Bewegungen.",
+    "ko": "상대 공격수를 밀착 추적해 공간을 줄이고 움직임을 방해한다.",
+    "pt": "Acompanha de perto o atacante, restringe o espaço disponível e dificulta seus movimentos.",
+    "ru": "Плотно сопровождает нападающего, ограничивает доступное пространство и мешает его движению.",
+    "es": "Sigue de cerca al atacante, limita su espacio disponible y dificulta sus movimientos."
+  },
+  "CLASHING FINISHERS": {
+    "ms": "PENYUDAH BERTEMBUNG",
+    "ja": "衝突するフィニッシャー",
+    "ar": "مهاجمان متصادمان",
+    "zh-CN": "终结者的冲突",
+    "fr": "FINISSEURS EN CONFLIT",
+    "de": "KOLLIERENDE ABSCHLUSSSPIELER",
+    "ko": "충돌하는 피니셔",
+    "pt": "FINALIZADORES EM CONFLITO",
+    "ru": "КОНФЛИКТ ФИНИШЕРОВ",
+    "es": "REMATADORES EN CONFLICTO"
+  },
+  "Both attack decisive scoring spaces, but their finishing instincts can collide instead of forming a coordinated route. Football compatibility, not personal hostility, limits this pairing.": {
+    "ms": "Kedua-duanya menyerang ruang gol penting, tetapi naluri penyudah boleh bertembung dan bukannya membentuk laluan tersusun. Keserasian bola sepak, bukan permusuhan peribadi, mengehadkan gandingan ini.",
+    "ja": "双方が決定的な得点空間を狙うが、連携ルートを作るよりもフィニッシュの本能が衝突することがある。この組み合わせの限界は個人的な敵意ではなく、サッカー上の相性にある。",
+    "ar": "كلاهما يهاجم مساحات التسجيل الحاسمة، لكن غريزتي الإنهاء قد تتصادمان بدل تنسيق المسار. يحد من هذا الثنائي التوافق الكروي، لا العداء الشخصي.",
+    "zh-CN": "两人都会攻击决定性的得分空间，但终结本能有时相互冲突而非形成协同路线。限制这对组合的是足球上的适配性，而非私人敌意。",
+    "fr": "Tous deux attaquent les espaces décisifs, mais leurs instincts de finition peuvent se heurter au lieu de former un circuit coordonné. La limite est leur compatibilité footballistique, pas une hostilité personnelle.",
+    "de": "Beide greifen entscheidende Torräume an, doch ihre Abschlussinstinkte können kollidieren statt einen gemeinsamen Weg zu bilden. Fußballerische Kompatibilität begrenzt dieses Duo, nicht persönliche Feindseligkeit.",
+    "ko": "둘 다 결정적인 득점 공간을 노리지만 마무리 본능이 협력 경로를 만들기보다 충돌할 수 있다. 이 조합의 한계는 개인적 적대감이 아니라 축구적 호흡에 있다.",
+    "pt": "Ambos atacam espaços decisivos, mas seus instintos de finalização podem colidir em vez de criar uma rota coordenada. A limitação é a compatibilidade no futebol, não uma hostilidade pessoal.",
+    "ru": "Оба атакуют решающие голевые зоны, но инстинкты завершения могут сталкиваться вместо согласованного маршрута. Пару ограничивает футбольная совместимость, а не личная вражда.",
+    "es": "Ambos atacan espacios decisivos, pero sus instintos de remate pueden chocar en vez de formar una ruta coordinada. La limitación es su compatibilidad futbolística, no la hostilidad personal."
+  },
+  "From Team Z and the Second Selection to their England attacking combinations, Isagi reads Chigiri's high-speed runs while Chigiri supplies the space and delivery for a first-time finish.": {
+    "ms": "Dari Team Z dan Pemilihan Kedua hingga kombinasi menyerang menentang England, Isagi membaca larian laju Chigiri yang membuka ruang serta menghantar bola untuk penyudah sentuhan pertama.",
+    "ja": "チームZ、二次選考からイングランド戦の連携まで、潔は千切の高速ランを読み、千切はダイレクトシュートにつながる空間とボールを供給する。",
+    "ar": "من فريق Z والاختيار الثاني إلى التعاون الهجومي أمام إنجلترا، يقرأ إيساغي انطلاقات تشيغيري السريعة، بينما يوفر تشيغيري المساحة والكرة للإنهاء المباشر.",
+    "zh-CN": "从 Z 队、二次选拔到对英格兰的进攻配合，洁读懂千切的高速跑动，千切则为直接射门提供空间与传球。",
+    "fr": "De l’équipe Z à la deuxième sélection puis aux combinaisons contre l’Angleterre, Isagi lit les courses rapides de Chigiri, qui fournit l’espace et le ballon pour une finition directe.",
+    "de": "Von Team Z und der zweiten Auswahl bis zu den Kombinationen gegen England liest Isagi Chigiris schnelle Läufe, während Chigiri Raum und Zuspiel für einen Direktabschluss schafft.",
+    "ko": "팀 Z와 2차 선발부터 잉글랜드전 연계까지 이사기는 치기리의 고속 질주를 읽고 치기리는 직접 마무리를 위한 공간과 공을 제공한다.",
+    "pt": "Do Time Z e da Segunda Seleção às combinações contra a Inglaterra, Isagi lê as corridas velozes de Chigiri, que fornece espaço e passe para a finalização de primeira.",
+    "ru": "От команды Z и Второго отбора до комбинаций против Англии Исаги читает скоростные рывки Тигири, а тот создаёт пространство и доставляет мяч для удара с ходу.",
+    "es": "Desde el equipo Z y la Segunda Selección hasta las combinaciones contra Inglaterra, Isagi lee las carreras rápidas de Chigiri, que aporta espacio y pase para rematar de primeras."
+  },
+  "ROSTER & BALANCE": {
+    "ms": "ROSTER & IMBANGAN",
+    "ja": "ロスターとバランス調整",
+    "ar": "القائمة والتوازن",
+    "zh-CN": "阵容与平衡",
+    "fr": "EFFECTIF ET ÉQUILIBRAGE",
+    "de": "KADER UND BALANCE",
+    "ko": "로스터 및 밸런스",
+    "pt": "ELENCO E EQUILÍBRIO",
+    "ru": "СОСТАВ И БАЛАНС",
+    "es": "PLANTILLA Y EQUILIBRIO"
+  },
+  "Secret roster attributes and chemistry have been rebalanced while preserving unlock rules and existing squads.": {
+    "ms": "Atribut dan kimia roster rahsia diimbangkan semula sambil mengekalkan peraturan buka kunci dan skuad sedia ada.",
+    "ja": "シークレット選手の能力と相性を調整。解放条件と既存チームは維持されます。",
+    "ar": "أعيد توازن قدرات القائمة السرية وانسجامها مع الحفاظ على شروط الفتح والتشكيلات الموجودة.",
+    "zh-CN": "调整隐藏阵容的属性与默契，保留解锁规则及现有球队。",
+    "fr": "Les attributs et l’alchimie de l’effectif secret ont été rééquilibrés, sans modifier le déblocage ni les équipes existantes.",
+    "de": "Attribute und Chemie des geheimen Kaders wurden angepasst; Freischaltregeln und bestehende Teams bleiben erhalten.",
+    "ko": "해금 규칙과 기존 스쿼드를 유지하며 비밀 로스터의 능력치와 케미를 조정했습니다.",
+    "pt": "Atributos e química do elenco secreto foram ajustados, preservando as regras de desbloqueio e os times existentes.",
+    "ru": "Характеристики и сыгранность секретного состава перебалансированы с сохранением правил открытия и существующих команд.",
+    "es": "Se han equilibrado los atributos y la química de la plantilla secreta, manteniendo las reglas de desbloqueo y los equipos existentes."
+  },
+  "Dada Silva, Pablo Cavasoz, Adam Blake and Leonardo Luna receive stronger, distinct World Five profiles.": {
+    "ms": "Dada Silva, Pablo Cavasoz, Adam Blake dan Leonardo Luna menerima profil World Five yang lebih kuat dan tersendiri.",
+    "ja": "ダダ・シウバ、パブロ・カバソス、アダム・ブレイク、レオナルド・ルナを、それぞれの強みを生かして強化。",
+    "ar": "عززت ملفات دادا سيلفا وبابلو كافاسوز وآدم بليك وليوناردو لونا مع الحفاظ على تميز كل منهم.",
+    "zh-CN": "强化达达·席尔瓦、巴勃罗·卡瓦索斯、亚当·布莱克和莱昂纳多·卢纳，保持世界五人组各自特色。",
+    "fr": "Dada Silva, Pablo Cavasoz, Adam Blake et Leonardo Luna sont renforcés en conservant leurs profils distincts du World Five.",
+    "de": "Dada Silva, Pablo Cavasoz, Adam Blake und Leonardo Luna erhalten stärkere, klar unterscheidbare World-Five-Profile.",
+    "ko": "다다 실바, 파블로 카바소스, 애덤 블레이크, 레오나르도 루나의 월드 파이브 특성을 살려 강화했습니다.",
+    "pt": "Dada Silva, Pablo Cavasoz, Adam Blake e Leonardo Luna recebem perfis do World Five mais fortes e distintos.",
+    "ru": "Дада Силва, Пабло Кавасоз, Адам Блейк и Леонардо Луна усилены с сохранением разных особенностей Мировой пятёрки.",
+    "es": "Dada Silva, Pablo Cavasoz, Adam Blake y Leonardo Luna reciben perfiles del World Five más fuertes y diferenciados."
+  },
+  "Exum joins the public roster as an England U-20 defensive midfielder with Man-Marking.": {
+    "ms": "Exum menyertai roster awam sebagai pemain tengah bertahan England U-20 dengan Man-Marking.",
+    "ja": "マンマークを武器とするU-20イングランド代表の守備的MF、エクサムが通常ロスターに登場。",
+    "ar": "ينضم إكسوم إلى القائمة العامة كلاعب وسط دفاعي لإنجلترا تحت 20 عامًا بسلاح الرقابة الفردية.",
+    "zh-CN": "擅长盯人的英格兰 U-20 防守型中场 Exum 加入公开阵容。",
+    "fr": "Exum rejoint l’effectif public comme milieu défensif de l’Angleterre U-20, avec le marquage individuel.",
+    "de": "Exum ergänzt den öffentlichen Kader als defensiver Mittelfeldspieler Englands U-20 mit Manndeckung.",
+    "ko": "대인 마크를 갖춘 잉글랜드 U-20 수비형 미드필더 엑섬이 공개 로스터에 합류합니다.",
+    "pt": "Exum entra no elenco público como volante da Inglaterra U-20 com Marcação Individual.",
+    "ru": "Экзум пополняет открытый состав как опорный полузащитник Англии U-20 с персональной опекой.",
+    "es": "Exum llega a la plantilla pública como mediocentro defensivo de Inglaterra U-20 con Marcaje Individual."
+  },
+  "Refined character profiles, established weapons and selected chemistry links; canon coverage now extends through Chapter 368.": {
+    "ms": "Profil watak, senjata sedia ada dan pautan kimia terpilih diperhalus; liputan kanon kini sehingga Bab 368.",
+    "ja": "人物紹介、既存の武器、一部の相性を更新。原作対応範囲は第368話まで。",
+    "ar": "حسنت ملفات الشخصيات وأسلحتها المعروفة وروابط انسجام محددة؛ تمتد تغطية القصة الآن إلى الفصل 368.",
+    "zh-CN": "完善人物档案、既有武器和部分默契关系；原作支持范围扩展至第 368 话。",
+    "fr": "Profils, armes établies et certains liens d’alchimie affinés ; le canon est désormais couvert jusqu’au chapitre 368.",
+    "de": "Charakterprofile, bewährte Waffen und ausgewählte Chemieverbindungen verfeinert; Kanonabdeckung jetzt bis Kapitel 368.",
+    "ko": "캐릭터 소개, 기존 무기, 일부 케미 관계를 다듬었으며 원작 지원 범위를 368화까지 확장했습니다.",
+    "pt": "Perfis, armas estabelecidas e algumas relações de química refinados; a cobertura do cânone agora vai até o capítulo 368.",
+    "ru": "Уточнены профили, устоявшиеся оружия и отдельные связи сыгранности; охват канона расширен до главы 368.",
+    "es": "Se refinan perfiles, armas establecidas y algunos vínculos de química; la cobertura del canon llega al capítulo 368."
+  },
+  "FLOW & WEAPON STATUS": {
+    "ms": "STATUS FLOW & SENJATA",
+    "ja": "フローと武器の状態",
+    "ar": "حالة التدفق والأسلحة",
+    "zh-CN": "心流与武器状态",
+    "fr": "ÉTAT DU FLOW ET DES ARMES",
+    "de": "FLOW- UND WAFFENSTATUS",
+    "ko": "플로우 및 무기 상태",
+    "pt": "ESTADO DO FLOW E DAS ARMAS",
+    "ru": "СОСТОЯНИЕ ПОТОКА И ОРУЖИЯ",
+    "es": "ESTADO DE FLOW Y ARMAS"
+  },
+  "Battle Sim player profiles now show whether conditional passives are in effect, whether specials are ready or on cooldown, and the remaining cooldown ticks.": {
+    "ms": "Profil pemain Battle Sim kini menunjukkan pasif bersyarat yang aktif, kesediaan gerakan khas dan baki tick masa menunggu.",
+    "ja": "Battle Simの選手プロフィールに条件付きパッシブの発動状況、特殊技の使用可否、残りクールダウンを表示。",
+    "ar": "تعرض ملفات لاعبي المحاكي الآن تفعيل القدرات المشروطة وجاهزية المهارات وفترات انتظارها المتبقية.",
+    "zh-CN": "比赛模拟球员档案现显示条件被动是否生效、特殊技能是否就绪及剩余冷却步数。",
+    "fr": "Les profils Battle Sim indiquent désormais les passifs conditionnels actifs, les techniques prêtes ou en recharge et les ticks restants.",
+    "de": "Battle-Sim-Profile zeigen nun aktive bedingte Passiven, bereite oder abklingende Spezialzüge und verbleibende Ticks.",
+    "ko": "배틀 시뮬 프로필에 조건부 패시브의 적용 여부, 특수기의 준비 상태와 남은 재사용 대기 틱을 표시합니다.",
+    "pt": "Os perfis do Battle Sim mostram passivas condicionais ativas, especiais prontos ou em recarga e os ticks restantes.",
+    "ru": "Профили Battle Sim показывают действие условных пассивов, готовность специальных приёмов и оставшиеся тики перезарядки.",
+    "es": "Los perfiles de Battle Sim muestran las pasivas condicionales activas, las técnicas listas o en recarga y los ticks restantes."
+  },
+  "Battle Sim weapon description cards now use a fixed 88px height.": {
+    "ms": "Kad penerangan senjata Battle Sim kini mempunyai ketinggian tetap 88px.",
+    "ja": "Battle Simの武器説明カードを高さ88pxに統一。",
+    "ar": "بطاقات وصف الأسلحة في المحاكي أصبحت بارتفاع ثابت قدره 88px.",
+    "zh-CN": "比赛模拟的武器说明卡现固定为 88px 高。",
+    "fr": "Les cartes de description des armes du Battle Sim ont désormais une hauteur fixe de 88px.",
+    "de": "Waffenbeschreibungskarten im Battle Sim haben jetzt eine feste Höhe von 88px.",
+    "ko": "배틀 시뮬 무기 설명 카드의 높이를 88px로 고정했습니다.",
+    "pt": "Os cartões de descrição de armas do Battle Sim agora têm altura fixa de 88px.",
+    "ru": "Карточки описаний оружия Battle Sim теперь имеют фиксированную высоту 88px.",
+    "es": "Las tarjetas de descripción de armas de Battle Sim ahora tienen una altura fija de 88px."
+  },
+  "Flow now lasts 40 ticks. Ultimates can be used once per Flow, with their usage refreshed when the player's next Flow activates.": {
+    "ms": "Flow kini berlangsung 40 tick. Ultimate boleh digunakan sekali setiap Flow dan ditetapkan semula apabila Flow seterusnya aktif.",
+    "ja": "フローは40ティック持続。必殺技は各フローにつき1回使用でき、次のフローで使用回数が回復。",
+    "ar": "يستمر التدفق الآن 40 نبضة. تستخدم المهارة القصوى مرة لكل تدفق، وتتجدد عند بدء التدفق التالي للاعب.",
+    "zh-CN": "心流现持续 40 步；终极技能每次心流可用一次，并在球员下一次心流启动时刷新。",
+    "fr": "Le Flow dure désormais 40 ticks. Les ultimes sont utilisables une fois par Flow et se réinitialisent au suivant.",
+    "de": "Flow dauert nun 40 Ticks. Ultimates sind einmal pro Flow nutzbar und werden beim nächsten Flow erneuert.",
+    "ko": "플로우는 이제 40틱 동안 지속됩니다. 궁극기는 플로우마다 한 번 사용하며 다음 플로우 활성화 시 초기화됩니다.",
+    "pt": "O Flow agora dura 40 ticks. Ultimates podem ser usados uma vez por Flow e são renovados no próximo.",
+    "ru": "Поток теперь длится 40 тиков. Ультимативный приём доступен один раз за Поток и обновляется при следующей активации.",
+    "es": "Flow dura ahora 40 ticks. Las definitivas se usan una vez por Flow y se renuevan al activar el siguiente."
+  },
+  "ABILITY SYSTEM OVERHAUL": {
+    "ms": "ROMBAKAN SISTEM KEBOLEHAN",
+    "ja": "アビリティシステム改修",
+    "ar": "تطوير نظام القدرات",
+    "zh-CN": "能力系统重构",
+    "fr": "REFONTE DES CAPACITÉS",
+    "de": "ÜBERARBEITETES FÄHIGKEITSSYSTEM",
+    "ko": "능력 시스템 개편",
+    "pt": "REFORMULAÇÃO DAS HABILIDADES",
+    "ru": "ПЕРЕРАБОТКА СИСТЕМЫ СПОСОБНОСТЕЙ",
+    "es": "RENOVACIÓN DEL SISTEMA DE HABILIDADES"
+  },
+  "Battle Sim abilities now support conditional passives, cooldown-based special moves and single-use ultimates.": {
+    "ms": "Kebolehan Battle Sim kini menyokong pasif bersyarat, gerakan khas bermasa menunggu dan ultimate sekali guna.",
+    "ja": "Battle Simの能力が条件付きパッシブ、クールダウン式特殊技、単発の必殺技に対応。",
+    "ar": "تدعم قدرات المحاكي الآن التأثيرات المشروطة والمهارات الخاصة بفترات انتظار والمهارات القصوى ذات الاستخدام الواحد.",
+    "zh-CN": "比赛模拟能力现支持条件被动、带冷却的特殊技能和单次终极技能。",
+    "fr": "Les capacités du Battle Sim prennent désormais en charge les passifs conditionnels, techniques à recharge et ultimes à usage unique.",
+    "de": "Battle-Sim-Fähigkeiten unterstützen nun bedingte Passiven, Spezialzüge mit Abklingzeit und einmalige Ultimates.",
+    "ko": "배틀 시뮬 능력이 조건부 패시브, 재사용 대기시간이 있는 특수기, 일회성 궁극기를 지원합니다.",
+    "pt": "As habilidades do Battle Sim agora incluem passivas condicionais, especiais com recarga e ultimates de uso único.",
+    "ru": "Способности Battle Sim теперь поддерживают условные пассивы, специальные приёмы с перезарядкой и одноразовые ультимативные приёмы.",
+    "es": "Las habilidades de Battle Sim incluyen pasivas condicionales, técnicas con recarga y definitivas de un solo uso."
+  },
+  "Isagi's Metavision increases OFF and SPD by 10% while he is off the ball.": {
+    "ms": "Metavision Isagi meningkatkan OFF dan SPD sebanyak 10% ketika tanpa bola.",
+    "ja": "潔のメタビジョンはオフ・ザ・ボール時にOFFとSPDを10%強化。",
+    "ar": "ترفع ميتافيجن إيساغي OFF وSPD بنسبة 10% عندما يكون دون كرة.",
+    "zh-CN": "洁的超越视界在无球时使 OFF 和 SPD 提高 10%。",
+    "fr": "La Métavision d’Isagi augmente OFF et SPD de 10% sans ballon.",
+    "de": "Isagis Metavision erhöht OFF und SPD ohne Ball um 10%.",
+    "ko": "이사기의 메타비전은 공이 없을 때 OFF와 SPD를 10% 높입니다.",
+    "pt": "A Metavision de Isagi aumenta OFF e SPD em 10% sem a bola.",
+    "ru": "Метавидение Исаги повышает OFF и SPD на 10%, когда он без мяча.",
+    "es": "La Metavisión de Isagi aumenta OFF y SPD un 10% cuando está sin balón."
+  },
+  "Direct Shot increases shot success chance by 2.5 percentage points per nearby outfield defender, up to +12 percentage points, with a 20-tick cooldown.": {
+    "ms": "Direct Shot meningkatkan peluang rembatan sebanyak 2.5 mata peratusan bagi setiap pertahanan padang berdekatan, maksimum +12 mata, dengan masa menunggu 20 tick.",
+    "ja": "ダイレクトシュートは近くの相手フィールド選手1人につき成功率を2.5ポイント、最大12ポイント強化。クールダウンは20ティック。",
+    "ar": "يزيد التسديد المباشر فرصة النجاح 2.5 نقطة مئوية لكل مدافع ميدان قريب، بحد أقصى 12 نقطة وفترة انتظار 20 نبضة.",
+    "zh-CN": "直接射门每有一名附近的外场防守球员，成功率提高 2.5 个百分点，最多提高 12 个百分点，冷却 20 步。",
+    "fr": "Direct Shot ajoute 2,5 points de réussite par défenseur de champ proche, jusqu’à +12 points, avec 20 ticks de recharge.",
+    "de": "Direct Shot erhöht die Trefferchance je nahem Feldverteidiger um 2,5 Prozentpunkte, maximal 12, bei 20 Ticks Abklingzeit.",
+    "ko": "다이렉트 슛은 주변 필드 수비수 한 명당 성공률이 2.5%p, 최대 12%p 증가하며 재사용 대기시간은 20틱입니다.",
+    "pt": "Direct Shot aumenta a chance de acerto em 2,5 pontos percentuais por defensor de linha próximo, até +12 pontos, com recarga de 20 ticks.",
+    "ru": "Direct Shot повышает шанс успеха на 2,5 процентного пункта за каждого близкого полевого защитника, максимум на 12, с перезарядкой 20 тиков.",
+    "es": "Direct Shot aumenta el acierto 2,5 puntos porcentuales por defensor de campo cercano, hasta +12 puntos, con 20 ticks de recarga."
+  },
+  "Two-Gun Volley can activate during Flow after Isagi receives a pass and attempts a goal. It doubles SHO and can be used once per match.": {
+    "ms": "Two-Gun Volley boleh aktif semasa Flow selepas Isagi menerima hantaran dan cuba menjaringkan gol. Ia menggandakan SHO dan boleh digunakan sekali setiap perlawanan.",
+    "ja": "二銃式直撃蹴弾はフロー中、潔がパスを受けてシュートする際に発動。SHOを2倍にし、1試合に1回使用可能。",
+    "ar": "يمكن تفعيل تسديدة المسدسين أثناء التدفق بعد استلام إيساغي تمريرة ومحاولة التسجيل. تضاعف SHO وتستخدم مرة في المباراة.",
+    "zh-CN": "二枪式凌空射门可在心流中、洁接球后尝试射门时发动；SHO 翻倍，每场可用一次。",
+    "fr": "Two-Gun Volley s’active en Flow après une passe reçue et une tentative de but. Il double SHO et s’utilise une fois par match.",
+    "de": "Two-Gun Volley kann im Flow nach einem empfangenen Pass beim Torversuch auslösen. Es verdoppelt SHO und ist einmal pro Spiel nutzbar.",
+    "ko": "투 건 발리는 플로우 중 이사기가 패스를 받아 슈팅할 때 발동할 수 있습니다. SHO를 두 배로 하며 경기당 한 번 사용합니다.",
+    "pt": "Two-Gun Volley pode ativar no Flow após Isagi receber um passe e tentar marcar. Dobra SHO e pode ser usado uma vez por partida.",
+    "ru": "Two-Gun Volley активируется в Потоке после получения паса при попытке забить. Удваивает SHO и доступен раз за матч.",
+    "es": "Two-Gun Volley se activa en Flow tras recibir Isagi un pase e intentar marcar. Duplica SHO y se usa una vez por partido."
+  },
+  "Flow now applies the existing 8.5% boost to every stat, ignores stamina-based stat penalties and prevents stamina loss until Flow ends.": {
+    "ms": "Flow kini menggunakan peningkatan sedia ada sebanyak 8.5% pada semua atribut, mengabaikan penalti stamina dan mencegah kehilangan stamina sehingga tamat.",
+    "ja": "フロー中は既存の8.5%強化が全能力に適用され、スタミナによる能力低下とスタミナ消費を無効化。",
+    "ar": "يطبق التدفق تعزيز 8.5% الحالي على كل القدرات، ويتجاهل عقوبات الإرهاق ويمنع فقدان التحمل حتى ينتهي.",
+    "zh-CN": "心流现将既有的 8.5% 加成应用于所有属性，忽略体力带来的属性惩罚，并在结束前防止体力流失。",
+    "fr": "Le Flow applique le bonus existant de 8,5% à toutes les statistiques, ignore les pénalités d’endurance et empêche sa baisse jusqu’à sa fin.",
+    "de": "Flow gewährt den bestehenden Bonus von 8,5% auf alle Werte, ignoriert Ausdauerabzüge und verhindert Ausdauerverlust bis zum Ende.",
+    "ko": "플로우는 모든 능력치에 기존 8.5% 보너스를 적용하고 체력에 따른 페널티와 플로우 종료 전 체력 소모를 막습니다.",
+    "pt": "O Flow aplica o bônus existente de 8,5% a todos os atributos, ignora penalidades de resistência e impede sua perda até o fim.",
+    "ru": "Поток даёт прежний бонус 8,5% всем характеристикам, игнорирует штрафы усталости и предотвращает расход выносливости до завершения.",
+    "es": "Flow aplica la mejora existente del 8,5% a todos los atributos, ignora penalizaciones de resistencia y evita su pérdida hasta terminar."
+  }
+};
+window.BLD_MESSAGES=Object.freeze({...window.BLD_MESSAGES,...entries});
+})();
+
+(function(){
+const templates=[
+ ["Verified deployments through chapter {chapter}. Gameplay eligibility is unchanged.",/^Verified deployments through chapter (\d+)\. Gameplay eligibility is unchanged\.$/],
+ ["No specific deployment was sufficiently verified through chapter {chapter}. Gameplay badges are not canon evidence.",/^No specific deployment was sufficiently verified through chapter (\d+)\. Gameplay badges are not canon evidence\.$/],
+ ["FAN MODEL // CANON GAMEPLAY THROUGH CH.{chapter}",/^FAN MODEL \/\/ CANON GAMEPLAY THROUGH CH\.(\d+)$/]
+].map(([key,pattern])=>Object.freeze({pattern,...Object.fromEntries(Object.entries(window.BLD_MESSAGES[key]).map(([language,value])=>[language,value.replaceAll('{chapter}','{1}')]))}));
+window.BLD_MESSAGE_TEMPLATES=Object.freeze([...window.BLD_MESSAGE_TEMPLATES,...templates]);
+})();
+
+// Patch history and shared information-page navigation.
+window.BLD_MESSAGES=Object.freeze({...window.BLD_MESSAGES,...{
+  "V0.8 SERIES": {
+    "ms": "SIRI V0.8",
+    "ja": "V0.8シリーズ",
+    "ar": "سلسلة V0.8",
+    "zh-CN": "V0.8 系列",
+    "fr": "SÉRIE V0.8",
+    "de": "V0.8-SERIE",
+    "ko": "V0.8 시리즈",
+    "pt": "SÉRIE V0.8",
+    "ru": "СЕРИЯ V0.8",
+    "es": "SERIE V0.8"
+  },
+  "V0.7 SERIES": {
+    "ms": "SIRI V0.7",
+    "ja": "V0.7シリーズ",
+    "ar": "سلسلة V0.7",
+    "zh-CN": "V0.7 系列",
+    "fr": "SÉRIE V0.7",
+    "de": "V0.7-SERIE",
+    "ko": "V0.7 시리즈",
+    "pt": "SÉRIE V0.7",
+    "ru": "СЕРИЯ V0.7",
+    "es": "SERIE V0.7"
+  },
+  "Battle Sim adds clearer pass paths, contextual set pieces, saved squad selection and a separate viewing projection.": {
+    "ms": "Battle Sim menambah laluan hantaran lebih jelas, bola mati mengikut situasi, pilihan skuad tersimpan dan unjuran paparan berasingan.",
+    "ja": "Battle Simに明確なパス軌道、状況に応じたセットプレー、保存チーム選択、独立した表示投影を追加。",
+    "ar": "يضيف محاكي المباريات مسارات تمرير أوضح وكرات ثابتة حسب السياق واختيار التشكيلات المحفوظة وإسقاط عرض مستقل.",
+    "zh-CN": "比赛模拟新增清晰传球轨迹、情境定位球、已保存阵容选择与独立显示投影。",
+    "fr": "Battle Sim ajoute des trajectoires de passe plus claires, des coups de pied arrêtés contextuels, le choix des équipes sauvegardées et une projection visuelle distincte.",
+    "de": "Battle Sim ergänzt klarere Passwege, situationsabhängige Standards, gespeicherte Kaderauswahl und eine getrennte Darstellungsprojektion.",
+    "ko": "배틀 시뮬에 명확한 패스 경로, 상황별 세트피스, 저장 스쿼드 선택과 별도의 화면 투영을 추가했습니다.",
+    "pt": "Battle Sim adiciona trajetórias de passe mais claras, bolas paradas contextuais, seleção de elencos salvos e uma projeção visual separada.",
+    "ru": "Battle Sim добавляет понятные траектории передач, ситуативные стандарты, выбор сохранённых составов и отдельную проекцию отображения.",
+    "es": "Battle Sim añade trayectorias de pase más claras, jugadas a balón parado según el contexto, selección de plantillas guardadas y una proyección visual independiente."
+  },
+  "Polished the pre-match lineup introduction and player spotlights.": {
+    "ms": "Memperhalus pengenalan kesebelasan sebelum perlawanan dan sorotan pemain.",
+    "ja": "試合前のラインナップ紹介と選手スポットライトを改善。",
+    "ar": "حسنت مقدمة التشكيلات قبل المباراة وتسليط الضوء على اللاعبين.",
+    "zh-CN": "优化赛前阵容介绍与球员聚焦展示。",
+    "fr": "Présentation des compositions et mises en avant des joueurs améliorées.",
+    "de": "Vorstellung der Aufstellungen und Spieler vor dem Spiel verfeinert.",
+    "ko": "경기 전 라인업 소개와 선수 집중 연출을 다듬었습니다.",
+    "pt": "A apresentação das escalações e os destaques dos jogadores foram aprimorados.",
+    "ru": "Улучшены предматчевое представление составов и акценты на игроках.",
+    "es": "Se pulieron la presentación de alineaciones y los focos de jugadores antes del partido."
+  },
+  "Added a live pre-match lineup introduction to Battle Sim.": {
+    "ms": "Menambah pengenalan kesebelasan langsung sebelum perlawanan dalam Battle Sim.",
+    "ja": "Battle Simに試合前のライブ形式ラインナップ紹介を追加。",
+    "ar": "أضيف عرض مباشر للتشكيلات قبل المباراة في المحاكي.",
+    "zh-CN": "为比赛模拟添加赛前实时阵容介绍。",
+    "fr": "Ajout d’une présentation animée des compositions avant le match dans Battle Sim.",
+    "de": "Live-Vorstellung der Aufstellungen vor Battle-Sim-Spielen hinzugefügt.",
+    "ko": "배틀 시뮬에 실시간 경기 전 라인업 소개를 추가했습니다.",
+    "pt": "Adicionada uma apresentação ao vivo das escalações antes das partidas do Battle Sim.",
+    "ru": "Добавлено живое предматчевое представление составов в Battle Sim.",
+    "es": "Se añadió una presentación en directo de las alineaciones antes del partido en Battle Sim."
+  },
+  "Restored attacking runs, improved shot selection and clarified set pieces and goalkeeper restarts.": {
+    "ms": "Memulihkan larian menyerang, memperbaik pemilihan rembatan dan memperjelas bola mati serta sepak mula semula penjaga gol.",
+    "ja": "攻撃の走り込みを復元し、シュート判断、セットプレー、GKの再開を改善。",
+    "ar": "أعيدت الانطلاقات الهجومية وحسن اختيار التسديدات ووضحت الكرات الثابتة وإعادة اللعب من الحارس.",
+    "zh-CN": "恢复进攻跑动，改善射门选择，并明确定位球与门将重新开球行为。",
+    "fr": "Appels offensifs rétablis, choix des tirs amélioré et coups de pied arrêtés ainsi que relances du gardien clarifiés.",
+    "de": "Angriffsläufe wiederhergestellt, Schusswahl verbessert und Standards sowie Torwartfortsetzungen geklärt.",
+    "ko": "공격 침투를 복원하고 슈팅 선택, 세트피스 및 골키퍼 재개 동작을 개선했습니다.",
+    "pt": "Corridas ofensivas restauradas, escolha de chutes melhorada e bolas paradas e reinícios do goleiro esclarecidos.",
+    "ru": "Восстановлены атакующие рывки, улучшен выбор удара, уточнены стандарты и возобновления игры вратарём.",
+    "es": "Se restauraron los desmarques ofensivos, se mejoró la selección de tiros y se aclararon las jugadas a balón parado y los reinicios del portero."
+  },
+  "Introduced continuous player and ball positions, speed-ordered movement and compatible spatial match saves.": {
+    "ms": "Memperkenalkan kedudukan pemain dan bola berterusan, pergerakan mengikut kelajuan dan simpanan perlawanan ruang yang serasi.",
+    "ja": "選手とボールの連続座標、速度順の移動、互換性を保つ座標付き試合セーブを導入。",
+    "ar": "أدخلت إحداثيات مستمرة للاعبين والكرة وحركة مرتبة بالسرعة وحفظ مباريات مكاني متوافق.",
+    "zh-CN": "引入连续球员与球体坐标、按速度排序的移动，以及兼容的空间比赛存档。",
+    "fr": "Positions continues des joueurs et du ballon, déplacements ordonnés par vitesse et sauvegardes spatiales compatibles introduits.",
+    "de": "Kontinuierliche Spieler- und Ballpositionen, Bewegung nach Geschwindigkeit und kompatible räumliche Spielstände eingeführt.",
+    "ko": "선수와 공의 연속 좌표, 속도순 이동, 호환되는 공간 기반 경기 저장을 도입했습니다.",
+    "pt": "Introduzidas posições contínuas de jogadores e bola, movimento por ordem de velocidade e saves espaciais compatíveis.",
+    "ru": "Введены непрерывные координаты игроков и мяча, движение по скорости и совместимые пространственные сохранения матчей.",
+    "es": "Se introdujeron posiciones continuas de jugadores y balón, movimiento ordenado por velocidad y guardados espaciales compatibles."
+  },
+  "Fixed release history grouping and information-page navigation.": {
+    "ms": "Membaiki pengelompokan sejarah keluaran dan navigasi halaman maklumat.",
+    "ja": "更新履歴のグループ分けと情報ページのナビゲーションを修正。",
+    "ar": "أصلح تجميع سجل الإصدارات والتنقل من صفحات المعلومات.",
+    "zh-CN": "修复更新历史分组和信息页面导航。",
+    "fr": "Correction du regroupement des versions et de la navigation depuis les pages d’information.",
+    "de": "Versionsgruppierung und Navigation auf Informationsseiten korrigiert.",
+    "ko": "업데이트 이력 그룹과 정보 페이지 탐색을 수정했습니다.",
+    "pt": "Corrigidos o agrupamento do histórico de versões e a navegação das páginas de informações.",
+    "ru": "Исправлены группировка истории версий и навигация информационных страниц.",
+    "es": "Se corrigieron la agrupación del historial de versiones y la navegación desde páginas informativas."
+  }
+}});

@@ -15,10 +15,17 @@ function advance(h,s){
  h.bs.playerTick(s);
 }
 const plain=v=>JSON.parse(JSON.stringify(v));
+// Presentation assertions require a goal; do not depend on a chance roll from an older engine revision.
+function forceGoal(h,state,shooter){
+ h.bs.setPosition(shooter,{x:90,y:50});
+ const random=state.random;let first=true;
+ state.random=Object.assign(()=>first?(first=false,0):random(),{getState:()=>random.getState()});
+ h.bs.resolveShot(state,shooter,false,{name:'Test finish'});
+}
 function runPresentationTests(){
  const h=battleContext();h.bs.quiet();const s=prepare(h,81);s.presentedEventId=1;
  const before=plain(h.bs.displayState());
- const shooter=s.teams[1].roster.find(p=>p.role!=='GK');shooter.zone=17;s.ballZone=17;h.bs.resolveShot(s,shooter,false,{name:'Test finish'});
+ const shooter=s.teams[1].roster.find(p=>p.role!=='GK');forceGoal(h,s,shooter);
  const attempt=s.events.find(e=>e.type==='shot-attempt'),goal=s.events.find(e=>e.type==='goal');assert(goal);
  assert.equal(h.bs.displayState().score[1],0,'unrevealed goal cannot change displayed score');
  assert.equal(JSON.stringify(h.bs.displayState().teams[1].roster.map(p=>[p.zone,p.flow,p.stamina])),JSON.stringify(before.teams[1].roster.map(p=>[p.zone,p.flow,p.stamina])),'future position and meters hidden');
@@ -53,7 +60,7 @@ function runPresentationTests(){
  }
  console.log('PASS presentation: 12 full spatial seeded simulations reproduce position/Flow/stamina/statistic timelines and results');
  schedulerTests();
- const r=battleContext();r.bs.quiet();const restart=prepare(r,9);r.bs.resolveShot(restart,restart.teams[1].roster.find(p=>p.role!=="GK"),false,{name:"Test finish"});restart.presentedEventId=restart.events.length;
+ const r=battleContext();r.bs.quiet();const restart=prepare(r,9);forceGoal(r,restart,restart.teams[1].roster.find(p=>p.role!=="GK"));restart.presentedEventId=restart.events.length;
  const rng=restart.random.getState();r.bs.continueMatch();assert.equal(restart.random.getState(),rng,"restart presentation cannot consume RNG");assert.equal(restart.events.at(-1).type,"kickoff");assert(restart.events.at(-1).presentationOnly);
  for(const reason of ["GOAL","SAVE","FREE KICK","RED CARD"]){const terminal=prepare(r,9);terminal.timeSeconds=5400;terminal.phase="secondHalf";terminal.status="paused";terminal.stoppage=reason;terminal.presentedEventId=terminal.events.length;r.bs.presentationSettled();assert.equal(terminal.status,"finished",reason+" at 90:00 finishes automatically");assert.equal(terminal.events.at(-1).type,"full-time");}
  console.log('PASS presentation: real kickoff reveal consumes no RNG; goals/saves/fouls/cards at 90:00 end without Proceed');

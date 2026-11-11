@@ -28,7 +28,7 @@ function runBattleV083Tests(){
  const gkCorner=b.keeper(corner.teams[2]);assert(gkCorner.x>=84&&gkCorner.x<=97&&gkCorner.y>=21&&gkCorner.y<=79);
  const fk=b.createMatch(),free={type:'free-kick',teamNumber:1,zone:15,point:{x:78,y:50},routine:'direct'};
  b.arrangeSetPiece(fk,free,b.setPieceTaker(fk,free));
- assert(b.active(fk.teams[2]).filter(p=>p.role!=='GK'&&p.x>=84&&p.x<=88&&Math.abs(p.y-50)<=8).length>=2,'free-kick defensive wall');
+ assert(b.active(fk.teams[2]).filter(p=>p.role!=='GK').every(p=>p.x>=78&&p.x<=97&&b.distance(p,free.point)>10),'attacking free-kick defenders occupy the current deep zone outside the restart radius');
  const goalKick=b.createMatch();b.setMatch(goalKick);
  const fromGoal={type:'goal-kick',teamNumber:1,zone:2,point:{x:4,y:50},routine:'direct'};
  assert.equal(b.setPieceTaker(goalKick,fromGoal).role,'GK','keeper takes goal kick by default');
@@ -38,15 +38,16 @@ function runBattleV083Tests(){
  const saved=b.createMatch();b.setMatch(saved);
  const shooter=b.active(saved.teams[1]).filter(p=>p.role!=='GK').sort((a,c)=>a.stats.sho-c.stats.sho)[0];
  b.setPosition(shooter,{x:75,y:50});saved.possession=1;saved.carrierId=shooter.id;b.setBall(saved,shooter);
- saved.random=()=>.5;
+ const saveRolls=[.999999,.5,.375];saved.random=()=>saveRolls.shift()??.5;
  b.resolveShot(saved,shooter,false);
  const saveEvent=saved.events.find(e=>e.type==='save');
  assert(saveEvent,'deterministic shot should be saved');
  const keeper=b.keeper(saved.teams[2]);
- assert.equal(saved.carrierId,keeper.id,'keeper retains the ball after a catch');
+ assert.equal(saved.pending?.type,'goal-kick','clean catches prepare the current goal-kick restart');
+ assert.equal(saved.carrierId,keeper.id,'pause stages the goal kick with keeper possession');
  assert.equal(saved.possession,2);
  assert.equal(saved.ball.x,keeper.x);assert.equal(saved.ball.y,keeper.y);
- assert.equal(saveEvent.presentation.carrierId,keeper.id,'the reveal shows keeper with the ball');
+ assert.equal(saveEvent.presentation.carrierId,keeper.id,'the settled save reveal includes the staged keeper restart');
  assert.equal(saveEvent.presentation.ball.x,keeper.x);
  const shots=[],goals=[],results=[];
  for(let seed=1;seed<=16;seed++){
@@ -71,6 +72,6 @@ function runBattleV083Tests(){
  const css=fs.readFileSync(path.join(__dirname,'../css/battle-renaissance.css'),'utf8');
  for(const token of ['bs-mini-card-face','bs-mini-card-info','bs-live-player-portrait','bs-live-keeper-tag'])
   assert(source.includes(token)&&css.includes(token),'portrait and sketch UI contract '+token);
- console.log('PASS v0.8.3: '+shots.length+' real-roster matches '+totalShots+' shots, '+totalGoals+' goals, '+scoreless+' scoreless; actual keeper catches, positional corners/free-kick walls/goal kicks, PAS/SHO contextual set pieces and portrait cards');
+ console.log('PASS v0.8.3: '+shots.length+' real-roster matches '+totalShots+' shots, '+totalGoals+' goals, '+scoreless+' scoreless; actual keeper catches, positional corners/free-kick zones/goal kicks, PAS/SHO contextual set pieces and portrait cards');
 }
 if(require.main===module)runBattleV083Tests();module.exports={runBattleV083Tests};

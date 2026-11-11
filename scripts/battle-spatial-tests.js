@@ -18,7 +18,7 @@ function runSpatialTests(){
   assert(keeper.y>=21&&keeper.y<=79);
  }
  const order=b.offBallOrder(s);assert.equal(order.length,21);
- for(let i=1;i<order.length;i++)assert(order[i-1].stats.spd>=order[i].stats.spd,'fastest mover takes turn first at full stamina');
+ for(let i=1;i<order.length;i++)assert(b.effective(order[i-1],'spd')>=b.effective(order[i],'spd'),'fastest effective SPD moves first, including conditional passives');
  const before=new Map(order.map(p=>[p.teamNumber+':'+p.id,[p.x,p.y]]));
  b.moveOffBall(s);
  for(const p of order){

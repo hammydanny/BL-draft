@@ -2,7 +2,7 @@
 // Split from the former root script.js. Classic scripts share the same global scope.
 
 // ----------------------------------------------------------------------------
-// CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 364
+// CHEMISTRY MODEL // BLUE LOCK CANON + GAMEPLAY THROUGH MANGA CHAPTER 368
 // ----------------------------------------------------------------------------
 // Blue Lock does NOT publish an official 0-100 chemistry statistic.
 // These scores are a fan-game model. Strong overrides are based on demonstrated
@@ -11,7 +11,7 @@
 // ----------------------------------------------------------------------------
 
 const CHEMISTRY_NEUTRAL_SCORE = 65;
-const CHEMISTRY_NEUTRAL_REASON = "No significant on-field relationship has been demonstrated through Chapter 364.";
+const CHEMISTRY_NEUTRAL_REASON = `No sustained shared on-field system has been demonstrated in Blue Lock through chapter ${APP_SUPPORTED_CHAPTER}.`;
 
 const CHEMISTRY_CONTEXTS = [
   {name:"TEAM Z",score:79,players:["Yoichi Isagi","Meguru Bachira","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Gurimu Igarashi","Asahi Naruhaya","Wataru Kuon","Yudai Imamura","Okuhito Iemon"]},
@@ -48,6 +48,7 @@ const CHEMISTRY_CONTEXTS = [
 
 const CHEMISTRY_SPECIAL_PAIRS = [
   ["Shoei Baro","Asahi Naruhaya",78,"SECOND SELECTION DUO","Barou and Naruhaya teamed with Nishioka, then faced Isagi and Nagi as a duo in the Second Selection."],
+  ["Yoichi Isagi","Ryusei Shido",61,"CLASHING FINISHERS","Both attack decisive scoring spaces, but their finishing instincts can collide instead of forming a coordinated route. Football compatibility, not personal hostility, limits this pairing."],
   // Proven elite / named combinations
   ["Junichi Wanima","Keisuke Wanima",99,"TWIN SYNCHRONIZATION","Team W's core duo can understand each other almost perfectly without words and specialize in synchronized combination play."],
   ["Ikki Niko","Hibiki Okawa",91,"HIDDEN PLAYMAKER × ACE","Team Y used Niko as the deep-lying organizer feeding Okawa as the visible finishing threat; Niko directly assisted Okawa against Team Z."],
@@ -66,7 +67,7 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Michael Kaiser","Yoichi Isagi",92,"RIVAL ALLIANCE","PXG: after prolonged conflict, Kaiser reset his ego and partnered with Isagi to break the genius-led defense."],
   ["Alexis Ness","Yoichi Isagi",84,"UNINTENTIONAL AWAKENING","Chapter 293 proves Isagi can read Ness' awakened pass and score from it, but Ness did not build that play as a trusted Isagi partnership and their personal relationship remains antagonistic."],
   ["Michael Kaiser","Alexis Ness",86,"FRACTURED ELITE DUO","Years of rehearsed combinations give them real technical compatibility, but the PXG match ends with Kaiser severing the dependency and Ness emotionally collapsing."],
-  ["Yoichi Isagi","Hyoma Chigiri",91,"SPEED REACTION","Isagi helps Chigiri rediscover his ego, then later selects him specifically because Chigiri's speed can survive inside the Second Selection's devouring reactions."],
+  ["Yoichi Isagi","Hyoma Chigiri",93,"SPEED REACTION","From Team Z and the Second Selection to their England attacking combinations, Isagi reads Chigiri's high-speed runs while Chigiri supplies the space and delivery for a first-time finish."],
   ["Rin Itoshi","Nijiro Nanase",88,"RIN SUPPORT ROUTE","Nanase deliberately trains to become useful to Rin and becomes a dedicated PXG support route, but the relationship is heavily one-sided rather than an equal chemical duo."],
   ["Oliver Aiku","Ikki Niko",92,"UBERS DEFENSIVE CORE","Both are elite readers who repeatedly operate inside Ubers' synchronized defensive rotations, with Aiku anchoring the line and Niko stepping into interception lanes."],
   ["Don Lorenzo","Oliver Aiku",91,"UBERS DEFENSIVE CORE","Lorenzo's elite man-marking and Aiku's reading anchor Ubers' layered defensive system."],
@@ -163,14 +164,14 @@ const CHEMISTRY_SPECIAL_PAIRS = [
   ["Qazicutie","Syaafi",69,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["Qazicutie","jon",63,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["Qazicutie","oka",65,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
-  ["hdannyy","floppy_willy",88,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
+  ["hdannyy","floppy_willy",92,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["hdannyy","raf",90,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["hdannyy","Syaafi",75,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["hdannyy","jon",70,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["hdannyy","oka",80,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["floppy_willy","Syaafi",67,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["floppy_willy","oka",75,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
-  ["floppy_willy","jon",50,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
+  ["floppy_willy","jon",65,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["floppy_willy","raf",70,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["raf","Syaafi",82,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
   ["raf","jon",60,"TEAMMATE CHEMISTRY","Project-defined teammate chemistry."],
@@ -488,7 +489,7 @@ function chemistryHud(teamNumber,team){
       <div class="chem-score">
         <span>TEAM CHEMISTRY</span>
         <strong>${c.overall||"--"}</strong>
-        <small>FAN MODEL // CANON GAMEPLAY THROUGH CH.364</small>
+        <small>${("FAN MODEL // CANON GAMEPLAY THROUGH CH.{chapter}").replace("{chapter}",APP_SUPPORTED_CHAPTER)}</small>
       </div>
       <div class="chemistry-summary">
         <div><span>TACTICAL LINKS</span><strong>${c.activeLinks}<small> / ${c.possibleLinks}</small></strong></div>

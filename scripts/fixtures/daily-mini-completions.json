@@ -13,23 +13,23 @@
       },
       {
         "type": "pick",
-        "id": 56
+        "id": 55
       },
       {
         "type": "pick",
-        "id": 63
+        "id": 24
       },
       {
         "type": "pick",
-        "id": 16
+        "id": 20
       },
       {
         "type": "pick",
-        "id": 12
+        "id": 21
       },
       {
         "type": "pick",
-        "id": 13
+        "id": 50
       }
     ]
   },
@@ -39,31 +39,31 @@
     "actions": [
       {
         "type": "pick",
-        "id": 39
+        "id": 4
       },
       {
         "type": "pick",
-        "id": 77
+        "id": 76
       },
       {
         "type": "pick",
-        "id": 74
+        "id": 56
       },
       {
         "type": "pick",
-        "id": 45
+        "id": 8
       },
       {
         "type": "pick",
-        "id": 24
+        "id": 16
       },
       {
         "type": "pick",
-        "id": 75
+        "id": 27
       },
       {
         "type": "pick",
-        "id": 72
+        "id": 7
       }
     ]
   },
@@ -73,31 +73,31 @@
     "actions": [
       {
         "type": "pick",
-        "id": 71
+        "id": 58
       },
       {
         "type": "pick",
-        "id": 33
+        "id": 21
       },
       {
         "type": "pick",
-        "id": 39
+        "id": 31
       },
       {
         "type": "pick",
-        "id": 16
+        "id": 20
       },
       {
         "type": "pick",
-        "id": 74
+        "id": 24
       },
       {
         "type": "pick",
-        "id": 76
+        "id": 40
       },
       {
         "type": "pick",
-        "id": 27
+        "id": 44
       }
     ]
   },
@@ -111,31 +111,31 @@
       },
       {
         "type": "pick",
-        "id": 58
+        "id": 50
       },
       {
         "type": "pick",
-        "id": 56
+        "id": 8
       },
       {
         "type": "pick",
-        "id": 24
+        "id": 59
       },
       {
         "type": "pick",
-        "id": 6
+        "id": 33
       },
       {
         "type": "pick",
-        "id": 45
+        "id": 21
       },
       {
         "type": "pick",
-        "id": 63
+        "id": 20
       },
       {
         "type": "pick",
-        "id": 15
+        "id": 40
       }
     ]
   },
@@ -145,7 +145,19 @@
     "actions": [
       {
         "type": "pick",
-        "id": 8
+        "id": 16
+      },
+      {
+        "type": "pick",
+        "id": 66
+      },
+      {
+        "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 27
       },
       {
         "type": "pick",
@@ -153,27 +165,15 @@
       },
       {
         "type": "pick",
-        "id": 31
+        "id": 20
       },
       {
         "type": "pick",
-        "id": 75
+        "id": 15
       },
       {
         "type": "pick",
-        "id": 9
-      },
-      {
-        "type": "pick",
-        "id": 40
-      },
-      {
-        "type": "pick",
-        "id": 32
-      },
-      {
-        "type": "pick",
-        "id": 2
+        "id": 7
       }
     ]
   },
@@ -183,11 +183,11 @@
     "actions": [
       {
         "type": "pick",
-        "id": 11
+        "id": 15
       },
       {
         "type": "pick",
-        "id": 65
+        "id": 33
       },
       {
         "type": "pick",
@@ -195,23 +195,23 @@
       },
       {
         "type": "pick",
+        "id": 59
+      },
+      {
+        "type": "pick",
+        "id": 21
+      },
+      {
+        "type": "pick",
         "id": 4
       },
       {
         "type": "pick",
-        "id": 20
-      },
-      {
-        "type": "pick",
-        "id": 50
-      },
-      {
-        "type": "pick",
-        "id": 74
-      },
-      {
-        "type": "pick",
         "id": 40
+      },
+      {
+        "type": "pick",
+        "id": 24
       }
     ]
   },
@@ -221,31 +221,15 @@
     "actions": [
       {
         "type": "pick",
-        "id": 59
+        "id": 36
       },
       {
         "type": "pick",
-        "id": 77
+        "id": 1
       },
       {
         "type": "pick",
-        "id": 26
-      },
-      {
-        "type": "pick",
-        "id": 47
-      },
-      {
-        "type": "pick",
-        "id": 16
-      },
-      {
-        "type": "pick",
-        "id": 20
-      },
-      {
-        "type": "pick",
-        "id": 74
+        "id": 58
       },
       {
         "type": "pick",
@@ -253,7 +237,23 @@
       },
       {
         "type": "pick",
-        "id": 65
+        "id": 61
+      },
+      {
+        "type": "pick",
+        "id": 20
+      },
+      {
+        "type": "pick",
+        "id": 67
+      },
+      {
+        "type": "pick",
+        "id": 56
+      },
+      {
+        "type": "pick",
+        "id": 16
       }
     ]
   },
@@ -263,7 +263,19 @@
     "actions": [
       {
         "type": "pick",
-        "id": 68
+        "id": 44
+      },
+      {
+        "type": "pick",
+        "id": 31
+      },
+      {
+        "type": "pick",
+        "id": 56
+      },
+      {
+        "type": "pick",
+        "id": 37
       },
       {
         "type": "pick",
@@ -271,31 +283,19 @@
       },
       {
         "type": "pick",
+        "id": 24
+      },
+      {
+        "type": "pick",
+        "id": 55
+      },
+      {
+        "type": "pick",
         "id": 9
       },
       {
         "type": "pick",
-        "id": 15
-      },
-      {
-        "type": "pick",
-        "id": 16
-      },
-      {
-        "type": "pick",
-        "id": 20
-      },
-      {
-        "type": "pick",
-        "id": 74
-      },
-      {
-        "type": "pick",
-        "id": 6
-      },
-      {
-        "type": "pick",
-        "id": 21
+        "id": 38
       }
     ]
   },
@@ -313,23 +313,11 @@
       },
       {
         "type": "pick",
-        "id": 26
+        "id": 38
       },
       {
         "type": "pick",
-        "id": 4
-      },
-      {
-        "type": "pick",
-        "id": 30
-      },
-      {
-        "type": "pick",
-        "id": 78
-      },
-      {
-        "type": "pick",
-        "id": 32
+        "id": 27
       },
       {
         "type": "pick",
@@ -337,7 +325,19 @@
       },
       {
         "type": "pick",
-        "id": 31
+        "id": 40
+      },
+      {
+        "type": "pick",
+        "id": 1
+      },
+      {
+        "type": "pick",
+        "id": 34
+      },
+      {
+        "type": "pick",
+        "id": 4
       }
     ]
   },
@@ -347,19 +347,35 @@
     "actions": [
       {
         "type": "pick",
-        "id": 11
+        "id": 78
       },
       {
         "type": "pick",
-        "id": 41
+        "id": 28
       },
       {
         "type": "pick",
-        "id": 65
+        "id": 58
       },
       {
         "type": "pick",
-        "id": 46
+        "id": 75
+      },
+      {
+        "type": "pick",
+        "id": 30
+      },
+      {
+        "type": "pick",
+        "id": 62
+      },
+      {
+        "type": "pick",
+        "id": 27
+      },
+      {
+        "type": "pick",
+        "id": 33
       },
       {
         "type": "pick",
@@ -367,23 +383,7 @@
       },
       {
         "type": "pick",
-        "id": 70
-      },
-      {
-        "type": "pick",
-        "id": 17
-      },
-      {
-        "type": "pick",
-        "id": 16
-      },
-      {
-        "type": "pick",
-        "id": 78
-      },
-      {
-        "type": "pick",
-        "id": 25
+        "id": 9
       }
     ]
   },
@@ -397,15 +397,11 @@
       },
       {
         "type": "pick",
-        "id": 68
-      },
-      {
-        "type": "pick",
         "id": 33
       },
       {
         "type": "pick",
-        "id": 5
+        "id": 26
       },
       {
         "type": "pick",
@@ -413,15 +409,19 @@
       },
       {
         "type": "pick",
-        "id": 22
+        "id": 42
       },
       {
         "type": "pick",
-        "id": 29
+        "id": 65
       },
       {
         "type": "pick",
-        "id": 70
+        "id": 8
+      },
+      {
+        "type": "pick",
+        "id": 27
       },
       {
         "type": "pick",
@@ -429,7 +429,7 @@
       },
       {
         "type": "pick",
-        "id": 27
+        "id": 28
       }
     ]
   },
@@ -439,23 +439,11 @@
     "actions": [
       {
         "type": "pick",
-        "id": 19
+        "id": 27
       },
       {
         "type": "pick",
-        "id": 10
-      },
-      {
-        "type": "pick",
-        "id": 58
-      },
-      {
-        "type": "pick",
-        "id": 28
-      },
-      {
-        "type": "pick",
-        "id": 46
+        "id": 76
       },
       {
         "type": "pick",
@@ -463,19 +451,31 @@
       },
       {
         "type": "pick",
+        "id": 8
+      },
+      {
+        "type": "pick",
+        "id": 30
+      },
+      {
+        "type": "pick",
+        "id": 9
+      },
+      {
+        "type": "pick",
+        "id": 60
+      },
+      {
+        "type": "pick",
+        "id": 26
+      },
+      {
+        "type": "pick",
         "id": 24
       },
       {
         "type": "pick",
-        "id": 32
-      },
-      {
-        "type": "pick",
         "id": 33
-      },
-      {
-        "type": "pick",
-        "id": 78
       }
     ]
   }

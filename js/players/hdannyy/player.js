@@ -7,7 +7,7 @@ const PLAYER_83_DATA = {
   appearanceOrder: 83,
   image: "images/hdannyy1.png",
   primaryPosition: "RW",
-  positions: ["RW", "LW", "CF", "CM", "GK"],
+  positions: ["RW", "LW", "CF", "CM"],
   secretCharacter: true,
   nationality: null,
   countryName: "Roblox",
@@ -21,7 +21,7 @@ const PLAYER_83_DATA = {
     description: "When on the field, unlock teammates' potentials and improve their coordination."
   }],
   // RW position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 94, sho: 96, pas: 96, dri: 91, spd: 93, off: 98, def: 89, gk: 80 },
+  stats: { ovr: 94, sho: 96, pas: 96, dri: 93, spd: 93, off: 98, def: 89, gk: 73 },
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] },
     { name: "3-Headed Succubus", members: ["hdannyy", "floppy_willy", "Qazicutie"] }

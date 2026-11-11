@@ -29,7 +29,7 @@ const PLAYER_89_DATA = {
     }
   ],
   // CF position-weighted overall derived from the supplied attributes.
-  stats: { ovr: 69, sho: 68, pas: 66, dri: 75, spd: 72, off: 69, def: 59, gk: 38 },
+  stats: { ovr: 71, sho: 72, pas: 66, dri: 79, spd: 75, off: 69, def: 59, gk: 38 },
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy", "Jameswasnthere"] }
   ]

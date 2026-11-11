@@ -20,8 +20,8 @@ const PLAYER_85_DATA = {
     category: "mental",
     description: "There are many different versions of jon, some more threatening than others- this allows for a variety of playstyles and an assortment of abilities unique to each personality. The most threatening one is the Drunk."
   }],
-  // CM position-weighted overall, derived from the supplied attributes.
-  stats: { ovr: 94, sho: 94, pas: 95, dri: 95, spd: 90, off: 93, def: 97, gk: 72 },
+  // Approved Base OVR stays 94; the shared CM position calculation is independently rounded to 93.
+  stats: { ovr: 94, sho: 94, pas: 90, dri: 95, spd: 92, off: 95, def: 97, gk: 72 },
   teamHistory: [
     { name: "Azure Latch", members: ["hdannyy", "jon", "raf", "Syaafi", "Qazicutie", "oka", "floppy_willy"] }
   ]

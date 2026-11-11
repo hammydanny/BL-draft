@@ -41,6 +41,8 @@ require('./v073-tests.js').runV073Tests();
 require('./v074-tests.js').runV074Tests();
 
 require('./bundle-characters.js').check()||assert.fail('Stale character bundle');
+require('./roster-content-tests.js').runRosterContentTests();
+require('./information-navigation-tests.js').runInformationNavigationTests();
 require('./battle-sim-tests.js').runBattleSimTests();
 require('./battle-spatial-tests.js').runSpatialTests();
 require('./battle-v083-tests.js').runBattleV083Tests();
