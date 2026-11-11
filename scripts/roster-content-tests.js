@@ -7,20 +7,22 @@ const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).dige
 function runRosterContentTests(){
  const {run}=createModeTestContext();
  const current=JSON.parse(run('JSON.stringify(players)'));
- for(const p of current.filter(p=>p.id!==90)){
+ for(const p of current.filter(p=>p.id<=89)){
   const copy=JSON.parse(JSON.stringify(p)),allow=baseline.allowed[p.id]||{};
   for(const key of allow.stats||[])delete copy.stats[key];if(allow.positions)delete copy.positions;
   for(const weapon of copy.weapons||[])if(weapon.id===allow.weapon)delete weapon.description;
   assert.equal(hash(copy),baseline.hashes[p.id],'Unapproved attribute or metadata change: '+p.name);
  }
- assert.deepEqual(current.map(p=>p.id),Array.from({length:90},(_,i)=>i+1),'Append-only roster IDs');
+ assert.deepEqual(current.map(p=>p.id),Array.from({length:98},(_,i)=>i+1),'Append-only roster IDs');
+ const stable=require('./fixtures/roster-v0881.json');
+ for(const p of current.filter(p=>p.id<=90))assert.equal(hash(p),stable.hashes[p.id],'Existing player changed: '+p.name);
  const permitted=[['floppy_willy','jon',65],['hdannyy','floppy_willy',92],['Yoichi Isagi','Ryusei Shido',61],['Yoichi Isagi','Hyoma Chigiri',93]],keys=new Set(permitted.map(p=>p.slice(0,2).sort().join('|')));
  const pairs=run('CHEMISTRY_SPECIAL_PAIRS');
  assert.equal(hash(pairs.filter(p=>!keys.has(p.slice(0,2).sort().join('|')))),baseline.chemistryHash,'Unapproved chemistry pair edit');
  assert.equal(hash(run('CHEMISTRY_CONTEXTS')),baseline.contextHash,'Existing chemistry contexts stay unchanged');
  for(const [a,b,score]of permitted)assert.equal(run(`playerChemistry(players.find(p=>p.name===${JSON.stringify(a)}),players.find(p=>p.name===${JSON.stringify(b)}))`),score);
  run(`
-  assert.equal(APP_SUPPORTED_CHAPTER,368);assert.equal(players.filter(p=>!p.secretCharacter).length,80);assert.equal(players.filter(p=>p.secretCharacter).length,10);
+  assert.equal(APP_SUPPORTED_CHAPTER,368);assert.equal(players.filter(p=>!p.secretCharacter).length,88);assert.equal(players.filter(p=>p.secretCharacter).length,10);
   for(const [id,base]of [[83,94],[82,73],[84,80],[89,71],[85,94],[88,85],[86,88]])assert.equal(playerOverall(playerById(id)),base);
   for(const [id,stats]of [[83,{gk:73,dri:93}],[82,{spd:64,dri:68,sho:75}],[84,{spd:68}],[89,{sho:72,dri:79,spd:75}],[85,{pas:90,off:95,spd:92}],[88,{sho:90,def:78}],[86,{sho:90}]])for(const [key,value]of Object.entries(stats))assert.equal(playerById(id).stats[key],value);
   assert.deepEqual(playerPositions(playerById(83)),['RW','LW','CF','CM']);assert(!playerPositions(playerById(83)).includes('GK'));assert.equal(playerById(83).stats.gk,73);
@@ -50,7 +52,7 @@ function runRosterContentTests(){
  const saved=JSON.parse(JSON.stringify(h.bs.snapshotMatch(state))),restored=h.bs.hydrateMatch(saved);assert(restored);assert(restored.teams[1].roster.some(p=>Number(p.id)===90));
  // Validate newly edited canonical copy against every translation catalog, not just HTML strings.
  const records=require('./localization-sanity').load(path.resolve(__dirname,'..')),catalog=new Map(records.map(r=>[r.source,r.values]));
- for(const id of [1,7,27,28,31,90]){
+ for(const id of [1,7,27,28,31,90,91,92,93,94,95,96,97,98]){
   const p=current.find(p=>p.id===id),overview=run(`playerRecord(${id}).profile.overview`);
   for(const text of [overview,...p.weapons.flatMap(w=>[w.name,w.description])]){
    assert(catalog.has(text),'Missing content translation: '+text);for(const language of require('./localization-sanity').languages)assert(catalog.get(text)[language]);

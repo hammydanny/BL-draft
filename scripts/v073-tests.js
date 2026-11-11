@@ -129,10 +129,11 @@ function runV073Tests(){
         const records=duelRecords();assert.deepEqual(records.levels.hard,{w:0,l:0,d:2,best:null});assert.deepEqual(records.daily,{});assert.deepEqual(records.recent,[]);
         const daily=duelDailySetup('2026-11-02');assert.equal(daily.level,'normal');assert.deepEqual(duelDailySetup('2026-11-02'),daily);
     `);
-    // Comparative CPU sample: same seeds, same fixed human policy.
-    const levels=JSON.parse(run(`(()=>{const out={};for(const level of DUEL_LEVELS){let strength=0,n=0;for(const format of ['quick','standard','full'])for(let seed=1;seed<=6;seed++){const state=duelNew({seed:seed*7919,format,level});duelStart(state);while(state.phase==='draft'){const best=[...state.market].sort((a,b)=>duelValue(state.human,state.humanFormation,b)-duelValue(state.human,state.humanFormation,a)||a-b)[0];duelPick(state,best);}strength+=duelResult(state).cpu.strength;n++;}out[level]=strength/n;}return JSON.stringify(out);})()`));
+    // Comparative CPU sample: same seeds and human policy. Include every original seed
+    // plus twelve more per format so roster additions cannot hinge the aggregate on six seeds.
+    const levels=JSON.parse(run(`(()=>{const out={};for(const level of DUEL_LEVELS){let strength=0,n=0;for(const format of ['quick','standard','full'])for(let seed=1;seed<=18;seed++){const state=duelNew({seed:seed*7919,format,level});duelStart(state);while(state.phase==='draft'){const best=[...state.market].sort((a,b)=>duelValue(state.human,state.humanFormation,b)-duelValue(state.human,state.humanFormation,a)||a-b)[0];duelPick(state,best);}strength+=duelResult(state).cpu.strength;n++;}out[level]=strength/n;}return JSON.stringify(out);})()`));
     assert(levels.hard>levels.normal&&levels.normal>levels.easy,JSON.stringify(levels));
-    pass(`Draft Duel is deterministic, never duplicates players, validates saves/codes/records; CPU strength over 18 paired duels Easy ${levels.easy.toFixed(2)} < Normal ${levels.normal.toFixed(2)} < Hard ${levels.hard.toFixed(2)}`);
+    pass(`Draft Duel is deterministic, never duplicates players, validates saves/codes/records; CPU strength over 54 paired duels Easy ${levels.easy.toFixed(2)} < Normal ${levels.normal.toFixed(2)} < Hard ${levels.hard.toFixed(2)}`);
     // ---------- Blue Lock Man (Auction setup toggle) ----------
     block(`
         const [k1,k2]=[blueLockManFor(1),blueLockManFor(2)];

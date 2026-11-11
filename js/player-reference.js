@@ -86,20 +86,28 @@ const PLAYER_PROFILE_METADATA = Object.fromEntries(Object.entries({
   "87": PLAYER_87_REFERENCE,
   "88": PLAYER_88_REFERENCE,
   "89": PLAYER_89_REFERENCE,
-  "90": PLAYER_90_REFERENCE
+  "90": PLAYER_90_REFERENCE,
+  "91": PLAYER_91_REFERENCE,
+  "92": PLAYER_92_REFERENCE,
+  "93": PLAYER_93_REFERENCE,
+  "94": PLAYER_94_REFERENCE,
+  "95": PLAYER_95_REFERENCE,
+  "96": PLAYER_96_REFERENCE,
+  "97": PLAYER_97_REFERENCE,
+  "98": PLAYER_98_REFERENCE
 }).filter(([,profile])=>profile));
 
 // Shared category registry: Auction selection and Database browsing use the same data.
 const PLAYER_POOL_CATEGORIES = {
-    "blue-lock-project":{label:"BLUE LOCK PROJECT",names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora","Hajime Nishioka","Shizuka Haiji","Reiji Hiiragi","Taiga Tsunzaki","Aiki Himizu"]},
+    "blue-lock-project":{label:"BLUE LOCK PROJECT",names:["Yoichi Isagi","Ryosuke Kira","Meguru Bachira","Gurimu Igarashi","Rensuke Kunigami","Hyoma Chigiri","Gin Gagamaru","Jingo Raichi","Asahi Naruhaya","Okuhito Iemon","Wataru Kuon","Yudai Imamura","Shoei Baro","Ikki Niko","Hibiki Okawa","Junichi Wanima","Keisuke Wanima","Reo Mikage","Seishiro Nagi","Zantetsu Tsurugi","Rin Itoshi","Jyubei Aryu","Aoshi Tokimitsu","Ranze Kurona","Yo Hiori","Tabito Karasu","Eita Otoya","Kenyu Yukimiya","Ryusei Shido","Nijiro Nanase","Jin Kiyora","Hajime Nishioka","Shizuka Haiji","Reiji Hiiragi","Taiga Tsunzaki","Aiki Himizu","Akira Endoji","Yukio Ishikari","Ryo Nameoka"]},
     "original-u20":{label:"ORIGINAL JAPAN U-20",names:["Sae Itoshi","Gen Fukaku","Oliver Aiku","Kazuma Nio","Miroku Darai","Teppei Neru","Itsuki Wakatsuki","Haru Hayate","Kento Cho","Teru Kitsunezato","Shuto Sendo","Ryusei Shido"]},
     "world-five":{label:"WORLD FIVE",names:["Leonardo Luna","Pablo Cavasoz","Adam Blake","Dada Silva","Julien Loki"]},
     "master-strikers":{label:"MASTER STRIKERS",names:["Noel Noa","Lavinho","Chris Prince","Marc Snuffy","Julien Loki"]},
     "new-gen-11":{label:"NEW GENERATION XI",names:["Sae Itoshi","Michael Kaiser","Don Lorenzo","Bunny Iglesias","Vivien Hugo","Teddy Knight"]},
-    "nel-foreign":{label:"NEL FOREIGN PLAYERS",names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier","Rooke","Renoir"]},
+    "nel-foreign":{label:"NEL FOREIGN PLAYERS",names:["Noel Noa","Julien Loki","Michael Kaiser","Alexis Ness","Benedict Grim","Lavinho","Chris Prince","Agi","Marc Snuffy","Don Lorenzo","Charles Chevalier","Rooke","Renoir","Birkenstock","Erik Gesner","Ignacio Lara"]},
     "japan-world-cup":{label:"JAPAN U-20 WORLD CUP",names:["Yoichi Isagi","Rin Itoshi","Ryusei Shido","Meguru Bachira","Hyoma Chigiri","Reo Mikage","Rensuke Kunigami","Eita Otoya","Oliver Aiku","Tabito Karasu","Gin Gagamaru","Jyubei Aryu","Kenyu Yukimiya","Ikki Niko","Yo Hiori","Shuto Sendo","Ranze Kurona","Zantetsu Tsurugi","Gen Fukaku","Jingo Raichi","Jin Kiyora","Nijiro Nanase","Shoei Baro"]},
-    "world-cup-new":{label:"U-20 WC NEWCOMERS",names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes","Exum"]},
-    "side-b":{label:"SIDE-B",names:["Seishiro Nagi","Ryosuke Kira","Haneru Shindo","Hajime Nishioka","Shigeo Mizuki","Reiji Hiiragi","Aiki Himizu","Keisuke Wanima","Hibiki Okawa"]}
+    "world-cup-new":{label:"U-20 WC NEWCOMERS",names:["Bunny Iglesias","Innocent Onazi","Godwin Kuso","Vivien Hugo","Achanpong","Lockhart","Teddy Knight","Childs","Oboabona","Bello","Bats","Leyden","Hermes","Exum","Camus"]},
+    "side-b":{label:"SIDE-B",names:["Seishiro Nagi","Ryosuke Kira","Haneru Shindo","Hajime Nishioka","Shigeo Mizuki","Reiji Hiiragi","Aiki Himizu","Keisuke Wanima","Hibiki Okawa","Ryo Nameoka","Ringo Pondemizu"]}
 };
 const PLAYER_POOL_CATEGORY_IDS=Object.fromEntries(Object.entries(PLAYER_POOL_CATEGORIES).map(([key,data])=>[
     key,new Set(players.filter(p=>data.names.includes(p.name)).map(p=>p.id))
@@ -151,6 +159,7 @@ function playerNationalityMarkup(player){
 
 // Canon aliases are display/search references only. A missing entry deliberately renders nothing.
 const PLAYER_ALIASES=Object.freeze({
+  "92":[{"name":"The Tallest High Schooler","verified":true,"source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yukio_Ishikari","note":"Recorded introduction epithet describing Japan’s tallest high-school footballer; no new nickname coined.","chapter":1}}],
   "1": [
     {
       "name": "Genius of Adaptability",
@@ -1326,6 +1335,14 @@ const PLAYER_REFERENCE_CONTENT_REVIEW=Object.freeze({
   "baseCommit": "4af894a7019c2268d1c448a2eb9165364d296aed",
   "sourceAccess": "Historical full-roster quotation audit: manga dialogue/context research was available through chapter 364; many official English readers and the existing subtitle host were inaccessible. All retained quotes retain their previous verification provenance. This is not a claim of full official-English chapter access.",
   "players": {
+    "91":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[93],"aliasAction":"verified-only"},
+    "92":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[1],"aliasAction":"verified-only"},
+    "93":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[157],"aliasAction":"verified-only"},
+    "94":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[156],"aliasAction":"verified-only"},
+    "95":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[158],"aliasAction":"verified-only"},
+    "96":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[327],"aliasAction":"verified-only"},
+    "97":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[327],"aliasAction":"verified-only"},
+    "98":{"quoteAction":"leave-empty-pending-verification","reason":"Character facts reviewed through chapter 368; no independently verified official-English quotation available.","mangaCandidates":[330],"aliasAction":"verified-only"},
     "90": {"quoteAction":"none","reason":"Limited appearance; no verified quote added.","mangaCandidates":[368],"aliasAction":"official-name-only"},
     "1": {
       "quoteAction": "retain",
