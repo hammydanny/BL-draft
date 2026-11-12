@@ -1,6 +1,6 @@
 # BLUE LOCK DRAFT
 
-Current release: **v0.8.0 ALPHA**. [Release report](docs/release-v0.8.0.md).
+Current release: **v0.8.8.4 ALPHA**. [Release report](docs/release-v0.8.8.4.md).
 
 Battle Sim includes exact formation boards, localized match commentary, canonical
 Blue Lock Man goalkeepers, persistent sequence progression and match reports.
