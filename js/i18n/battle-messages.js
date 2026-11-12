@@ -98,6 +98,7 @@ Interceptions|Pintasan|インターセプト|اعتراضات|拦截|Interceptio
 Turnovers|Kehilangan bola|ボールロスト|فقدان الكرة|丢失球权|Pertes de balle|Ballverluste|볼 상실|Perdas de bola|Потери|Pérdidas
 Fouls|Kesalahan|ファウル|أخطاء|犯规|Fautes|Fouls|파울|Faltas|Фолы|Faltas
 Corners|Sepakan sudut|コーナー|ركنيات|角球|Corners|Ecken|코너킥|Escanteios|Угловые|Córneres
+Offsides|Ofsaid|オフサイド|تسلل|越位|Hors-jeu|Abseits|오프사이드|Impedimentos|Офсайды|Fueras de juego
 Cards|Kad|カード|بطاقات|牌数|Cartons|Karten|카드|Cartões|Карточки|Tarjetas
 Stamina|Stamina|スタミナ|اللياقة|体力|Endurance|Ausdauer|체력|Resistência|Выносливость|Resistencia
 Rating|Penilaian|採点|التقييم|评分|Note|Note|평점|Nota|Оценка|Nota
@@ -107,6 +108,8 @@ SAVE / REBOUND|SELAMATAN / LANTUNAN|セーブ／こぼれ球|تصدي / كرة �
 GOAL KICK|SEPAKAN GOL|ゴールキック|ركلة مرمى|球门球|SIX MÈTRES|ABSTOSS|골킥|TIRO DE META|УДАР ОТ ВОРОТ|SAQUE DE META
 CORNER|SEPAKAN SUDUT|コーナー|ركنية|角球|CORNER|ECKE|코너킥|ESCANTEIO|УГЛОВОЙ|CÓRNER
 FREE KICK|SEPAKAN PERCUMA|フリーキック|ركلة حرة|任意球|COUP FRANC|FREISTOSS|프리킥|FALTA|ШТРАФНОЙ|TIRO LIBRE
+OFFSIDE|OFSAID|オフサイド|تسلل|越位|HORS-JEU|ABSEITS|오프사이드|IMPEDIMENTO|ОФСАЙД|FUERA DE JUEGO
+THROW IN|BALING KE DALAM|スローイン|رمية تماس|界外球|TOUCHE|EINWURF|스로인|LATERAL|ВБРАСЫВАНИЕ|SAQUE DE BANDA
 PENALTY|PENALTI|ペナルティーキック|ركلة جزاء|点球|PENALTY|ELFMETER|페널티킥|PÊNALTI|ПЕНАЛЬТИ|PENALTI
 RED CARD|KAD MERAH|レッドカード|بطاقة حمراء|红牌|CARTON ROUGE|ROTE KARTE|레드카드|CARTÃO VERMELHO|КРАСНАЯ КАРТОЧКА|TARJETA ROJA
 YELLOW CARD|KAD KUNING|イエローカード|بطاقة صفراء|黄牌|CARTON JAUNE|GELBE KARTE|옐로카드|CARTÃO AMARELO|ЖЁЛТАЯ КАРТОЧКА|TARJETA AMARILLA
@@ -140,6 +143,8 @@ Every match tick will appear here.|Setiap langkah perlawanan akan dipaparkan di 
 {player} scores for {team}!|{player} menjaringkan gol untuk {team}!|{player}が{team}のゴール！|يسجل {player} لصالح {team}!|{player} 为 {team} 进球！|{player} marque pour {team} !|{player} trifft für {team}!|{player}이(가) {team}의 골을 넣습니다!|{player} marca por {team}!|{player} забивает за {team}!|¡{player} marca para {team}!
 {player} saves the shot.|{player} menyelamatkan sepakan.|{player}がシュートをセーブ。|يتصدى {player} للتسديدة.|{player} 扑出射门。|{player} arrête le tir.|{player} hält den Schuss.|{player}이(가) 슛을 막습니다.|{player} defende o chute.|{player} отражает удар.|{player} detiene el disparo.
 {team} restart play.|{team} memulakan semula permainan.|{team}がプレーを再開。|يستأنف {team} اللعب.|{team} 重新开始比赛。|{team} reprend le jeu.|{team} setzt das Spiel fort.|{team}이(가) 경기를 재개합니다.|{team} reinicia o jogo.|{team} возобновляет игру.|{team} reanuda el juego.
+{player} is caught offside.|{player} terperangkap ofsaid.|{player}がオフサイドの判定を受ける。|يقع {player} في التسلل.|{player}越位了。|{player} est signalé hors-jeu.|{player} steht im Abseits.|{player}이(가) 오프사이드에 걸립니다.|{player} é flagrado em impedimento.|{player} попадает в офсайд.|{player} cae en fuera de juego.
+{team} take a throw-in.|{team} mengambil balingan ke dalam.|{team}がスローインを行う。|يُنفّذ {team} رمية تماس.|{team}掷界外球。|{team} joue la touche.|{team} führt den Einwurf aus.|{team}이(가) 스로인을 합니다.|{team} cobra o lateral.|{team} вбрасывает мяч из аута.|{team} saca de banda.
 {player} commits a foul.|{player} melakukan kesalahan.|{player}がファウル。|يرتكب {player} خطأ.|{player} 犯规。|{player} commet une faute.|{player} begeht ein Foul.|{player}이(가) 파울을 범합니다.|{player} comete uma falta.|{player} нарушает правила.|{player} comete una falta.
 {player} receives a card.|{player} menerima kad.|{player}にカード。|يتلقى {player} بطاقة.|{player} 被出示牌。|{player} reçoit un carton.|{player} erhält eine Karte.|{player}이(가) 카드를 받습니다.|{player} recebe um cartão.|{player} получает карточку.|{player} recibe una tarjeta.
 {team} bring on {player} for {other}.|{team} memasukkan {player} menggantikan {other}.|{team}は{other}に代えて{player}を投入。|يشرك {team} اللاعب {player} بدلًا من {other}.|{team} 换上 {player}，换下 {other}。|{team} fait entrer {player} à la place de {other}.|{team} wechselt {player} für {other} ein.|{team}이(가) {other} 대신 {player}을(를) 투입합니다.|{team} coloca {player} no lugar de {other}.|{team} выпускает {player} вместо {other}.|{team} da entrada a {player} por {other}.

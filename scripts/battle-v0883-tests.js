@@ -150,7 +150,8 @@ function positioningTests(){
 function scene(b,place){
  const s=b.createMatch();b.setMatch(s);s.kickoffPassPending=false;s.status='playing';
  b.active(s.teams[1]).filter(p=>p.role!=='GK').forEach((p,i)=>b.setPosition(p,{x:14,y:i%2?8:92}));
- b.active(s.teams[2]).filter(p=>p.role!=='GK').forEach((p,i)=>b.setPosition(p,{x:4+i*.5,y:i%2?12:88}));
+ // Unused opponents wait wide on their own goal line, so they hold a legal (onside) last line.
+ b.active(s.teams[2]).filter(p=>p.role!=='GK').forEach((p,i)=>b.setPosition(p,{x:96-i*.3,y:i%2?6:94}));
  const get=(n,role,skip=[])=>b.active(s.teams[n]).find(p=>p.role===role&&!skip.includes(p.id));
  const ctx=place(s,get);s.possession=1;s.carrierId=ctx.carrier.id;b.setBall(s,ctx.carrier);return {s,...ctx};
 }
