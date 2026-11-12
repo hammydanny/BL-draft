@@ -1235,8 +1235,14 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
         // Shared-table secret chemistry is visible only after the session unlock.
         secretCharactersUnlocked=false;
         for(const name of ["Shoei Baro","Ryusei Shido"]){const dossier=characterLoreProfileMarkup(players.find(p=>p.name===name));assert(!dossier.includes("Qazicutie"),"Locked secret partner leaked into "+name);for(const secret of players.filter(p=>p.secretCharacter))assert(!dossier.includes(">"+secret.name+"<"),"Locked secret "+secret.name+" leaked into "+name);}
+        // Secret-roster chemistry lives only in the secret area: even after the unlock, Blue Lock dossiers
+        // never list a secret partner, while the secret dossier still shows its pairs with Blue Lock players.
         secretCharactersUnlocked=true;
-        assert(characterLoreProfileMarkup(players.find(p=>p.name==="Shoei Baro")).includes("Qazicutie"),"Unlocked sessions show the shared secret pair");
+        for(const p of players.filter(p=>!p.secretCharacter)){const dossier=characterLoreProfileMarkup(p);for(const secret of players.filter(q=>q.secretCharacter))assert(!dossier.includes('data-character-id="'+secret.id+'"'),"Secret partner "+secret.name+" shown in "+p.name+"'s dossier after unlock");}
+        assert(!characterLoreProfileMarkup(players.find(p=>p.name==="Shoei Baro")).includes("Qazicutie"),"Unlocked sessions keep secret pairs out of Blue Lock dossiers");
+        assert(characterLoreProfileMarkup(players.find(p=>p.name==="Qazicutie")).includes("Shoei Baro"),"The secret dossier keeps its pair with Barou");
+        assert.equal(publicChemistryPairCount(),CHEMISTRY_REFERENCE_PAIRS.filter(e=>!e.playerIds.some(id=>playerById(id).secretCharacter)).length,"Hub pair count excludes secret pairs");
+        assert(publicChemistryPairCount()<CHEMISTRY_REFERENCE_PAIRS.length);
     `);
 });
 check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{
