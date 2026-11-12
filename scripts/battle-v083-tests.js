@@ -34,7 +34,7 @@ function runBattleV083Tests(){
  assert.equal(b.setPieceTaker(goalKick,fromGoal).role,'GK','keeper takes goal kick by default');
  const shotsBefore=goalKick.teams[1].stats.shots;b.resolveRestart(goalKick,fromGoal);
  assert.equal(goalKick.teams[1].stats.shots,shotsBefore,'long goal-kick must pass, never shoot at goal');
- assert(goalKick.events.some(e=>e.type==='set-piece'||e.type==='interception'),'goal kick resolves as pass');
+ assert(goalKick.events.some(e=>['set-piece','interception','turnover','rebound'].includes(e.type)&&e.passRoute),'goal kick resolves as a pass outcome');
  const saved=b.createMatch();b.setMatch(saved);
  const shooter=b.active(saved.teams[1]).filter(p=>p.role!=='GK').sort((a,c)=>a.stats.sho-c.stats.sho)[0];
  b.setPosition(shooter,{x:75,y:50});saved.possession=1;saved.carrierId=shooter.id;b.setBall(saved,shooter);

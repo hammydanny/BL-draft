@@ -26,7 +26,7 @@ while(!final&&guard++<1600){
   if(!sub){const t=s.teams[1],r=t.roster.find(p=>!Object.values(t.assignment).includes(p.id));assert(h.bs.substitute(t,'1',r.id));h.bs.renderMatch();assert(!h.bs.sequenceReady(s));sub=true;continue;}
   h.bs.continueMatch();const tick=s.tick;h.bs.continueMatch();assert.equal(s.tick,tick);
  }else if(s.requiredSub&&h.bs.progressionState()==='substitution'){
-  const req=s.requiredSub,t=s.teams[req.teamNumber],r=t.roster.find(p=>!Object.values(t.assignment).includes(p.id)&&!p.sentOff);if(r)h.bs.substitute(t,req.slot,r.id);else s.requiredSub=null;h.bs.renderMatch();
+  const req=s.requiredSub,t=s.teams[req.teamNumber],r=h.bs.bench(t)[0];if(r)h.bs.substitute(t,req.slot,r.id);else s.requiredSub=null;h.bs.renderMatch();
  }else{
   if(!paused&&s.tick>10){h.bs.toggleManualPause();const before=s.presentedEventId;assert.equal(h.timers.size,0);h.bs.renderMatch();assert.equal(s.presentedEventId,before);h.bs.toggleManualPause();paused=true;}
   if(!reloaded&&s.tick>20){const restored=h.bs.hydrateMatch(JSON.parse(JSON.stringify(h.bs.snapshotMatch(s))));assert(restored);const expected=s.presentedEventId;h.bs.clearFeedQueue();h.timers.clear();s=restored;h.bs.setMatch(s);h.bs.renderMatch();assert.equal(s.presentedEventId,expected);if(s.status==='playing')h.bs.runSequence(s);reloaded=true;}

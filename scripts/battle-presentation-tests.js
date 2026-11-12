@@ -7,7 +7,7 @@ function prepare(h,seed){teams(h);h.context.window.crypto={getRandomValues:a=>{a
 function advance(h,s){
  s.presentedEventId=s.events.length;
  if(s.status==='paused'){
-  if(s.requiredSub){const req=s.requiredSub,t=s.teams[req.teamNumber],r=t.roster.find(p=>!Object.values(t.assignment).includes(p.id)&&!p.sentOff);if(r)assert(h.bs.substitute(t,req.slot,r.id));else s.requiredSub=null;}
+  if(s.requiredSub){const req=s.requiredSub,t=s.teams[req.teamNumber],r=h.bs.bench(t)[0];if(r)assert(h.bs.substitute(t,req.slot,r.id));else s.requiredSub=null;}
   if(s.phase==='halfTime'){s.phase='secondHalf';h.bs.kickoff(s,2);}else if(s.pending?.type==='kickoff')h.bs.kickoff(s,s.pending.teamNumber);else if(s.pending)s.forced={...s.pending};s.status='playing';s.stoppage='';
  }
  if(s.timeSeconds>=5400){h.bs.finish(s);return;}

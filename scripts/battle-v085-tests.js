@@ -39,15 +39,16 @@ function runBattleV085Tests(){
  assert(shortReceiver&&b.distance(shortReceiver,taker)<20,'short-corner receiver near taker');
  const coords=()=>[1,2].flatMap(n=>k.teams[n].roster.map(p=>[n,p.id,p.x,p.y]));
  const goalKick={type:'goal-kick',teamNumber:1,point:{x:4,y:50},zone:2,routine:'direct',goalKickTaker:'gk'};
- const beforeKeeperGoalKick=coords();
- k.pending=goalKick;b.stagePendingSetPiece(k);assert.equal(b.setPieceTaker(k,goalKick).role,'GK');
- assert.deepEqual(coords(),beforeKeeperGoalKick,'goal-kick staging preserves every player position');
+ // v0.8.8.3: goal kicks are staged into a Law 16 shape (superseding the v0.8.5 "players stay put" rule).
+ k.pending=goalKick;b.stagePendingSetPiece(k);const gkTaker=b.setPieceTaker(k,goalKick);assert.equal(gkTaker.role,'GK');
+ assert.deepEqual([gkTaker.x,gkTaker.y],[4,50],'keeper stands at the ball inside the goal area');
+ assert(b.active(k.teams[2]).filter(p=>p.role!=='GK').every(p=>!b.inOpponentBox(2,p)),'opponents are outside the penalty area');
  goalKick.goalKickTaker='outfield';goalKick.takerId=b.active(k.teams[1]).find(p=>p.role==='ST').id;goalKick.staged=false;
- const beforeOutfieldGoalKick=coords();b.stagePendingSetPiece(k);
+ b.stagePendingSetPiece(k);
  assert.equal(b.setPieceTaker(k,goalKick).role,'ST');
  const out=b.setPieceTaker(k,goalKick);
- assert.deepEqual([out.x,out.y],beforeOutfieldGoalKick.find(p=>p[0]===1&&p[1]===out.id).slice(2),'outfield taker remains in place for a goal kick');
- assert.deepEqual(coords(),beforeOutfieldGoalKick,'outfield goal-kick staging preserves every player position');
+ assert.deepEqual([out.x,out.y],[4,50],'an outfield taker moves to the restart spot');
+ assert(b.inGoalArea(1,b.keeper(k.teams[1]))===false&&b.inOpponentBox(2,b.keeper(k.teams[1])),'the displaced keeper stays in his area as a short option');
  k.random=()=>0;const beforeGoalKickRestart=coords();b.resolveRestart(k,goalKick);
  assert.deepEqual(coords(),beforeGoalKickRestart,'resolving a goal kick does not reposition players');
  const goalKickPass=k.events.at(-1);

@@ -48,6 +48,7 @@ require('./battle-sim-tests.js').runBattleSimTests();
 require('./battle-spatial-tests.js').runSpatialTests();
 require('./battle-v083-tests.js').runBattleV083Tests();
 require('./battle-v085-tests.js').runBattleV085Tests();
+require('./battle-v0883-tests.js').runBattleV0883Tests();
 require('./battle-presentation-tests.js').runPresentationTests();
 require('./battle-refinement-tests.js').runRefinementTests();
 require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});
