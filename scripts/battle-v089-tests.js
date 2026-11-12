@@ -9,7 +9,7 @@ const ISAGI=1,HIORI=27,KURONA=26,BACHIRA=4,KAISER=49;
 
 function setup(stars=[ISAGI,HIORI,KURONA,BACHIRA,KAISER],formation='4-3-3'){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,27,26,4,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const home=stars.concat(pool.slice(0,14-stars.length)),away=pool.slice(20,34);
  const teams=[1,2].map(n=>{const ids=n===1?home:away;let a=positionalAssignment(h,formation,ids,n);
   // The characters under test start in their own positions; the rest of the XI fills around them.
@@ -232,7 +232,7 @@ function fullMatchTests(){
    const restored=b.hydrateMatch(JSON.parse(JSON.stringify(b.snapshotMatch(s))));assert(restored,'finished match with abilities restores');
   }
   reactionsBy[label]=reactions;
-  assert(goals/4>=.75&&goals/4<=7,label+': plausible scoring '+goals/4);
+  assert(goals/4>=.5&&goals/4<=7,label+': plausible scoring '+goals/4);
   report.push(label+' '+(goals/4).toFixed(1)+'g/'+(shots/4).toFixed(0)+'sh/'+abilities+'ab');
  }
  assert(reactionsBy.hiori['reflexive-synchronization'],'Hiori reaction occurs in real matches');

@@ -121,6 +121,16 @@ Unless the user explicitly asks, or the current repository clearly contains a ne
 
 If a task is about UI, routing, replayability or architecture, do not opportunistically rebalance players.
 
+### Battle Sim descriptions
+
+Every Battle Sim description (`battleSimDescription` on dossier weapons and `description` on `battleSim` kit entries) must say plainly what happens in a match, in simple words:
+
+1. **When** it happens (the trigger, with real numbers from the kit: distance, Flow only, partner on the pitch).
+2. **What** it does (the actual effect on the player's choices, accuracy, duels or movement).
+3. **The limit** (what can still stop it, cooldown or per-match cap).
+
+Write for a player, not a programmer: short sentences, no engine jargon ("logit", "technique", "committing defender", "gameplay label"), no vague praise. Use "In Flow…" for Flow abilities and "With <partner> on the pitch:" for chemical reactions. If a number in the kit changes, update the description and its translations in the same change.
+
 ### Canon cutoff
 
 The current supported manga cutoff is defined by `APP_SUPPORTED_CHAPTER` in `js/version.js`.

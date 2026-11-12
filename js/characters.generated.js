@@ -7,14 +7,14 @@ const ISAGI_PLAYER_DATA = {
         stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 },
         nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}},
         weapons: [
-            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Battle Sim: reads runs, gaps and passing options from further away and predicts the back line's shift. No stat boost.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"awareness","name":"Awareness","description":"Notices shifts in player positions, open lanes, danger and passing options before they become obvious.","battleSimType":"Passive","battleSimDescription":"Battle Sim: part of Metavision. Isagi recognises teammates' runs and the timing of a through ball earlier than most players.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"adaptability","name":"Adaptability","description":"Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.","battleSimType":"Passive","battleSimDescription":"Battle Sim: remembers run channels, passing lanes and shot placements opponents have shut down this match and adjusts.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"off-the-ball-movements","name":"Off-the-Ball Movements","description":"Times sharp runs into blind spots and open space to arrive where defenders lose track of him.","battleSimType":"Passive","battleSimDescription":"Battle Sim: Blind-Spot Movement. Runs behind his marker's line of sight; only elite defensive readers track them.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"direct-shot","name":"Direct Shot","description":"Meets the incoming ball with a first-time strike, denying defenders the extra moment a controlling touch would give them.","battleSimType":"Special Move","battleSimDescription":"Battle Sim: a first-time finish from a pass inside 24 m. Less time for defenders to close or block; the keeper still contests it.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"Threatens a volley with one foot, changes the shooting leg in mid-air and finishes after the defender commits to the first motion.","battleSimType":"Ultimate","battleSimDescription":"Battle Sim: in Flow, after a pass, feints a committing defender and switches the volley to the open side. One goal per match at most.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"Disguises a forward strike before redirecting the ball behind him with a backheel to bypass a closing defender.","battleSimType":"Special Move","battleSimDescription":"Battle Sim: rare. Moving away from goal with a defender tight on him, he backheels a disguised finish past that defender.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"Finishes first-time with his left foot when a defender closes the angle for his preferred right-footed strike.","battleSimType":"Special Move","battleSimDescription":"Battle Sim: a left-footed first-time finish towards the near post when the far-post angle is blocked or already read.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
+            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Isagi sees teammates' runs and gaps from further away than other players, so he spots more passing chances and starts his own runs before the ball is played. It does not make him faster.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"awareness","name":"Awareness","description":"Notices shifts in player positions, open lanes, danger and passing options before they become obvious.","battleSimType":"Passive","battleSimDescription":"Part of Metavision: Isagi notices a teammate's run, and the right moment for a through ball, earlier than most players.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"adaptability","name":"Adaptability","description":"Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.","battleSimType":"Passive","battleSimDescription":"If opponents stop one of Isagi's runs, cut out one of his passes or save one of his shots, he remembers it and tries something different next time. This only lasts for the current match.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"off-the-ball-movements","name":"Off-the-Ball Movements","description":"Times sharp runs into blind spots and open space to arrive where defenders lose track of him.","battleSimType":"Passive","battleSimDescription":"Isagi runs into the space behind the defender marking him while that defender is watching the ball. Only the best defenders follow these runs; the rest react late when the pass comes.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"direct-shot","name":"Direct Shot","description":"Meets the incoming ball with a first-time strike, denying defenders the extra moment a controlling touch would give them.","battleSimType":"Special Move","battleSimDescription":"When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"Threatens a volley with one foot, changes the shooting leg in mid-air and finishes after the defender commits to the first motion.","battleSimType":"Ultimate","battleSimDescription":"Isagi's ultimate, only in Flow. When a pass reaches him within 20 m and a defender jumps in to block, he fakes the shot with one foot and volleys with the other into the open side. The goalkeeper can still save it. At most one goal (two attempts) per match.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"Disguises a forward strike before redirecting the ball behind him with a backheel to bypass a closing defender.","battleSimType":"Special Move","battleSimDescription":"Rare. Within 16 m of goal, with his back to goal and a defender right behind him, Isagi flicks a backheel shot past that defender. It is hard to pull off, and he must wait a long time before trying it again.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"Finishes first-time with his left foot when a defender closes the angle for his preferred right-footed strike.","battleSimType":"Special Move","battleSimDescription":"The same first-time shot, but with his left foot to the near post. He uses it when the far post is blocked. It is slightly less accurate.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
         ]
     ,
         battleSim: {
@@ -35,7 +35,7 @@ const ISAGI_PLAYER_DATA = {
                     "label": "METAVISION",
                     "effect": "space-reading",
                     "dialogue": "read",
-                    "description": "Reads runs, gaps and passing options from further away, predicts how the back line will shift and starts his runs before the pass is played. It never makes him faster."
+                    "description": "Isagi sees teammates' runs and gaps from further away than other players, so he spots more passing chances and starts his own runs before the ball is played. It does not make him faster."
                 },
                 {
                     "id": "off-the-ball-movements",
@@ -43,7 +43,7 @@ const ISAGI_PLAYER_DATA = {
                     "label": "BLIND-SPOT MOVEMENT",
                     "effect": "blind-spot-run",
                     "dialogue": "blindRun",
-                    "description": "Times runs into the space behind his marker's line of sight. Only elite defensive readers track them; other defenders react late when the ball is played."
+                    "description": "Isagi runs into the space behind the defender marking him while that defender is watching the ball. Only the best defenders follow these runs; the rest react late when the pass comes."
                 },
                 {
                     "id": "adaptability",
@@ -56,7 +56,7 @@ const ISAGI_PLAYER_DATA = {
                         "decayTicks": 90,
                         "weight": 0.1
                     },
-                    "description": "Remembers, for this match only, the run channels, passing lanes and shot placements that opponents have shut down, and changes his choices. The memory is small and fades."
+                    "description": "If opponents stop one of Isagi's runs, cut out one of his passes or save one of his shots, he remembers it and tries something different next time. This only lasts for the current match."
                 }
             ],
             "weapons": [
@@ -72,7 +72,7 @@ const ISAGI_PLAYER_DATA = {
                         "pressureRelief": 2.5,
                         "blockFactor": 0.7
                     },
-                    "description": "Strikes a pass first-time inside 24 m without a controlling touch, so the nearest defender has less time to close him down or block. The goalkeeper still has to be beaten."
+                    "description": "When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it."
                 },
                 {
                     "id": "left-footed-direct-shot",
@@ -83,7 +83,7 @@ const ISAGI_PLAYER_DATA = {
                     "params": {
                         "technique": -0.12
                     },
-                    "description": "The same first-time finish with his left foot towards the near post, chosen when the far-post angle is blocked or already read. Slightly less precise."
+                    "description": "The same first-time shot, but with his left foot to the near post. He uses it when the far post is blocked. It is slightly less accurate."
                 },
                 {
                     "id": "reverse-back-heel-shot",
@@ -92,11 +92,12 @@ const ISAGI_PLAYER_DATA = {
                     "effect": "disguised-finish",
                     "dialogue": "backHeel",
                     "params": {
-                        "maxMetres": 14,
+                        "maxMetres": 16,
                         "technique": -0.45,
-                        "cooldownTicks": 40
+                        "cooldownTicks": 40,
+                        "tightMetres": 3
                     },
-                    "description": "Rare: moving away from goal with a defender tight on him inside 14 m, he disguises the strike and backheels it past that defender. Difficult to execute, with a long cooldown."
+                    "description": "Rare. Within 16 m of goal, with his back to goal and a defender right behind him, Isagi flicks a backheel shot past that defender. It is hard to pull off, and he must wait a long time before trying it again."
                 }
             ],
             "ultimates": [
@@ -110,9 +111,10 @@ const ISAGI_PLAYER_DATA = {
                         "maxMetres": 20,
                         "technique": 0.45,
                         "maxGoalsPerMatch": 1,
-                        "maxAttemptsPerMatch": 2
+                        "maxAttemptsPerMatch": 2,
+                        "commitRange": 4.5
                     },
-                    "description": "In Flow, when a pass reaches him and a defender commits to the block, he fakes the volley with one foot and strikes with the other towards the open side. The goalkeeper still contests it. At most one goal from two attempts per match."
+                    "description": "Isagi's ultimate, only in Flow. When a pass reaches him within 20 m and a defender jumps in to block, he fakes the shot with one foot and volleys with the other into the open side. The goalkeeper can still save it. At most one goal (two attempts) per match."
                 }
             ],
             "reactions": [
@@ -120,7 +122,6 @@ const ISAGI_PLAYER_DATA = {
                     "id": "reflexive-synchronization",
                     "name": "Reflexive Synchronization",
                     "label": "REFLEXIVE SYNCHRONIZATION",
-                    "partnerId": 27,
                     "effect": "synchronized-through",
                     "cooldownTicks": 12,
                     "dialogue": "sync",
@@ -128,13 +129,16 @@ const ISAGI_PLAYER_DATA = {
                         "precision": 0.55,
                         "value": 0.012
                     },
-                    "description": "With Yo Hiori: Hiori reads Isagi's run beyond his normal field of view and plays a more precisely weighted through ball into it."
+                    "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
+                    "members": [
+                        1,
+                        27
+                    ]
                 },
                 {
                     "id": "planet-hotline",
                     "name": "Planet Hotline",
                     "label": "PLANET HOTLINE",
-                    "partnerId": 26,
                     "effect": "wall-pass",
                     "cooldownTicks": 14,
                     "dialogue": "hotline",
@@ -143,28 +147,16 @@ const ISAGI_PLAYER_DATA = {
                         "returnValue": 0.02,
                         "precision": 0.6
                     },
-                    "description": "With Ranze Kurona: when Isagi is closed down, he plays into Kurona and sprints behind his marker for a precise first-time return."
-                },
-                {
-                    "id": "creative-instinct",
-                    "name": "Creative Instinct",
-                    "label": "CREATIVE INSTINCT",
-                    "partnerId": 4,
-                    "effect": "exploit-disruption",
-                    "cooldownTicks": 14,
-                    "dialogue": "creative",
-                    "params": {
-                        "defendersDrawn": 2,
-                        "returnValue": 0.02,
-                        "precision": 0.7
-                    },
-                    "description": "With Meguru Bachira: when Bachira's dribble drags two or more defenders, Isagi moves into the space they left and Bachira can find him there."
+                    "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
+                    "members": [
+                        1,
+                        26
+                    ]
                 },
                 {
                     "id": "rational-alliance",
                     "name": "Rational Alliance",
                     "label": "RATIONAL ALLIANCE",
-                    "partnerId": 49,
                     "effect": "rival-cooperation",
                     "cooldownTicks": 16,
                     "dialogue": "rival",
@@ -173,7 +165,11 @@ const ISAGI_PLAYER_DATA = {
                         "value": 0.02,
                         "rivalry": 0.01
                     },
-                    "description": "With Michael Kaiser: the two rivals prefer to finish themselves, but pass to each other when the other's chance is clearly better."
+                    "description": "With Michael Kaiser on the pitch: both prefer to shoot themselves, but they pass to each other when the other clearly has the better chance.",
+                    "members": [
+                        1,
+                        49
+                    ]
                 }
             ],
             "dialogue": {
@@ -233,27 +229,691 @@ const ISAGI_PLAYER_DATA = {
 
 // js/players/ryosuke-kira/player.js
 // Character player data: Ryosuke Kira (ID 2).
-const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearanceOrder: 2, image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 } };
+const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearanceOrder: 2, image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 },
+        battleSim: {
+            "awareness": {
+                "vision": 0.02
+            },
+            "tendencies": {
+                "pass": 0.04,
+                "shoot": -0.02
+            },
+            "rivals": [
+                1
+            ],
+            "passives": [
+                {
+                    "id": "composed-forward",
+                    "name": "Composed Forward",
+                    "label": "COMPOSED FORWARD",
+                    "effect": "support-movement",
+                    "interpretation": "gameplay",
+                    "description": "When the teammate on the ball has no one nearby, Kira moves close to give him an easy pass. He prefers simple passing moves to risky dribbles."
+                },
+                {
+                    "id": "strikers-pride",
+                    "name": "Striker's Pride",
+                    "label": "STRIKER'S PRIDE",
+                    "effect": "pride",
+                    "dialogue": "responsibility",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "shoot": 0.22,
+                        "quietAfter": 30
+                    },
+                    "description": "When his team is losing, or he hasn't had a shot after the first 30 ticks, Kira becomes more willing to shoot. His shots do not become more accurate."
+                }
+            ],
+            "weapons": [
+                {
+                    "id": "aces-finish",
+                    "name": "Ace's Finish",
+                    "label": "ACE'S FINISH",
+                    "effect": "controlled-finish",
+                    "dialogue": "aceFinish",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "maxMetres": 18,
+                        "technique": 0.12
+                    },
+                    "description": "When Kira gets the ball within 18 m of goal with no defender within 2 m, he places a calm shot into the far corner. It is a little more accurate than a normal shot."
+                }
+            ],
+            "ultimates": [
+                {
+                    "id": "reclaimed-pride",
+                    "name": "Reclaimed Pride",
+                    "label": "RECLAIMED PRIDE",
+                    "effect": "flow-state",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "boost": {
+                            "controlled-finish": {
+                                "maxMetres": 21,
+                                "technique": 0.16
+                            },
+                            "pride": {
+                                "always": true,
+                                "shoot": 0.26
+                            }
+                        }
+                    },
+                    "description": "Kira's Flow. In Flow he is always willing to shoot, and he can use Ace's Finish from up to 21 m. His stats do not change."
+                }
+            ],
+            "dialogue": {
+                "support": [
+                    "I'm here, use me!",
+                    "Keep it simple. I've got your back."
+                ],
+                "responsibility": [
+                    "This one is mine to finish.",
+                    "I won't hide from this chance."
+                ],
+                "aceFinish": [
+                    "Pick the corner. Stay calm."
+                ],
+                "goal": [
+                    "That's how a striker answers.",
+                    "I'm still here. Remember that."
+                ],
+                "miss": [
+                    "Not good enough. Again.",
+                    "I had that one..."
+                ],
+                "rival": [
+                    "Isagi... I won't fall behind you again."
+                ],
+                "flow": [
+                    "My pride's back. Give me the ball."
+                ]
+            }
+        }
+    };
 ;
 
 // js/players/noel-noa/player.js
 // Character player data: Noel Noa (ID 3).
-const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrder: 3, image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , nationality: {"code":"FR","name":"France","basis":"nationality","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"ambidexterity","name":"Ambidexterity","description":"Finishes with either foot, removing the need to set up a preferred side.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"ball-control","name":"Ball Control","description":"Keeps the ball secure while changing direction and selecting a shooting route.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 } };
+const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrder: 3, image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , nationality: {"code":"FR","name":"France","basis":"nationality","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"ambidexterity","name":"Ambidexterity","description":"Finishes with either foot, removing the need to set up a preferred side.","battleSimType":"Passive","battleSimDescription":"Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"ball-control","name":"Ball Control","description":"Keeps the ball secure while changing direction and selecting a shooting route.","battleSimType":"Special Move","battleSimDescription":"When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 },
+        battleSim: {
+            "awareness": {
+                "vision": 0.06,
+                "space": 0.08,
+                "anticipation": 0.4,
+                "defensiveRead": 0.04
+            },
+            "tendencies": {
+                "shoot": 0.03
+            },
+            "passives": [
+                {
+                    "id": "rational-football",
+                    "name": "Rational Football",
+                    "label": "RATIONAL FOOTBALL",
+                    "effect": "rational-decisions",
+                    "params": {
+                        "sharpness": 0.45
+                    },
+                    "description": "Noa weighs up the same options as everyone else but picks the best one far more often. He still cannot know whether a shot or tackle will work."
+                },
+                {
+                    "id": "perfect-ambidexterity",
+                    "name": "Perfect Ambidexterity",
+                    "label": "PERFECT AMBIDEXTERITY",
+                    "effect": "ambidextrous",
+                    "params": {
+                        "technique": 0,
+                        "firstTime": 0.08,
+                        "maxMetres": 28
+                    },
+                    "description": "Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy."
+                },
+                {
+                    "id": "elite-off-ball-movement",
+                    "name": "Elite Off-Ball Movement",
+                    "label": "ELITE OFF-BALL MOVEMENT",
+                    "effects": [
+                        "decoy-run",
+                        "support-movement"
+                    ],
+                    "description": "Noa keeps making runs even when teammates are already running, which drags defenders with him and opens space. When the ball carrier has no one nearby, he moves close to help."
+                }
+            ],
+            "weapons": [
+                {
+                    "id": "machine-dribble",
+                    "name": "Machine Dribble",
+                    "label": "MACHINE DRIBBLE",
+                    "effect": "power-dribble",
+                    "dialogue": "dribble",
+                    "params": {
+                        "stride": 1.2,
+                        "protection": 5
+                    },
+                    "description": "When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him."
+                },
+                {
+                    "id": "two-footed-execution",
+                    "name": "Two-Footed Execution",
+                    "label": "TWO-FOOTED EXECUTION",
+                    "effect": "switch-foot-finish",
+                    "dialogue": "twoFooted",
+                    "params": {
+                        "technique": 0.06,
+                        "commitRange": 4,
+                        "maxMetres": 24
+                    },
+                    "description": "When a defender within 4 m tries to block one side, Noa shoots with his other foot to the other post. The goalkeeper can still save it."
+                }
+            ],
+            "ultimates": [
+                {
+                    "id": "optimal-execution",
+                    "name": "Optimal Execution",
+                    "label": "OPTIMAL EXECUTION",
+                    "effect": "flow-state",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "boost": {
+                            "switch-foot-finish": {
+                                "technique": 0.12
+                            },
+                            "rational-decisions": {
+                                "sharpness": 0.65
+                            },
+                            "power-dribble": {
+                                "protection": 8
+                            }
+                        }
+                    },
+                    "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+                }
+            ],
+            "reactions": [
+                {
+                    "id": "imperial-route",
+                    "name": "Imperial Route",
+                    "label": "IMPERIAL ROUTE",
+                    "members": [
+                        3,
+                        49
+                    ],
+                    "effect": "rival-cooperation",
+                    "cooldownTicks": 14,
+                    "dialogue": "route",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "margin": 0.06,
+                        "value": 0.02,
+                        "rivalry": 0.008,
+                        "startsRun": true
+                    },
+                    "description": "With Michael Kaiser on the pitch: when Kaiser has the ball, Noa makes a run to open a route for him. They only pass to each other when the other clearly has the better chance."
+                }
+            ],
+            "dialogue": {
+                "dribble": [
+                    "The shortest route.",
+                    "No wasted touches."
+                ],
+                "twoFooted": [
+                    "Wrong side. You committed.",
+                    "Either foot. Your choice was the mistake."
+                ],
+                "goal": [
+                    "Efficient. As calculated.",
+                    "That was the correct answer."
+                ],
+                "miss": [
+                    "An error. Corrected next time."
+                ],
+                "defend": [
+                    "Read and removed."
+                ],
+                "route": [
+                    "Kaiser, your route is better. Take it."
+                ],
+                "flow": [
+                    "Optimal. Every piece is in place."
+                ]
+            }
+        }
+    };
 ;
 
 // js/players/meguru-bachira/player.js
 // Character player data: Meguru Bachira (ID 4).
-const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearanceOrder: 4, image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"creative-dribbling","name":"Creative Dribbling","description":"Uses close touches and unpredictable changes of direction to beat markers.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/bachira/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"creative-passing","name":"Creative Passing","category":"technical","description":"Shapes lofted and disguised passes around the receiver’s movement instead of relying only on dribbling to advance an attack.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","note":"Bachira creates the First Clear Team’s goal; Tokimitsu identifies his extraordinary passes at 20:24.","episode":13}}], stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 } };
+const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearanceOrder: 4, image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"creative-dribbling","name":"Creative Dribbling","description":"Uses close touches and unpredictable changes of direction to beat markers.","battleSimType":"Special Move","battleSimDescription":"Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/bachira/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"creative-passing","name":"Creative Passing","category":"technical","description":"Shapes lofted and disguised passes around the receiver’s movement instead of relying only on dribbling to advance an attack.","battleSimType":"Special Move","battleSimDescription":"Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","note":"Bachira creates the First Clear Team’s goal; Tokimitsu identifies his extraordinary passes at 20:24.","episode":13}}], stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 },
+        battleSim: {
+            "awareness": {
+                "space": 0.05
+            },
+            "tendencies": {
+                "dribble": 0.08,
+                "pass": -0.02
+            },
+            "passives": [
+                {
+                    "id": "monster-instinct",
+                    "name": "Monster Instinct",
+                    "label": "MONSTER INSTINCT",
+                    "effect": "isolation-hunter",
+                    "params": {
+                        "value": 0.012
+                    },
+                    "description": "Bachira looks for one-on-ones with space behind the defender and is more likely to take them on."
+                },
+                {
+                    "id": "free-spirit",
+                    "name": "Free Spirit",
+                    "label": "FREE SPIRIT",
+                    "effect": "free-spirit",
+                    "params": {
+                        "factor": 0.35
+                    },
+                    "description": "Losing the ball on a dribble makes players more careful for a while. Bachira becomes only about a third as careful, so he keeps trying."
+                }
+            ],
+            "weapons": [
+                {
+                    "id": "creative-dribbling",
+                    "name": "Creative Dribbling",
+                    "label": "CREATIVE DRIBBLING",
+                    "effect": "creative-dribble",
+                    "dialogue": "dribble",
+                    "params": {
+                        "feint": 0.12,
+                        "cuts": [
+                            -84,
+                            84
+                        ]
+                    },
+                    "description": "Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled."
+                },
+                {
+                    "id": "creative-passing",
+                    "name": "Creative Passing",
+                    "label": "CREATIVE PASSING",
+                    "effect": "disruption-pass",
+                    "dialogue": "create",
+                    "params": {
+                        "value": 0.012,
+                        "precision": 0.8
+                    },
+                    "description": "Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate."
+                },
+                {
+                    "id": "bee-shot",
+                    "name": "Bee Shot",
+                    "label": "BEE SHOT",
+                    "effect": "post-dribble-finish",
+                    "dialogue": "beeShot",
+                    "params": {
+                        "maxMetres": 22,
+                        "technique": 0.1,
+                        "cooldownTicks": 10
+                    },
+                    "description": "Right after beating a defender within 22 m of goal, Bachira can shoot before that defender recovers. Other defenders and the goalkeeper can still stop it. Short cooldown."
+                }
+            ],
+            "ultimates": [
+                {
+                    "id": "ginga-monster",
+                    "name": "Ginga × Monster",
+                    "label": "GINGA × MONSTER",
+                    "effects": [
+                        "flow-state",
+                        "dribble-chain"
+                    ],
+                    "params": {
+                        "maxChain": 2,
+                        "boost": {
+                            "creative-dribble": {
+                                "feint": 0.2
+                            }
+                        }
+                    },
+                    "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+                }
+            ],
+            "reactions": [
+                {
+                    "id": "creative-instinct",
+                    "name": "Creative Instinct",
+                    "label": "CREATIVE INSTINCT",
+                    "members": [
+                        1,
+                        4
+                    ],
+                    "effect": "exploit-disruption",
+                    "cooldownTicks": 12,
+                    "dialogue": "creative",
+                    "params": {
+                        "defendersDrawn": 1,
+                        "returnValue": 0.02,
+                        "precision": 0.7
+                    },
+                    "description": "With Yoichi Isagi on the pitch: when Bachira beats a defender or pulls one towards him, Isagi runs into the space that opens and Bachira can pass to him there. Defenders can still get back."
+                }
+            ],
+            "dialogue": {
+                "dribble": [
+                    "Monster says go!",
+                    "Ehehe, this way!",
+                    "Bet you didn't see that!"
+                ],
+                "dribbleFail": [
+                    "Aww, you got me!",
+                    "Ugh, that one's on me."
+                ],
+                "create": [
+                    "Space! Somebody take it!",
+                    "There, the monster opened a door!"
+                ],
+                "beeShot": [
+                    "Buzz! Bee Shot!",
+                    "Straight past you!"
+                ],
+                "goal": [
+                    "That was so much fun!",
+                    "Did you see that dance?"
+                ],
+                "miss": [
+                    "Ahh, so close!"
+                ],
+                "flowDribble": [
+                    "One more! The monster's hungry!"
+                ],
+                "flow": [
+                    "I can hear the monster singing!"
+                ]
+            }
+        }
+    };
 ;
 
 // js/players/gurimu-igarashi/player.js
 // Character player data: Gurimu Igarashi (ID 5).
-const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appearanceOrder: 5, image: "images/gurimu-igarashi.jpg", primaryPosition: "FW", positions: ["FW", "DF"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"malicia","name":"Malicia","description":"Positions his body to draw contact and earn fouls from opponents.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Gurimu_Igarashi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:69, off:67, sho:65, spd:68, def:77, pas:66, dri:65, gk:54 } };
+const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appearanceOrder: 5, image: "images/gurimu-igarashi.jpg", primaryPosition: "FW", positions: ["FW", "DF"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"malicia","name":"Malicia","description":"Positions his body to draw contact and earn fouls from opponents.","battleSimType":"Special Move","battleSimDescription":"When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Gurimu_Igarashi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:69, off:67, sho:65, spd:68, def:77, pas:66, dri:65, gk:54 },
+        battleSim: {
+            "awareness": {
+                "defensiveRead": 0.03
+            },
+            "passives": [
+                {
+                    "id": "never-give-up",
+                    "name": "Never Give Up",
+                    "label": "NEVER GIVE UP",
+                    "effect": "persistent-press",
+                    "params": {
+                        "press": 0.5,
+                        "looseBall": 0.12
+                    },
+                    "description": "Igarashi joins the press sooner and reacts faster to loose balls. He does not get extra speed or stamina."
+                },
+                {
+                    "id": "opportunist",
+                    "name": "Opportunist",
+                    "label": "OPPORTUNIST",
+                    "effect": "contact-read",
+                    "params": {
+                        "range": 1
+                    },
+                    "description": "Igarashi notices defenders rushing in, or coming from a bad angle, a little earlier, which gives him more chances to use Malicia."
+                }
+            ],
+            "weapons": [
+                {
+                    "id": "malicia",
+                    "name": "Malicia",
+                    "label": "MALICIA",
+                    "effect": "foul-drawing",
+                    "dialogue": "malicia",
+                    "params": {
+                        "base": 0.1,
+                        "range": 3.4,
+                        "preference": 0.022
+                    },
+                    "description": "When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving."
+                },
+                {
+                    "id": "right-side-trap",
+                    "name": "Right-Side Trap",
+                    "label": "RIGHT-SIDE TRAP",
+                    "effect": "right-side-trap",
+                    "params": {
+                        "bonus": 0.1,
+                        "cooldownTicks": 8
+                    },
+                    "description": "When a defender challenges Igarashi from his right side, Malicia is more likely to win a foul. Careful defenders can still avoid it. Short cooldown."
+                }
+            ],
+            "ultimates": [
+                {
+                    "id": "survival-instinct",
+                    "name": "Survival Instinct",
+                    "label": "SURVIVAL INSTINCT",
+                    "effect": "flow-state",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "boost": {
+                            "foul-drawing": {
+                                "base": 0.16
+                            },
+                            "persistent-press": {
+                                "press": 0.8,
+                                "looseBall": 0.18
+                            }
+                        }
+                    },
+                    "description": "Igarashi's Flow. In Flow, Malicia works more often, and he presses and chases loose balls even harder. It does not help his shooting."
+                }
+            ],
+            "dialogue": {
+                "malicia": [
+                    "Gotcha! That's a foul, ref!",
+                    "Heh, Malicia never fails!"
+                ],
+                "maliciaFail": [
+                    "W-wait, he really hit me!",
+                    "Ugh, the ref saw that..."
+                ],
+                "defend": [
+                    "I'm not giving up!",
+                    "Survived another one!"
+                ],
+                "secondBall": [
+                    "Mine! Loose ball's mine!"
+                ],
+                "goal": [
+                    "Did everyone see?! I scored!"
+                ],
+                "miss": [
+                    "Nooo, why not!"
+                ],
+                "flow": [
+                    "Okay... okay! I can survive this!"
+                ]
+            }
+        }
+    };
 ;
 
 // js/players/rensuke-kunigami/player.js
 // Character player data: Rensuke Kunigami (ID 6).
-const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appearanceOrder: 6, image: "images/rensuke-kunigami.jpg", primaryPosition: "CF", positions: ["CF", "DM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"physical-strength","name":"Physical Strength","description":"Uses his powerful frame to hold off opponents and contest possession.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"left-footed-long-range-shot","name":"Left-Footed Long-Range Shot","description":"Strikes powerful shots from distance with his preferred left foot.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"right-footed-finishing","name":"Right-Footed Finishing","category":"technical","description":"Uses his trained right foot to finish a loose or redirected ball without waiting to bring it onto his stronger left side.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_185","chapter":185,"note":"Kunigami converts the diverted Isagi shot with his right foot against Manshine City."}}], stats: { ovr:90, off:91, sho:95, spd:87, def:86, pas:75, dri:79, gk:58 } };
+const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appearanceOrder: 6, image: "images/rensuke-kunigami.jpg", primaryPosition: "CF", positions: ["CF", "DM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"physical-strength","name":"Physical Strength","description":"Uses his powerful frame to hold off opponents and contest possession.","battleSimType":"Passive","battleSimDescription":"Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"left-footed-long-range-shot","name":"Left-Footed Long-Range Shot","description":"Strikes powerful shots from distance with his preferred left foot.","battleSimType":"Special Move","battleSimDescription":"From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"right-footed-finishing","name":"Right-Footed Finishing","category":"technical","description":"Uses his trained right foot to finish a loose or redirected ball without waiting to bring it onto his stronger left side.","battleSimType":"Special Move","battleSimDescription":"Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_185","chapter":185,"note":"Kunigami converts the diverted Isagi shot with his right foot against Manshine City."}}], stats: { ovr:90, off:91, sho:95, spd:87, def:86, pas:75, dri:79, gk:58 },
+        battleSim: {
+            "awareness": {
+                "space": -0.02,
+                "defensiveRead": 0.02
+            },
+            "tendencies": {
+                "shoot": 0.06
+            },
+            "rivals": [
+                31
+            ],
+            "passives": [
+                {
+                    "id": "physical-dominance",
+                    "name": "Physical Dominance",
+                    "label": "PHYSICAL DOMINANCE",
+                    "effect": "physical-shield",
+                    "dialogue": "dribble",
+                    "params": {
+                        "shield": 6,
+                        "looseBall": 0.1
+                    },
+                    "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+                },
+                {
+                    "id": "wild-card-physique",
+                    "name": "Wild Card Physique",
+                    "label": "WILD CARD PHYSIQUE",
+                    "effect": "durable",
+                    "params": {
+                        "drain": 0.75
+                    },
+                    "description": "Running and duels tire Kunigami 25% less than other players."
+                }
+            ],
+            "weapons": [
+                {
+                    "id": "power-shot",
+                    "name": "Power Shot",
+                    "label": "POWER SHOT",
+                    "effect": "power-shot",
+                    "dialogue": "powerShot",
+                    "params": {
+                        "minMetres": 16,
+                        "maxMetres": 32,
+                        "technique": 0.3,
+                        "parry": 0.12
+                    },
+                    "description": "From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them."
+                },
+                {
+                    "id": "ambidextrous-finishing",
+                    "name": "Ambidextrous Finishing",
+                    "label": "AMBIDEXTROUS FINISHING",
+                    "effect": "weak-foot-finish",
+                    "dialogue": "ambi",
+                    "params": {
+                        "anyShot": true,
+                        "technique": -0.05,
+                        "maxMetres": 26
+                    },
+                    "description": "Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate."
+                },
+                {
+                    "id": "rush-volley",
+                    "name": "Rush Volley",
+                    "label": "RUSH VOLLEY",
+                    "effect": "rebound-volley",
+                    "dialogue": "rushVolley",
+                    "params": {
+                        "reach": 1.6,
+                        "technique": 0.15,
+                        "cooldownTicks": 6
+                    },
+                    "description": "When a goalkeeper parries a shot within 18 m of goal and Kunigami reaches the ball first, he volleys it straight away. He has to actually get there first."
+                },
+                {
+                    "id": "physical-man-marking",
+                    "name": "Physical Man-Marking",
+                    "label": "PHYSICAL MAN-MARKING",
+                    "effect": "man-marking",
+                    "dialogue": "defend",
+                    "params": {
+                        "targets": [
+                            31
+                        ],
+                        "range": 30,
+                        "duel": 4
+                    },
+                    "description": "When defending, Kunigami marks Shidou if he is nearby, or otherwise the most dangerous attacker close to him. He stays tight to that player and is harder to beat in duels with him."
+                }
+            ],
+            "ultimates": [
+                {
+                    "id": "physical-breakthrough",
+                    "name": "Physical Breakthrough",
+                    "label": "PHYSICAL BREAKTHROUGH",
+                    "effect": "flow-state",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "boost": {
+                            "power-shot": {
+                                "technique": 0.42,
+                                "maxMetres": 35
+                            },
+                            "physical-shield": {
+                                "shield": 10
+                            }
+                        }
+                    },
+                    "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+                }
+            ],
+            "reactions": [
+                {
+                    "id": "second-ball-instinct",
+                    "name": "Second Ball Instinct",
+                    "label": "SECOND BALL INSTINCT",
+                    "members": [
+                        6,
+                        1
+                    ],
+                    "effect": "second-ball",
+                    "cooldownTicks": 10,
+                    "dialogue": "kuniSecond",
+                    "interpretation": "gameplay",
+                    "params": {
+                        "reaction": 0.2
+                    },
+                    "description": "With Yoichi Isagi on the pitch: when a goalkeeper parries one of Isagi's shots, Kunigami reacts to the rebound a little faster. Other players can still get there first."
+                }
+            ],
+            "dialogue": {
+                "powerShot": [
+                    "Feel the power of this one.",
+                    "Full force."
+                ],
+                "ambi": [
+                    "Right foot works too."
+                ],
+                "rushVolley": [
+                    "Hit it before it drops!"
+                ],
+                "goal": [
+                    "That's the weight of my shot.",
+                    "I came back for this."
+                ],
+                "miss": [
+                    "Not enough. Hit it harder."
+                ],
+                "defend": [
+                    "You're not getting past me.",
+                    "I'll stay on you all game."
+                ],
+                "secondBall": [
+                    "Second ball's mine!"
+                ],
+                "kuniSecond": [
+                    "Isagi, I'll finish what you start!"
+                ],
+                "dribble": [
+                    "Bounce off."
+                ],
+                "rival": [
+                    "Shidou. I'm marking you."
+                ],
+                "flow": [
+                    "I came back stronger. Watch."
+                ]
+            }
+        }
+    };
 ;
 
 // js/players/hyoma-chigiri/player.js

@@ -6,14 +6,16 @@ Track implementation coverage for every character in the player roster. Check an
 - **Passives:** character-specific passive mechanics and balanced gameplay effects.
 - **Dialogue:** character-specific lines for relevant match events, plus teammate/rival chemistry lines where appropriate.
 
+v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit entry is wired to an engine effect, appears with a label in seeded full matches (positional lineups, 117-match harness) and has keyed dialogue in all 11 languages. Activation rates differ widely, and some are rare (for example Kunigami's Physical Man-Marking and Rush Volley, and Isagi's Two-Gun Volley); see `docs/release-v0.8.9.1.md`.
+
 | Player (ID) | Special moves | Passives | Dialogue |
 |---|:---:|:---:|:---:|
 | Yoichi Isagi (1) | [x] | [x] | [x] |
-| Ryosuke Kira (2) | [ ] | [ ] | [ ] |
-| Noel Noa (3) | [ ] | [ ] | [ ] |
-| Meguru Bachira (4) | [ ] | [ ] | [ ] |
-| Gurimu Igarashi (5) | [ ] | [ ] | [ ] |
-| Rensuke Kunigami (6) | [ ] | [ ] | [ ] |
+| Ryosuke Kira (2) | [x] | [x] | [x] |
+| Noel Noa (3) | [x] | [x] | [x] |
+| Meguru Bachira (4) | [x] | [x] | [x] |
+| Gurimu Igarashi (5) | [x] | [x] | [x] |
+| Rensuke Kunigami (6) | [x] | [x] | [x] |
 | Hyoma Chigiri (7) | [ ] | [ ] | [ ] |
 | Gin Gagamaru (8) | [ ] | [ ] | [ ] |
 | Jingo Raichi (9) | [ ] | [ ] | [ ] |
@@ -97,3 +99,7 @@ Track implementation coverage for every character in the player roster. Check an
 - [x] Unique pass, successful/failed dribble, shot-attempt, missed-shot, and goal dialogue
 - [x] Selected chemistry dialogue for Hiori Yo, Meguru Bachira, Seishiro Nagi, Rensuke Kunigami, Rin Itoshi, and Michael Kaiser
 - [x] Special-move usage contributes to match rating
+
+## Writing descriptions
+
+Battle Sim descriptions say plainly **when** the ability happens, **what** it does and **what can still stop it**, using the real numbers from the kit and simple words (see CLAUDE.md, "Battle Sim descriptions"). Example: "When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it."
