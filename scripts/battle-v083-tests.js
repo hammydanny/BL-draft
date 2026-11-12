@@ -28,7 +28,7 @@ function runBattleV083Tests(){
  const gkCorner=b.keeper(corner.teams[2]);assert(gkCorner.x>=84&&gkCorner.x<=97&&gkCorner.y>=21&&gkCorner.y<=79);
  const fk=b.createMatch(),free={type:'free-kick',teamNumber:1,zone:15,point:{x:78,y:50},routine:'direct'};
  b.arrangeSetPiece(fk,free,b.setPieceTaker(fk,free));
- assert(b.active(fk.teams[2]).filter(p=>p.role!=='GK').every(p=>p.x>=78&&p.x<=97&&b.distance(p,free.point)>10),'attacking free-kick defenders occupy the current deep zone outside the restart radius');
+ assert(b.active(fk.teams[2]).filter(p=>p.role!=='GK').every(p=>p.x>=78&&p.x<=97&&b.distance(p,free.point)>=9.15),'attacking free-kick defenders occupy the current deep zone outside the Law 13 9.15m radius');
  const goalKick=b.createMatch();b.setMatch(goalKick);
  const fromGoal={type:'goal-kick',teamNumber:1,zone:2,point:{x:4,y:50},routine:'direct'};
  assert.equal(b.setPieceTaker(goalKick,fromGoal).role,'GK','keeper takes goal kick by default');

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 'use strict';
-// v0.8.8.4 Battle Sim regressions: offside (Law 11), out-of-play restarts (throw-ins,
+// v0.8.8.5 Battle Sim regressions: offside (Law 11), out-of-play restarts (throw-ins,
 // goal kicks, corners), the smooth finishing model, the pass mix and engine cost.
 const assert=require('node:assert/strict');
 const {battleContext}=require('./battle-sim-tests.js');
@@ -50,7 +50,7 @@ function offsideTests(){
  assert(poor>sharp,'tight offside calls are misjudged more often with poor vision: '+poor+' vs '+sharp);
  // Snapshot of a pending offside restart survives save/load and resolves identically.
  const s1=t.s;const restored=b.hydrateMatch(plain(b.snapshotMatch(s1)));assert(restored);
- console.log('PASS v0.8.8.4 offside: Law 11 position (line, half, ball), free kick to defenders with stats, exemptions, vision-based misreads ('+poor+' vs '+sharp+'), save/load');
+ console.log('PASS v0.8.8.5 offside: Law 11 position (line, half, ball), free kick to defenders with stats, exemptions, vision-based misreads ('+poor+' vs '+sharp+'), save/load');
 }
 
 function outOfPlayTests(){
@@ -71,7 +71,7 @@ const count=t.s.events.length;b.playerTick(t.s);
  assert.equal(e.type,'goal-kick');assert.equal(t.s.pending.type,'goal-kick');assert.equal(t.s.pending.teamNumber,2);assert.equal(t.s.stoppage,'GOAL KICK');
  t=misplaced({x:22,y:36},{x:5,y:22},m=>[.9999,.5],'CB');e=t.s.events.at(-1);
  assert.equal(e.type,'corner');assert.equal(t.s.pending.type,'corner');assert.equal(t.s.pending.teamNumber,2);assert.equal(t.s.teams[2].stats.corners,1);
- console.log('PASS v0.8.8.4 out of play: touchline throw-ins (no stoppage, short throw next tick, save/load), byline goal kicks and own-byline corners');
+ console.log('PASS v0.8.8.5 out of play: touchline throw-ins (no stoppage, short throw next tick, save/load), byline goal kicks and own-byline corners');
 }
 
 function shotModelTests(){
@@ -92,7 +92,7 @@ function shotModelTests(){
  const open=b.shotModel(t.s,t.carrier,false,null,null).goalChance;const d=b.active(t.s.teams[2]).find(p=>p.role!=='GK');b.setPosition(d,{x:83,y:50});
  const blocked=b.shotModel(t.s,t.carrier,false,null,null);assert(blocked.blockers>=1&&blocked.goalChance<open*.75,'blocked and pressured shots are harder');
  const pen=b.shotModel(t.s,t.carrier,true,null,null);assert(pen.goalChance>.6,'penalties keep their dedicated duel');
- console.log('PASS v0.8.8.4 finishing: smooth distance/angle curve, proportional SHO/GK skill (11m avg '+average[5].toFixed(2)+', 40m elite '+elite.at(-1).toFixed(2)+'), blockers, pressure, penalties');
+ console.log('PASS v0.8.8.5 finishing: smooth distance/angle curve, proportional SHO/GK skill (11m avg '+average[5].toFixed(2)+', 40m elite '+elite.at(-1).toFixed(2)+'), blockers, pressure, penalties');
 }
 
 function sampleTests(){
@@ -113,8 +113,20 @@ function sampleTests(){
  assert(pct>.75&&pct<.9,'pass completion between 75% and 90%: '+pct.toFixed(3));assert(lofted/openPasses<.3,'lofted balls are a minority of open-play passes');
  assert(offsides/16>=.3&&offsides/16<=4,'offsides happen but rarely: '+offsides/16);assert(throwIns>0,'throw-ins occur');assert(longShots/shots<.15,'long-range shots are occasional');
  assert(ms/ticks<10,'engine cost stays bounded: '+(ms/ticks).toFixed(2)+'ms per tick');
- console.log('PASS v0.8.8.4 sample: '+(goals/16).toFixed(2)+' goals, '+(shots/16).toFixed(1)+' shots, '+(100*pct).toFixed(1)+'% passes, '+(100*lofted/openPasses).toFixed(1)+'% lofted, '+(offsides/16).toFixed(2)+' offsides and '+(throwIns/16).toFixed(1)+' throw-ins per match, '+(ms/ticks).toFixed(2)+'ms per tick');
+ console.log('PASS v0.8.8.5 sample: '+(goals/16).toFixed(2)+' goals, '+(shots/16).toFixed(1)+' shots, '+(100*pct).toFixed(1)+'% passes, '+(100*lofted/openPasses).toFixed(1)+'% lofted, '+(offsides/16).toFixed(2)+' offsides and '+(throwIns/16).toFixed(1)+' throw-ins per match, '+(ms/ticks).toFixed(2)+'ms per tick');
 }
-function runBattleV0884Tests(){offsideTests();outOfPlayTests();shotModelTests();sampleTests();}
-if(require.main===module)runBattleV0884Tests();
-module.exports={runBattleV0884Tests};
+// Law 13 (free kicks): every opponent is at least 9.15 m from the ball, for every free-kick type,
+// spot and pressing level, including the offside free kicks introduced in this release.
+function freeKickDistanceTests(){
+ const {b}=setup();let layouts=0,closest=99;
+ for(let seed=1;seed<=20;seed++)for(const n of [1,2])for(const [x,y,routine] of [[78,50,'direct'],[70,30,'short-pass'],[50,60,'short-pass'],[88,15,'direct'],[30,50,'short-pass'],[82,70,'long-pass']])for(const pressing of [20,60,90]){
+  const s=b.createMatch();s.seed=seed;b.setMatch(s);s.teams[n===1?2:1].strategy.pressing=pressing;
+  const spot=n===1?{x,y}:{x:100-x,y},pending={type:'free-kick',teamNumber:n,zone:b.zoneAt(spot),point:spot,routine};
+  b.arrangeSetPiece(s,pending,b.setPieceTaker(s,pending));layouts++;
+  for(const p of b.active(s.teams[n===1?2:1]).filter(p=>p.role!=='GK')){const d=b.distance(p,pending.point);closest=Math.min(closest,d);assert(d>=9.15,'opponent '+d.toFixed(2)+'m from a free kick');}
+ }
+ console.log('PASS v0.8.8.5 free kicks: '+layouts+' layouts (both directions, all routines, pressing 20/60/90) keep every opponent >= 9.15m (closest '+closest.toFixed(2)+'m)');
+}
+function runBattleV0885Tests(){offsideTests();outOfPlayTests();shotModelTests();freeKickDistanceTests();sampleTests();}
+if(require.main===module)runBattleV0885Tests();
+module.exports={runBattleV0885Tests};

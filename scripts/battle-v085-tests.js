@@ -67,7 +67,8 @@ function runBattleV085Tests(){
   assert(nearMate&&b.distance(nearMate,midfieldFreeKickTaker)<10,"midfield free kick has a nearby teammate");
   for(const n of [1,2])for(const p of b.active(foulMatch.teams[n]).filter(p=>p.role!=="GK"&&p.id!==midfieldFreeKickTaker.id)){
    assert(p.x>midfieldFreeKickTaker.x,"midfield restart players are in front");
-   if(p.id!==nearMate.id)assert(b.distance(p,midfieldFreeKickTaker)>10,"midfield restart preserves 10m distance");
+   // Law 13: opponents keep 9.15 m; the kicking team's own players may stand anywhere (v0.8.8.4 lanes).
+   if(n!==1)assert(b.distance(p,midfieldFreeKickTaker)>=9.15,"midfield restart keeps opponents 9.15m away");
   }
   const boxMatch=b.createMatch();b.setMatch(boxMatch);
   const boxCarrier=b.active(boxMatch.teams[1]).find(p=>p.role!=="GK"),boxDefender=b.active(boxMatch.teams[2]).find(p=>p.role!=="GK");
@@ -76,7 +77,8 @@ function runBattleV085Tests(){
   b.stagePendingSetPiece(boxMatch);
   assert.equal(boxMatch.pending.freeKickType,"attacking");assert.equal(b.setPieceTaker(boxMatch,boxMatch.pending).x,82);
   assert.equal(b.setPieceSkill(boxMatch.pending),"sho");
-  for(const p of b.active(boxMatch.teams[2]).filter(p=>p.role!=="GK"))assert(b.distance(p,b.setPieceTaker(boxMatch,boxMatch.pending))>10);
+  // Law 13: the defensive wall and markers stand at least 9.15 m from the ball.
+  for(const p of b.active(boxMatch.teams[2]).filter(p=>p.role!=="GK"))assert(b.distance(p,b.setPieceTaker(boxMatch,boxMatch.pending))>=9.15,"box free-kick opponents keep 9.15m");
   const penaltyMatch=b.createMatch();b.setMatch(penaltyMatch);
   const penaltyCarrier=b.active(penaltyMatch.teams[1]).find(p=>p.role!=="GK"),penaltyDefender=b.active(penaltyMatch.teams[2]).find(p=>p.role!=="GK");
   b.setPosition(penaltyCarrier,{x:90,y:50});b.setPosition(penaltyDefender,{x:90,y:50});penaltyMatch.random=()=>.99;
