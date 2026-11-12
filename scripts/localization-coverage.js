@@ -184,7 +184,9 @@ function balanceCoverage(covered){
     return values.filter(value=>!covered(value)).map(value=>({file:"v0722-feedback",value}));
 }
 function battleCoverage(covered){
- const required=['SQUAD SOURCE','TEAM STRATEGY','PROCEED TO NEXT SEQUENCE →','PLAYING SEQUENCE…','SUBSTITUTION REQUIRED','MANDATORY SUBSTITUTION','PLAYER OF THE MATCH','LATEST MANGA CHAPTER','BL-DRAFT CANON COVERAGE','Verification pending','{player} completes a pass to {other}.','{player} wins possession.','{player} saves the shot.','{team} bring on {player} for {other}.','{player} receives a card.','Seconds between notable events','LATEST FIRST','Shots','Passes','Tackles','Saves','Unable to save this squad. Check browser storage and player availability.'];
+ const required=['SQUAD SOURCE','TEAM STRATEGY','PROCEED TO NEXT SEQUENCE →','PLAYING SEQUENCE…','SUBSTITUTION REQUIRED','MANDATORY SUBSTITUTION','PLAYER OF THE MATCH','LATEST MANGA CHAPTER','BL-DRAFT CANON COVERAGE','Verification pending','{player} completes a pass to {other}.','{player} wins possession.','{player} saves the shot.','{team} bring on {player} for {other}.','{player} receives a card.','Seconds between notable events','LATEST FIRST','Shots','Passes','Tackles','Saves','Unable to save this squad. Check browser storage and player availability.',
+  // v0.8.9 ability/reaction labels, dossier statuses and original character lines (keys from js/players/isagi/player.js).
+  'METAVISION','BLIND-SPOT MOVEMENT','ADAPTABILITY','DIRECT SHOT','LEFT-FOOTED DIRECT SHOT','REVERSE BACK HEEL SHOT','TWO-GUN VOLLEY','REFLEXIVE SYNCHRONIZATION','PLANET HOTLINE','CREATIVE INSTINCT','RATIONAL ALLIANCE','CHEMICAL REACTION','PARTNER NOT ON PITCH','USED THIS MATCH','IN EFFECT','READY','REQUIRES FLOW','WAITING FOR PASS','ON COOLDOWN','PASSIVE','SPECIAL','ULTIMATE','One-two, Kurona!','Same picture, Hiori.','Every piece fit.'];
  return required.filter(value=>!covered(value)).map(value=>({file:'battle-sim-dynamic',value}));
 }
 function scanCoverage(){

@@ -579,3 +579,14 @@ body.bs-game-route .bs-live-feed .bs-event-actor{
 .bs-player-profile-weapon-status.is-cooldown{border-color:#d19b4580;color:#ffd58a;background:#382b18}
 .bs-player-profile-weapon-status.is-used{border-color:#8c79b980;color:#c9baff;background:#28213b}
 .bs-player-profile-weapon-description{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.16;max-height:2.32em;overflow-wrap:anywhere}
+/* v0.8.9 — character abilities, chemical reactions and runs */
+.bs-event-abilities{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bs-event-ability{display:inline-flex;align-items:center;min-height:22px;padding:3px 8px;border:1px solid color-mix(in srgb,var(--bs-event-team-color,#65c4ff) 55%,transparent);border-radius:4px;background:color-mix(in srgb,var(--bg-surface,#07111c) 82%,var(--bs-event-team-color,#65c4ff) 18%);color:var(--text-primary,#eaf2ff);font-size:10px;font-weight:800;letter-spacing:.08em;line-height:1.2}
+.bs-event-ability--ultimate{border-color:#ffd56a;box-shadow:0 0 0 1px #ffd56a33 inset}
+.bs-event-ability--reaction{border-style:dashed}
+.bs-event-ability--passive{font-weight:700;opacity:.92}
+body.bs-game-route .bs-event-ability{font-size:11px}
+body.bs-game-route .bs-ball-trail path.bs-run-route{stroke:#9fe7ff;stroke-width:.34;stroke-dasharray:.5 .9;opacity:0;filter:none;transition:opacity 160ms linear}
+.bs-ball-trail .bs-run-route{stroke:#9fe7ff;stroke-width:.3;stroke-dasharray:.5 .9;opacity:0;fill:none}
+[dir="rtl"] .bs-event-abilities{direction:rtl}
+@media (prefers-reduced-motion:reduce){body.bs-game-route .bs-ball-trail path.bs-run-route{transition:none}}

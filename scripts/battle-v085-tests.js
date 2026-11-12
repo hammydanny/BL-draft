@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const {battleContext}=require('./battle-sim-tests.js');
+const {battleContext,positionalAssignment}=require('./battle-sim-tests.js');
 const {advance}=require('./battle-presentation-tests.js');
 function runBattleV085Tests(){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const teams=h.run(`[1,2].map(n=>bs.normalizeTeam({name:'Part 2 '+n,roster:[blueLockManFor(n),...players.filter(p=>!p.secretCharacter).slice((n-1)*20,(n-1)*20+14)],assignment:{0:9100+n}},n))`);
+ // v0.8.9: positional lineups (primary positions first), as players field them with Auto Best.
+ const formation=h.run(`bs.normalizeTeam({name:'X',roster:[blueLockManFor(1)]},1).formation`);
+ const teams=[1,2].map(n=>{const ids=h.run(`players.filter(p=>!p.secretCharacter).slice(${(n-1)*20},${(n-1)*20+14}).map(p=>p.id)`);
+  return h.run(`bs.normalizeTeam({name:'Part 2 ${n}',formation:${JSON.stringify(formation)},roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:${JSON.stringify(positionalAssignment(h,formation,ids,n))}},${n})`);});
  b.setTeams(teams);
  const m=b.createMatch();b.setMatch(m);
  const player=b.active(m.teams[1]).find(p=>p.role!=='GK'),original={x:player.x,y:player.y};

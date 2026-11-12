@@ -3,7 +3,7 @@
 // v0.8.8.5 Battle Sim regressions: offside (Law 11), out-of-play restarts (throw-ins,
 // goal kicks, corners), the smooth finishing model, the pass mix and engine cost.
 const assert=require('node:assert/strict');
-const {battleContext}=require('./battle-sim-tests.js');
+const {battleContext,positionalAssignment}=require('./battle-sim-tests.js');
 const {advance}=require('./battle-presentation-tests.js');
 const plain=v=>JSON.parse(JSON.stringify(v));
 function setup(){
@@ -99,7 +99,7 @@ function sampleTests(){
  const {h,b}=setup();const forms=h.run('Object.keys(FORMATIONS)'),pool=h.run('players.filter(p=>!p.secretCharacter).map(p=>p.id)');
  let goals=0,shots=0,attempted=0,completed=0,offsides=0,throwIns=0,lofted=0,openPasses=0,longShots=0,scoreless=0,ticks=0;const t0=process.hrtime.bigint();
  for(let seed=1;seed<=16;seed++){
-  const cfg=[1,2].map(n=>{const ids=pool.slice((seed*7+n*13)%60,(seed*7+n*13)%60+14);return h.run(`bs.normalizeTeam({name:'S${n}',formation:${JSON.stringify(forms[(seed*3+n)%forms.length])},roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:{0:${9100+n}},strategy:${JSON.stringify({tempo:20+(seed*11+n*7)%60,directness:20+(seed*13+n*5)%60,pressing:15+(seed*19+n*3)%75,line:25+(seed*7+n*11)%55,width:25+(seed*17+n*9)%60})}},${n})`);});
+  const cfg=[1,2].map(n=>{const ids=pool.slice((seed*7+n*13)%60,(seed*7+n*13)%60+14);return h.run(`bs.normalizeTeam({name:'S${n}',formation:${JSON.stringify(forms[(seed*3+n)%forms.length])},roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:${JSON.stringify(positionalAssignment(h,forms[(seed*3+n)%forms.length],ids,n))},strategy:${JSON.stringify({tempo:20+(seed*11+n*7)%60,directness:20+(seed*13+n*5)%60,pressing:15+(seed*19+n*3)%75,line:25+(seed*7+n*11)%55,width:25+(seed*17+n*9)%60})}},${n})`);});
   b.setTeams(cfg);const s=b.createMatch();s.seed=seed;s.random=b.seeded(seed);b.setMatch(s);let g=0;while(s.status!=='finished'&&g++<1200)advance({bs:b},s);
   assert.equal(s.status,'finished');ticks+=s.tick;const total=s.score[1]+s.score[2];goals+=total;if(!total)scoreless++;
   for(const n of [1,2]){const T=s.teams[n];shots+=T.stats.shots;attempted+=T.stats.attempted;completed+=T.stats.passes;offsides+=Number(T.stats.offsides)||0;

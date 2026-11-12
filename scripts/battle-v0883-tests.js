@@ -3,7 +3,7 @@
 // v0.8.8.3 Battle Sim football-intelligence regressions: substitution eligibility,
 // Law 16 goal-kick shapes, off-ball spacing, lane-based interceptions and decisions.
 const assert=require('node:assert/strict');
-const {battleContext}=require('./battle-sim-tests.js');
+const {battleContext,positionalAssignment}=require('./battle-sim-tests.js');
 const {advance}=require('./battle-presentation-tests.js');
 const plain=v=>JSON.parse(JSON.stringify(v));
 function setup(){
@@ -140,7 +140,9 @@ function positioningTests(){
  assert(support/supportSamples>.85,'the carrier has a supporting option with a clear lane: '+(support/supportSamples).toFixed(3));
  assert.equal(overMove,0,'off-ball movement stays gradual (no teleporting): '+overMove+'/'+moves);
  // Repeated planning with a frozen ball converges instead of oscillating.
- const s=b.createMatch();b.setMatch(s);s.kickoffPassPending=false;let last=[];
+ // v0.8.9: tactical runs are deliberate (and re-planned as the ball moves), so the convergence
+ // check measures the formation planner with run intents rested.
+ const s=b.createMatch();b.setMatch(s);s.kickoffPassPending=false;let last=[];[1,2].forEach(n=>s.teams[n].roster.forEach(p=>{p.runRest=1e9;}));
  for(let i=0;i<14;i++){const before=[1,2].flatMap(n=>b.active(s.teams[n]).map(p=>({p,x:p.x,y:p.y})));b.moveOffBall(s);s.tick++;last.push(before.reduce((a,o)=>a+b.distance(o.p,o),0)/before.length);}
  assert(last.slice(-3).every(v=>v<1.2),'settled players make only small adjustments: '+last.map(v=>v.toFixed(2)).join(','));
  console.log('PASS v0.8.8.3 positioning: '+(pairs/samples).toFixed(2)+' clustered pairs/tick, formation order '+(100*ordered/orderSamples).toFixed(1)+'%, supported carrier '+(100*support/supportSamples).toFixed(1)+'%, gradual and convergent movement');
@@ -248,7 +250,7 @@ function sampleTests(){
  const {h,b}=setup();const forms=h.run('Object.keys(FORMATIONS)'),pool=h.run('players.filter(p=>!p.secretCharacter).map(p=>p.id)');
  let goals=0,shots=0,scoreless=0,attempted=0,completed=0,ints=0,longShots=0;const results=[];
  for(let seed=1;seed<=16;seed++){
-  const cfg=[1,2].map(n=>{const ids=pool.slice((seed*5+n*17)%60,(seed*5+n*17)%60+14);return h.run(`bs.normalizeTeam({name:'S${n}',formation:${JSON.stringify(forms[(seed+n)%forms.length])},roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:{0:${9100+n}},strategy:${JSON.stringify({tempo:20+(seed*13+n*7)%60,directness:20+(seed*11+n*5)%60,pressing:15+(seed*17+n*3)%75,line:25+(seed*7+n)%50,width:25+(seed*19+n*9)%60})}},${n})`);});
+  const cfg=[1,2].map(n=>{const ids=pool.slice((seed*5+n*17)%60,(seed*5+n*17)%60+14);return h.run(`bs.normalizeTeam({name:'S${n}',formation:${JSON.stringify(forms[(seed+n)%forms.length])},roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:${JSON.stringify(positionalAssignment(h,forms[(seed+n)%forms.length],ids,n))},strategy:${JSON.stringify({tempo:20+(seed*13+n*7)%60,directness:20+(seed*11+n*5)%60,pressing:15+(seed*17+n*3)%75,line:25+(seed*7+n)%50,width:25+(seed*19+n*9)%60})}},${n})`);});
   b.setTeams(cfg);const s=b.createMatch();s.seed=seed;s.random=b.seeded(seed);b.setMatch(s);let g=0;while(s.status!=='finished'&&g++<1200)advance({bs:b},s);
   assert.equal(s.status,'finished');const total=s.score[1]+s.score[2];goals+=total;if(!total)scoreless++;results.push(s.score[1]+'-'+s.score[2]);
   for(const n of [1,2]){shots+=s.teams[n].stats.shots;attempted+=s.teams[n].stats.attempted;completed+=s.teams[n].stats.passes;ints+=s.teams[n].stats.interceptions;}
