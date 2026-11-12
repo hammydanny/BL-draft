@@ -1094,12 +1094,10 @@ function arrangeFreeKick(state,pending,team,opposition,taker,restart,attackers,d
  if(opponentKeeper){const home=ownGoal(defN);setPosition(opponentKeeper,{x:home.x,y:clamp(50+(restart.y-50)*.3,30,70)});}
  return{team,taker,spot:restart,attackers,defenders};
 }
-function randomOutsidePenalty
 function randomOutsidePenalty(teamNumber,rand){
  for(let i=0;i<240;i++){const q={x:4+rand()*92,y:5+rand()*90};if(!inOpponentBox(teamNumber,q))return q;}
  return{x:teamNumber===1?55:45,y:10+rand()*80};
 }
-/* Goal kicks (IFAB Law 16):
 /* Goal kicks (IFAB Law 16): the taker stands at the ball inside the goal area,
    teammates may use the penalty area, opponents stay outside it until the kick.
    The six-yard area is kept clear of outfield players as a presentation preference.
