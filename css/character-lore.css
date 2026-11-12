@@ -314,3 +314,5 @@
   #character-lore-screen.character-lore-detail-view :is(.lore-toolbar,.database-intro,.mobile-database-tabs){display:none}
 }
 
+.character-profile-kit-heading{margin:18px 0 10px;font-size:.78rem;letter-spacing:.12em;color:var(--text-muted)}
+.character-profile-kit-card .character-profile-weapon-kind{white-space:nowrap}
