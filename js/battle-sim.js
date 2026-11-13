@@ -422,7 +422,7 @@ function battleSimPassiveMultiplier(p,k,state=match){
 }
 function effective(p,k,state=match){
  const flowing=isFlowing(p);
- const staminaMultiplier=flowing?1:(.7+.3*clamp(p.stamina,0,100)/100);
+ const staminaMultiplier=flowing?1:(.85+.15*clamp(p.stamina,0,100)/100);
  const flowMultiplier=flowing?FLOW_STAT_MULTIPLIER:1;
  return(Number(p.stats[k])||1)*staminaMultiplier*flowMultiplier*battleSimPassiveMultiplier(p,k,state);
 }
