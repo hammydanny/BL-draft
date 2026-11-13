@@ -304,7 +304,7 @@ function flowMeter(value,name){const amount=clamp(Number.isFinite(Number(value))
 function portraitSource(p){try{if(typeof playerImageUrl==="function"){const url=playerImageUrl(p);if(url)return String(url);}}catch(e){}return String(p&&p.image||(typeof PLAYER_IMAGE_FALLBACK!=="undefined"?PLAYER_IMAGE_FALLBACK:""));}
 function portraitWithStamina(parent,p,size){
  const px=size||32,stamina=clamp(Number(p.stamina)||0,0,100),ring=make("span","bs-stamina-ring");
- ring.style.setProperty("--stamina",stamina+"%");ring.style.setProperty("--stamina-hue",String(Math.round(stamina*1.2)));ring.style.setProperty("--portrait-size",px+"px");
+ ring.style.setProperty("--stamina",stamina+"%");ring.style.setProperty("--stamina-hue",String(Math.round(stamina*1.2)));ring.style.setProperty("--portrait-size",px+"px");ring.classList.toggle("is-flowing",isFlowing(p));
  const img=make("img","bs-stamina-portrait");img.src=portraitSource(p);img.alt=p.name||"Player";img.width=px;img.height=px;img.loading="lazy";
  img.onerror=function(){img.onerror=null;if(typeof PLAYER_IMAGE_FALLBACK!=="undefined")img.src=PLAYER_IMAGE_FALLBACK;};put(ring,img);put(parent,ring);return ring;
 }
@@ -603,7 +603,7 @@ function shapeTarget(team,p,ctx){
 const AWARENESS_CACHE=new WeakMap();
 function battleAwareness(p){
  if(!p||!p.stats)return{vision:.6,space:.6,anticipation:0,defensiveRead:.6,scan:36,tendencies:{shoot:1,dribble:0,pass:0,direct:0}};
- let a=AWARENESS_CACHE.get(p);if(a)return a;
+ let a=AWARENESS_CACHE.get(p);if(a)return flowAware(p,a);
  const s=p.stats,kit=p.battleSim||{},k=kit.awareness||{},t=kit.tendencies||{},num=v=>Number(v)||0;
  const vision=clamp((s.pas*.6+s.off*.4)/100+num(k.vision),0,1.25),space=clamp(s.off/100+num(k.space),0,1.25);
  a={vision,space,anticipation:clamp(num(k.anticipation),0,1),defensiveRead:clamp(s.def/100+num(k.defensiveRead),0,1.25),
@@ -612,7 +612,18 @@ function battleAwareness(p){
   // Character priorities: evaluation weights, never success-rate bonuses.
   tendencies:{shoot:1+clamp((s.sho-(s.pas+s.dri)/2)/100,-.2,.2)+num(t.shoot),dribble:clamp((s.dri-s.pas)/100,-.15,.15)+num(t.dribble),
    pass:clamp((s.pas-s.sho)/100,-.15,.15)+num(t.pass),direct:clamp((s.spd+s.sho-s.pas-s.dri)/200,-.15,.15)+num(t.direct)}};
- AWARENESS_CACHE.set(p,a);return a;
+ AWARENESS_CACHE.set(p,a);return flowAware(p,a);
+}
+// Flow changes tactical awareness, never physical Speed or stored ratings.
+function flowAware(p,base){
+ if(!isFlowing(p))return base;
+ const flow=kitAbility(p,"flow-state"),extra=flow&&flow.params&&flow.params.awareness;
+ if(!extra)return base;
+ const add=k=>Number(extra[k])||0;
+ return {...base,vision:clamp(base.vision+add("vision"),0,1.25),
+  space:clamp(base.space+add("space"),0,1.25),
+  anticipation:clamp(base.anticipation+add("anticipation"),0,1),
+  scan:clamp(base.scan+add("scan"),18,60)};
 }
 function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
 function kitParam(ability,key,fallback){const v=ability&&ability.params&&ability.params[key];return v==null?fallback:v;}
@@ -2700,8 +2711,8 @@ function updateTeamPanel(panel,team,state=match){
  const roster=new Map(team.roster.map(p=>[p.id,p])),ratings=positionRatings(team);
  panel._playerBindings.forEach(({marker,ring,meter,rating,live,liveWrap})=>{
   const p=roster.get(marker.dataset.playerId);if(!p)return;
-  marker.title=ratingTooltip(team,p,ratings);const ovr=playerOVR(team,p,ratings);if(live&&ovr&&live.textContent!==String(ovr.live))live.textContent=ovr.live;if(liveWrap)liveWrap.style.setProperty("--stamina-hue",String(Math.round(clamp(p.stamina,0,100)*1.2)));
-  if(ring){ring.style.setProperty("--stamina",clamp(p.stamina,0,100)+"%");ring.style.setProperty("--stamina-hue",Math.round(p.stamina*1.2));}
+  marker.title=ratingTooltip(team,p,ratings);marker.classList.toggle("is-flowing",isFlowing(p));const ovr=playerOVR(team,p,ratings);if(live&&ovr&&live.textContent!==String(ovr.live))live.textContent=ovr.live;if(liveWrap)liveWrap.style.setProperty("--stamina-hue",String(Math.round(clamp(p.stamina,0,100)*1.2)));
+  if(ring){ring.classList.toggle("is-flowing",isFlowing(p));ring.style.setProperty("--stamina",clamp(p.stamina,0,100)+"%");ring.style.setProperty("--stamina-hue",Math.round(p.stamina*1.2));}
   if(meter){meter.style.setProperty("--flow",p.flow+"%");meter.setAttribute("aria-valuenow",Math.round(p.flow));meter.title=p.name+" · FLOW "+Math.round(p.flow)+"%";meter.classList.toggle("is-full",p.flow>=100);}
   if(rating&&rating.textContent!==ratingNow(p).toFixed(2)){rating.textContent=ratingNow(p).toFixed(2);rating.style.color=ratingColor(ratingNow(p));}
  });
@@ -2737,7 +2748,7 @@ function renderMiniFormation(number,state=displayState()){
    empty.setAttribute("data-swap-slot",k);empty.setAttribute("data-swap-team",number);
    put(empty,make("strong","bs-formation-player-name","VACANT"));put(pitch,empty);return;
   }
-  const card=make("div","bs-formation-player bs-formation-player--compact");
+  const card=make("div","bs-formation-player bs-formation-player--compact"+(isFlowing(p)?" is-flowing":""));
   card.setAttribute("role","button");card.tabIndex=0;card.setAttribute("aria-label","View "+p.name+" player profile · "+slot.label);
   if(stoppageReady()&&p.role!=="GK"){card.setAttribute("data-swap-slot",k);card.setAttribute("data-swap-team",number);}
   positionMarker(card,slot,false,liveFormationPoint);
