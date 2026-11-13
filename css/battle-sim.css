@@ -617,3 +617,13 @@ body.bs-game-route .bs-rating-value.is-flowing{
  background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);background-clip:text;-webkit-background-clip:text;
  color:transparent!important;-webkit-text-fill-color:transparent;
 }
+
+/* Active Flow also colors the side squad rows' stamina bars and ratings. */
+body.bs-game-route .bs-match-player-row.is-flowing .bs-stamina-fill{
+ background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0)!important;
+}
+body.bs-game-route .bs-match-player-row.is-flowing .bs-rating-value{
+ background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);
+ background-clip:text;-webkit-background-clip:text;
+ color:transparent!important;-webkit-text-fill-color:transparent;
+}
