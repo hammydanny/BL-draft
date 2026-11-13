@@ -2479,7 +2479,7 @@ function positionOVRMarkup(team,p){
 }
 function liveFormationPoint(slot,flipY){const p=formationPoint(slot,flipY);return{x:12+(p.x-7)*76/86,y:10+(p.y-9)*80/82};}
 function addPlayerRow(parent,p,team,slotIndex){
- const row=make("div","bs-match-player-row");row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
+ const row=make("div","bs-match-player-row"+(isFlowing(p)?" is-flowing":""));row.dataset.playerId=p.id;row.setAttribute("role","button");row.tabIndex=0;row.setAttribute("aria-label","View "+p.name+" player profile");row.style.setProperty("--bs-team-color",team.color);portraitWithStamina(row,p,36);put(row,flowMeter(p.flow,p.name));
  const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",p.role||"CM"));put(copy,line);
  put(copy,playerMeta(p.stats.ovr,ratingNow(p)));
  if(p.yellows>0||p.sentOff){const c=make("span","bs-player-card-state",cardLabel(p));c.classList.add(p.sentOff?"is-red-card":"is-yellow-card");put(copy,c);}
