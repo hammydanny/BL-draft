@@ -344,3 +344,14 @@
 .character-profile-weapon-kit-link .character-profile-kit-kind{font-size:.68rem;font-weight:800;letter-spacing:.1em;padding:1px 6px;border:1px solid var(--kit-color);border-radius:3px;color:var(--kit-color)}
 .character-profile-weapon-kit-link[data-kit-kind="flow"] .character-profile-kit-kind{border-color:#ff5bd0}
 .character-profile-kit-ref{font-weight:700;color:var(--text-primary,inherit)}
+
+/* v0.8.9.5 — Flow cards and weapon-kit references get actual rainbow accents and borders. */
+.character-profile-kit-card[data-kit-kind="flow"]{
+ border-inline-start:3px solid transparent;border-image:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0) 1;
+}
+.character-profile-kit-card[data-kit-kind="flow"] .character-profile-kit-name{
+ text-decoration-color:transparent;background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0) bottom left / 100% 2px no-repeat;
+}
+.character-profile-weapon-kit-link[data-kit-kind="flow"] .character-profile-kit-kind{
+ border:1px solid transparent;border-image:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0) 1;
+}
