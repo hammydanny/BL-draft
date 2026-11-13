@@ -52,6 +52,7 @@ require('./battle-v0883-tests.js').runBattleV0883Tests();
 require('./battle-v0885-tests.js').runBattleV0885Tests();
 require('./battle-v089-tests.js').runBattleV089Tests();
 require('./battle-v0891-tests.js').runBattleV0891Tests();
+require('./battle-v0894-tests.js').runBattleV0894Tests();
 require('./battle-presentation-tests.js').runPresentationTests();
 require('./battle-refinement-tests.js').runRefinementTests();
 require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});

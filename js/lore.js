@@ -107,6 +107,22 @@ function characterLoreCard(record){
     if(record.html)return record.html;const player=record.player,overall=playerOverall(player),positionLabel=player.allPositions?"ALL":primaryPosition(player);
     record.html=`<article class="character-lore-card"><a class="character-lore-card-link" data-character-id="${player.id}" href="${characterDossierHref(player.id)}" aria-label="Open ${esc(player.name)} dossier, ${positionLabel}, overall ${overall}, grade ${playerStatGrade(overall)}"><span class="character-lore-image-wrap"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" class="character-lore-image" loading="lazy" decoding="async" width="180" height="225"><span class="character-card-rating"><strong>${overall}</strong><b>${playerStatGrade(overall)}</b><small>OVR</small></span></span><span class="character-lore-card-name">${esc(player.name)}</span>${positionBadges(player,true)}</a><button class="character-compare-toggle" type="button" data-compare-player="${player.id}" aria-pressed="false" aria-label="Compare ${esc(player.name)}">+ COMPARE</button></article>`;return record.html;
 }
+// Every chemical reaction this player takes part in, from whichever partner's kit declares it (one entry
+// per reaction id). Reactions with a hidden character are never listed in a public dossier.
+function battleSimReactionsFor(player){
+    const seen=new Set(),out=[],me=String(player.id);
+    for(const owner of players){
+        for(const entry of Array.isArray(owner.battleSim?.reactions)?owner.battleSim.reactions:[]){
+            if(!entry||!entry.id||seen.has(entry.id))continue;
+            const members=Array.isArray(entry.members)&&entry.members.length?entry.members.map(String):[String(owner.id),String(entry.partnerId)];
+            if(!members.includes(me))continue;
+            const partner=playerById(members.find(id=>id!==me));
+            if(!partner||(partner.secretCharacter&&!player.secretCharacter)||!secretPlayerAvailable(partner))continue;
+            seen.add(entry.id);out.push({entry,partner});
+        }
+    }
+    return out;
+}
 function characterPersonLink(id){const player=playerById(id);if(!secretPlayerAvailable(player))return "";return `<a class="character-profile-person-link" data-character-id="${id}" href="${characterDossierHref(id)}">${esc(player.name)}</a>`;}
 function dossierSection(code,title,content){return `<section class="character-profile-section"><div class="character-profile-section-heading"><span>${code}</span><h3>${title}</h3></div>${content}</section>`;}
 function characterLoreProfileMarkup(player){
@@ -143,14 +159,25 @@ function characterLoreProfileMarkup(player){
     const rows=PLAYER_RADAR_AXES.map(axis=>`<div class="character-profile-stat"><span>${axis.label}</span><small>${axis.name.toUpperCase()}</small><strong>${playerStats(player)[axis.key]}</strong><b class="evaluation-grade">${playerStatGrade(playerStats(player)[axis.key])}</b></div>`).join("");
     const projectPositionDetails=player.allPositions?`<dl><dt>Available roles</dt><dd>ALL</dd></dl><p>This character is eligible for every position in Blue Lock Draft.</p>`:`<dl><dt>Primary</dt><dd>${primaryPosition(player)}</dd><dt>Secondary</dt><dd>${playerPositions(player).filter(position=>position!==primaryPosition(player)).join(" / ")||"None listed"}</dd></dl><p>These roles determine compatibility in Blue Lock Draft. They are separate from demonstrated story positions.</p>`;
     const positions=`<div class="character-position-analysis"><div><span class="reference-classification">GAMEPLAY INTERPRETATION</span><h4>PROJECT POSITIONS</h4>${projectPositionDetails}</div><div><span class="reference-classification">CANON ROLE REFERENCE</span><h4>DEMONSTRATED POSITIONS</h4>${canon.length?`<ul>${canon.map(role=>`<li><b data-i18n-ignore>${esc(role.position)}</b><span><span>${esc(role.context)}</span>${role.club?`<small data-i18n-ignore>${esc(role.club)}</small>`:""}${role.sourceUrl?`<a class="canon-position-source" href="${esc(role.sourceUrl)}" target="_blank" rel="noopener noreferrer">${role.chapter?`CH. ${role.chapter}`:"POSITION SOURCE"}</a>`:""}</span></li>`).join("")}</ul><p>${esc("Verified deployments through chapter {chapter}. Gameplay eligibility is unchanged.".replace("{chapter}",record.profile.positionAudit?.throughChapter||APP_SUPPORTED_CHAPTER))}</p>`:(player.secretCharacter?`<p>Project character; no canon deployment.</p>`:`<p>${esc("No specific deployment was sufficiently verified through chapter {chapter}. Gameplay badges are not canon evidence.".replace("{chapter}",record.profile.positionAudit?.throughChapter||APP_SUPPORTED_CHAPTER))}</p>`)}</div></div>`;
-    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p>${weapon.battleSimType&&weapon.battleSimType!=="TBD"?`<p class="character-profile-weapon-battle-sim"><b>BATTLE SIM · ${esc(weapon.battleSimType)}</b> ${esc(weapon.battleSimDescription||"")}</p>`:""}</article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
-    // Battle Sim kit: every ability the player uses in Battle Sim (passives, signature moves, Flow and
-    // chemical reactions). Entries already shown on a football weapon card above are not repeated.
-    const kit=player.battleSim||{},shownSim=new Set(weapons.map(weapon=>weapon.battleSimDescription).filter(Boolean));
+    // Football weapons show their canon description; a weapon that is part of the Battle Sim kit links to its
+    // kit card (type colour + name) instead of repeating the description, so every dossier reads the same way.
+    const kitData=player.battleSim||{};
     const kitKind=(group,entry)=>group==="reactions"?"CHEMICAL REACTION":[entry.effect,...(Array.isArray(entry.effects)?entry.effects:[])].includes("flow-state")?"FLOW":group==="passives"?"PASSIVE":group==="ultimates"?"ULTIMATE":"SPECIAL";
-    const kitEntries=["passives","weapons","ultimates","reactions"].flatMap(group=>(Array.isArray(kit[group])?kit[group]:[]).map(entry=>({group,entry})))
-        .filter(({group,entry})=>entry&&entry.name&&entry.description&&!shownSim.has(entry.description)&&(group!=="reactions"||!!player.secretCharacter||!playerById(entry.partnerId)?.secretCharacter&&!(entry.members||[]).some(id=>playerById(id)?.secretCharacter)));
-    const kitCards=kitEntries.length?`<h4 class="character-profile-kit-heading">BATTLE SIM KIT</h4><div class="character-profile-weapons-grid character-profile-kit-grid">${kitEntries.map(({group,entry})=>`<article class="character-profile-weapon-card character-profile-kit-card"><div class="character-profile-weapon-heading"><h4>${esc(entry.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="battle-sim">${kitKind(group,entry)}</span></div><p class="character-profile-weapon-description">${esc(entry.description)}</p></article>`).join("")}</div>`:"";
+    const kindClass={"PASSIVE":"passive","SPECIAL":"special","ULTIMATE":"ultimate","FLOW":"flow","CHEMICAL REACTION":"reaction"};
+    const kitEntries=["passives","weapons","ultimates"].flatMap(group=>(Array.isArray(kitData[group])?kitData[group]:[]).map(entry=>({group,entry}))).filter(({entry})=>entry&&entry.name&&entry.description);
+    const kitFor=weapon=>kitEntries.find(({entry})=>entry.description===weapon.battleSimDescription||entry.id===weapon.id)||null;
+    const simLine=weapon=>{if(!(weapon.battleSimType&&weapon.battleSimType!=="TBD"))return "";const k=kitFor(weapon);
+        if(!k)return `<p class="character-profile-weapon-battle-sim"><b>BATTLE SIM · ${esc(weapon.battleSimType)}</b> ${esc(weapon.battleSimDescription||"")}</p>`;
+        const kind=kitKind(k.group,k.entry);return `<p class="character-profile-weapon-battle-sim character-profile-weapon-kit-link" data-kit-kind="${kindClass[kind]}"><b>BATTLE SIM</b> <span class="character-profile-kit-kind">${kind}</span> <span class="character-profile-kit-ref">${esc(k.entry.name)}</span></p>`;};
+    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p>${simLine(weapon)}</article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
+    // Battle Sim kit: every ability the player uses in Battle Sim, in a fixed order (passives, signature
+    // moves, ultimate, Flow, then chemical reactions), each with its plain "when / what / limit" description.
+    const kindOrder={"PASSIVE":0,"SPECIAL":1,"ULTIMATE":2,"FLOW":3};
+    // Chemical reactions: one shared definition (declared in either partner's kit), shown in both dossiers.
+    const reactions=battleSimReactionsFor(player).map(({entry,partner})=>({group:"reactions",entry,partner}));
+    const kitCard=({group,entry,partner})=>{const kind=kitKind(group,entry);return `<article class="character-profile-weapon-card character-profile-kit-card" data-kit-kind="${kindClass[kind]}"><div class="character-profile-weapon-heading"><h4 class="character-profile-kit-name">${esc(entry.name)}</h4><span class="character-profile-weapon-kind character-profile-kit-kind" data-weapon-category="battle-sim">${kind}</span></div>${partner?`<p class="character-profile-kit-partner"><span>WITH:</span> ${characterPersonLink(partner.id)}</p>`:""}<p class="character-profile-weapon-description">${esc(entry.description)}</p></article>`;};
+    const kitAll=kitEntries.slice().sort((a,b)=>kindOrder[kitKind(a.group,a.entry)]-kindOrder[kitKind(b.group,b.entry)]).concat(reactions);
+    const kitCards=kitAll.length?`<h4 class="character-profile-kit-heading">BATTLE SIM KIT</h4><div class="character-profile-weapons-grid character-profile-kit-grid">${kitAll.map(kitCard).join("")}</div>`:"";
     const pairCards=links.map(link=>{
         const names=Array.isArray(link.playerNames)
             ?link.playerNames.filter(name=>name!==player.name)

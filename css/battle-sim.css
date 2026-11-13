@@ -590,3 +590,21 @@ body.bs-game-route .bs-ball-trail path.bs-run-route{stroke:#9fe7ff;stroke-width:
 .bs-ball-trail .bs-run-route{stroke:#9fe7ff;stroke-width:.3;stroke-dasharray:.5 .9;opacity:0;fill:none}
 [dir="rtl"] .bs-event-abilities{direction:rtl}
 @media (prefers-reduced-motion:reduce){body.bs-game-route .bs-ball-trail path.bs-run-route{transition:none}}
+/* v0.8.9.4 — ability-type colours in the match profile, partner line, ability badge above the player card */
+.bs-player-profile-weapon[data-profile-ability-type="PASSIVE"] .bs-player-profile-weapon-type{color:#5cc8ff}
+.bs-player-profile-weapon[data-profile-ability-type="SPECIAL"] .bs-player-profile-weapon-type{color:#ffa53d}
+.bs-player-profile-weapon[data-profile-ability-type="ULTIMATE"] .bs-player-profile-weapon-type{color:#b07cff}
+.bs-player-profile-weapon[data-profile-ability-type="CHEMICAL REACTION"] .bs-player-profile-weapon-type{color:#2fd6b5}
+.bs-player-profile-weapon-partner{margin:2px 0 4px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2fd6b5}
+.bs-event-abilities{margin:8px 0 4px}
+.bs-event-ability-owner{font-weight:700;opacity:.85;margin-inline-start:6px;letter-spacing:.04em}
+/* v0.8.9.4 — side formations: goal box at the bottom (goalkeeper end) for both teams */
+.bs-mini-pitch-markings{top:auto;bottom:5px;border-top:1px solid #d1fff12c;border-bottom:0}
+.bs-mini-pitch-markings:before{bottom:auto;top:-1px}
+.bs-mini-pitch-markings:after{top:0}
+/* Chemical reaction cards carry an extra "WITH:" row: give it its own track instead of overlapping. */
+.bs-player-profile-weapon.has-partner{grid-template-rows:auto auto auto minmax(0,1fr);height:auto;min-height:88px;max-height:none;flex-basis:auto}
+.bs-player-profile-weapon.has-partner .bs-player-profile-weapon-partner{margin:0;font-size:9px;line-height:1.1}
+/* The in-match profile panel is dark in both themes: keep its title readable in light mode. */
+.bs-player-profile-overlay .bs-player-profile-name{color:#eaf2ff}
+.bs-player-profile-overlay .bs-player-profile-heading>span,.bs-player-profile-overlay .bs-player-profile-positions{color:#9fb4c8}

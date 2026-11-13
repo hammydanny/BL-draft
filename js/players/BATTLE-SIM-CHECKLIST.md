@@ -16,11 +16,11 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Meguru Bachira (4) | [x] | [x] | [x] |
 | Gurimu Igarashi (5) | [x] | [x] | [x] |
 | Rensuke Kunigami (6) | [x] | [x] | [x] |
-| Hyoma Chigiri (7) | [ ] | [ ] | [ ] |
-| Gin Gagamaru (8) | [ ] | [ ] | [ ] |
-| Jingo Raichi (9) | [ ] | [ ] | [ ] |
-| Asahi Naruhaya (10) | [ ] | [ ] | [ ] |
-| Okuhito Iemon (11) | [ ] | [ ] | [ ] |
+| Hyoma Chigiri (7) | [x] | [x] | [x] |
+| Gin Gagamaru (8) | [x] | [x] | [x] |
+| Jingo Raichi (9) | [x] | [x] | [x] |
+| Asahi Naruhaya (10) | [x] | [x] | [x] |
+| Okuhito Iemon (11) | [x] | [x] | [x] |
 | Wataru Kuon (12) | [ ] | [ ] | [ ] |
 | Yudai Imamura (13) | [ ] | [ ] | [ ] |
 | Sae Itoshi (14) | [ ] | [ ] | [ ] |

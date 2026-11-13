@@ -239,7 +239,7 @@ function decisionTests(){
  // 7. A high-skill dribbler takes on a weak defender far more than a weak dribbler takes on a strong one.
  const duel=(dri,def)=>{const x=scene(b,(s,get)=>{const c=get(1,'LW'),d=get(2,'RB')||get(2,'CB');c.stats.dri=dri;c.stats.spd=dri;d.stats.def=def;b.setPosition(c,{x:70,y:30});b.setPosition(d,{x:73,y:30});return {carrier:c};});
   const m=b.dribbleModel(x.s,x.carrier,{x:76,y:30});return {chance:m.chance,r:choices(b,x.s,x.carrier)};};
- const star=duel(97,52),weak=duel(52,95);assert(star.chance>.6&&star.chance>weak.chance+.2,'DRI vs DEF decides the duel');assert(star.r.dribble>weak.r.dribble+40,'skilled dribbler chooses to dribble more');report.push('dribble '+star.r.dribble+' vs '+weak.r.dribble);
+ const star=duel(97,52),weak=duel(52,95);assert(star.chance>.6&&star.chance>weak.chance+.2,'DRI vs DEF decides the duel');assert(star.r.forwardDribble>weak.r.forwardDribble+40,'skilled dribbler takes the defender on more (v0.8.9.4: a weak dribbler may shield instead)');report.push('take-on '+star.r.forwardDribble+' vs '+weak.r.forwardDribble);
  // 8. A teammate in a clearly better scoring position receives the ball.
  t=scene(b,(s,get)=>{const c=get(1,'LW'),st=get(1,'ST');b.setPosition(c,{x:82,y:16});b.setPosition(st,{x:89,y:48});b.setPosition(b.active(s.teams[2]).filter(p=>p.role!=='GK')[0],{x:83.5,y:17.5});return {carrier:c,st};});
  r=choices(b,t.s,t.carrier);assert((r.to[t.st.id]||0)/240>=.55,'square ball to the better-placed striker: '+JSON.stringify(r));assert(r.shot/240<.3);report.push('square '+Math.round(100*(r.to[t.st.id]||0)/240)+'%');

@@ -110,7 +110,7 @@ const shots=[],goals=[],zeroes=[];
  const totalShots=shots.reduce((a,c)=>a+c,0),totalGoals=goals.reduce((a,c)=>a+c,0);
  assert(totalShots>=125,'hype match engine creates opportunities');assert(totalGoals>=12&&totalGoals<=140,'balanced scoring, got '+totalGoals);assert(goals.filter(g=>g===0).length<=8,'avoid 0-0 regression');
  const source=fs.readFileSync(path.join(__dirname,'../js/battle-sim.js'),'utf8');
- assert(source.includes('number===2,"bs-mini-chemistry-lines"'),'team 2 formation vertically flipped with chemistry');
+ assert(source.includes('appendFormationChemistryLines(pitch,team,false,"bs-mini-chemistry-lines"'),'v0.8.9.4: both side formations share one orientation (forwards top, goalkeeper bottom), chemistry lines included');
  assert(!source.slice(source.indexOf('function renderMiniFormation('),source.indexOf('function renderMiniFormation(')+2800).includes('make("span","","LIVE OVR")'),'no LIVE OVR text in tactical markers');
  assert(source.includes('bs-goal-kick-taker-mode'),'distinct GK/outfield set-piece option');
  assert(source.includes('0.1,5')||source.includes('.1,5'),'0.1s feed delay minimum');

@@ -23,7 +23,7 @@ function runInformationNavigationTests(){
  let opened=0;const game=vm.createContext({document:{body:{dataset:{}}},openBattleSimPage(){opened++;}});vm.runInContext(source,game);vm.runInContext("runDirectoryAction('battle-sim')",game);assert.equal(opened,1,'Game documents keep their existing navigation helper');
  const html=read('changelog/index.html'),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
  const links=[...html.matchAll(/href="changelog\/#([^"]+)"/g)].map(m=>m[1]);for(const id of links)assert(ids.includes(id),'Broken release anchor '+id);
- for(const version of ['0.8.9.3','0.8.9.2','0.8.9.1','0.8.9','0.8.8.5','0.8.8.1','0.8.8','0.8.7','0.8.6','0.8.5','0.8.4','0.8.3','0.8.2','0.8.1.2','0.8.1.1','0.8.0']){const id='release-'+version.replaceAll('.','');assert(links.includes(id),'Release missing from index '+version);assert(html.includes('>V'+version+'</h3>'),'Release missing from history '+version);}
+ for(const version of ['0.8.9.4','0.8.9.3','0.8.9.2','0.8.9.1','0.8.9','0.8.8.5','0.8.8.1','0.8.8','0.8.7','0.8.6','0.8.5','0.8.4','0.8.3','0.8.2','0.8.1.2','0.8.1.1','0.8.0']){const id='release-'+version.replaceAll('.','');assert(links.includes(id),'Release missing from index '+version);assert(html.includes('>V'+version+'</h3>'),'Release missing from history '+version);}
  assert(html.includes('V0.8 SERIES')&&html.includes('V0.7 SERIES'));assert(!html.includes('V0.9.'),'no unreleased versions in the history');
     // The public changelog never mentions hidden content.
     assert(!/secret/i.test(html.replace(/<[^>]+>/g,' ')),'changelog text mentions hidden content');

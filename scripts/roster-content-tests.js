@@ -28,7 +28,7 @@ function runRosterContentTests(){
   assert.deepEqual(playerPositions(playerById(83)),['RW','LW','CF','CM']);assert(!playerPositions(playerById(83)).includes('GK'));assert.equal(playerById(83).stats.gk,73);
   assert.equal(calculatePositionOVR(playerById(85),'CM'),93);assert.equal(playerOverall(playerById(85)),94);
   assert.equal(effectiveOVR(playerById(85),'CM'),94,'Shared position model retains its Base OVR anchor');
-  for(const [id,target]of [[34,96],[35,95],[36,96],[37,95]]){const p=playerById(id);assert.equal(playerOverall(p),target);assert.equal(calculatePositionOVR(p,primaryPosition(p)),target);}
+  for(const [id,target,position]of [[34,96,96],[35,95,95],[36,96,95],[37,95,95]]){const p=playerById(id);assert.equal(playerOverall(p),target);assert.equal(calculatePositionOVR(p,primaryPosition(p)),position);} // v0.8.9.4: Blake's OFF/SHO 100→99 (public 99 cap) lowers his derived FW rating by one; Base OVR is unchanged
   const exum=playerById(90);assert.equal(exum.name,'Exum');assert.equal(exum.primaryPosition,'DM');assert.equal(exum.debutChapter,368);assert.equal(exum.jerseyNumber,13);assert(!exum.secretCharacter);
   assert.deepEqual(exum.stats,{ovr:81,off:79,sho:68,pas:82,dri:78,spd:91,def:95,gk:39});
   assert.equal(calculatePositionOVR(exum,'DM'),81);assert.deepEqual(exum.weapons.map(w=>w.id),['man-marking']);assert.equal(verifiedPlayerQuotes(90).length,0);assert(PLAYER_POOL_CATEGORY_IDS['world-cup-new'].has(90));

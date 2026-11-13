@@ -27,6 +27,8 @@ async function main(){
  const cases=[
   {name:'reaction',stars:[1,27],want:e=>e.reaction&&e.dialogue.some(d=>d.key)},
   {name:'bachira',stars:[4],want:e=>e.ability&&String(e.ability.id).startsWith('creative')},
+  {name:'chigiri',stars:[7,1],want:e=>(e.ability&&['no-break-dribble','high-speed-cut-in','golden-zone-shot'].includes(e.ability.id))||(e.reaction&&e.reaction.id==='speed-and-vision')},
+  {name:'raichi',stars:[9],want:e=>e.ability&&['man-marking','relentless-duel'].includes(e.ability.id)},
   {name:'kunigami',stars:[6],want:e=>e.ability&&['power-shot','physical-dominance','ambidextrous-finishing','physical-man-marking','rush-volley'].includes(e.ability.id)},
   {name:'igarashi',stars:[5],want:e=>e.ability&&['malicia','right-side-trap'].includes(e.ability.id)},
   {name:'noa',stars:[3],want:e=>e.ability&&e.ability.id==='machine-dribble'}
@@ -47,13 +49,13 @@ async function main(){
      await page.setViewportSize({width,height});await page.waitForTimeout(400);
     }
     const info=await page.evaluate(()=>{const first=document.querySelector('.bs-feed-event');return{
-     chips:[...first.querySelectorAll('.bs-event-ability')].map(x=>x.textContent.trim()),
+     chips:[...first.querySelectorAll('.bs-event-ability-label')].map(x=>x.textContent.trim()),badgeBeforeCards:(()=>{const r=first.querySelector('.bs-event-abilities'),a=first.querySelector('.bs-event-actors');return !r||!a||!!(r.compareDocumentPosition(a)&Node.DOCUMENT_POSITION_FOLLOWING);})(),
      lines:[...first.querySelectorAll('.bs-event-line-text')].map(x=>x.textContent.trim()),
      route:(()=>{const r=document.querySelector('.bs-run-route');return r?getComputedStyle(r).opacity:null;})(),
      overflow:document.documentElement.scrollWidth>innerWidth+1,dir:document.documentElement.dataset.textDirection||'ltr'};});
     const expectChips=[event.reaction,event.ability,event.abilityNote].filter(Boolean).length;
     assert.equal(info.chips.length,expectChips,c.name+' '+lang+': one chip per ability/reaction');
-    assert(info.chips.every(t=>t.length>0),'chips have text');
+    assert(info.chips.every(t=>t.length>0),'chips have text');assert(info.badgeBeforeCards,'ability label sits above the player cards');
     if(lang!=='en')assert(info.chips.every((t,i)=>t!==[event.reaction,event.ability,event.abilityNote].filter(Boolean)[i].label),c.name+' '+lang+': chips translated '+info.chips);
     const keyed=event.dialogue.filter(d=>d.key);assert.equal(info.lines.length,keyed.length,'keyed lines rendered');
     if(lang!=='en')info.lines.forEach((t,i)=>assert.notEqual(t,keyed[i].key,c.name+' '+lang+': line translated'));

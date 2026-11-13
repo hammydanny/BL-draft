@@ -316,3 +316,31 @@
 
 .character-profile-kit-heading{margin:18px 0 10px;font-size:.78rem;letter-spacing:.12em;color:var(--text-muted)}
 .character-profile-kit-card .character-profile-weapon-kind{white-space:nowrap}
+/* v0.8.9.4 — Battle Sim kit: one colour per ability type (type label + subtle name accent) */
+.character-profile-kit-card{--kit-color:#5cc8ff}
+.character-profile-kit-card[data-kit-kind="passive"]{--kit-color:#5cc8ff}
+.character-profile-kit-card[data-kit-kind="special"]{--kit-color:#ffa53d}
+.character-profile-kit-card[data-kit-kind="ultimate"]{--kit-color:#b07cff}
+.character-profile-kit-card[data-kit-kind="reaction"]{--kit-color:#2fd6b5}
+.character-profile-kit-card[data-kit-kind="flow"]{--kit-color:#ff5bd0}
+[data-theme="light"] .character-profile-kit-card[data-kit-kind="passive"]{--kit-color:#0b78b8}
+[data-theme="light"] .character-profile-kit-card[data-kit-kind="special"]{--kit-color:#b85c00}
+[data-theme="light"] .character-profile-kit-card[data-kit-kind="ultimate"]{--kit-color:#6d34d6}
+[data-theme="light"] .character-profile-kit-card[data-kit-kind="reaction"]{--kit-color:#0b8573}
+.character-profile-kit-card{border-inline-start:3px solid var(--kit-color)}
+.character-profile-kit-card:not([data-kit-kind="flow"]) .character-profile-kit-kind{color:var(--kit-color);border-color:var(--kit-color)}
+.character-profile-kit-card .character-profile-kit-kind{white-space:nowrap}
+.character-profile-kit-name{text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--kit-color) 55%,transparent);text-decoration-thickness:2px;text-underline-offset:5px}
+.character-profile-kit-partner{margin:6px 0 4px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--kit-color)}
+.character-profile-kit-partner a{color:inherit}
+/* Weapon card → Battle Sim kit reference: the same type colours as the kit cards. */
+.character-profile-weapon-kit-link{--kit-color:#5cc8ff;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.character-profile-weapon-kit-link[data-kit-kind="special"]{--kit-color:#ffa53d}
+.character-profile-weapon-kit-link[data-kit-kind="ultimate"]{--kit-color:#b07cff}
+.character-profile-weapon-kit-link[data-kit-kind="flow"]{--kit-color:#ff5bd0}
+[data-theme="light"] .character-profile-weapon-kit-link[data-kit-kind="passive"]{--kit-color:#0b78b8}
+[data-theme="light"] .character-profile-weapon-kit-link[data-kit-kind="special"]{--kit-color:#b85c00}
+[data-theme="light"] .character-profile-weapon-kit-link[data-kit-kind="ultimate"]{--kit-color:#6d34d6}
+.character-profile-weapon-kit-link .character-profile-kit-kind{font-size:.68rem;font-weight:800;letter-spacing:.1em;padding:1px 6px;border:1px solid var(--kit-color);border-radius:3px;color:var(--kit-color)}
+.character-profile-weapon-kit-link[data-kit-kind="flow"] .character-profile-kit-kind{border-color:#ff5bd0}
+.character-profile-kit-ref{font-weight:700;color:var(--text-primary,inherit)}

@@ -9,7 +9,7 @@ const ISAGI=1,HIORI=27,KURONA=26,BACHIRA=4,KAISER=49;
 
 function setup(stars=[ISAGI,HIORI,KURONA,BACHIRA,KAISER],formation='4-3-3'){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const home=stars.concat(pool.slice(0,14-stars.length)),away=pool.slice(20,34);
  const teams=[1,2].map(n=>{const ids=n===1?home:away;let a=positionalAssignment(h,formation,ids,n);
   // The characters under test start in their own positions; the rest of the XI fills around them.

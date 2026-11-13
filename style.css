@@ -1389,3 +1389,9 @@ html[data-theme="light"] .chem-link.neutral{stroke-width:2;opacity:.92;filter:dr
 html[data-theme="light"] .share-chemistry-lines .chem-link.neutral{stroke-width:1.65;opacity:.84}
 .result-chem-link.neutral:before{background:var(--chem-neutral)}
 .chem-key span{white-space:nowrap}
+/* v0.8.9.4 — Flow text: luminous rainbow gradient (solid fallback when background-clip:text is unsupported) */
+.flow-text,[data-kit-kind="flow"] .character-profile-kit-kind,.bs-player-profile-weapon[data-profile-ability-type="FLOW"] .bs-player-profile-weapon-type{color:#ff5bd0;font-weight:800}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+.flow-text,[data-kit-kind="flow"] .character-profile-kit-kind,.bs-player-profile-weapon[data-profile-ability-type="FLOW"] .bs-player-profile-weapon-type{background-image:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;filter:drop-shadow(0 0 5px rgba(168,85,247,.35))}
+[data-theme="light"] .flow-text,[data-theme="light"] [data-kit-kind="flow"] .character-profile-kit-kind,[data-theme="light"] .bs-player-profile-weapon[data-profile-ability-type="FLOW"] .bs-player-profile-weapon-type{background-image:linear-gradient(90deg,#d61f1f,#d9730a,#a88a00,#16903a,#0b8fa8,#2f55d8,#7c3aed,#c81fa6);filter:none}
+}
