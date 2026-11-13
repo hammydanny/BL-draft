@@ -608,3 +608,12 @@ body.bs-game-route .bs-ball-trail path.bs-run-route{stroke:#9fe7ff;stroke-width:
 /* The in-match profile panel is dark in both themes: keep its title readable in light mode. */
 .bs-player-profile-overlay .bs-player-profile-name{color:#eaf2ff}
 .bs-player-profile-overlay .bs-player-profile-heading>span,.bs-player-profile-overlay .bs-player-profile-positions{color:#9fb4c8}
+
+/* v0.8.9.5 — Rainbow stamina and OVR only during active Flow. */
+body.bs-game-route .bs-stamina-ring.is-flowing{
+ background:conic-gradient(from -90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);
+}
+body.bs-game-route .bs-rating-value.is-flowing{
+ background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);background-clip:text;-webkit-background-clip:text;
+ color:transparent!important;-webkit-text-fill-color:transparent;
+}
