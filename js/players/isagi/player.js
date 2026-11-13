@@ -54,6 +54,22 @@ const ISAGI_PLAYER_DATA = {
                         "weight": 0.1
                     },
                     "description": "If opponents stop one of Isagi's runs, cut out one of his passes or save one of his shots, he remembers it and tries something different next time. This only lasts for the current match."
+                },
+                {
+                    "id": "puzzle-completion",
+                    "name": "Metavision: Puzzle Completion",
+                    "label": "METAVISION: PUZZLE COMPLETION",
+                    "effect": "flow-state",
+                    "dialogue": "flow",
+                    "params": {
+                        "awareness": {
+                            "vision": 0.06,
+                            "space": 0.07,
+                            "anticipation": 0.12,
+                            "scan": 5
+                        }
+                    },
+                    "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
                 }
             ],
             "weapons": [
