@@ -313,7 +313,11 @@ body.bs-game-route [data-refresh-saved-teams]{flex:0 0 auto}
 /* v0.8.9.5 — Make the active side-formation Flow bar rainbow, not teal. */
 body.bs-game-route .bs-mini-pitch .bs-mini-flow-horizontal.is-full .bs-flow-meter-fill,
 body.bs-game-route .bs-formation-player .bs-mini-flow-horizontal.is-full .bs-flow-meter-fill{background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0)}
+/* Keep the rainbow OVR, but give each digit a bright outline at miniature size. */
 body.bs-game-route .bs-mini-pitch .bs-formation-player.is-flowing .bs-live-ovr>b{
- background:linear-gradient(90deg,#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0);background-clip:text;-webkit-background-clip:text;
- color:transparent;-webkit-text-fill-color:transparent;
+ background:linear-gradient(90deg,#ff9482,#ffe878,#bbff96,#6ef3da,#92ccff,#e3a8ff);
+ background-clip:text;-webkit-background-clip:text;
+ color:#f7fbff;-webkit-text-fill-color:transparent;
+ -webkit-text-stroke:.8px #f7fbff;
+ text-shadow:0 1px 2px #00110e;
 }
