@@ -21,13 +21,13 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Jingo Raichi (9) | [x] | [x] | [x] |
 | Asahi Naruhaya (10) | [x] | [x] | [x] |
 | Okuhito Iemon (11) | [x] | [x] | [x] |
-| Wataru Kuon (12) | [ ] | [ ] | [ ] |
-| Yudai Imamura (13) | [ ] | [ ] | [ ] |
+| Wataru Kuon (12) | [x] | [x] | [x] |
+| Yudai Imamura (13) | [x] | [x] | [x] |
+| Ikki Niko (16) | [x] | [x] | [x] |
+| Hibiki Okawa (17) | [x] | [x] | [x] |
+| Junichi Wanima (18) | [x] | [x] | [x] |
 | Sae Itoshi (14) | [ ] | [ ] | [ ] |
 | Shoei Baro (15) | [ ] | [ ] | [ ] |
-| Ikki Niko (16) | [ ] | [ ] | [ ] |
-| Hibiki Okawa (17) | [ ] | [ ] | [ ] |
-| Junichi Wanima (18) | [ ] | [ ] | [ ] |
 | Keisuke Wanima (19) | [ ] | [ ] | [ ] |
 | Reo Mikage (20) | [ ] | [ ] | [ ] |
 | Seishiro Nagi (21) | [ ] | [ ] | [ ] |
@@ -103,3 +103,11 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 ## Writing descriptions
 
 Battle Sim descriptions say plainly **when** the ability happens, **what** it does and **what can still stop it**, using the real numbers from the kit and simple words (see CLAUDE.md, "Battle Sim descriptions"). Example: "When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it."
+
+## 8.9.8.2 character batch
+
+Kuon, Imamura, Niko, Okawa and Junichi use physical movement, passing, aerial contests and the shared shot model. Deterministic scenes cover triggers, failure paths and cooldowns. Normal seeded-match opportunities and observed usage are recorded in `docs/release-v8.9.8.2.md`; rare techniques are not forced to activate. All 16 completed characters have localized event dialogue. Keisuke remains unchecked: only Eye Contact interpreter dialogue and shared reaction participation are implemented. Fan-game ability names are marked as interpretations in the kit data.
+
+## Standard for future batches
+
+Every new kit must pair canon-grounded, fallible football effects with contextual character dialogue, including success/failure and quiet or nonverbal personalities. Reuse physical movement and shared reactions, localize names/descriptions/lines in all 11 languages, and verify deterministic saves plus ordinary seeded matches. Limited-canon players stay simple. Do not mark a kit complete from declarations or string counts alone.

@@ -105,7 +105,7 @@ function sampleTests(){
   for(const n of [1,2]){const T=s.teams[n];shots+=T.stats.shots;attempted+=T.stats.attempted;completed+=T.stats.passes;offsides+=Number(T.stats.offsides)||0;
    assert.equal(Number(T.stats.offsides)||0,s.events.filter(e=>e.type==='offside'&&e.teamNumber!==n).length,'offside statistics match events');}
   throwIns+=s.events.filter(e=>e.type==='throw-in').length;
-  s.events.forEach(e=>{if(e.passRoute&&!['set-piece','offside'].includes(e.type)){openPasses++;if(e.passRoute.kind==='long')lofted++;}if(e.type==='shot-attempt'&&+(e.description.match(/(\d+)m/)||[0,0])[1]>=30)longShots++;});
+  s.events.forEach(e=>{if(e.passRoute&&!['set-piece','offside'].includes(e.type)){openPasses++;if(e.passRoute.kind==='long')lofted++;}if(e.type==='shot-attempt'&&e.shotRoute&&b.distance(e.shotRoute.from,e.shotRoute.to)>=30)longShots++;});
   s.events.filter(e=>e.type==='offside').forEach(e=>assert(s.events.some(x=>x.id>e.id)),'play resumes after offside');
  }
  const ms=Number(process.hrtime.bigint()-t0)/1e6,pct=completed/attempted;

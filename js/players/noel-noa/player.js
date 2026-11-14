@@ -117,30 +117,66 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
                 }
             ],
             "dialogue": {
-                "dribble": [
-                    "The shortest route.",
-                    "No wasted touches."
-                ],
-                "twoFooted": [
-                    "Wrong side. You committed.",
-                    "Either foot. Your choice was the mistake."
-                ],
-                "goal": [
-                    "Efficient. As calculated.",
-                    "That was the correct answer."
-                ],
-                "miss": [
-                    "An error. Corrected next time."
-                ],
-                "defend": [
-                    "Read and removed."
-                ],
-                "route": [
-                    "Kaiser, your route is better. Take it."
-                ],
-                "flow": [
-                    "Optimal. Every piece is in place."
-                ]
-            }
+    "dribble": [
+        "Keep it efficient.",
+        "The shortest route.",
+        "No wasted touches."
+    ],
+    "twoFooted": [
+        "Wrong side. You committed.",
+        "Either foot. Your choice was the mistake."
+    ],
+    "goal": [
+        "A rational result.",
+        "Efficient. As calculated.",
+        "That was the correct answer."
+    ],
+    "miss": [
+        "Recalculate.",
+        "An error. Corrected next time."
+    ],
+    "defend": [
+        "Option removed.",
+        "Read and removed."
+    ],
+    "route": [
+        "Kaiser, your route is better. Take it."
+    ],
+    "flow": [
+        "Maintain this standard."
+    ],
+    "kickoff": [
+        "Begin."
+    ],
+    "pass": [
+        "Use this angle.",
+        "Choose the next action."
+    ],
+    "receive": [
+        "Next action."
+    ],
+    "dribbleFail": [
+        "A poor choice."
+    ],
+    "shot-attempt": [
+        "The angle is sufficient."
+    ],
+    "concede": [
+        "Correct the positioning."
+    ],
+    "support": [
+        "Use this angle."
+    ],
+    "passFail": [
+        "A poor choice.",
+        "Recalculate."
+    ],
+    "foul": [
+        "A poor choice."
+    ],
+    "save": [
+        "Option removed."
+    ]
+}
         }
     };

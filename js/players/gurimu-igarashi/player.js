@@ -75,30 +75,68 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
                 }
             ],
             "dialogue": {
-                "malicia": [
-                    "Gotcha! That's a foul, ref!",
-                    "Heh, Malicia never fails!"
-                ],
-                "maliciaFail": [
-                    "W-wait, he really hit me!",
-                    "Ugh, the ref saw that..."
-                ],
-                "defend": [
-                    "I'm not giving up!",
-                    "Survived another one!"
-                ],
-                "secondBall": [
-                    "Mine! Loose ball's mine!"
-                ],
-                "goal": [
-                    "Did everyone see?! I scored!"
-                ],
-                "miss": [
-                    "Nooo, why not!"
-                ],
-                "flow": [
-                    "Okay... okay! I can survive this!"
-                ]
-            }
+    "malicia": [
+        "Gotcha! That's a foul, ref!",
+        "Heh, Malicia never fails!"
+    ],
+    "maliciaFail": [
+        "W-wait, he really hit me!",
+        "Ugh, the ref saw that..."
+    ],
+    "defend": [
+        "I survived that one!",
+        "I'm not giving up!",
+        "Survived another one!"
+    ],
+    "secondBall": [
+        "Mine! Loose ball's mine!"
+    ],
+    "goal": [
+        "I am still in this!",
+        "Did everyone see?! I scored!"
+    ],
+    "miss": [
+        "No, come on!",
+        "Nooo, why not!"
+    ],
+    "flow": [
+        "I am not done yet!"
+    ],
+    "kickoff": [
+        "Please let this go well!"
+    ],
+    "pass": [
+        "Take it, quick!",
+        "Do not lose it!"
+    ],
+    "receive": [
+        "Okay, okay, I have it!"
+    ],
+    "dribble": [
+        "Just let me through!"
+    ],
+    "dribbleFail": [
+        "Wait, give it back!"
+    ],
+    "shot-attempt": [
+        "Please go in!"
+    ],
+    "concede": [
+        "We can still do this, right?"
+    ],
+    "support": [
+        "Take it, quick!"
+    ],
+    "passFail": [
+        "Wait, give it back!",
+        "No, come on!"
+    ],
+    "foul": [
+        "Wait, give it back!"
+    ],
+    "save": [
+        "I survived that one!"
+    ]
+}
         }
     };

@@ -274,7 +274,7 @@ function sanitizeIntelligence(state){
  }));
  if(state.chain!=null){state.chain=Math.floor(clamp(fin(state.chain),0,999));state.chainTeam=[1,2].includes(state.chainTeam)?state.chainTeam:null;}
  if(state.reactionCooldowns!=null)state.reactionCooldowns=Object.fromEntries(Object.entries(state.reactionCooldowns&&typeof state.reactionCooldowns==="object"?state.reactionCooldowns:{}).slice(0,24).map(([k,v])=>[String(k).slice(0,40),fin(v)]));
- const r=state.lastReception;if(r!=null)state.lastReception=r&&pt(r.from)&&pt(r.to)&&[1,2].includes(r.teamNumber)?{playerId:idOf(r.playerId),teamNumber:r.teamNumber,passerId:idOf(r.passerId),tick:fin(r.tick),kind:r.kind==="long"?"long":"short",through:!!r.through,...(r.style==="cross"||r.style==="cutback"?{style:r.style}:{}),from:pt(r.from),to:pt(r.to)}:null;
+ const r=state.lastReception;if(r!=null)state.lastReception=r&&pt(r.from)&&pt(r.to)&&[1,2].includes(r.teamNumber)?{playerId:idOf(r.playerId),teamNumber:r.teamNumber,passerId:idOf(r.passerId),tick:fin(r.tick),kind:r.kind==="long"?"long":"short",through:!!r.through,...(typeof r.aerial==="boolean"?{aerial:r.aerial}:{}),...(r.style==="cross"||r.style==="cutback"?{style:r.style}:{}),from:pt(r.from),to:pt(r.to)}:null;
 }
 // v0.8.8.3 participation state. Older saves have no matchStatus, so it is
 // rebuilt from the append-only substitution events; current saves are validated.
@@ -482,7 +482,7 @@ function playerWeaponsText(player){
  if(!weapons.length)return "WEAPONS\nNone registered";
  return "WEAPONS\n"+weapons.map(w=>typeof w==="string"?w:(String(w.name||w.id||"Weapon")+(w.description?" — "+String(w.description):""))).join("\n");
 }
-function basicActionDialogue(type,actors){
+function basicActionDialogue(type,actors,state,options={},roleIndex=0){
  const lines={pass:["Here you go!","Got it!"],"set-piece":["Here you go!","Got it!"],
   dribble:["I’m getting past you!","Not so fast!"],carry:["Keep moving!"],"shot-attempt":["I’m taking the shot!"],
   goal:["That’s the finish!","Great pass!"],save:["I should have done better.","Not past me!"],
@@ -492,9 +492,10 @@ function basicActionDialogue(type,actors){
   "flow-activation":["I’m in the zone!"],corner:["So close!"],"goal-kick":["That one’s gone wide."],
   kickoff:["Let’s get started!"],play:["Keep moving!"],offside:["I was level!","Hold your run!"],"throw-in":["Too heavy!","Our throw!"]};
  const phrases=lines[type]||["Keep moving!"];
- return(actors||[]).filter(Boolean).slice(0,3).map((p,i)=>({playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}));
+ return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{i+=roleIndex;const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"defend":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:"foul",corner:"miss","goal-kick":"miss",offside:"passFail",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
+ if(p.battleSim?.dialogue?.[key]){const line=kitLine(state,p,key,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}];});
 }
-function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","offside","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:((options.dialogue&&options.dialogue.length)?options.dialogue:basicActionDialogue(type,options.actors||[])).map(d=>d.key?{playerId:idOf(d.playerId),text:String(d.text||""),key:String(d.key)}:{playerId:idOf(d.playerId),text:String(d.text||"")})};if(options.passRoute){
+function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","offside","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:((options.dialogue&&options.dialogue.length)?options.dialogue:basicActionDialogue(type,options.actors||[],state,options)).map(d=>d.key?{playerId:idOf(d.playerId),text:String(d.text||""),key:String(d.key)}:{playerId:idOf(d.playerId),text:String(d.text||"")})};if(options.passRoute){
   const r=options.passRoute;
   event.passRoute={kind:r.kind==="long"?"long":"short",from:point(r.from),to:point(r.to),chemistry:clamp(Number(r.chemistry)||65,0,100)};
  }
@@ -506,6 +507,9 @@ function addEvent(state,options){const type=options.type||"play",actionTypes=new
   event.nearbyDefenders=options.nearbyDefenders.map(d=>({id:idOf(d.id),name:String(d.name||"Defender"),
    def:clamp(Number(d.def)||0,0,100),distance:Math.max(0,Number(d.distance)||0),selected:!!d.selected}));
  }
+ event.dialogue=event.dialogue.flatMap(d=>{const p=(options.actors||[]).find(p=>idOf(p.id)===d.playerId);if(!p?.battleSim?.dialogue?.kickoff||d.key)return[d];const roleIndex=Math.max(0,(options.actors||[]).indexOf(p)),chosen=basicActionDialogue(type,[p],state,options,roleIndex);return chosen;});
+ if(type==="interception"&&!event.ability){const d=(options.actors||[])[1],read=d&&kitAbility(d,"anticipatory-interception");if(read){const trap=d.battleSimState?.trapUntil>=state.tick?kitAbility(d,"defensive-trap"):null;event.ability=abilityBadge(trap||read,trap?"weapon":"passive");}}
+ if(type==="goal"){const gk=keeper(state.teams[options.teamNumber===1?2:1]),line=gk&&kitLine(state,gk,"concede",false);if(line)event.dialogue.push(line);}
  if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);state.events.push(event);return event;}
 
 function stagePendingSetPiece(state){
@@ -525,7 +529,7 @@ function pause(state,reason){
 function dialogue(state,p,kind,good){
  // Data-driven character lines (localized by key) take precedence over the generic set.
  // Kit-driven lines for every character with a kit (localized by key); generic lines otherwise.
- const key=kind==="dribble"&&!good?"dribbleFail":kind==="shot"&&!good?"miss":kind==="shot"&&good?"goal":kind;
+ const key=(kind==="pass"||kind==="receive")&&!good?"passFail":kind==="defend"&&!good?"dribbleFail":kind==="dribble"&&!good?"dribbleFail":kind==="shot"&&!good?"miss":kind==="shot"&&good?"goal":kind;
  if(p.battleSim&&p.battleSim.dialogue&&Array.isArray(p.battleSim.dialogue[key])){const line=kitLine(state,p,key,true);if(line)return line;}
  const lines={pass:good?["Here!","One touch!","Play it forward!"]:["Too slow!","I should have seen that!"],receive:good?["Got it!","I’m on it!","Keep moving!"]:["That was difficult to reach!"],dribble:good?["There’s the gap!","Past you!","Can’t catch me!"]:["They closed the lane!","I lost control!"],shot:good?["It’s in!","Yes!","What a finish!"]:["Not enough!","I need to do better!"],"shot-attempt":good?["I’m taking this!","Let’s test the keeper!","Here comes the shot!"]:["I need a better opening!"],flow:good?["I’m in the zone!","This is my moment!","Nothing can stop me now!"]:["I need to find my rhythm!"],defend:good?["Won it back!","Read that!","Not today!"]:["They got away!"],save:good?["I’ve got it!","Safe hands!","Not past me!"]:["Rebound!"]};
  return{playerId:p.id,text:p.name+": "+String.fromCharCode(34)+randomPick(lines[kind]||lines.pass,state.random)+String.fromCharCode(34)};
@@ -636,6 +640,20 @@ function abilityState(p){const r=battleSimRuntimeState(p);if(!Array.isArray(r.me
 function abilityBadge(ability,kind){return ability?{id:String(ability.id),label:String(ability.label||ability.name||ability.id).toUpperCase(),kind:kind||"ability"}:null;}
 function teammateById(state,p,id){const t=state.teams[p.teamNumber];return t?active(t).find(x=>idOf(x.id)===idOf(id))||null:null;}
 
+
+function abilityReady(state,p,a){const cd=abilityState(p).cooldowns,group=kitParam(a,"cooldownGroup",a.id);return Math.max(Number(cd[group])||0,Number(cd[a.id])||0,group==="direct-shot"?Number(cd["left-footed-direct-shot"])||0:0)<=Number(state.tick);}
+// Presentation choice is independent of the gameplay generator and survives save/load.
+function lineIndex(state,p,key,length){let h=(Number(state.seed)||0)>>>0;for(const c of String(p.id)+":"+key+":"+state.tick+":"+(p.battleSimState?.recentLines||[]).join(";"))h=Math.imul(h^c.charCodeAt(0),16777619)>>>0;return h%length;}
+function finishCommitment(state,p,d,aim){if(!d||distance(p,d)>4.5)return null;const g=laneGeometry(p,aim,d),mv=d.lastMove||{},toward=((p.x-d.x)*XM*(Number(mv.x)||0)+(p.y-d.y)*YM*(Number(mv.y)||0));if(g.along<.3||g.perp>2.2||toward<.25)return null;return clamp(.48+(battleAwareness(p).anticipation-battleAwareness(d).anticipation)*.18+(effective(p,"dri")-effective(d,"def"))*.004,.15,.75);}
+function watchtowerTarget(state,d,carrier){const w=kitAbility(d,"watchtower");if(!w||distance(d,carrier)>kitParam(w,"rangeMeters",44))return null;const n=d.teamNumber,range=kitParam(w,"rangeMeters",44),candidates=active(state.teams[carrier.teamNumber]).filter(p=>p!==carrier&&p.role!=="GK"&&distance(d,p)<=range&&(!p.intent?.blindSpot||tracksRun(d,p)));
+ const ranked=candidates.map(p=>{const at=p.intent?.type==="run"?lerpPoint(p,p.intent.target,.55):point(p),goal=distance(at,ownGoal(n)),lane=lerpPoint(carrier,at,.67);return{p,at,lane,score:40-goal+Math.max(0,18-distance(carrier,p))*.25-distance(d,lane)*.4};}).sort((a,b)=>b.score-a.score||idOf(a.p.id).localeCompare(idOf(b.p.id)));
+ const best=ranked[0];if(!best||distance(d,best.lane)>14||distance(best.at,ownGoal(n))>distance(carrier,ownGoal(n))+15)return null;
+ const trap=kitAbility(d,"defensive-trap"),st=abilityState(d);if(trap&&abilityReady(state,d,trap)){st.cooldowns[trap.id]=state.tick+kitParam(trap,"cooldownTicks",10);st.trapUntil=state.tick+2;}
+ st.predictedReceiver=idOf(best.p.id);st.predictedPasser=idOf(carrier.id);st.predictionTick=state.tick;
+ // A baited lane is covered from the side; a changed pass can use the vacated space.
+ return st.trapUntil>=state.tick?clampPitch({...best.lane,y:best.lane.y+(d.y<best.lane.y?-2:2)/YM}):best.lane;
+}
+
 /* ---------- Intents ---------- */
 // Defenders forming the last line, as lateral positions in metres (attacking team's view).
 function backLineYs(state,n,line){return opposing(state,n).filter(o=>o.role!=="GK"&&Math.abs(aheadM(n,o)-line)<7).map(o=>o.y*YM).sort((a,b)=>a-b);}
@@ -682,6 +700,8 @@ function updateIntents(state){
    for(const r of kitReactions(state,carrier))if(r.def.effect==="wall-pass"&&r.owner===carrier&&reactionReady(state,r.def,r.owner.teamNumber)&&!r.partner.intent&&rested(r.partner)&&distance(r.partner,carrier)>12&&distance(r.partner,carrier)<40)supporters.push(r.partner);
    if(!players.some(m=>m!==carrier&&distance(m,carrier)<12))players.forEach(m=>{if(m!==carrier&&!m.intent&&rested(m)&&kitAbility(m,"support-movement")&&distance(m,carrier)>11&&distance(m,carrier)<30&&!supporters.includes(m))supporters.push(m);});
    supporters.forEach(m=>{const spot=supportSpot(state,n,carrier,m,line);if(spot)m.intent={type:"support",target:spot,buffer:0,band:0,tick:state.tick,until:state.tick+2,primed:false,blindSpot:false,dir:{x:n===1?1:-1,y:0}};});}
+  // A finishing specialist offers an onside box reception, reached through normal movement.
+  if(aheadM(n,carrier)>=62)players.forEach(p=>{if(p===carrier||!kitAbility(p,"finishing-run")||p.intent&&p.intent.type!=="hold")return;const depth=Math.min(line-.8,PITCH_LENGTH-10),candidates=[44,50,56].map(y=>pitchAt(n,depth,y)).filter(q=>distance(p,q)<=18&&distance(carrier,q)<=32&&nearestOpponentM(state,n,q)>2);candidates.sort((a,b)=>distance(p,a)-distance(p,b));if(candidates[0])p.intent={type:"support",target:candidates[0],tick:state.tick,until:state.tick+2,primed:false,blindSpot:false};});
   // Runs in behind when there is depth to attack; against a deep block, or when the ball is wide
   // in the final third, runs into the box (between the defenders, onside).
   const wideBall=aheadM(n,state.ball)>=62&&Math.abs(state.ball.y-50)*YM>12;
@@ -690,7 +710,7 @@ function updateIntents(state){
   if(wideBall&&PITCH_LENGTH-line<=27){const side=state.ball.y<50?-1:1,spots=[{m:6,y:50+side*7,who:"F"},{m:8,y:50-side*9,who:"F"},{m:11,y:50,who:"F"},{m:14,y:50+side*4,who:"M"}],taken=new Set();
    for(const sp of spots){const where=pitchAt(n,Math.min(PITCH_LENGTH-sp.m,line-.5),sp.y);
     const pick=players.filter(p=>p!==carrier&&!taken.has(p)&&rested(p)&&(!p.intent||p.intent.type==="hold")&&(sp.who==="F"?["ST","W","AM"].includes(roleGroup(p.role))||p.stats.off>=88:["CM","AM","DM"].includes(roleGroup(p.role)))&&distance(p,where)<42)
-     .sort((a,b)=>distance(a,where)-distance(b,where)||idOf(a.id).localeCompare(idOf(b.id)))[0];
+     .sort((a,b)=>distance(a,where)-(kitAbility(a,"finishing-run")?2:0)-distance(b,where)+(kitAbility(b,"finishing-run")?2:0)||idOf(a.id).localeCompare(idOf(b.id)))[0];
     if(!pick)continue;taken.add(pick);
     pick.intent={type:sp.who==="F"?"run":"support",target:where,buffer:.5,band:gapBand(where.y*YM),tick:state.tick,until:state.tick+2,primed:distance(pick,where)<3,blindSpot:sp.who==="F"&&!!kitAbility(pick,"blind-spot-run")&&onBlindSide(state,pick,where),dir:{x:n===1?1:-1,y:0}};if(sp.who==="F")runners++;}
   }
@@ -770,7 +790,7 @@ function opportunity(state,p,key){const m=typeof globalThis!=="undefined"?global
  const tag=key+"@"+(p?idOf(p.id):"-")+"@"+state.tick;if(m.__seen===tag||m.__seenSet&&m.__seenSet.has(tag))return;if(!m.__seenSet)m.__seenSet=new Set();if(m.__seenSet.size>5000)m.__seenSet.clear();m.__seenSet.add(tag);m[key]=(m[key]||0)+1;}
 function shotTechniques(state,p){
  const n=p.teamNumber,aims=aimPoints(n,p),list=[{id:"conventional",aim:null,logit:0}],first=firstTimeChance(state,p);
- const metres=distance(p,targetGoal(n)),runtime=abilityState(p),ready=a=>!(Number(runtime.cooldowns[a.id]||0)>Number(state.tick)),rivals=opposing(state,n).filter(d=>d.role!=="GK");
+ const metres=distance(p,targetGoal(n)),runtime=abilityState(p),ready=a=>abilityReady(state,p,a),rivals=opposing(state,n).filter(d=>d.role!=="GK");
  // Any player: a cross met first-time inside the box is a header or volley, not a controlled shot.
  if(first&&first.style==="cross"&&metres<=16)list.push({id:"header",aim:null,logit:-.25,blockFactor:.6});
  // Any player: a pass met first-time inside 18 m denies the nearest defender time to close or block.
@@ -809,13 +829,24 @@ function shotTechniques(state,p){
  if(pw&&metres>=kitParam(pw,"minMetres",16)&&metres<=kitParamP(p,pw,"maxMetres",32))
   list.push({id:pw.id,ability:pw,aim:null,logit:kitParamP(p,pw,"technique",.3)*clamp((metres-12)/12,0,1),blockFactor:1.1,parry:kitParam(pw,"parry",.12)});
  
+ const header=kitAbility(p,"aerial-header"),timed=kitAbility(p,"timed-finish"),chip=kitAbility(p,"chip-finish"),gk=keeper(state.teams[n===1?2:1]),nearest=Math.min(99,...rivals.map(d=>distance(d,p)));
+ if(header&&first?.aerial&&first.style==="cross"&&metres<=kitParam(header,"maxMetres",16)&&ready(header))list.push({id:header.id,ability:header,aim:null,logit:kitParamP(p,header,"technique",.08),blockFactor:1,cooldown:8});
+ const keeperMove=gk?.lastMove,keeperClosing=gk&&keeperMove?((p.x-gk.x)*XM*(keeperMove.x||0)+(p.y-gk.y)*YM*(keeperMove.y||0))/Math.max(1,distance(p,gk)):0;
+ const keeperMoving=!!keeperMove&&(keeperClosing>.18||Math.abs(keeperMove.y||0)>.2&&(aims.far.y-gk.y)*YM*(keeperMove.y||0)<-.1);
+ if(header)opportunity(state,p,first?.aerial?metres<=16?"kuon:header-offered":"kuon:aerial-too-far":"kuon:no-airborne-reception");
+ if(timed){opportunity(state,p,"okawa:range-"+(metres<10?"<10m":metres<=20?"10-20m":"20m+"));opportunity(state,p,"okawa:keeper-"+(keeperMoving?"committed":"set"));}
+ if(timed)opportunity(state,p,keeperMoving&&metres<=20&&metres>=6&&nearest>2.5&&Math.abs(p.y-50)<20&&ready(timed)?"okawa:delayed-offered":"okawa:no-delayed-window");
+ if(chip)opportunity(state,p,gk&&distance(gk,ownGoal(gk.teamNumber))>6&&distance(gk,p)>4&&metres>=8&&metres<=24&&Math.abs(p.y-50)<20&&nearest>2.5&&ready(chip)?"okawa:chip-offered":"okawa:no-chip-window");
+
+ if(timed&&gk&&keeperMoving&&metres<=20&&metres>=6&&nearest>2.5&&Math.abs(p.y-50)<20&&ready(timed))list.push({id:timed.id,ability:timed,aim:aims.far,aimSide:"far",logit:kitParamP(p,timed,"timing",.12),blockFactor:1,cooldown:8});
+ if(chip&&gk&&distance(gk,ownGoal(gk.teamNumber))>6&&distance(gk,p)>4&&metres>=8&&metres<=24&&Math.abs(p.y-50)<20&&nearest>2.5&&ready(chip))list.push({id:chip.id,ability:chip,aim:null,logit:kitParamP(p,chip,"timing",.12),blockFactor:1,cooldown:10});
  // Two-Gun Volley: pass in Flow, within 20 m and with an outfield defender blocking.
  const volley=kitAbility(p,"feint-volley"),used=runtime.usedUltimates||[];
  if(volley)opportunity(state,p,!first?"tgv:no-first-time":!isFlowing(p)?"tgv:first-time-no-flow":metres>kitParam(volley,"maxMetres",20)?"tgv:flow-too-far":used.includes(idOf(volley.id))?"tgv:already-used":"tgv:flow-in-range");
  if(volley&&first&&isFlowing(p)&&metres<=kitParam(volley,"maxMetres",20)&&!used.includes(idOf(volley.id))){
   const farBlocker=lineBlocker(state,p,aims.far),nearBlocker=lineBlocker(state,p,aims.near),middleBlocker=lineBlocker(state,p,targetGoal(n)),blocker=farBlocker||nearBlocker||middleBlocker;
   opportunity(state,p,blocker?"tgv:offered":"tgv:no-committing-defender");
-  if(blocker){const switched=farBlocker?aims.near:aims.far;list.push({id:"two-gun-volley",ability:volley,ultimate:true,aim:switched,aimSide:switched===aims.far?"far":"near",logit:kitParam(volley,"technique",.45),blockFactor:0});}
+  if(blocker){const deception=finishCommitment(state,p,blocker,farBlocker?aims.far:nearBlocker?aims.near:targetGoal(n));if(deception){const switched=farBlocker?aims.near:aims.far;list.push({id:"two-gun-volley",ability:volley,ultimate:true,aim:switched,aimSide:switched===aims.far?"far":"near",logit:kitParam(volley,"technique",.45)*deception,feintId:idOf(blocker.id),deception,blockFactor:1});}}
  }
 
  // Rush Volley is offered by the rebound race (reboundRace), not from a settled position.
@@ -848,7 +879,7 @@ function kitLine(state,p,key,major){
  const lines=p&&p.battleSim&&p.battleSim.dialogue&&p.battleSim.dialogue[key];if(!Array.isArray(lines)||!lines.length)return null;
  const st=abilityState(p),now=Number(state.tick)||0;
  if(!major&&now-(Number(st.lastLineTick)||-99)<3)return null;
- const fresh=lines.filter(l=>!st.recentLines.includes(l)),others=lines.filter(l=>l!==st.recentLines[st.recentLines.length-1]),pool=fresh.length?fresh:others.length?others:lines,line=pool[Math.floor(state.random()*pool.length)%pool.length];
+ const fresh=lines.filter(l=>!st.recentLines.includes(l)),others=lines.filter(l=>l!==st.recentLines[st.recentLines.length-1]),pool=fresh.length?fresh:others.length?others:lines,line=pool[lineIndex(state,p,key,pool.length)];
  st.recentLines.push(line);if(st.recentLines.length>6)st.recentLines.shift();st.lastLineTick=now;
  return{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+line+String.fromCharCode(34),key:line};
 }
@@ -875,11 +906,12 @@ function passIntelligence(state,carrier,option,ctx){
  if(!option.through){const w=reactionBetween(state,carrier,receiver,"wall-pass");if(w&&w.owner===carrier)opportunity(state,carrier,!ctx.pressured?"hotline:not-pressured":distance(carrier,receiver)>=20?"hotline:too-far":option.model.success<=.65?"hotline:risky":"hotline:eligible");}
  const tag=(r,bonus,precision)=>{option.reaction=r;option.value+=bonus;if(precision&&option.through){option.precision=precision;const m=passModel(state,carrier,receiver,option.to,option.kind,{...ctx.opts,through:true,precision});if(!m.offside){option.model=m;option.value=passValue(state,carrier,option)+bonus;}}};
  let r;
- if(option.through&&run&&(r=reactionBetween(state,carrier,receiver,"synchronized-through"))&&r.owner===receiver&&!option.model.offside)
+ if((r=reactionBetween(state,carrier,receiver,"ace-supply"))&&r.owner===carrier&&option.model.success>.6&&!option.model.offside&&aheadM(n,receiver)>aheadM(n,carrier)&&distance(carrier,receiver)<32)tag(r,kitParam(r.def,"value",.012));
+ else if(option.through&&run&&(r=reactionBetween(state,carrier,receiver,"synchronized-through"))&&r.owner===receiver&&!option.model.offside)
   tag(r,kitParam(r.def,"value",.012),kitParam(r.def,"precision",.55));
  else if(run&&run.reaction&&idOf(run.reactionPasser)===idOf(carrier.id)&&(r=kitReactions(state,carrier).find(x=>x.def.id===run.reaction&&(x.partner===receiver||x.owner===receiver)))&&!option.model.offside)
   tag(r,kitParam(r.def,"returnValue",.02),kitParam(r.def,"precision",.6));   // second half of a wall pass / exploiting created space
- else if(!option.through&&(r=reactionBetween(state,carrier,receiver,"wall-pass"))&&r.owner===carrier&&ctx.pressured&&distance(carrier,receiver)<20&&option.model.success>.65)
+ else if(!option.through&&(r=reactionBetween(state,carrier,receiver,"wall-pass"))&&r.owner===carrier&&ctx.pressured&&distance(carrier,receiver)>=kitParam(r.def,"minDistance",0)&&distance(carrier,receiver)<kitParam(r.def,"maxDistance",20)&&option.model.success>.65)
   tag(r,kitParam(r.def,"value",.012));
  else if((r=reactionBetween(state,carrier,receiver,"rival-cooperation"))){
   // Rivals prefer to finish themselves; they cooperate only when the other's chance is clearly better.
@@ -894,7 +926,7 @@ function playReaction(state,carrier,option){
  const r=option.reaction;if(!r)return{};
  const chained=option.receiver.intent&&option.receiver.intent.reaction===r.def.id;
  if(!chained)useReaction(state,r.def,r.owner.teamNumber);
- const line=kitLine(state,r.owner,r.def.dialogue||r.def.id,true);
+ const speaker=r.def.id==="eye-contact"?r.partner:r.owner,line=kitLine(state,speaker,r.def.dialogue||r.def.id,true);
  // Wall pass: the passer sets off for the return into the space behind his marker.
  if(r.def.effect==="wall-pass"&&!chained&&r.owner===carrier){
   const n=carrier.teamNumber,goal=targetGoal(n),dir=Math.atan2((goal.y-carrier.y)*YM,(goal.x-carrier.x)*XM),target=shiftM(carrier,Math.abs(Math.cos(dir))*12,(goal.y-carrier.y)*YM*.15,n);
@@ -1079,6 +1111,7 @@ function defensivePlan(state,team,players,carrier,shape,targets,fixed,plans){
   if(kept(d)!==idOf(a.id))d.markTarget={id:idOf(a.id),tick:state.tick};
   const at=read(d,a),danger=aheadM(n,at)<35,live=distance(at,ball)<28,mark=lerpPoint(offsetM(at,goal,danger?1.5:2.2),ball,.1);
   targets.set(d.id,lerpPoint(shape.get(d.id),mark,danger?.9:live?.8:.5));});
+ players.forEach(d=>{const at=watchtowerTarget(state,d,carrier);if(at){targets.set(d.id,at);fixed.add(d.id);}});
  free.forEach(p=>{if(!targets.has(p.id))targets.set(p.id,shape.get(p.id));});
 }
 // Context-dependent spacing: support players keep passing distance; pressers,
@@ -1351,7 +1384,7 @@ function shotModel(state,shooter,penalty,ultimate,special,at,opponents,technique
  // Outfield defenders standing in the shooting lane can block the strike.
  let blockers=0,openChance=1;
  const aim=tech&&tech.aim?tech.aim:goal,blockScale=tech&&tech.blockFactor!=null?tech.blockFactor:1;
- if(!penalty)rivals.forEach(d=>{if(d.role==="GK"||idOf(d.id)===skip)return;const g=laneGeometry(spot,aim,d);if(g.along>.8&&g.along<g.len-1.5&&g.perp<1.8){blockers++;openChance*=1-.32*blockScale*(1-g.perp/1.8);}});
+ if(!penalty)rivals.forEach(d=>{if(d.role==="GK"||idOf(d.id)===skip)return;const g=laneGeometry(spot,aim,d);if(g.along>.8&&g.along<g.len-1.5&&g.perp<1.8){blockers++;openChance*=1-.32*blockScale*(tech&&idOf(d.id)===tech.feintId?1-(Number(tech.deception)||0):1)*(1-g.perp/1.8);}});
  // Close-range finishes are routinely pressured; the same pressure smothers a long-range strike.
  const closedDown=penalty?1:1-(near<2.5?.4:near<4?.24:near<TACKLE_RADIUS_M?.08:0)*clamp((metres-6)/22,.3,1);
  const goalChance=clamp((finishing+specialBonus)*openChance*closedDown,0,1);
@@ -1372,6 +1405,7 @@ function dribbleModel(state,carrier,end,opponents,style={}){
  // Machine Dribble protects the ball with economical touches; physical players shield or barge;
  // a man-marker is tighter on his assigned target; a feint makes a poor reader hesitate (less access).
  const power=kitAbility(carrier,"power-dribble"),shield=kitAbility(carrier,"physical-shield"),creative=kitAbility(carrier,"creative-dribble");
+ const carry=kitAbility(carrier,"controlled-carry");if(carry&&abilityReady(state,carrier,carry)&&aheadM(carrier.teamNumber,end)>aheadM(carrier.teamNumber,carrier)&&!defenders.some(d=>{const g=laneGeometry(carrier,end,d);return g.along>0&&g.along<g.len&&g.perp<2.2;}))advantage+=kitParamP(carrier,carry,"control",2);
  if(power)advantage+=kitParamP(carrier,power,"protection",5);if(shield)advantage+=kitParamP(carrier,shield,"shield",6);
  if(def){const dShield=kitAbility(def,"physical-shield"),mm=kitAbility(def,"man-marking");if(dShield)advantage-=kitParamP(def,dShield,"shield",6)*.5;
   if(mm&&def.markTarget&&def.markTarget.id===idOf(carrier.id))advantage-=kitParamP(def,mm,"duel",4);
@@ -1634,7 +1668,7 @@ function ballFlight(from,to,kind,pace=1,angle=0){
    const q=at(s),air=s<land,t=air?s/land*flight:flight+(roll-Math.sqrt(Math.max(0,roll*roll-2*decel*(s-land))))/decel;
    if(outsidePitchLines(q)&&(!air||s>=land-1)){exit={s,t,...q};break;}
    if(air&&s>2.5&&s<land-4)continue;   // out of reach while it is in the air
-   points.push({s,t,...q});
+   points.push({s,t,airborne:air,...q});
   }
  }else{
   const v0=Math.min(24,Math.sqrt(THROUGH_ARRIVAL_SPEED*THROUGH_ARRIVAL_SPEED+2*BALL_ROLL_DECEL*d))*pace,stop=Math.min(80,v0*v0/(2*BALL_ROLL_DECEL));
@@ -1644,21 +1678,22 @@ function ballFlight(from,to,kind,pace=1,angle=0){
    points.push({s,t,...q});
   }
  }
- return{from:a,points,exit,stop:exit?null:points.at(-1)||{s:0,t:0,...a}};
+ return{from:a,kind,points,exit,stop:exit?null:points.at(-1)||{s:0,t:0,...a}};
 }
 // Reaction and starting speed for one racer. Abilities change anticipation, never speed limits.
 function raceProfile(state,p,role,flight,receiverRun){
- const vmax=sprintSpeed(p,state),acc=sprintAccel(p,state),aware=battleAwareness(p);
+ const vmax=sprintSpeed(p,state),acc=sprintAccel(p,state),aware=battleAwareness(p),aerial=flight?.kind==="long"?kitAbility(p,"aerial-reach"):null,airReaction=aerial?kitParamP(p,aerial,"reaction",.18):0;
  if(role==="receiver"){
   const primed=!!receiverRun;
   // Sprint momentum: a runner already at speed starts the race faster (never above his top speed).
   const mom=kitAbility(p,"sprint-momentum"),carry=mom?sprintMomentum(p)*kitParamP(p,mom,"carry",.35):0;
-  return{vmax,acc,v0:primed?vmax*Math.min(.95,.55+carry):vmax*carry*.6,reaction:Math.max(0,(primed?.02:.24)-aware.anticipation*.08)};
+  return{vmax,acc,v0:primed?vmax*Math.min(.95,.55+carry):vmax*carry*.6,reaction:Math.max(0,(primed?.02:.24)-aware.anticipation*.08-airReaction)};
  }
  if(role==="keeper")return{vmax:vmax*.92,acc,v0:0,reaction:.22};
  // A defender chasing a ball played in behind him has to turn first.
  const own=ownGoal(p.teamNumber),end=flight.points.at(-1)||flight.from,behind=distance(end,own)<distance(p,own)-1;
- return{vmax,acc,v0:0,reaction:Math.max(.08,.3+.3*beatenSeverity(state,p)+(behind?.16:0)+(receiverRun&&receiverRun.blindSpot&&!tracksRun(p,{intent:receiverRun})?.12:0)-(effective(p,"def",state)-70)*.004-aware.anticipation*.08)};
+ const prediction=p.battleSimState,predicted=prediction&&playerIn(state.teams[state.possession],prediction.predictedReceiver),anticipated=kitAbility(p,"anticipatory-interception")&&state.tick-(prediction?.predictionTick??-99)<=1&&idOf(prediction.predictedPasser)===idOf(state.carrierId)&&predicted&&distance(end,predicted.intent?.target||predicted)<10;
+ return{vmax,acc,v0:0,reaction:Math.max(.08,.3+.3*beatenSeverity(state,p)+(behind?.16:0)+(receiverRun&&receiverRun.blindSpot&&!tracksRun(p,{intent:receiverRun})?.12:0)-(effective(p,"def",state)-70)*.004-aware.anticipation*.08-airReaction-(anticipated?kitParamP(p,kitAbility(p,"anticipatory-interception"),"reaction",.12):0))};
 }
 function throughRace(state,carrier,receiver,to,kind,opts={}){
  const n=carrier.teamNumber,flight=ballFlight(opts.fromPoint||carrier,to,kind,opts.pace??1,opts.angle??0),noise=opts.noise||null;
@@ -1701,7 +1736,7 @@ function receiverRunFor(receiver,to){
 // The value is taken where the runner would actually meet the ball, not where it was aimed.
 // Aerial contest for a cross: timing (who attacks the ball first, a runner arrives with momentum)
 // and a heading proxy from the ratings (no height data exists): striking intent, defending, power.
-function aerialSkill(state,p,attacking){const phys=kitAbility(p,"physical-shield");return effective(p,attacking?"off":"def",state)*.45+effective(p,"sho",state)*(attacking?.2:0)+effective(p,"def",state)*(attacking?.1:.25)+effective(p,"spd",state)*.2+(phys?kitParamP(p,phys,"aerial",4):0);}
+function aerialSkill(state,p,attacking){const reach=kitAbility(p,"aerial-reach"),phys=kitAbility(p,"physical-shield");return effective(p,attacking?"off":"def",state)*.45+effective(p,"sho",state)*(attacking?.2:0)+effective(p,"def",state)*(attacking?.1:.25)+effective(p,"spd",state)*.2+(phys?kitParamP(p,phys,"aerial",4):0)+(reach?4:0); }
 function aerialDuel(state,attacker,defender,lead,running){return clamp(sigmoid(lead/.22+(aerialSkill(state,attacker,true)-aerialSkill(state,defender,false))/10+(running?.35:0)-.25),.03,.92);}
 function throughBallEstimate(state,carrier,receiver,to,kind,opts){
  const pas=passingSkill(state,carrier,opts),pressure=(opts.opponents||opposing(state,carrier.teamNumber)).filter(o=>o.role!=="GK"&&distance(o,carrier)<=4).length;
@@ -1747,9 +1782,10 @@ function resolveThroughBall(state,carrier,option,opts={}){
  const metres=Math.round(distance(model.from,ballAt)),runM=Math.round(distance(start,ballAt));
  const comparison=d=>({attackerLabel:"PAS",attackerValue:pas,defenderLabel:"DEF",defenderValue:d?effective(d,"def",state):60});
  if(outcome==="receiver"){
+  const aerial=winner.meet.airborne?kitAbility(receiver,"aerial-reach"):null;if(aerial&&!extras.ability&&!extras.reaction)extras.ability=chipOnce(state,receiver,aerial,"passive",8);
   setPosition(receiver,ballAt);receiver.lastMove={x:(ballAt.x-start.x)*XM,y:(ballAt.y-start.y)*YM};drain(carrier,true,"pass");addPoints(carrier,.06);team.stats.passes++;carrier.match.passes++;
   setBall(state,receiver);state.carrierId=receiver.id;state.possession=team.number;state.lastPasser=carrier.id;
-  recordReception(state,carrier,receiver,{kind,from:model.from,to:ballAt,through:true,style:option.style});
+  recordReception(state,carrier,receiver,{kind,from:model.from,to:ballAt,through:true,style:option.style,aerial:!!winner.meet.airborne});
   if(option.style==="cross")team.stats.crossesCompleted=(team.stats.crossesCompleted||0)+1;
   addEvent(state,{type:"pass",teamNumber:team.number,notable:true,
    description:option.style==="cross"?carrier.name+" crosses "+metres+"m and "+receiver.name+" meets it after a "+runM+"m run.":carrier.name+(option.behind?" threads a through ball ":" plays the ball into space ")+metres+"m into "+receiver.name+"'s run; he reaches it after "+runM+"m.",
@@ -1782,7 +1818,7 @@ function resolveThroughBall(state,carrier,option,opts={}){
  else addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,description:carrier.name+"'s "+ballName+" runs out of "+receiver.name+"'s reach; "+first.name+" collects it.",probability:model.success,probabilityLabel:"PASS SUCCESS",actors:[carrier,first],passRoute:route,nearbyDefenders:feed(first)});
 }
 // The last completed reception: who received, from whom, when and how (used for first-time finishing).
-function recordReception(state,passer,receiver,info){state.lastReception={playerId:idOf(receiver.id),teamNumber:receiver.teamNumber,passerId:idOf(passer.id),tick:Number(state.tick)||0,kind:info.kind,through:!!info.through,...(info.style?{style:String(info.style)}:{}),from:point(info.from),to:point(info.to)};}
+function recordReception(state,passer,receiver,info){state.lastReception={playerId:idOf(receiver.id),teamNumber:receiver.teamNumber,passerId:idOf(passer.id),tick:Number(state.tick)||0,kind:info.kind,through:!!info.through,aerial:!!info.aerial,...(info.style?{style:String(info.style)}:{}),from:point(info.from),to:point(info.to)};}
 // Malicia outcome: foul awarded, possession kept, a booking for simulation, or the ball lost.
 function resolveMalicia(state,carrier,read){
  const team=state.teams[carrier.teamNumber],opp=state.teams[team.number===1?2:1],d=read.defender,roll=state.random(),nearby=defenderFeedDetails([d],[carrier],d);
@@ -1817,6 +1853,7 @@ function resolveDribble(state,carrier,opts={}){
  // Only a defender who genuinely engages the carrier is "beaten" (and can foul him).
  const def=model.def&&model.access>=.35?model.def:null;
  const nearbyDefenderInfo=defenderFeedDetails(defenders,[carrier],model.def);
+ const carry=kitAbility(carrier,"controlled-carry"),carryOn=carry&&abilityReady(state,carrier,carry)&&aheadM(team.number,end)>aheadM(team.number,carrier)&&!defenders.some(d=>{const g=laneGeometry(carrier,end,d);return g.along>0&&g.along<g.len&&g.perp<2.2;});if(carryOn)abilityState(carrier).cooldowns[carry.id]=state.tick+7;
  carrier.match.dribblesAttempted++;
  if(state.random()<chance){
   drain(carrier,true,"dribble");carrier.match.dribbles++;addPoints(carrier,def?.07:.03);moveToward(carrier,end,stride);setBall(state,carrier);state.lastPasser=null;
@@ -1824,7 +1861,7 @@ function resolveDribble(state,carrier,opts={}){
   if(def)markBeaten(state,def,carrier,model,sharp);
   // Visible identity (throttled): the cut, the machine-like carry, the shrugged-off challenge, the Flow chain.
   const creative=kitAbility(carrier,"creative-dribble"),shield=kitAbility(carrier,"physical-shield"),chain=opts.chain?kitAbility(carrier,"dribble-chain"):null;
-  const chip=chain?abilityBadge(chain,"ultimate"):cutKit?chipOnce(state,carrier,cutKit,"weapon",5):pushKit?chipOnce(state,carrier,pushKit,"weapon",6):creative&&def&&(sharp||model.hesitation>.04)?chipOnce(state,carrier,creative,"weapon",5):power&&def?chipOnce(state,carrier,power,"weapon",10):shield&&def?chipOnce(state,carrier,shield,"passive",10):undefined;
+  const chip=carryOn?chipOnce(state,carrier,carry,"weapon",7):chain?abilityBadge(chain,"ultimate"):cutKit?chipOnce(state,carrier,cutKit,"weapon",5):pushKit?chipOnce(state,carrier,pushKit,"weapon",6):creative&&def&&(sharp||model.hesitation>.04)?chipOnce(state,carrier,creative,"weapon",5):power&&def?chipOnce(state,carrier,power,"weapon",10):shield&&def?chipOnce(state,carrier,shield,"passive",10):undefined;
   const dribbleLine=chip?kitLine(state,carrier,chain?"flowDribble":"dribble",!!chain):null;
   addEvent(state,{type:"dribble",teamNumber:team.number,notable:true,ability:chip,dialogue:dribbleLine?[dribbleLine]:undefined,description:carrier.name+(chain?" chains another move and ":sharp?" cuts sharply and ":"")+(def?(sharp||chain?"beats ":" beats ")+def.name:model.def?(sharp||chain?"accelerates away from ":" accelerates away from ")+model.def.name:(sharp||chain?"accelerates into open space":" accelerates into open space"))+" over "+Math.round(distance(before,carrier))+"m.",
    comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:def?effective(def,"def"):0},
@@ -1844,15 +1881,16 @@ function resolveDribble(state,carrier,opts={}){
   const tackled=distance(def,carrier)<=TACKLE_RADIUS_M;
   if(tackled&&checkFoul(state,team.number,carrier,def,carrier,nearbyDefenderInfo))return;
   const backHeel=kitAbility(carrier,"disguised-finish"),flowUses=battleSimRuntimeState(carrier).usedUltimates||[];
-  if(tackled&&backHeel&&isFlowing(carrier)&&distance(carrier,targetGoal(team.number))<=kitParam(backHeel,"maxMetres",20)&&!flowUses.includes(idOf(backHeel.id))){
-   resolveShot(state,carrier,false,null,{id:"reverse-back-heel-shot",ability:backHeel,ultimate:true,aim:aimPoints(team.number,carrier).far,aimSide:"far",logit:kitParam(backHeel,"technique",-.45),ignoreId:idOf(def.id),blockFactor:1});return;
+  const deception=tackled&&backHeel&&isFlowing(carrier)&&distance(carrier,targetGoal(team.number))<=kitParam(backHeel,"maxMetres",20)&&!flowUses.includes(idOf(backHeel.id))?finishCommitment(state,carrier,def,targetGoal(team.number)):null;
+  if(deception){flowUses.push(idOf(backHeel.id));if(state.random()<deception){
+   resolveShot(state,carrier,false,null,{id:"reverse-back-heel-shot",ability:backHeel,ultimate:true,aim:aimPoints(team.number,carrier).far,aimSide:"far",logit:kitParam(backHeel,"technique",-.45),ignoreId:idOf(def.id),blockFactor:1});return;}const st=abilityState(carrier),id=String(backHeel.id),uses=st.uses[id]||(st.uses[id]={attempts:0,goals:0});uses.attempts++;
   }
   def.match.tackles++;addPoints(def,.18);opp.stats.tackles++;team.stats.turnovers++;moveToward(def,carrier,movementMeters(def));
   state.lastPasser=null;state.possession=opp.number;state.carrierId=def.id;setBall(state,def);
   const mm=kitAbility(def,"man-marking"),onMark=mm&&def.markTarget&&def.markTarget.id===idOf(carrier.id),dsh=kitAbility(def,"physical-shield");
   if(onMark){addPoints(def,.05);def.match.markWins=(def.match.markWins||0)+1;}
   const defChip=onMark?chipOnce(state,def,mm,"weapon",4):dsh?chipOnce(state,def,dsh,"passive",6):undefined,defLine=kitLine(state,def,"defend",false)||(defChip?null:kitLine(state,carrier,"dribbleFail",false));
-  addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,ability:defChip,dialogue:defLine?[defLine]:undefined,description:def.name+(onMark?" stays tight on his man and wins the ball from ":" wins the ball from ")+carrier.name+".",
+  addEvent(state,{type:"turnover",teamNumber:opp.number,notable:true,ability:deception?abilityBadge(backHeel,"ultimate"):defChip,dialogue:defLine?[defLine]:undefined,description:def.name+(onMark?" stays tight on his man and wins the ball from ":" wins the ball from ")+carrier.name+".",
    comparison:{attackerLabel:"DRI",attackerValue:effective(carrier,"dri"),defenderLabel:"DEF",defenderValue:effective(def,"def")},
    probability:1-chance,probabilityLabel:"TACKLE WIN",actors:[carrier,def],nearbyDefenders:nearbyDefenderInfo});
  }else{
@@ -1873,7 +1911,8 @@ function recoverLoose(state,where,attackingNumber){
  addEvent(state,{type:"rebound",teamNumber:p.teamNumber,notable:true,description:p.name+" reaches the rebound first.",actors:[p]});return p;
 }
 function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
- const tech=!penalty&&technique&&technique.id!=="conventional"?technique:null;
+ let tech=!penalty&&technique&&technique.id!=="conventional"?technique:null;
+ if(tech?.feintId){const deceived=state.random()<tech.deception;tech={...tech,ignoreId:deceived?tech.feintId:null,feintId:null,deception:0};}
  const special=!penalty&&!ultimate&&!tech?activateBattleSimSpecial(state,shooter,"shot"):null;
  const {team,defteam,gk,metres,shoot,gkStat,goalChance:rawChance}=shotModel(state,shooter,penalty,ultimate,special,null,null,tech);
  const goalChance=rawChance,roll=state.random();team.stats.shots++;shooter.match.shots++;
@@ -1881,7 +1920,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  const activeAbility=ultimate||special,runtime=tech&&tech.ability?abilityState(shooter):null;
  if(tech&&tech.ultimate&&tech.ability&&tech.ability.oncePerFlow){const used=battleSimRuntimeState(shooter).usedUltimates,id=idOf(tech.ability.id);if(!used.includes(id))used.push(id);}
  if(tech&&tech.ability){const id=String(tech.ability.id),uses=runtime.uses[id]||(runtime.uses[id]={attempts:0,goals:0});uses.attempts++;
-  if(tech.cooldown)runtime.cooldowns[id]=Number(state.tick)+Math.max(1,Number(tech.cooldown));}
+  if(tech.cooldown)runtime.cooldowns[kitParam(tech.ability,"cooldownGroup",id)]=Number(state.tick)+Math.max(1,Number(tech.cooldown));}
  const rivals=(shooter.battleSim&&Array.isArray(shooter.battleSim.rivals)?shooter.battleSim.rivals:[]).map(idOf),rState=rivals.length?abilityState(shooter):null;
  const rivalOn=rState&&!rState.rivalSpoken&&opposing(state,team.number).some(o=>rivals.includes(idOf(o.id)));if(rivalOn)rState.rivalSpoken=true;
  const prideOn=!tech&&pride?pride:null,techLine=rivalOn?kitLine(state,shooter,"rival",true):tech&&tech.ability?kitLine(state,shooter,tech.ability.dialogue||tech.id,true):prideOn?kitLine(state,shooter,prideOn.dialogue||"responsibility",false):null,abilityDialogue=techLine?[techLine]:battleSimAbilityDialogue(shooter,activeAbility);
@@ -1912,7 +1951,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
   state.pending={type:"kickoff",teamNumber:defteam.number,zone:7,point:{x:50,y:50}};
   resetPositions(state);pause(state,"GOAL");return;
  }
- addPoints(shooter,-.08);
+ addPoints(shooter,-.08);learnShot();
  // Every failed shot: 25% deflected for a corner, 25% held, 25% parried, 25% wide. A powerful strike
  // is harder to hold, so more of its saves are parries (a live second ball).
  const outcome=state.random(),parry=tech&&tech.parry?Number(tech.parry):0,missLine=kitLine(state,shooter,"miss",false);
@@ -1929,7 +1968,6 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  if(keeperUsed&&["smother-block","super-reflex"].includes(keeperUsed.effect))abilityState(gk).cooldowns[keeperUsed.effect]=Number(state.tick)+Math.max(1,Number(kitParam(keeperUsed,"cooldownTicks",12)));
  const keeperLine=keeperChip?kitLine(state,gk,keeperUsed.dialogue||"save",false):null;
  if(outcome<.25+catchShare){
-  learnShot();
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.54);defteam.stats.saves++;}
   const spot=ownGoal(defteam.number);state.pending={type:"goal-kick",teamNumber:defteam.number,zone:zoneAt(spot),point:spot,takerId:null,goalKickTaker:"gk",routine:"short"};
   state.possession=defteam.number;state.carrierId=null;setBall(state,spot);
@@ -1937,7 +1975,6 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
    comparison:{attackerLabel:"SHO",attackerValue:shoot,defenderLabel:"GK",defenderValue:gkStat},actors:[shooter,gk],ability:keeperChip,dialogue:keeperLine?[keeperLine]:missLine?[missLine]:undefined});pause(state,"SAVE / GOAL KICK");return;
  }
  if(outcome<.75){
-  learnShot();
   team.stats.onTarget++;shooter.match.onTarget++;if(gk){gk.match.saves++;addPoints(gk,.25);defteam.stats.saves++;}
   const loose={x:team.number===1?91:9,y:clamp(shooter.y+state.random()*10-5,26,74)};
   addEvent(state,{type:"save",teamNumber:defteam.number,notable:true,description:(gk?gk.name:"The keeper")+" parries "+shooter.name+"'s shot into danger!",actors:[shooter,gk],ability:keeperChip||(parryKeeper?chipOnce(state,gk,parryKeeper,"weapon",6):undefined),dialogue:keeperLine?[keeperLine]:undefined});
@@ -2546,7 +2583,7 @@ function battleSimProfileStatus(player,type,abilityId,state=match){
    return{label:"READY THIS FLOW",kind:"ready"};
   }
   if(entry.effect==="flow-state")return isFlowing(player)?{label:"IN EFFECT",kind:"active"}:{label:"REQUIRES FLOW",kind:"inactive"};
-  if(entry.params&&entry.params.cooldownTicks){const left=Math.max(0,Number(runtime.cooldowns&&(runtime.cooldowns[entry.id]||runtime.cooldowns["disguised-finish"])||0)-tick);return left>0?{label:"ON COOLDOWN · "+left+" TICKS LEFT",kind:"cooldown",ticksLeft:left}:{label:"READY",kind:"ready",ticksLeft:0};}
+  if(entry.params&&entry.params.cooldownTicks){const cd=runtime.cooldowns||{},group=kitParam(entry,"cooldownGroup",entry.id),end=Math.max(Number(cd[group])||0,Number(cd[entry.id])||0,group==="direct-shot"?Number(cd["left-footed-direct-shot"])||0:0),left=Math.max(0,end-tick);return left>0?{label:"ON COOLDOWN · "+left+" TICKS LEFT",kind:"cooldown",ticksLeft:left}:{label:"READY",kind:"ready",ticksLeft:0};}
   return type==="PASSIVE"?{label:"IN EFFECT",kind:"active"}:{label:"READY",kind:"ready",ticksLeft:0};
  }
  if(type==="PASSIVE"){

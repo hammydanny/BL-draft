@@ -194,14 +194,14 @@ function attackingTests(){
 
 function fullMatchTests(){
  const scen={kira:[KIRA],noa:[NOA],bachira:[BACHIRA],igarashi:[IGARASHI],kunigami:[KUNIGAMI],'isagi+bachira':[ISAGI,BACHIRA],'isagi+kunigami':[ISAGI,KUNIGAMI]};
- const report=[],seen={};let ms=0,ticks=0;
+ const sampleCount=8,report=[],seen={};let ms=0,ticks=0;
  for(const [label,stars] of Object.entries(scen)){const {b}=setup(stars,'4-4-2');let goals=0,shots=0;const chips={};
-  for(let seed=1;seed<=3;seed++){const s=b.createMatch();s.seed=seed*11;s.random=b.seeded(s.seed);b.setMatch(s);const t0=process.hrtime.bigint();let g=0;
+  for(let seed=1;seed<=sampleCount;seed++){const s=b.createMatch();s.seed=seed*11;s.random=b.seeded(s.seed);b.setMatch(s);const t0=process.hrtime.bigint();let g=0;
    while(s.status!=='finished'&&g++<1400)advance({bs:b},s);ms+=Number(process.hrtime.bigint()-t0)/1e6;ticks+=s.tick;assert.equal(s.status,'finished');
    goals+=s.score[1]+s.score[2];shots+=s.teams[1].stats.shots+s.teams[2].stats.shots;
    s.events.forEach(e=>{[e.ability,e.abilityNote,e.reaction].filter(Boolean).forEach(a=>{chips[a.id]=(chips[a.id]||0)+1;seen[a.id]=(seen[a.id]||0)+1;});});
    assert(b.hydrateMatch(JSON.parse(JSON.stringify(b.snapshotMatch(s)))),'match with new kits restores');}
-  assert(goals/3<=7,label+': no runaway scoring '+goals/3);report.push(label+' '+(goals/3).toFixed(1)+'g/'+(shots/3).toFixed(0)+'sh '+Object.keys(chips).length+' kinds');}
+  assert(goals/sampleCount<=7,label+': no runaway scoring '+goals/sampleCount);report.push(label+' '+(goals/sampleCount).toFixed(1)+'g/'+(shots/sampleCount).toFixed(0)+'sh '+Object.keys(chips).length+' kinds');}
  // Signature identities must appear in real matches, not only in constructed scenes.
  ['machine-dribble','creative-dribbling','power-shot','physical-dominance'].forEach(id=>assert(seen[id]>0,'appears in full matches: '+id));
  const per=ms/ticks;assert(per<12,'tick cost bounded: '+per.toFixed(2));

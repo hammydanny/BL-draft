@@ -120,33 +120,74 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "mark": [
-                    "You're mine all game!",
-                    "Go on, try to lose me!"
-                ],
-                "press": [
-                    "Get back here!",
-                    "I'm not tired. Are you?"
-                ],
-                "duel": [
-                    "Out of my way!",
-                    "Too soft!"
-                ],
-                "trap": [
-                    "Isagi! He's got nowhere to go!",
-                    "I pinned him. Finish it!"
-                ],
-                "fail": [
-                    "Tch. Lucky.",
-                    "Next time I flatten you."
-                ],
-                "goal": [
-                    "See that?! That's Raichi!"
-                ],
-                "flow": [
-                    "I'll chase you to the end of the pitch!",
-                    "You don't get one easy touch!"
-                ]
-            }
+    "mark": [
+        "You're mine all game!",
+        "Go on, try to lose me!"
+    ],
+    "press": [
+        "Get back here!",
+        "I'm not tired. Are you?"
+    ],
+    "duel": [
+        "Out of my way!",
+        "Too soft!"
+    ],
+    "trap": [
+        "Isagi! He's got nowhere to go!",
+        "I pinned him. Finish it!"
+    ],
+    "fail": [
+        "Tch. Lucky.",
+        "Next time I flatten you."
+    ],
+    "goal": [
+        "Did you see that?!",
+        "See that?! That's Raichi!"
+    ],
+    "flow": [
+        "Come on, take me on!"
+    ],
+    "kickoff": [
+        "Do not get in my way!"
+    ],
+    "pass": [
+        "Move! Take it!",
+        "Do not waste my pass!"
+    ],
+    "receive": [
+        "About time!"
+    ],
+    "dribble": [
+        "Try stopping me!"
+    ],
+    "dribbleFail": [
+        "Give that back!"
+    ],
+    "shot-attempt": [
+        "I am blasting this!"
+    ],
+    "miss": [
+        "Damn it! Again!"
+    ],
+    "defend": [
+        "You are going nowhere!"
+    ],
+    "concede": [
+        "Get back in position!"
+    ],
+    "support": [
+        "Move! Take it!"
+    ],
+    "passFail": [
+        "Give that back!",
+        "Damn it! Again!"
+    ],
+    "foul": [
+        "Give that back!"
+    ],
+    "save": [
+        "You are going nowhere!"
+    ]
+}
         }
     };

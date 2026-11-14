@@ -113,36 +113,70 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
                 }
             ],
             "dialogue": {
-                "dribble": [
-                    "Monster says go!",
-                    "Ehehe, this way!",
-                    "Bet you didn't see that!"
-                ],
-                "dribbleFail": [
-                    "Aww, you got me!",
-                    "Ugh, that one's on me."
-                ],
-                "create": [
-                    "Space! Somebody take it!",
-                    "There, the monster opened a door!"
-                ],
-                "beeShot": [
-                    "Buzz! Bee Shot!",
-                    "Straight past you!"
-                ],
-                "goal": [
-                    "That was so much fun!",
-                    "Did you see that dance?"
-                ],
-                "miss": [
-                    "Ahh, so close!"
-                ],
-                "flowDribble": [
-                    "One more! The monster's hungry!"
-                ],
-                "flow": [
-                    "I can hear the monster singing!"
-                ]
-            }
+    "dribble": [
+        "Come dance with me!",
+        "Monster says go!",
+        "Ehehe, this way!",
+        "Bet you didn't see that!"
+    ],
+    "dribbleFail": [
+        "You caught me that time!"
+    ],
+    "create": [
+        "Space! Somebody take it!",
+        "There, the monster opened a door!"
+    ],
+    "beeShot": [
+        "Buzz! Bee Shot!",
+        "Straight past you!"
+    ],
+    "goal": [
+        "That was fun!",
+        "That was so much fun!",
+        "Did you see that dance?"
+    ],
+    "miss": [
+        "Oops, a little off!",
+        "Ahh, so close!"
+    ],
+    "flowDribble": [
+        "One more! The monster's hungry!"
+    ],
+    "flow": [
+        "Now we can really play!"
+    ],
+    "kickoff": [
+        "Shall we play?"
+    ],
+    "pass": [
+        "Try something fun with this!",
+        "Show me your next trick!"
+    ],
+    "receive": [
+        "Ooh, my turn!"
+    ],
+    "shot-attempt": [
+        "Let us try this!"
+    ],
+    "defend": [
+        "Mine now!"
+    ],
+    "concede": [
+        "That makes it interesting!"
+    ],
+    "support": [
+        "Try something fun with this!"
+    ],
+    "passFail": [
+        "You caught me that time!",
+        "Oops, a little off!"
+    ],
+    "foul": [
+        "You caught me that time!"
+    ],
+    "save": [
+        "Mine now!"
+    ]
+}
         }
     };

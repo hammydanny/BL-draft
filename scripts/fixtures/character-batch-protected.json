@@ -1,0 +1,2570 @@
+{
+  "public": [
+    {
+      "id": 1,
+      "stats": {
+        "ovr": 94,
+        "off": 98,
+        "sho": 94,
+        "spd": 82,
+        "def": 78,
+        "pas": 91,
+        "dri": 84,
+        "gk": 48
+      },
+      "positions": [
+        "CF",
+        "AM"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 2,
+      "stats": {
+        "ovr": 79,
+        "off": 83,
+        "sho": 84,
+        "spd": 79,
+        "def": 60,
+        "pas": 77,
+        "dri": 80,
+        "gk": 43
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 3,
+      "stats": {
+        "ovr": 98,
+        "off": 99,
+        "sho": 98,
+        "spd": 94,
+        "def": 84,
+        "pas": 91,
+        "dri": 94,
+        "gk": 66
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 4,
+      "stats": {
+        "ovr": 93,
+        "off": 95,
+        "sho": 88,
+        "spd": 84,
+        "def": 68,
+        "pas": 88,
+        "dri": 95,
+        "gk": 51
+      },
+      "positions": [
+        "CF",
+        "LWB",
+        "LM"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 5,
+      "stats": {
+        "ovr": 69,
+        "off": 67,
+        "sho": 65,
+        "spd": 68,
+        "def": 77,
+        "pas": 66,
+        "dri": 65,
+        "gk": 54
+      },
+      "positions": [
+        "FW",
+        "DF"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 6,
+      "stats": {
+        "ovr": 90,
+        "off": 91,
+        "sho": 95,
+        "spd": 87,
+        "def": 86,
+        "pas": 75,
+        "dri": 79,
+        "gk": 58
+      },
+      "positions": [
+        "CF",
+        "DM"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 7,
+      "stats": {
+        "ovr": 93,
+        "off": 88,
+        "sho": 88,
+        "spd": 98,
+        "def": 68,
+        "pas": 80,
+        "dri": 93,
+        "gk": 49
+      },
+      "positions": [
+        "LW",
+        "RW",
+        "RWB",
+        "RB"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 8,
+      "stats": {
+        "ovr": 89,
+        "off": 79,
+        "sho": 80,
+        "spd": 87,
+        "def": 93,
+        "pas": 88,
+        "dri": 84,
+        "gk": 96
+      },
+      "positions": [
+        "GK",
+        "FW"
+      ],
+      "primaryPosition": "GK"
+    },
+    {
+      "id": 9,
+      "stats": {
+        "ovr": 87,
+        "off": 79,
+        "sho": 82,
+        "spd": 77,
+        "def": 90,
+        "pas": 81,
+        "dri": 82,
+        "gk": 62
+      },
+      "positions": [
+        "DM",
+        "CB"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 10,
+      "stats": {
+        "ovr": 70,
+        "off": 77,
+        "sho": 68,
+        "spd": 81,
+        "def": 54,
+        "pas": 67,
+        "dri": 75,
+        "gk": 42
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 11,
+      "stats": {
+        "ovr": 68,
+        "off": 67,
+        "sho": 65,
+        "spd": 70,
+        "def": 70,
+        "pas": 68,
+        "dri": 67,
+        "gk": 72
+      },
+      "positions": [
+        "GK",
+        "FW"
+      ],
+      "primaryPosition": "GK"
+    },
+    {
+      "id": 12,
+      "stats": {
+        "ovr": 71,
+        "off": 76,
+        "sho": 73,
+        "spd": 79,
+        "def": 66,
+        "pas": 70,
+        "dri": 71,
+        "gk": 55
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 13,
+      "stats": {
+        "ovr": 68,
+        "off": 72,
+        "sho": 70,
+        "spd": 76,
+        "def": 54,
+        "pas": 67,
+        "dri": 72,
+        "gk": 41
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 14,
+      "stats": {
+        "ovr": 96,
+        "off": 95,
+        "sho": 91,
+        "spd": 88,
+        "def": 78,
+        "pas": 98,
+        "dri": 96,
+        "gk": 58
+      },
+      "positions": [
+        "AM",
+        "CM"
+      ],
+      "primaryPosition": "AM"
+    },
+    {
+      "id": 15,
+      "stats": {
+        "ovr": 93,
+        "off": 96,
+        "sho": 96,
+        "spd": 89,
+        "def": 74,
+        "pas": 76,
+        "dri": 91,
+        "gk": 53
+      },
+      "positions": [
+        "CF",
+        "RW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 16,
+      "stats": {
+        "ovr": 87,
+        "off": 82,
+        "sho": 76,
+        "spd": 78,
+        "def": 84,
+        "pas": 88,
+        "dri": 67,
+        "gk": 57
+      },
+      "positions": [
+        "CB",
+        "DM"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 17,
+      "stats": {
+        "ovr": 73,
+        "off": 78,
+        "sho": 79,
+        "spd": 73,
+        "def": 55,
+        "pas": 68,
+        "dri": 73,
+        "gk": 42
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 18,
+      "stats": {
+        "ovr": 73,
+        "off": 76,
+        "sho": 72,
+        "spd": 76,
+        "def": 65,
+        "pas": 72,
+        "dri": 73,
+        "gk": 45
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 19,
+      "stats": {
+        "ovr": 72,
+        "off": 76,
+        "sho": 72,
+        "spd": 76,
+        "def": 65,
+        "pas": 72,
+        "dri": 73,
+        "gk": 45
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 20,
+      "stats": {
+        "ovr": 90,
+        "off": 89,
+        "sho": 85,
+        "spd": 86,
+        "def": 86,
+        "pas": 91,
+        "dri": 89,
+        "gk": 68
+      },
+      "positions": [
+        "CM",
+        "AM",
+        "CB",
+        "RM"
+      ],
+      "primaryPosition": "CM"
+    },
+    {
+      "id": 21,
+      "stats": {
+        "ovr": 91,
+        "off": 94,
+        "sho": 92,
+        "spd": 82,
+        "def": 69,
+        "pas": 84,
+        "dri": 96,
+        "gk": 55
+      },
+      "positions": [
+        "CF",
+        "AM",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 22,
+      "stats": {
+        "ovr": 84,
+        "off": 84,
+        "sho": 81,
+        "spd": 95,
+        "def": 70,
+        "pas": 73,
+        "dri": 82,
+        "gk": 48
+      },
+      "positions": [
+        "RW",
+        "RM",
+        "WB"
+      ],
+      "primaryPosition": "RW"
+    },
+    {
+      "id": 23,
+      "stats": {
+        "ovr": 95,
+        "off": 97,
+        "sho": 97,
+        "spd": 90,
+        "def": 83,
+        "pas": 91,
+        "dri": 92,
+        "gk": 60
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 24,
+      "stats": {
+        "ovr": 86,
+        "off": 68,
+        "sho": 69,
+        "spd": 74,
+        "def": 90,
+        "pas": 76,
+        "dri": 79,
+        "gk": 67
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 25,
+      "stats": {
+        "ovr": 85,
+        "off": 82,
+        "sho": 82,
+        "spd": 83,
+        "def": 87,
+        "pas": 75,
+        "dri": 76,
+        "gk": 64
+      },
+      "positions": [
+        "DM",
+        "CM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 26,
+      "stats": {
+        "ovr": 87,
+        "off": 84,
+        "sho": 77,
+        "spd": 91,
+        "def": 84,
+        "pas": 89,
+        "dri": 88,
+        "gk": 55
+      },
+      "positions": [
+        "RB",
+        "RWB"
+      ],
+      "primaryPosition": "RB"
+    },
+    {
+      "id": 27,
+      "stats": {
+        "ovr": 89,
+        "off": 87,
+        "sho": 82,
+        "spd": 81,
+        "def": 82,
+        "pas": 95,
+        "dri": 91,
+        "gk": 58
+      },
+      "positions": [
+        "CM",
+        "AM",
+        "RWB",
+        "LWB"
+      ],
+      "primaryPosition": "CM"
+    },
+    {
+      "id": 28,
+      "stats": {
+        "ovr": 89,
+        "off": 86,
+        "sho": 80,
+        "spd": 82,
+        "def": 91,
+        "pas": 91,
+        "dri": 88,
+        "gk": 60
+      },
+      "positions": [
+        "DM",
+        "CM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 29,
+      "stats": {
+        "ovr": 87,
+        "off": 90,
+        "sho": 84,
+        "spd": 91,
+        "def": 70,
+        "pas": 84,
+        "dri": 88,
+        "gk": 49
+      },
+      "positions": [
+        "RW",
+        "RWB",
+        "RM"
+      ],
+      "primaryPosition": "RW"
+    },
+    {
+      "id": 30,
+      "stats": {
+        "ovr": 89,
+        "off": 88,
+        "sho": 86,
+        "spd": 89,
+        "def": 76,
+        "pas": 77,
+        "dri": 91,
+        "gk": 52
+      },
+      "positions": [
+        "LW",
+        "LWB",
+        "LM"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 31,
+      "stats": {
+        "ovr": 94,
+        "off": 97,
+        "sho": 98,
+        "spd": 91,
+        "def": 72,
+        "pas": 75,
+        "dri": 88,
+        "gk": 57
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 32,
+      "stats": {
+        "ovr": 82,
+        "off": 82,
+        "sho": 76,
+        "spd": 81,
+        "def": 79,
+        "pas": 84,
+        "dri": 81,
+        "gk": 55
+      },
+      "positions": [
+        "CM",
+        "DM"
+      ],
+      "primaryPosition": "CM"
+    },
+    {
+      "id": 33,
+      "stats": {
+        "ovr": 86,
+        "off": 85,
+        "sho": 86,
+        "spd": 88,
+        "def": 82,
+        "pas": 83,
+        "dri": 89,
+        "gk": 56
+      },
+      "positions": [
+        "LB",
+        "WB",
+        "DF"
+      ],
+      "primaryPosition": "LB"
+    },
+    {
+      "id": 34,
+      "stats": {
+        "ovr": 96,
+        "off": 99,
+        "sho": 97,
+        "spd": 96,
+        "def": 73,
+        "pas": 94,
+        "dri": 99,
+        "gk": 58
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 35,
+      "stats": {
+        "ovr": 95,
+        "off": 96,
+        "sho": 96,
+        "spd": 94,
+        "def": 69,
+        "pas": 99,
+        "dri": 98,
+        "gk": 55
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 36,
+      "stats": {
+        "ovr": 96,
+        "off": 99,
+        "sho": 99,
+        "spd": 96,
+        "def": 70,
+        "pas": 92,
+        "dri": 95,
+        "gk": 59
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 37,
+      "stats": {
+        "ovr": 95,
+        "off": 99,
+        "sho": 99,
+        "spd": 96,
+        "def": 74,
+        "pas": 88,
+        "dri": 93,
+        "gk": 63
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 38,
+      "stats": {
+        "ovr": 97,
+        "off": 96,
+        "sho": 94,
+        "spd": 99,
+        "def": 74,
+        "pas": 91,
+        "dri": 97,
+        "gk": 61
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 39,
+      "stats": {
+        "ovr": 82,
+        "off": 58,
+        "sho": 56,
+        "spd": 72,
+        "def": 86,
+        "pas": 76,
+        "dri": 62,
+        "gk": 88
+      },
+      "positions": [
+        "GK"
+      ],
+      "primaryPosition": "GK"
+    },
+    {
+      "id": 40,
+      "stats": {
+        "ovr": 91,
+        "off": 75,
+        "sho": 77,
+        "spd": 82,
+        "def": 96,
+        "pas": 85,
+        "dri": 79,
+        "gk": 69
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 41,
+      "stats": {
+        "ovr": 78,
+        "off": 61,
+        "sho": 63,
+        "spd": 72,
+        "def": 84,
+        "pas": 69,
+        "dri": 65,
+        "gk": 59
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 42,
+      "stats": {
+        "ovr": 78,
+        "off": 65,
+        "sho": 61,
+        "spd": 79,
+        "def": 83,
+        "pas": 71,
+        "dri": 72,
+        "gk": 53
+      },
+      "positions": [
+        "LB"
+      ],
+      "primaryPosition": "LB"
+    },
+    {
+      "id": 43,
+      "stats": {
+        "ovr": 79,
+        "off": 68,
+        "sho": 61,
+        "spd": 87,
+        "def": 82,
+        "pas": 72,
+        "dri": 74,
+        "gk": 52
+      },
+      "positions": [
+        "RB"
+      ],
+      "primaryPosition": "RB"
+    },
+    {
+      "id": 44,
+      "stats": {
+        "ovr": 78,
+        "off": 71,
+        "sho": 70,
+        "spd": 73,
+        "def": 81,
+        "pas": 78,
+        "dri": 73,
+        "gk": 55
+      },
+      "positions": [
+        "DM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 45,
+      "stats": {
+        "ovr": 78,
+        "off": 72,
+        "sho": 68,
+        "spd": 75,
+        "def": 80,
+        "pas": 79,
+        "dri": 74,
+        "gk": 53
+      },
+      "positions": [
+        "DM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 46,
+      "stats": {
+        "ovr": 77,
+        "off": 80,
+        "sho": 76,
+        "spd": 80,
+        "def": 66,
+        "pas": 73,
+        "dri": 78,
+        "gk": 44
+      },
+      "positions": [
+        "LW",
+        "FW"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 47,
+      "stats": {
+        "ovr": 77,
+        "off": 80,
+        "sho": 75,
+        "spd": 82,
+        "def": 65,
+        "pas": 73,
+        "dri": 79,
+        "gk": 44
+      },
+      "positions": [
+        "RW",
+        "FW"
+      ],
+      "primaryPosition": "RW"
+    },
+    {
+      "id": 48,
+      "stats": {
+        "ovr": 83,
+        "off": 86,
+        "sho": 83,
+        "spd": 80,
+        "def": 67,
+        "pas": 81,
+        "dri": 80,
+        "gk": 49
+      },
+      "positions": [
+        "CF",
+        "AM"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 49,
+      "stats": {
+        "ovr": 96,
+        "off": 96,
+        "sho": 98,
+        "spd": 91,
+        "def": 74,
+        "pas": 81,
+        "dri": 85,
+        "gk": 57
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 50,
+      "stats": {
+        "ovr": 91,
+        "off": 94,
+        "sho": 82,
+        "spd": 74,
+        "def": 71,
+        "pas": 97,
+        "dri": 90,
+        "gk": 52
+      },
+      "positions": [
+        "AM",
+        "CM"
+      ],
+      "primaryPosition": "AM"
+    },
+    {
+      "id": 51,
+      "stats": {
+        "ovr": 84,
+        "off": 84,
+        "sho": 82,
+        "spd": 85,
+        "def": 72,
+        "pas": 83,
+        "dri": 85,
+        "gk": 50
+      },
+      "positions": [
+        "LW",
+        "LM"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 52,
+      "stats": {
+        "ovr": 97,
+        "off": 96,
+        "sho": 92,
+        "spd": 94,
+        "def": 76,
+        "pas": 92,
+        "dri": 99,
+        "gk": 59
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 53,
+      "stats": {
+        "ovr": 97,
+        "off": 96,
+        "sho": 95,
+        "spd": 95,
+        "def": 85,
+        "pas": 88,
+        "dri": 92,
+        "gk": 67
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 54,
+      "stats": {
+        "ovr": 91,
+        "off": 92,
+        "sho": 88,
+        "spd": 85,
+        "def": 76,
+        "pas": 91,
+        "dri": 90,
+        "gk": 60
+      },
+      "positions": [
+        "CF",
+        "FW"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 55,
+      "stats": {
+        "ovr": 97,
+        "off": 97,
+        "sho": 91,
+        "spd": 87,
+        "def": 94,
+        "pas": 98,
+        "dri": 94,
+        "gk": 72
+      },
+      "positions": [
+        "FW",
+        "AM"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 56,
+      "stats": {
+        "ovr": 95,
+        "off": 84,
+        "sho": 82,
+        "spd": 83,
+        "def": 99,
+        "pas": 87,
+        "dri": 93,
+        "gk": 70
+      },
+      "positions": [
+        "CB",
+        "DF"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 57,
+      "stats": {
+        "ovr": 93,
+        "off": 95,
+        "sho": 85,
+        "spd": 86,
+        "def": 71,
+        "pas": 98,
+        "dri": 93,
+        "gk": 51
+      },
+      "positions": [
+        "CM",
+        "AM"
+      ],
+      "primaryPosition": "CM"
+    },
+    {
+      "id": 58,
+      "stats": {
+        "ovr": 88,
+        "off": 61,
+        "sho": 59,
+        "spd": 80,
+        "def": 91,
+        "pas": 82,
+        "dri": 72,
+        "gk": 92
+      },
+      "positions": [
+        "GK"
+      ],
+      "primaryPosition": "GK"
+    },
+    {
+      "id": 59,
+      "stats": {
+        "ovr": 89,
+        "off": 63,
+        "sho": 61,
+        "spd": 82,
+        "def": 92,
+        "pas": 84,
+        "dri": 75,
+        "gk": 93
+      },
+      "positions": [
+        "GK"
+      ],
+      "primaryPosition": "GK"
+    },
+    {
+      "id": 60,
+      "stats": {
+        "ovr": 84,
+        "off": 80,
+        "sho": 79,
+        "spd": 82,
+        "def": 59,
+        "pas": 72,
+        "dri": 78,
+        "gk": 44
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 61,
+      "stats": {
+        "ovr": 95,
+        "off": 96,
+        "sho": 95,
+        "spd": 94,
+        "def": 70,
+        "pas": 87,
+        "dri": 94,
+        "gk": 56
+      },
+      "positions": [
+        "FW",
+        "SS"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 62,
+      "stats": {
+        "ovr": 89,
+        "off": 93,
+        "sho": 91,
+        "spd": 88,
+        "def": 70,
+        "pas": 83,
+        "dri": 87,
+        "gk": 54
+      },
+      "positions": [
+        "CF"
+      ],
+      "primaryPosition": "CF"
+    },
+    {
+      "id": 63,
+      "stats": {
+        "ovr": 86,
+        "off": 87,
+        "sho": 81,
+        "spd": 82,
+        "def": 72,
+        "pas": 89,
+        "dri": 86,
+        "gk": 52
+      },
+      "positions": [
+        "AM"
+      ],
+      "primaryPosition": "AM"
+    },
+    {
+      "id": 64,
+      "stats": {
+        "ovr": 95,
+        "off": 91,
+        "sho": 88,
+        "spd": 89,
+        "def": 88,
+        "pas": 95,
+        "dri": 94,
+        "gk": 65
+      },
+      "positions": [
+        "CM"
+      ],
+      "primaryPosition": "CM"
+    },
+    {
+      "id": 65,
+      "stats": {
+        "ovr": 86,
+        "off": 87,
+        "sho": 83,
+        "spd": 89,
+        "def": 68,
+        "pas": 84,
+        "dri": 87,
+        "gk": 50
+      },
+      "positions": [
+        "FW",
+        "WM"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 66,
+      "stats": {
+        "ovr": 91,
+        "off": 92,
+        "sho": 90,
+        "spd": 88,
+        "def": 73,
+        "pas": 91,
+        "dri": 89,
+        "gk": 56
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 67,
+      "stats": {
+        "ovr": 95,
+        "off": 96,
+        "sho": 95,
+        "spd": 96,
+        "def": 75,
+        "pas": 90,
+        "dri": 96,
+        "gk": 58
+      },
+      "positions": [
+        "LW",
+        "LM"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 68,
+      "stats": {
+        "ovr": 84,
+        "off": 86,
+        "sho": 85,
+        "spd": 84,
+        "def": 65,
+        "pas": 79,
+        "dri": 82,
+        "gk": 49
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 69,
+      "stats": {
+        "ovr": 69,
+        "off": 70,
+        "sho": 63,
+        "spd": 76,
+        "def": 62,
+        "pas": 66,
+        "dri": 64,
+        "gk": 39
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 70,
+      "stats": {
+        "ovr": 76,
+        "off": 78,
+        "sho": 74,
+        "spd": 78,
+        "def": 49,
+        "pas": 74,
+        "dri": 80,
+        "gk": 35
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 71,
+      "stats": {
+        "ovr": 68,
+        "off": 69,
+        "sho": 67,
+        "spd": 70,
+        "def": 48,
+        "pas": 67,
+        "dri": 69,
+        "gk": 35
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 72,
+      "stats": {
+        "ovr": 76,
+        "off": 78,
+        "sho": 73,
+        "spd": 68,
+        "def": 53,
+        "pas": 75,
+        "dri": 81,
+        "gk": 34
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 73,
+      "stats": {
+        "ovr": 68,
+        "off": 70,
+        "sho": 68,
+        "spd": 72,
+        "def": 47,
+        "pas": 65,
+        "dri": 68,
+        "gk": 34
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 74,
+      "stats": {
+        "ovr": 81,
+        "off": 55,
+        "sho": 58,
+        "spd": 74,
+        "def": 86,
+        "pas": 67,
+        "dri": 61,
+        "gk": 48
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 75,
+      "stats": {
+        "ovr": 81,
+        "off": 77,
+        "sho": 72,
+        "spd": 82,
+        "def": 58,
+        "pas": 75,
+        "dri": 86,
+        "gk": 34
+      },
+      "positions": [
+        "RM"
+      ],
+      "primaryPosition": "RM"
+    },
+    {
+      "id": 76,
+      "stats": {
+        "ovr": 84,
+        "off": 64,
+        "sho": 58,
+        "spd": 74,
+        "def": 88,
+        "pas": 76,
+        "dri": 68,
+        "gk": 48
+      },
+      "positions": [
+        "DM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 77,
+      "stats": {
+        "ovr": 85,
+        "off": 80,
+        "sho": 78,
+        "spd": 89,
+        "def": 57,
+        "pas": 80,
+        "dri": 82,
+        "gk": 33
+      },
+      "positions": [
+        "LW"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 78,
+      "stats": {
+        "ovr": 82,
+        "off": 53,
+        "sho": 50,
+        "spd": 75,
+        "def": 85,
+        "pas": 73,
+        "dri": 63,
+        "gk": 44
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 79,
+      "stats": {
+        "ovr": 77,
+        "off": 77,
+        "sho": 70,
+        "spd": 78,
+        "def": 64,
+        "pas": 73,
+        "dri": 83,
+        "gk": 37
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 90,
+      "stats": {
+        "ovr": 81,
+        "off": 79,
+        "sho": 68,
+        "pas": 82,
+        "dri": 78,
+        "spd": 91,
+        "def": 95,
+        "gk": 39
+      },
+      "positions": [
+        "DM"
+      ],
+      "primaryPosition": "DM"
+    },
+    {
+      "id": 91,
+      "stats": {
+        "ovr": 69,
+        "off": 73,
+        "sho": 70,
+        "pas": 66,
+        "dri": 69,
+        "spd": 71,
+        "def": 40,
+        "gk": 30
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 92,
+      "stats": {
+        "ovr": 72,
+        "off": 79,
+        "sho": 78,
+        "pas": 69,
+        "dri": 64,
+        "spd": 64,
+        "def": 62,
+        "gk": 35
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 93,
+      "stats": {
+        "ovr": 86,
+        "off": 73,
+        "sho": 66,
+        "pas": 79,
+        "dri": 73,
+        "spd": 82,
+        "def": 90,
+        "gk": 45
+      },
+      "positions": [
+        "CB"
+      ],
+      "primaryPosition": "CB"
+    },
+    {
+      "id": 94,
+      "stats": {
+        "ovr": 81,
+        "off": 82,
+        "sho": 78,
+        "pas": 84,
+        "dri": 88,
+        "spd": 81,
+        "def": 55,
+        "gk": 36
+      },
+      "positions": [
+        "RW",
+        "RM"
+      ],
+      "primaryPosition": "RW"
+    },
+    {
+      "id": 95,
+      "stats": {
+        "ovr": 78,
+        "off": 80,
+        "sho": 77,
+        "pas": 80,
+        "dri": 80,
+        "spd": 82,
+        "def": 49,
+        "gk": 32
+      },
+      "positions": [
+        "LW"
+      ],
+      "primaryPosition": "LW"
+    },
+    {
+      "id": 96,
+      "stats": {
+        "ovr": 64,
+        "off": 70,
+        "sho": 69,
+        "pas": 57,
+        "dri": 61,
+        "spd": 65,
+        "def": 44,
+        "gk": 30
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 97,
+      "stats": {
+        "ovr": 67,
+        "off": 73,
+        "sho": 74,
+        "pas": 62,
+        "dri": 62,
+        "spd": 64,
+        "def": 50,
+        "gk": 31
+      },
+      "positions": [
+        "FW"
+      ],
+      "primaryPosition": "FW"
+    },
+    {
+      "id": 98,
+      "stats": {
+        "ovr": 82,
+        "off": 82,
+        "sho": 78,
+        "pas": 80,
+        "dri": 83,
+        "spd": 91,
+        "def": 66,
+        "gk": 35
+      },
+      "positions": [
+        "RW"
+      ],
+      "primaryPosition": "RW"
+    }
+  ],
+  "priorKits": [
+    {
+      "id": 2,
+      "kit": {
+        "awareness": {
+          "vision": 0.02
+        },
+        "tendencies": {
+          "pass": 0.04,
+          "shoot": -0.02
+        },
+        "rivals": [
+          1
+        ],
+        "passives": [
+          {
+            "id": "composed-forward",
+            "name": "Composed Forward",
+            "label": "COMPOSED FORWARD",
+            "effect": "support-movement",
+            "interpretation": "gameplay",
+            "description": "When the teammate on the ball has no one nearby, Kira moves close to give him an easy pass. He prefers simple passing moves to risky dribbles."
+          },
+          {
+            "id": "strikers-pride",
+            "name": "Striker's Pride",
+            "label": "STRIKER'S PRIDE",
+            "effect": "pride",
+            "dialogue": "responsibility",
+            "interpretation": "gameplay",
+            "params": {
+              "shoot": 0.22,
+              "quietAfter": 30
+            },
+            "description": "When his team is losing, or he hasn't had a shot after the first 30 ticks, Kira becomes more willing to shoot. His shots do not become more accurate."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "aces-finish",
+            "name": "Ace's Finish",
+            "label": "ACE'S FINISH",
+            "effect": "controlled-finish",
+            "dialogue": "aceFinish",
+            "interpretation": "gameplay",
+            "params": {
+              "maxMetres": 18,
+              "technique": 0.12
+            },
+            "description": "When Kira gets the ball within 18 m of goal with no defender within 2 m, he places a calm shot into the far corner. It is a little more accurate than a normal shot."
+          }
+        ],
+        "ultimates": [
+          {
+            "id": "reclaimed-pride",
+            "name": "Reclaimed Pride",
+            "label": "RECLAIMED PRIDE",
+            "effect": "flow-state",
+            "interpretation": "gameplay",
+            "params": {
+              "boost": {
+                "controlled-finish": {
+                  "maxMetres": 21,
+                  "technique": 0.16
+                },
+                "pride": {
+                  "always": true,
+                  "shoot": 0.26
+                }
+              }
+            },
+            "description": "Kira's Flow. In Flow he is always willing to shoot, and he can use Ace's Finish from up to 21 m. His stats do not change."
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "kit": {
+        "awareness": {
+          "vision": 0.06,
+          "space": 0.08,
+          "anticipation": 0.4,
+          "defensiveRead": 0.04
+        },
+        "tendencies": {
+          "shoot": 0.03
+        },
+        "passives": [
+          {
+            "id": "rational-football",
+            "name": "Rational Football",
+            "label": "RATIONAL FOOTBALL",
+            "effect": "rational-decisions",
+            "params": {
+              "sharpness": 0.45
+            },
+            "description": "Noa weighs up the same options as everyone else but picks the best one far more often. He still cannot know whether a shot or tackle will work."
+          },
+          {
+            "id": "perfect-ambidexterity",
+            "name": "Perfect Ambidexterity",
+            "label": "PERFECT AMBIDEXTERITY",
+            "effect": "ambidextrous",
+            "params": {
+              "technique": 0,
+              "firstTime": 0.08,
+              "maxMetres": 28
+            },
+            "description": "Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy."
+          },
+          {
+            "id": "elite-off-ball-movement",
+            "name": "Elite Off-Ball Movement",
+            "label": "ELITE OFF-BALL MOVEMENT",
+            "effects": [
+              "decoy-run",
+              "support-movement"
+            ],
+            "description": "Noa keeps making runs even when teammates are already running, which drags defenders with him and opens space. When the ball carrier has no one nearby, he moves close to help."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "machine-dribble",
+            "name": "Machine Dribble",
+            "label": "MACHINE DRIBBLE",
+            "effect": "power-dribble",
+            "dialogue": "dribble",
+            "params": {
+              "stride": 1.2,
+              "protection": 5
+            },
+            "description": "When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him."
+          },
+          {
+            "id": "two-footed-execution",
+            "name": "Two-Footed Execution",
+            "label": "TWO-FOOTED EXECUTION",
+            "effect": "switch-foot-finish",
+            "dialogue": "twoFooted",
+            "params": {
+              "technique": 0.06,
+              "commitRange": 4,
+              "maxMetres": 24
+            },
+            "description": "When a defender within 4 m tries to block one side, Noa shoots with his other foot to the other post. The goalkeeper can still save it."
+          }
+        ],
+        "ultimates": [
+          {
+            "id": "optimal-execution",
+            "name": "Optimal Execution",
+            "label": "OPTIMAL EXECUTION",
+            "effect": "flow-state",
+            "interpretation": "gameplay",
+            "params": {
+              "boost": {
+                "switch-foot-finish": {
+                  "technique": 0.12
+                },
+                "rational-decisions": {
+                  "sharpness": 0.65
+                },
+                "power-dribble": {
+                  "protection": 8
+                }
+              }
+            },
+            "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+          }
+        ],
+        "reactions": [
+          {
+            "id": "imperial-route",
+            "name": "Imperial Route",
+            "label": "IMPERIAL ROUTE",
+            "members": [
+              3,
+              49
+            ],
+            "effect": "rival-cooperation",
+            "cooldownTicks": 14,
+            "dialogue": "route",
+            "interpretation": "gameplay",
+            "params": {
+              "margin": 0.06,
+              "value": 0.02,
+              "rivalry": 0.008,
+              "startsRun": true
+            },
+            "description": "With Michael Kaiser on the pitch: when Kaiser has the ball, Noa makes a run to open a route for him. They only pass to each other when the other clearly has the better chance."
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "kit": {
+        "awareness": {
+          "space": 0.05
+        },
+        "tendencies": {
+          "dribble": 0.08,
+          "pass": -0.02
+        },
+        "passives": [
+          {
+            "id": "monster-instinct",
+            "name": "Monster Instinct",
+            "label": "MONSTER INSTINCT",
+            "effect": "isolation-hunter",
+            "params": {
+              "value": 0.012
+            },
+            "description": "Bachira looks for one-on-ones with space behind the defender and is more likely to take them on."
+          },
+          {
+            "id": "free-spirit",
+            "name": "Free Spirit",
+            "label": "FREE SPIRIT",
+            "effect": "free-spirit",
+            "params": {
+              "factor": 0.35
+            },
+            "description": "Losing the ball on a dribble makes players more careful for a while. Bachira becomes only about a third as careful, so he keeps trying."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "creative-dribbling",
+            "name": "Creative Dribbling",
+            "label": "CREATIVE DRIBBLING",
+            "effect": "creative-dribble",
+            "dialogue": "dribble",
+            "params": {
+              "feint": 0.12,
+              "cuts": [
+                -84,
+                84
+              ]
+            },
+            "description": "Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled."
+          },
+          {
+            "id": "creative-passing",
+            "name": "Creative Passing",
+            "label": "CREATIVE PASSING",
+            "effect": "disruption-pass",
+            "dialogue": "create",
+            "params": {
+              "value": 0.012,
+              "precision": 0.8
+            },
+            "description": "Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate."
+          },
+          {
+            "id": "bee-shot",
+            "name": "Bee Shot",
+            "label": "BEE SHOT",
+            "effect": "post-dribble-finish",
+            "dialogue": "beeShot",
+            "params": {
+              "maxMetres": 22,
+              "technique": 0.1,
+              "cooldownTicks": 10
+            },
+            "description": "Right after beating a defender within 22 m of goal, Bachira can shoot before that defender recovers. Other defenders and the goalkeeper can still stop it. Short cooldown."
+          }
+        ],
+        "ultimates": [
+          {
+            "id": "ginga-monster",
+            "name": "Ginga × Monster",
+            "label": "GINGA × MONSTER",
+            "effects": [
+              "flow-state",
+              "dribble-chain"
+            ],
+            "params": {
+              "maxChain": 2,
+              "boost": {
+                "creative-dribble": {
+                  "feint": 0.2
+                }
+              }
+            },
+            "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+          }
+        ],
+        "reactions": [
+          {
+            "id": "creative-instinct",
+            "name": "Creative Instinct",
+            "label": "CREATIVE INSTINCT",
+            "members": [
+              1,
+              4
+            ],
+            "effect": "exploit-disruption",
+            "cooldownTicks": 12,
+            "dialogue": "creative",
+            "params": {
+              "defendersDrawn": 1,
+              "returnValue": 0.02,
+              "precision": 0.7
+            },
+            "description": "With Yoichi Isagi on the pitch: when Bachira beats a defender or pulls one towards him, Isagi runs into the space that opens and Bachira can pass to him there. Defenders can still get back."
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "kit": {
+        "awareness": {
+          "defensiveRead": 0.03
+        },
+        "passives": [
+          {
+            "id": "never-give-up",
+            "name": "Never Give Up",
+            "label": "NEVER GIVE UP",
+            "effect": "persistent-press",
+            "params": {
+              "press": 0.5,
+              "looseBall": 0.12
+            },
+            "description": "Igarashi joins the press sooner and reacts faster to loose balls. He does not get extra speed or stamina."
+          },
+          {
+            "id": "opportunist",
+            "name": "Opportunist",
+            "label": "OPPORTUNIST",
+            "effect": "contact-read",
+            "params": {
+              "range": 1
+            },
+            "description": "Igarashi notices defenders rushing in, or coming from a bad angle, a little earlier, which gives him more chances to use Malicia."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "malicia",
+            "name": "Malicia",
+            "label": "MALICIA",
+            "effect": "foul-drawing",
+            "dialogue": "malicia",
+            "params": {
+              "base": 0.1,
+              "range": 3.4,
+              "preference": 0.022
+            },
+            "description": "When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving."
+          },
+          {
+            "id": "right-side-trap",
+            "name": "Right-Side Trap",
+            "label": "RIGHT-SIDE TRAP",
+            "effect": "right-side-trap",
+            "params": {
+              "bonus": 0.1,
+              "cooldownTicks": 8
+            },
+            "description": "When a defender challenges Igarashi from his right side, Malicia is more likely to win a foul. Careful defenders can still avoid it. Short cooldown."
+          }
+        ],
+        "ultimates": [
+          {
+            "id": "survival-instinct",
+            "name": "Survival Instinct",
+            "label": "SURVIVAL INSTINCT",
+            "effect": "flow-state",
+            "interpretation": "gameplay",
+            "params": {
+              "boost": {
+                "foul-drawing": {
+                  "base": 0.16
+                },
+                "persistent-press": {
+                  "press": 0.8,
+                  "looseBall": 0.18
+                }
+              }
+            },
+            "description": "Igarashi's Flow. In Flow, Malicia works more often, and he presses and chases loose balls even harder. It does not help his shooting."
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "kit": {
+        "awareness": {
+          "space": -0.02,
+          "defensiveRead": 0.02
+        },
+        "tendencies": {
+          "shoot": 0.06
+        },
+        "rivals": [
+          31
+        ],
+        "passives": [
+          {
+            "id": "physical-dominance",
+            "name": "Physical Dominance",
+            "label": "PHYSICAL DOMINANCE",
+            "effect": "physical-shield",
+            "dialogue": "dribble",
+            "params": {
+              "shield": 6,
+              "looseBall": 0.1
+            },
+            "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+          },
+          {
+            "id": "wild-card-physique",
+            "name": "Wild Card Physique",
+            "label": "WILD CARD PHYSIQUE",
+            "effect": "durable",
+            "params": {
+              "drain": 0.75
+            },
+            "description": "Running and duels tire Kunigami 25% less than other players."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "power-shot",
+            "name": "Power Shot",
+            "label": "POWER SHOT",
+            "effect": "power-shot",
+            "dialogue": "powerShot",
+            "params": {
+              "minMetres": 16,
+              "maxMetres": 32,
+              "technique": 0.3,
+              "parry": 0.12
+            },
+            "description": "From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them."
+          },
+          {
+            "id": "ambidextrous-finishing",
+            "name": "Ambidextrous Finishing",
+            "label": "AMBIDEXTROUS FINISHING",
+            "effect": "weak-foot-finish",
+            "dialogue": "ambi",
+            "params": {
+              "anyShot": true,
+              "technique": -0.05,
+              "maxMetres": 26
+            },
+            "description": "Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate."
+          },
+          {
+            "id": "rush-volley",
+            "name": "Rush Volley",
+            "label": "RUSH VOLLEY",
+            "effect": "rebound-volley",
+            "dialogue": "rushVolley",
+            "params": {
+              "reach": 1.6,
+              "technique": 0.15,
+              "cooldownTicks": 6
+            },
+            "description": "When a goalkeeper parries a shot within 18 m of goal and Kunigami reaches the ball first, he volleys it straight away. He has to actually get there first."
+          },
+          {
+            "id": "physical-man-marking",
+            "name": "Physical Man-Marking",
+            "label": "PHYSICAL MAN-MARKING",
+            "effect": "man-marking",
+            "dialogue": "defend",
+            "params": {
+              "targets": [
+                31
+              ],
+              "range": 30,
+              "duel": 4
+            },
+            "description": "When defending, Kunigami marks Shidou if he is nearby, or otherwise the most dangerous attacker close to him. He stays tight to that player and is harder to beat in duels with him."
+          }
+        ],
+        "ultimates": [
+          {
+            "id": "physical-breakthrough",
+            "name": "Physical Breakthrough",
+            "label": "PHYSICAL BREAKTHROUGH",
+            "effect": "flow-state",
+            "interpretation": "gameplay",
+            "params": {
+              "boost": {
+                "power-shot": {
+                  "technique": 0.42,
+                  "maxMetres": 35
+                },
+                "physical-shield": {
+                  "shield": 10
+                }
+              }
+            },
+            "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+          }
+        ],
+        "reactions": [
+          {
+            "id": "second-ball-instinct",
+            "name": "Second Ball Instinct",
+            "label": "SECOND BALL INSTINCT",
+            "members": [
+              6,
+              1
+            ],
+            "effect": "second-ball",
+            "cooldownTicks": 10,
+            "dialogue": "kuniSecond",
+            "interpretation": "gameplay",
+            "params": {
+              "reaction": 0.2
+            },
+            "description": "With Yoichi Isagi on the pitch: when a goalkeeper parries one of Isagi's shots, Kunigami reacts to the rebound a little faster. Other players can still get there first."
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "kit": {
+        "awareness": {
+          "space": 0.03
+        },
+        "tendencies": {
+          "direct": 0.08,
+          "dribble": 0.03
+        },
+        "passives": [
+          {
+            "id": "top-speed-specialist",
+            "name": "Top-Speed Specialist",
+            "label": "TOP-SPEED SPECIALIST",
+            "effect": "sprint-momentum",
+            "params": {
+              "carry": 0.35,
+              "race": 5
+            },
+            "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
+          },
+          {
+            "id": "high-speed-awareness",
+            "name": "High-Speed Awareness",
+            "label": "HIGH-SPEED AWARENESS",
+            "effect": "wide-runner",
+            "params": {
+              "wide": 4
+            },
+            "description": "Chigiri makes his runs behind the defence through the wide channels instead of crowding the middle. Defenders who read the run can still follow it."
+          },
+          {
+            "id": "red-panther-sniper",
+            "name": "Red Panther Sniper",
+            "label": "RED PANTHER SNIPER",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+              "boost": {
+                "sprint-momentum": {
+                  "carry": 0.42,
+                  "race": 7
+                },
+                "speed-cut": {
+                  "value": 0.012
+                },
+                "zone-finish": {
+                  "technique": 0.4,
+                  "approach": 0.02
+                }
+              }
+            },
+            "description": "Chigiri's Flow. In Flow he carries more speed into races, cuts inside more readily and his Golden Zone Shot is more accurate. The shot can still be blocked or saved."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "no-break-dribble",
+            "name": "No-Break Dribble",
+            "label": "NO-BREAK DRIBBLE",
+            "effect": "push-dribble",
+            "dialogue": "sprint",
+            "params": {
+              "stride": 1.5,
+              "space": 5
+            },
+            "description": "With at least 5 m of open grass ahead, Chigiri knocks the ball forward and chases it, covering about 50% more ground than a normal dribble. Speed decides it more than skill, and a defender in the way can still take the ball."
+          },
+          {
+            "id": "high-speed-cut-in",
+            "name": "High-Speed Cut-In",
+            "label": "HIGH-SPEED CUT-IN",
+            "effect": "speed-cut",
+            "dialogue": "cut",
+            "params": {
+              "angle": 48,
+              "minSpeed": 0.35,
+              "value": 0.006
+            },
+            "description": "When Chigiri is sprinting down the wing in the attacking half, he can cut inside at speed without the usual loss of control. A defender covering the inside can still stop him."
+          },
+          {
+            "id": "golden-zone-shot",
+            "name": "Golden Zone Shot",
+            "label": "GOLDEN ZONE SHOT",
+            "effect": "zone-finish",
+            "dialogue": "zone",
+            "params": {
+              "metres": [
+                15,
+                23
+              ],
+              "angle": [
+                30,
+                58
+              ],
+              "technique": 0.3,
+              "approach": 0.012
+            },
+            "description": "From his favourite diagonal spot, about 15–23 m from goal at an angle of roughly 30–58°, Chigiri's shot to the far post is more accurate, and he looks for dribbles that take him there. Defenders can block it and the goalkeeper can save it."
+          }
+        ],
+        "reactions": [
+          {
+            "id": "speed-and-vision",
+            "name": "Speed and Vision",
+            "label": "SPEED AND VISION",
+            "members": [
+              7,
+              1
+            ],
+            "effect": "synchronized-through",
+            "cooldownTicks": 14,
+            "dialogue": "sync",
+            "params": {
+              "precision": 0.65,
+              "value": 0.01
+            },
+            "description": "When Isagi has the ball, Chigiri sets off on a run at the same moment and Isagi spots it even from far away, playing a more accurate through ball. Offside still counts and defenders can still catch the pass."
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "kit": {
+        "passives": [
+          {
+            "id": "wild-reflexes",
+            "name": "Wild Reflexes",
+            "label": "WILD REFLEXES",
+            "effect": "reflex-save",
+            "dialogue": "save",
+            "params": {
+              "reflex": 0.28
+            },
+            "description": "In goal, Gagamaru reacts faster to close-range shots: the nearer the shooter (inside about 17 m), the harder he is to beat. Well-placed shots still go in."
+          },
+          {
+            "id": "springlike-body",
+            "name": "Springlike Body",
+            "label": "SPRINGLIKE BODY",
+            "effect": "acrobatic-reach",
+            "dialogue": "save",
+            "params": {
+              "reach": 0.2
+            },
+            "description": "In goal, his flexibility lets him reach shots from wide angles and shots aimed at a post more often than other keepers. He still has to be in position to get there."
+          },
+          {
+            "id": "wild-instinct",
+            "name": "Wild Instinct",
+            "label": "WILD INSTINCT",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+              "boost": {
+                "reflex-save": {
+                  "reflex": 0.38
+                },
+                "acrobatic-reach": {
+                  "reach": 0.28
+                },
+                "smother-block": {
+                  "block": 0.45
+                },
+                "super-reflex": {
+                  "reflex": 0.4
+                }
+              }
+            },
+            "description": "Gagamaru's Flow. In Flow his reflexes, reach, Super Reflex Save and point-blank blocks all improve. He can still be beaten."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "super-reflex-save",
+            "name": "Super Reflex Save",
+            "label": "SUPER REFLEX SAVE",
+            "effect": "super-reflex",
+            "dialogue": "save",
+            "params": {
+              "minMetres": 8,
+              "maxMetres": 22,
+              "reflex": 0.3,
+              "cooldownTicks": 10
+            },
+            "description": "In goal, against a well-placed shot from 8–22 m, Gagamaru reacts in time to dive across and make a much harder shot saveable. After he makes a save with it, it needs 10 ticks to come back."
+          },
+          {
+            "id": "shachihoko-defense",
+            "name": "Shachihoko Defense",
+            "label": "SHACHIHOKO DEFENSE",
+            "effect": "smother-block",
+            "dialogue": "block",
+            "params": {
+              "maxMetres": 9,
+              "maxGap": 7,
+              "block": 0.35,
+              "cooldownTicks": 12
+            },
+            "description": "In goal, when a shooter is within 9 m and Gagamaru is within 7 m of him, he throws his whole body, even upside down, in front of the ball, making the shot much harder to score. After he makes a save with it, it needs 12 ticks to come back."
+          },
+          {
+            "id": "bear-claw-deflection",
+            "name": "Bear Claw Deflection",
+            "label": "BEAR CLAW DEFLECTION",
+            "effect": "extended-parry",
+            "params": {
+              "parry": 0.05
+            },
+            "description": "In goal, Gagamaru gets a hand on shots he cannot hold and pushes them away, so more of his saves are parries. A parry leaves a loose ball that either team can win."
+          },
+          {
+            "id": "scorpion-kick",
+            "name": "Scorpion Kick",
+            "label": "SCORPION KICK",
+            "effect": "acrobatic-finish",
+            "dialogue": "scorpion",
+            "params": {
+              "maxMetres": 12,
+              "technique": 0.15
+            },
+            "description": "Only when he plays outfield: when a cross reaches him within 12 m of goal, he can finish it acrobatically in the air. Defenders and the goalkeeper can still stop it."
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "kit": {
+        "awareness": {
+          "defensiveRead": 0.04
+        },
+        "tendencies": {
+          "shoot": -0.05
+        },
+        "passives": [
+          {
+            "id": "immense-stamina",
+            "name": "Immense Stamina",
+            "label": "IMMENSE STAMINA",
+            "effect": "durable",
+            "params": {
+              "drain": 0.65
+            },
+            "description": "Pressing, marking and duels tire Raichi 35% less than other players. His stamina still runs down."
+          },
+          {
+            "id": "physical-aggression",
+            "name": "Physical Aggression",
+            "label": "PHYSICAL AGGRESSION",
+            "effects": [
+              "aggression",
+              "persistent-press"
+            ],
+            "dialogue": "press",
+            "params": {
+              "duel": 3,
+              "foulRisk": 0.012,
+              "press": 0.5
+            },
+            "description": "Raichi joins the press sooner and is harder to dribble past, but he gives away more fouls than other defenders."
+          },
+          {
+            "id": "unbreakable-marking",
+            "name": "Unbreakable Marking",
+            "label": "UNBREAKABLE MARKING",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+              "boost": {
+                "man-marking": {
+                  "duel": 7
+                },
+                "quick-recovery": {
+                  "recovery": 0.45
+                },
+                "aggression": {
+                  "duel": 5
+                },
+                "stalking-horse": {
+                  "read": 0.14
+                }
+              }
+            },
+            "description": "Raichi's Flow. In Flow he is harder for his marked opponent to beat, reads passes into that opponent better and recovers faster after being dribbled past. Opponents can still escape him."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "man-marking",
+            "name": "Man-Marking",
+            "label": "MAN-MARKING",
+            "effects": [
+              "man-marking",
+              "quick-recovery"
+            ],
+            "dialogue": "mark",
+            "params": {
+              "range": 30,
+              "duel": 4,
+              "recovery": 0.3
+            },
+            "description": "When defending, Raichi picks the most dangerous attacker near his position, stays tight to him and is harder to beat in duels with him. If that player dribbles past him, Raichi recovers faster than other defenders. Cutting out a pass meant for his man earns extra match rating."
+          },
+          {
+            "id": "stalking-horse-defense",
+            "name": "Stalking Horse Defense",
+            "label": "STALKING HORSE DEFENSE",
+            "effect": "stalking-horse",
+            "params": {
+              "radius": 6,
+              "read": 0.1
+            },
+            "description": "When Raichi is within 6 m of the player he is marking, he waits a step ahead of him and is more likely to cut out passes played to that player. Quick passing around him and runs he cannot follow still beat it."
+          },
+          {
+            "id": "relentless-duel",
+            "name": "Relentless Duel",
+            "label": "RELENTLESS DUEL",
+            "effect": "physical-shield",
+            "dialogue": "duel",
+            "params": {
+              "shield": 5,
+              "looseBall": 0.08
+            },
+            "description": "In physical contests Raichi is hard to push off the ball and hard to get past, and he reacts faster to loose balls. He can still lose the duel."
+          }
+        ],
+        "reactions": [
+          {
+            "id": "cornered-prey",
+            "name": "Cornered Prey",
+            "label": "CORNERED PREY",
+            "members": [
+              9,
+              1
+            ],
+            "effect": "mark-and-read",
+            "cooldownTicks": 16,
+            "dialogue": "trap",
+            "params": {
+              "range": 14,
+              "read": 0.12
+            },
+            "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "kit": {
+        "tendencies": {
+          "shoot": 0.02
+        },
+        "passives": [
+          {
+            "id": "blind-spot-specialist",
+            "name": "Blind-Spot Specialist",
+            "label": "BLIND-SPOT SPECIALIST",
+            "effect": "blind-spot-run",
+            "dialogue": "blindRun",
+            "params": {
+              "trackRead": 0.84
+            },
+            "description": "Naruhaya runs behind his marker while that defender is watching the ball. Good defenders follow these runs more easily than they follow Isagi's, but average ones react late."
+          },
+          {
+            "id": "underdogs-determination",
+            "name": "Underdog's Determination",
+            "label": "UNDERDOG'S DETERMINATION",
+            "effect": "run-hunger",
+            "params": {
+              "rest": 2
+            },
+            "description": "After a run that is not used, Naruhaya is ready to go again sooner than other players. It does not make his shooting any better."
+          },
+          {
+            "id": "desperate-breakthrough",
+            "name": "Desperate Breakthrough",
+            "label": "DESPERATE BREAKTHROUGH",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+              "boost": {
+                "run-hunger": {
+                  "rest": 1
+                },
+                "ghost-run": {
+                  "cooldownTicks": 8
+                },
+                "blind-spot-run": {
+                  "trackRead": 0.88
+                }
+              }
+            },
+            "description": "Naruhaya's Flow. In Flow he makes runs almost without rest, Ghost Run comes back sooner and his runs are harder to follow. His finishing stays the same."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "off-the-ball-movement",
+            "name": "Off-the-Ball Movement",
+            "label": "OFF-THE-BALL MOVEMENT",
+            "effect": "run-timing",
+            "params": {
+              "reach": 24
+            },
+            "description": "Naruhaya starts runs behind the defence from up to 24 m behind the defensive line, and he still makes his run when two teammates are already running. He only gets into position: he still has to receive the pass and finish."
+          },
+          {
+            "id": "ghost-run",
+            "name": "Ghost Run",
+            "label": "GHOST RUN",
+            "effect": "ghost-run",
+            "dialogue": "ghost",
+            "params": {
+              "cooldownTicks": 14
+            },
+            "description": "Once every 14 ticks, a blind-side run by Naruhaya starts at full speed and is even harder for defenders to follow. It only gets him into position: he still has to receive the pass and finish."
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "kit": {
+        "passives": [
+          {
+            "id": "all-rounder",
+            "name": "All-Rounder",
+            "label": "ALL-ROUNDER",
+            "effect": "support-movement",
+            "dialogue": "support",
+            "params": {
+              "range": 14
+            },
+            "description": "Only when he plays outfield: when the teammate on the ball has no one nearby, Iemon moves close to give him an easy pass. It does not change his ratings in any position."
+          },
+          {
+            "id": "team-organizer",
+            "name": "Team Organizer",
+            "label": "TEAM ORGANIZER",
+            "effect": "steady-keeper",
+            "dialogue": "save",
+            "params": {
+              "positioning": 0.08,
+              "hold": 0.07
+            },
+            "description": "In goal, when Iemon is well positioned he is slightly harder to beat from 12 m or further, and he catches more shots instead of parrying them, so there are fewer rebounds."
+          },
+          {
+            "id": "last-line-of-defence",
+            "name": "Last Line of Defence",
+            "label": "LAST LINE OF DEFENCE",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+              "boost": {
+                "steady-keeper": {
+                  "positioning": 0.14,
+                  "hold": 0.11
+                },
+                "set-piece-ready": {
+                  "ready": 0.3
+                }
+              }
+            },
+            "description": "Iemon's Flow. In Flow his positioning and handling improve a little more and he is better prepared for set pieces. He gains no acrobatic saves."
+          }
+        ],
+        "weapons": [
+          {
+            "id": "set-piece-readiness",
+            "name": "Set-Piece Readiness",
+            "label": "SET-PIECE READINESS",
+            "effect": "set-piece-ready",
+            "dialogue": "setPiece",
+            "params": {
+              "window": 2,
+              "ready": 0.22
+            },
+            "description": "In goal, for the two ticks after an opposing free kick or corner is taken, Iemon is set for the shot and harder to beat. A well-struck shot can still go in."
+          }
+        ]
+      }
+    }
+  ],
+  "chemistry": "e1bd0f4ae225731c7a55af5fa6124a28fad77798b9b6270882962ddefb791d6a"
+}

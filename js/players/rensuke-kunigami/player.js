@@ -133,42 +133,77 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
                 }
             ],
             "dialogue": {
-                "powerShot": [
-                    "Feel the power of this one.",
-                    "Full force."
-                ],
-                "ambi": [
-                    "Right foot works too."
-                ],
-                "rushVolley": [
-                    "Hit it before it drops!"
-                ],
-                "goal": [
-                    "That's the weight of my shot.",
-                    "I came back for this."
-                ],
-                "miss": [
-                    "Not enough. Hit it harder."
-                ],
-                "defend": [
-                    "You're not getting past me.",
-                    "I'll stay on you all game."
-                ],
-                "secondBall": [
-                    "Second ball's mine!"
-                ],
-                "kuniSecond": [
-                    "Isagi, I'll finish what you start!"
-                ],
-                "dribble": [
-                    "Bounce off."
-                ],
-                "rival": [
-                    "Shidou. I'm marking you."
-                ],
-                "flow": [
-                    "I came back stronger. Watch."
-                ]
-            }
+    "powerShot": [
+        "Feel the power of this one.",
+        "Full force."
+    ],
+    "ambi": [
+        "Right foot works too."
+    ],
+    "rushVolley": [
+        "Hit it before it drops!"
+    ],
+    "goal": [
+        "That is one.",
+        "That's the weight of my shot.",
+        "I came back for this."
+    ],
+    "miss": [
+        "I have to finish those.",
+        "Not enough. Hit it harder."
+    ],
+    "defend": [
+        "You are not getting through.",
+        "You're not getting past me.",
+        "I'll stay on you all game."
+    ],
+    "secondBall": [
+        "Second ball's mine!"
+    ],
+    "kuniSecond": [
+        "Isagi, I'll finish what you start!"
+    ],
+    "dribble": [
+        "I am going through.",
+        "Bounce off."
+    ],
+    "rival": [
+        "Shidou. I'm marking you."
+    ],
+    "flow": [
+        "I will force an opening."
+    ],
+    "kickoff": [
+        "Let us get on with it."
+    ],
+    "pass": [
+        "Take it forward.",
+        "Keep pushing forward."
+    ],
+    "receive": [
+        "I have it."
+    ],
+    "dribbleFail": [
+        "I lost that duel."
+    ],
+    "shot-attempt": [
+        "I will put this away."
+    ],
+    "concede": [
+        "Next play."
+    ],
+    "support": [
+        "Take it forward."
+    ],
+    "passFail": [
+        "I lost that duel."
+    ],
+    "foul": [
+        "I lost that duel."
+    ],
+    "save": [
+        "You are not getting through."
+    ]
+}
         }
     };

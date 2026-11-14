@@ -9,7 +9,7 @@ const ISAGI=1,HIORI=27,KURONA=26,BACHIRA=4,KAISER=49;
 
 function setup(stars=[ISAGI,HIORI,KURONA,BACHIRA,KAISER],formation='4-3-3'){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const home=stars.concat(pool.slice(0,14-stars.length)),away=pool.slice(20,34);
  const teams=[1,2].map(n=>{const ids=n===1?home:away;let a=positionalAssignment(h,formation,ids,n);
   // The characters under test start in their own positions; the rest of the XI fills around them.
@@ -128,22 +128,22 @@ function isagiTests(){
  assert(far&&near,'both feet are options');const cFar=b.shotModel(t.s,t.carrier,false,null,null,null,null,far).goalChance,cNear=b.shotModel(t.s,t.carrier,false,null,null,null,null,near).goalChance;
  assert(cNear>cFar,'left foot to the near post when the far post is blocked: '+cNear.toFixed(3)+' vs '+cFar.toFixed(3));
  // Reverse Back Heel: in Flow, a tackle within 20 m preserves Isagi's possession for the immediate shot.
- t=base((s,get,def,isg,c)=>{b.setPosition(isg,{x:90,y:50});b.setPosition(def(0),{x:91.5,y:50.5});isg.flow=100;},false);
+ t=base((s,get,def,isg,c)=>{b.setPosition(isg,{x:90,y:50});b.setPosition(def(0),{x:91.5,y:50.5});def(0).lastMove={x:-1,y:0};isg.flow=100;},false);
  assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='reverse-back-heel-shot'),'Back Heel is not a normal shot option');
  assert.equal(b.battleSimProfileStatus(t.carrier,'ULTIMATE','reverse-back-heel-shot',t.s).kind,'ready','Back Heel is a Flow ultimate');
- t.s.random=()=>.999999;b.resolveDribble(t.s,t.carrier);
- assert(t.s.events.some(e=>e.type==='shot-attempt'&&e.ability&&e.ability.id==='reverse-back-heel-shot'),'a tackle triggers Back Heel');
+ {let calls=0;t.s.random=()=>++calls<=2?.999999:0;}b.resolveDribble(t.s,t.carrier);
+ assert(t.s.events.some(e=>e.type==='shot-attempt'&&e.ability&&e.ability.id==='reverse-back-heel-shot'),'a committed tackle can be deceived into Back Heel');
  assert(t.carrier.battleSimState.usedUltimates.includes('reverse-back-heel-shot'),'Back Heel is consumed for this Flow');
  assert.equal(b.battleSimProfileStatus(t.carrier,'ULTIMATE','reverse-back-heel-shot',t.s).kind,'used','Back Heel cannot repeat in the same Flow');
  // Two-Gun Volley: Flow + first-time pass + blocking defender; once per Flow.
- const volleyScene=()=>base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:25});b.setPosition(isg,{x:88,y:48});b.setPosition(def(0),{x:89.5,y:49});isg.flow=100;});
+ const volleyScene=()=>base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:25});b.setPosition(isg,{x:88,y:48});b.setPosition(def(0),{x:89.5,y:49});def(0).lastMove={x:-1,y:0};isg.flow=100;});
  t=volleyScene();assert(b.shotTechniques(t.s,t.carrier).some(x=>x.id==='two-gun-volley'),'volley offered in Flow after a pass with a committing defender');
  t.carrier.flow=50;assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='two-gun-volley'),'never outside Flow');t.carrier.flow=100;
  const volley=b.shotTechniques(t.s,t.carrier).find(x=>x.id==='two-gun-volley');
  assert(b.shotModel(t.s,t.carrier,false,null,null,null,null,volley).goalChance<.95,'the keeper still contests the volley');
  t.s.random=()=>0;b.resolveShot(t.s,t.carrier,false,null,volley);assert.equal(t.s.score[1],1,'volley can score');
  const after=volleyScene();Object.assign(after.carrier.battleSimState=after.carrier.battleSimState||{},t.carrier.battleSimState);
- assert(!b.shotTechniques(after.s,after.carrier).some(x=>x.id==='two-gun-volley'),'one Two-Gun Volley goal per match');
+ assert(!b.shotTechniques(after.s,after.carrier).some(x=>x.id==='two-gun-volley'),'one Two-Gun Volley attempt per Flow cycle');
  // Adaptability: a rolling last-three failure memory that persists across elapsed time and saves.
  const m=b.createMatch();b.setMatch(m);const isg=b.active(m.teams[1]).find(p=>Number(p.id)===ISAGI),gkm=b.keeper(m.teams[2]);
  for(let i=0;i<10;i++){m.tick=i;b.learn(m,isg,'lane',i,gkm);}b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);

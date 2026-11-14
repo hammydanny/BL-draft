@@ -102,25 +102,62 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "save": [
-                    "Got it.",
-                    "My body moved first."
-                ],
-                "block": [
-                    "Not past me.",
-                    "I'll stop it with everything."
-                ],
-                "scorpion": [
-                    "Any part of me can score.",
-                    "Like this!"
-                ],
-                "goal": [
-                    "I can score too."
-                ],
-                "flow": [
-                    "I can feel where it's going.",
-                    "Shoot. I'll reach it."
-                ]
-            }
+    "save": [
+        "Caught it."
+    ],
+    "block": [
+        "Not past me.",
+        "I'll stop it with everything."
+    ],
+    "scorpion": [
+        "Any part of me can score.",
+        "Like this!"
+    ],
+    "goal": [
+        "In.",
+        "I can score too."
+    ],
+    "flow": [
+        "My body knows."
+    ],
+    "kickoff": [
+        "Ready."
+    ],
+    "pass": [
+        "There.",
+        "Your ball."
+    ],
+    "receive": [
+        "Got it."
+    ],
+    "dribble": [
+        "I fit through here."
+    ],
+    "dribbleFail": [
+        "Slipped away."
+    ],
+    "shot-attempt": [
+        "I can reach it."
+    ],
+    "miss": [
+        "Wrong angle."
+    ],
+    "defend": [
+        "Caught it."
+    ],
+    "concede": [
+        "Get the next one."
+    ],
+    "support": [
+        "There."
+    ],
+    "passFail": [
+        "Slipped away.",
+        "Wrong angle."
+    ],
+    "foul": [
+        "Slipped away."
+    ]
+}
         }
     };

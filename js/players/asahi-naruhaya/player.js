@@ -72,26 +72,65 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
                 }
             ],
             "dialogue": {
-                "blindRun": [
-                    "He never saw me go.",
-                    "Behind you."
-                ],
-                "ghost": [
-                    "Now. While nobody's looking.",
-                    "This is the only way I win."
-                ],
-                "goal": [
-                    "I did it! I really scored!",
-                    "That one's for my family!"
-                ],
-                "miss": [
-                    "Why can't I finish it?!",
-                    "I got there... and wasted it."
-                ],
-                "flow": [
-                    "I'm not going home yet.",
-                    "One more run. One more!"
-                ]
-            }
+    "blindRun": [
+        "He never saw me go.",
+        "Behind you."
+    ],
+    "ghost": [
+        "Now. While nobody's looking.",
+        "This is the only way I win."
+    ],
+    "goal": [
+        "I made it count!",
+        "I did it! I really scored!",
+        "That one's for my family!"
+    ],
+    "miss": [
+        "I have to do better.",
+        "Why can't I finish it?!",
+        "I got there... and wasted it."
+    ],
+    "flow": [
+        "I can still make a difference."
+    ],
+    "kickoff": [
+        "I have to make this count."
+    ],
+    "pass": [
+        "Go, I will follow.",
+        "I will keep up with you."
+    ],
+    "receive": [
+        "I can work with this."
+    ],
+    "dribble": [
+        "Just one opening."
+    ],
+    "dribbleFail": [
+        "I have to try again."
+    ],
+    "shot-attempt": [
+        "This is my chance."
+    ],
+    "defend": [
+        "I will fight for this ball."
+    ],
+    "concede": [
+        "Keep going. We still have a chance."
+    ],
+    "support": [
+        "Go, I will follow."
+    ],
+    "passFail": [
+        "I have to try again.",
+        "I have to do better."
+    ],
+    "foul": [
+        "I have to try again."
+    ],
+    "save": [
+        "I will fight for this ball."
+    ]
+}
         }
     };

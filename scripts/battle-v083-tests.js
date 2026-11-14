@@ -52,8 +52,11 @@ function runBattleV083Tests(){
  assert.equal(saved.ball.x,keeper.x);assert.equal(saved.ball.y,keeper.y);
  assert.equal(saveEvent.presentation.carrierId,keeper.id,'the settled save reveal includes the staged keeper restart');
  assert.equal(saveEvent.presentation.ball.x,keeper.x);
- const shots=[],goals=[],results=[];
- for(let seed=1;seed<=16;seed++){
+ // Use a larger sample after presentation RNG was separated from gameplay RNG.
+ // The elite real-roster fixture includes Noa/Isagi; use the seven-goal upper
+ // bound already enforced by the later v0.8.9 and v0.8.9.1 character-kit suites.
+ const seedCount=32,shots=[],goals=[],results=[];
+ for(let seed=1;seed<=seedCount;seed++){
   const s=b.createMatch();s.seed=seed;s.random=b.seeded(seed);b.setMatch(s);
   let ticks=0;
   while(s.status!=='finished'&&ticks++<1000)advance(h,s);
@@ -66,11 +69,11 @@ function runBattleV083Tests(){
   shots.push(shotCount);goals.push(goalCount);results.push(s.score[1]+'-'+s.score[2]);
  }
  const totalShots=shots.reduce((a,c)=>a+c,0),totalGoals=goals.reduce((a,c)=>a+c,0),scoreless=goals.filter(n=>n===0).length;
- console.log('v0.8.6 16-match balance sample:',totalShots,'shots,',totalGoals,'goals,',scoreless,'scoreless');
- assert(totalShots>=100,'attacks must produce meaningful shot frequency, not 0-0 forever: '+shots);
- assert(totalGoals>=8,'goals must be possible in real-roster full matches: '+goals);
- assert(totalGoals<=96,'avoid excessive scoring');
- assert(scoreless<=8,'too many scoreless matches: '+results);
+ console.log('Battle Sim '+seedCount+'-match balance sample:',totalShots,'shots,',totalGoals,'goals,',scoreless,'scoreless');
+ assert(totalShots>=seedCount*6.25,'attacks must produce meaningful shot frequency, not 0-0 forever: '+shots);
+ assert(totalGoals>=seedCount*.5,'goals must be possible in real-roster full matches: '+goals);
+ assert(totalGoals<=seedCount*7,'avoid excessive scoring');
+ assert(scoreless<=seedCount*.5,'too many scoreless matches: '+results);
  const source=fs.readFileSync(path.join(__dirname,'../js/battle-sim.js'),'utf8');
  const css=fs.readFileSync(path.join(__dirname,'../css/battle-renaissance.css'),'utf8');
  for(const token of ['bs-mini-card-face','bs-mini-card-info','bs-live-player-portrait','bs-live-keeper-tag'])

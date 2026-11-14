@@ -11,222 +11,280 @@ const ISAGI_PLAYER_DATA = {
             {"id":"adaptability","name":"Adaptability","description":"Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.","battleSimType":"Passive","battleSimDescription":"Remembers failed runs, intercepted passes and saved shots. Isagi avoids repeating the same pattern found in his last three failed events.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"off-the-ball-movements","name":"Blind Spot Movement","description":"When Isagi is being marked, he moves into the defender's blind spot.","battleSimType":"Passive","battleSimDescription":"When Isagi is being marked, he moves into the defender's blind spot.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
             {"id":"direct-shot","name":"Direct Shot","description":"When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness.","battleSimType":"Special Move","battleSimDescription":"When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness.","battleSimType":"Ultimate","battleSimDescription":"In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot.","battleSimType":"Ultimate","battleSimDescription":"In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"In Flow after a pass within 20 m, feints against one committed blocker. Other defenders and the keeper can stop it. Once per Flow.","battleSimType":"Ultimate","battleSimDescription":"In Flow after a pass within 20 m, feints against one committed blocker. Other defenders and the keeper can stop it. Once per Flow.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow.","battleSimType":"Ultimate","battleSimDescription":"In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
             {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"A variation of Direct Shot: Isagi uses his left foot when the far post is blocked.","battleSimType":"Special Move","battleSimDescription":"A variation of Direct Shot: Isagi uses his left foot when the far post is blocked.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
         ]
     ,
         battleSim: {
-            "awareness": {
-                "vision": 0.08,
-                "space": 0.12,
-                "anticipation": 0.6,
-                "scan": 8
+    "awareness": {
+        "vision": 0.08,
+        "space": 0.12,
+        "anticipation": 0.6,
+        "scan": 8
+    },
+    "tendencies": {
+        "shoot": 0.04,
+        "dribble": -0.03
+    },
+    "passives": [
+        {
+            "id": "metavision",
+            "name": "Metavision",
+            "label": "METAVISION",
+            "effect": "space-reading",
+            "params": {
+                "rangeMeters": 50
             },
-            "tendencies": {
-                "shoot": 0.04,
-                "dribble": -0.03
+            "dialogue": "read",
+            "description": "Reads the defensive line and identifies gaps up to 50 m away, allowing Isagi to spot passing lanes and position himself before the defense reacts."
+        },
+        {
+            "id": "off-the-ball-movements",
+            "name": "Blind Spot Movement",
+            "label": "BLIND SPOT MOVEMENT",
+            "effect": "blind-spot-run",
+            "dialogue": "blindRun",
+            "description": "When Isagi is being marked, he moves into the defender's blind spot."
+        },
+        {
+            "id": "adaptability",
+            "name": "Adaptability",
+            "label": "ADAPTABILITY",
+            "effect": "tactical-memory",
+            "params": {
+                "maxEntries": 3,
+                "rollingWindow": 3,
+                "weight": 0.1
             },
-            "passives": [
-                {
-                    "id": "metavision",
-                    "name": "Metavision",
-                    "label": "METAVISION",
-                    "effect": "space-reading",
-                    "params": { "rangeMeters": 50 },
-                    "dialogue": "read",
-                    "description": "Reads the defensive line and identifies gaps up to 50 m away, allowing Isagi to spot passing lanes and position himself before the defense reacts."
-                },
-                {
-                    "id": "off-the-ball-movements",
-                    "name": "Blind Spot Movement",
-                    "label": "BLIND SPOT MOVEMENT",
-                    "effect": "blind-spot-run",
-                    "dialogue": "blindRun",
-                    "description": "When Isagi is being marked, he moves into the defender's blind spot."
-                },
-                {
-                    "id": "adaptability",
-                    "name": "Adaptability",
-                    "label": "ADAPTABILITY",
-                    "effect": "tactical-memory",
-                    "params": {
-                        "maxEntries": 3,
-                        "rollingWindow": 3,
-                        "weight": 0.1
-                    },
-                    "description": "Remembers failed runs, intercepted passes and saved shots. Isagi avoids repeating the same pattern found in his last three failed events."
-                },
-                {
-                    "id": "puzzle-completion",
-                    "name": "Metavision: Puzzle Completion",
-                    "label": "METAVISION: PUZZLE COMPLETION",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "awareness": {
-                            "vision": 0.06,
-                            "space": 0.07,
-                            "anticipation": 0.12,
-                            "scan": 5
-                        }
-                    },
-                    "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
+            "description": "Remembers failed runs, intercepted passes and saved shots. Isagi avoids repeating the same pattern found in his last three failed events."
+        },
+        {
+            "id": "puzzle-completion",
+            "name": "Metavision: Puzzle Completion",
+            "label": "METAVISION: PUZZLE COMPLETION",
+            "effect": "flow-state",
+            "dialogue": "flow",
+            "params": {
+                "awareness": {
+                    "vision": 0.06,
+                    "space": 0.07,
+                    "anticipation": 0.12,
+                    "scan": 5
                 }
-            ],
-            "weapons": [
-                {
-                    "id": "direct-shot",
-                    "name": "Direct Shot",
-                    "label": "DIRECT SHOT",
-                    "effect": "first-time-finish",
-                    "dialogue": "directShot",
-                    "params": {
-                        "technique": 0.25,
-                        "blockFactor": 0.7,
-                        "cooldownTicks": 5
-                    },
-                    "description": "When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness."
-                },
-                {
-                    "id": "left-footed-direct-shot",
-                    "name": "Left-Footed Direct Shot",
-                    "label": "LEFT-FOOTED DIRECT SHOT",
-                    "effect": "weak-foot-finish",
-                    "dialogue": "leftFoot",
-                    "params": {
-                        "technique": -0.12,
-                        "cooldownTicks": 5
-                    },
-                    "description": "A variation of Direct Shot: Isagi uses his left foot when the far post is blocked."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "reverse-back-heel-shot",
-                    "name": "Reverse Back Heel Shot",
-                    "label": "REVERSE BACK HEEL SHOT",
-                    "effect": "disguised-finish",
-                    "dialogue": "backHeel",
-                    "condition": { "duringFlow": true },
-                    "oncePerFlow": true,
-                    "params": {
-                        "maxMetres": 20,
-                        "technique": -0.45
-                    },
-                    "description": "In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot."
-                },
-                {
-                    "id": "two-gun-volley",
-                    "name": "Two-Gun Volley",
-                    "label": "TWO-GUN VOLLEY",
-                    "effect": "feint-volley",
-                    "dialogue": "volley",
-                    "condition": { "duringFlow": true, "receivedPass": true },
-                    "oncePerFlow": true,
-                    "params": {
-                        "maxMetres": 20,
-                        "technique": 0.45,
-                        "commitRange": 4.5
-                    },
-                    "description": "In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "reflexive-synchronization",
-                    "name": "Reflexive Synchronization",
-                    "label": "REFLEXIVE SYNCHRONIZATION",
-                    "effect": "synchronized-through",
-                    "cooldownTicks": 12,
-                    "dialogue": "sync",
-                    "params": {
-                        "precision": 0.55,
-                        "value": 0.012
-                    },
-                    "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
-                    "members": [
-                        1,
-                        27
-                    ]
-                },
-                {
-                    "id": "planet-hotline",
-                    "name": "Planet Hotline",
-                    "label": "PLANET HOTLINE",
-                    "effect": "wall-pass",
-                    "cooldownTicks": 14,
-                    "dialogue": "hotline",
-                    "params": {
-                        "value": 0.012,
-                        "returnValue": 0.02,
-                        "precision": 0.6
-                    },
-                    "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
-                    "members": [
-                        1,
-                        26
-                    ]
-                },
-                {
-                    "id": "rational-alliance",
-                    "name": "Rational Alliance",
-                    "label": "RATIONAL ALLIANCE",
-                    "effect": "rival-cooperation",
-                    "cooldownTicks": 16,
-                    "dialogue": "rival",
-                    "params": {
-                        "margin": 0.08,
-                        "value": 0.02,
-                        "rivalry": 0.01
-                    },
-                    "description": "With Michael Kaiser on the pitch: both prefer to shoot themselves, but they pass to each other when the other clearly has the better chance.",
-                    "members": [
-                        1,
-                        49
-                    ]
-                }
-            ],
-            "dialogue": {
-                "read": [
-                    "I can see where the line will be.",
-                    "That gap is opening. Now."
-                ],
-                "blindRun": [
-                    "He's watching the ball, not me.",
-                    "Out of his sight, into the space."
-                ],
-                "directShot": ["Direct Shot!"],
-                "leftFoot": ["Lefty Shoot!"],
-                "backHeel": ["Just kidding. I fooled you, genius! My reverse direct... Back Heel Shot!"],
-                "volley": ["This is my ultimate... Two-Gun Volley!"],
-                "goal": [
-                    "That's the route I saw.",
-                    "The picture was complete.",
-                    "Every piece fit."
-                ],
-                "sync": [
-                    "Hiori, you saw it too.",
-                    "Same picture, Hiori."
-                ],
-                "hotline": [
-                    "Kurona, give it straight back!",
-                    "One-two, Kurona!"
-                ],
-                "creative": [
-                    "Bachira pulled them away. That space is mine.",
-                    "Keep dancing, Bachira. I'm going."
-                ],
-                "rival": [
-                    "This time, your angle is better.",
-                    "Use it, Kaiser. I'll take the next one."
-                ],
-                "flow": [
-                    "Everything is slowing down.",
-                    "I can see all of it now."
-                ]
-            }
+            },
+            "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
         }
+    ],
+    "weapons": [
+        {
+            "id": "direct-shot",
+            "name": "Direct Shot",
+            "label": "DIRECT SHOT",
+            "effect": "first-time-finish",
+            "dialogue": "directShot",
+            "params": {
+                "technique": 0.25,
+                "blockFactor": 0.7,
+                "cooldownTicks": 5,
+                "cooldownGroup": "direct-shot"
+            },
+            "description": "When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness."
+        },
+        {
+            "id": "left-footed-direct-shot",
+            "name": "Left-Footed Direct Shot",
+            "label": "LEFT-FOOTED DIRECT SHOT",
+            "effect": "weak-foot-finish",
+            "dialogue": "leftFoot",
+            "params": {
+                "technique": -0.12,
+                "cooldownTicks": 5,
+                "cooldownGroup": "direct-shot"
+            },
+            "description": "A variation of Direct Shot: Isagi uses his left foot when the far post is blocked."
+        }
+    ],
+    "ultimates": [
+        {
+            "id": "reverse-back-heel-shot",
+            "name": "Reverse Back Heel Shot",
+            "label": "REVERSE BACK HEEL SHOT",
+            "effect": "disguised-finish",
+            "dialogue": "backHeel",
+            "condition": {
+                "duringFlow": true
+            },
+            "oncePerFlow": true,
+            "params": {
+                "maxMetres": 20,
+                "technique": -0.45
+            },
+            "description": "In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow."
+        },
+        {
+            "id": "two-gun-volley",
+            "name": "Two-Gun Volley",
+            "label": "TWO-GUN VOLLEY",
+            "effect": "feint-volley",
+            "dialogue": "volley",
+            "condition": {
+                "duringFlow": true,
+                "receivedPass": true
+            },
+            "oncePerFlow": true,
+            "params": {
+                "maxMetres": 20,
+                "technique": 0.45,
+                "commitRange": 4.5
+            },
+            "description": "In Flow after a pass within 20 m, feints against one committed blocker. Other defenders and the keeper can stop it. Once per Flow."
+        }
+    ],
+    "reactions": [
+        {
+            "id": "reflexive-synchronization",
+            "name": "Reflexive Synchronization",
+            "label": "REFLEXIVE SYNCHRONIZATION",
+            "effect": "synchronized-through",
+            "cooldownTicks": 12,
+            "dialogue": "sync",
+            "params": {
+                "precision": 0.55,
+                "value": 0.012
+            },
+            "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
+            "members": [
+                1,
+                27
+            ]
+        },
+        {
+            "id": "planet-hotline",
+            "name": "Planet Hotline",
+            "label": "PLANET HOTLINE",
+            "effect": "wall-pass",
+            "cooldownTicks": 14,
+            "dialogue": "hotline",
+            "params": {
+                "value": 0.012,
+                "returnValue": 0.02,
+                "precision": 0.6
+            },
+            "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
+            "members": [
+                1,
+                26
+            ]
+        },
+        {
+            "id": "rational-alliance",
+            "name": "Rational Alliance",
+            "label": "RATIONAL ALLIANCE",
+            "effect": "rival-cooperation",
+            "cooldownTicks": 16,
+            "dialogue": "rival",
+            "params": {
+                "margin": 0.08,
+                "value": 0.02,
+                "rivalry": 0.01
+            },
+            "description": "With Michael Kaiser on the pitch: both prefer to shoot themselves, but they pass to each other when the other clearly has the better chance.",
+            "members": [
+                1,
+                49
+            ]
+        }
+    ],
+    "dialogue": {
+        "read": [
+            "I can see where the line will be.",
+            "That gap is opening. Now."
+        ],
+        "blindRun": [
+            "He's watching the ball, not me.",
+            "Out of his sight, into the space."
+        ],
+        "directShot": [
+            "Direct Shot!"
+        ],
+        "leftFoot": [
+            "Lefty Shoot!"
+        ],
+        "backHeel": [
+            "Just kidding. I fooled you, genius! My reverse direct... Back Heel Shot!"
+        ],
+        "volley": [
+            "This is my ultimate... Two-Gun Volley!"
+        ],
+        "goal": [
+            "That is my goal!",
+            "That's the route I saw.",
+            "The picture was complete.",
+            "Every piece fit."
+        ],
+        "sync": [
+            "Hiori, you saw it too.",
+            "Same picture, Hiori."
+        ],
+        "hotline": [
+            "Kurona, give it straight back!",
+            "One-two, Kurona!"
+        ],
+        "creative": [
+            "Bachira pulled them away. That space is mine.",
+            "Keep dancing, Bachira. I'm going."
+        ],
+        "rival": [
+            "This time, your angle is better.",
+            "Use it, Kaiser. I'll take the next one."
+        ],
+        "flow": [
+            "The pieces are coming together."
+        ],
+        "kickoff": [
+            "I can build a route from here."
+        ],
+        "pass": [
+            "That lane is open.",
+            "Use that gap."
+        ],
+        "receive": [
+            "I see the next piece."
+        ],
+        "dribble": [
+            "I found the gap."
+        ],
+        "dribbleFail": [
+            "That route was closed."
+        ],
+        "shot-attempt": [
+            "I can finish from here."
+        ],
+        "miss": [
+            "I need a different answer."
+        ],
+        "defend": [
+            "I saw that option."
+        ],
+        "concede": [
+            "I need to reset the picture."
+        ],
+        "support": [
+            "That lane is open."
+        ],
+        "passFail": [
+            "That route was closed.",
+            "I need a different answer."
+        ],
+        "foul": [
+            "That route was closed."
+        ],
+        "save": [
+            "I saw that option."
+        ]
+    }
+}
     };
 ;
 
@@ -305,32 +363,68 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "support": [
-                    "I'm here, use me!",
-                    "Keep it simple. I've got your back."
-                ],
-                "responsibility": [
-                    "This one is mine to finish.",
-                    "I won't hide from this chance."
-                ],
-                "aceFinish": [
-                    "Pick the corner. Stay calm."
-                ],
-                "goal": [
-                    "That's how a striker answers.",
-                    "I'm still here. Remember that."
-                ],
-                "miss": [
-                    "Not good enough. Again.",
-                    "I had that one..."
-                ],
-                "rival": [
-                    "Isagi... I won't fall behind you again."
-                ],
-                "flow": [
-                    "My pride's back. Give me the ball."
-                ]
-            }
+    "support": [
+        "Here, keep it moving."
+    ],
+    "responsibility": [
+        "This one is mine to finish.",
+        "I won't hide from this chance."
+    ],
+    "aceFinish": [
+        "Pick the corner. Stay calm."
+    ],
+    "goal": [
+        "That is what I came to do!",
+        "That's how a striker answers.",
+        "I'm still here. Remember that."
+    ],
+    "miss": [
+        "I should have placed that better.",
+        "Not good enough. Again.",
+        "I had that one..."
+    ],
+    "rival": [
+        "Isagi... I won't fall behind you again."
+    ],
+    "flow": [
+        "I can do more."
+    ],
+    "kickoff": [
+        "Let us play a good match."
+    ],
+    "pass": [
+        "Here, keep it moving.",
+        "I am backing you."
+    ],
+    "receive": [
+        "Thank you. My turn."
+    ],
+    "dribble": [
+        "I can get through."
+    ],
+    "dribbleFail": [
+        "You read that well."
+    ],
+    "shot-attempt": [
+        "I will take this chance."
+    ],
+    "defend": [
+        "I am not giving this away."
+    ],
+    "concede": [
+        "We can still recover."
+    ],
+    "passFail": [
+        "You read that well.",
+        "I should have placed that better."
+    ],
+    "foul": [
+        "You read that well."
+    ],
+    "save": [
+        "I am not giving this away."
+    ]
+}
         }
     };
 ;
@@ -455,31 +549,67 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
                 }
             ],
             "dialogue": {
-                "dribble": [
-                    "The shortest route.",
-                    "No wasted touches."
-                ],
-                "twoFooted": [
-                    "Wrong side. You committed.",
-                    "Either foot. Your choice was the mistake."
-                ],
-                "goal": [
-                    "Efficient. As calculated.",
-                    "That was the correct answer."
-                ],
-                "miss": [
-                    "An error. Corrected next time."
-                ],
-                "defend": [
-                    "Read and removed."
-                ],
-                "route": [
-                    "Kaiser, your route is better. Take it."
-                ],
-                "flow": [
-                    "Optimal. Every piece is in place."
-                ]
-            }
+    "dribble": [
+        "Keep it efficient.",
+        "The shortest route.",
+        "No wasted touches."
+    ],
+    "twoFooted": [
+        "Wrong side. You committed.",
+        "Either foot. Your choice was the mistake."
+    ],
+    "goal": [
+        "A rational result.",
+        "Efficient. As calculated.",
+        "That was the correct answer."
+    ],
+    "miss": [
+        "Recalculate.",
+        "An error. Corrected next time."
+    ],
+    "defend": [
+        "Option removed.",
+        "Read and removed."
+    ],
+    "route": [
+        "Kaiser, your route is better. Take it."
+    ],
+    "flow": [
+        "Maintain this standard."
+    ],
+    "kickoff": [
+        "Begin."
+    ],
+    "pass": [
+        "Use this angle.",
+        "Choose the next action."
+    ],
+    "receive": [
+        "Next action."
+    ],
+    "dribbleFail": [
+        "A poor choice."
+    ],
+    "shot-attempt": [
+        "The angle is sufficient."
+    ],
+    "concede": [
+        "Correct the positioning."
+    ],
+    "support": [
+        "Use this angle."
+    ],
+    "passFail": [
+        "A poor choice.",
+        "Recalculate."
+    ],
+    "foul": [
+        "A poor choice."
+    ],
+    "save": [
+        "Option removed."
+    ]
+}
         }
     };
 ;
@@ -600,37 +730,71 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
                 }
             ],
             "dialogue": {
-                "dribble": [
-                    "Monster says go!",
-                    "Ehehe, this way!",
-                    "Bet you didn't see that!"
-                ],
-                "dribbleFail": [
-                    "Aww, you got me!",
-                    "Ugh, that one's on me."
-                ],
-                "create": [
-                    "Space! Somebody take it!",
-                    "There, the monster opened a door!"
-                ],
-                "beeShot": [
-                    "Buzz! Bee Shot!",
-                    "Straight past you!"
-                ],
-                "goal": [
-                    "That was so much fun!",
-                    "Did you see that dance?"
-                ],
-                "miss": [
-                    "Ahh, so close!"
-                ],
-                "flowDribble": [
-                    "One more! The monster's hungry!"
-                ],
-                "flow": [
-                    "I can hear the monster singing!"
-                ]
-            }
+    "dribble": [
+        "Come dance with me!",
+        "Monster says go!",
+        "Ehehe, this way!",
+        "Bet you didn't see that!"
+    ],
+    "dribbleFail": [
+        "You caught me that time!"
+    ],
+    "create": [
+        "Space! Somebody take it!",
+        "There, the monster opened a door!"
+    ],
+    "beeShot": [
+        "Buzz! Bee Shot!",
+        "Straight past you!"
+    ],
+    "goal": [
+        "That was fun!",
+        "That was so much fun!",
+        "Did you see that dance?"
+    ],
+    "miss": [
+        "Oops, a little off!",
+        "Ahh, so close!"
+    ],
+    "flowDribble": [
+        "One more! The monster's hungry!"
+    ],
+    "flow": [
+        "Now we can really play!"
+    ],
+    "kickoff": [
+        "Shall we play?"
+    ],
+    "pass": [
+        "Try something fun with this!",
+        "Show me your next trick!"
+    ],
+    "receive": [
+        "Ooh, my turn!"
+    ],
+    "shot-attempt": [
+        "Let us try this!"
+    ],
+    "defend": [
+        "Mine now!"
+    ],
+    "concede": [
+        "That makes it interesting!"
+    ],
+    "support": [
+        "Try something fun with this!"
+    ],
+    "passFail": [
+        "You caught me that time!",
+        "Oops, a little off!"
+    ],
+    "foul": [
+        "You caught me that time!"
+    ],
+    "save": [
+        "Mine now!"
+    ]
+}
         }
     };
 ;
@@ -713,31 +877,69 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
                 }
             ],
             "dialogue": {
-                "malicia": [
-                    "Gotcha! That's a foul, ref!",
-                    "Heh, Malicia never fails!"
-                ],
-                "maliciaFail": [
-                    "W-wait, he really hit me!",
-                    "Ugh, the ref saw that..."
-                ],
-                "defend": [
-                    "I'm not giving up!",
-                    "Survived another one!"
-                ],
-                "secondBall": [
-                    "Mine! Loose ball's mine!"
-                ],
-                "goal": [
-                    "Did everyone see?! I scored!"
-                ],
-                "miss": [
-                    "Nooo, why not!"
-                ],
-                "flow": [
-                    "Okay... okay! I can survive this!"
-                ]
-            }
+    "malicia": [
+        "Gotcha! That's a foul, ref!",
+        "Heh, Malicia never fails!"
+    ],
+    "maliciaFail": [
+        "W-wait, he really hit me!",
+        "Ugh, the ref saw that..."
+    ],
+    "defend": [
+        "I survived that one!",
+        "I'm not giving up!",
+        "Survived another one!"
+    ],
+    "secondBall": [
+        "Mine! Loose ball's mine!"
+    ],
+    "goal": [
+        "I am still in this!",
+        "Did everyone see?! I scored!"
+    ],
+    "miss": [
+        "No, come on!",
+        "Nooo, why not!"
+    ],
+    "flow": [
+        "I am not done yet!"
+    ],
+    "kickoff": [
+        "Please let this go well!"
+    ],
+    "pass": [
+        "Take it, quick!",
+        "Do not lose it!"
+    ],
+    "receive": [
+        "Okay, okay, I have it!"
+    ],
+    "dribble": [
+        "Just let me through!"
+    ],
+    "dribbleFail": [
+        "Wait, give it back!"
+    ],
+    "shot-attempt": [
+        "Please go in!"
+    ],
+    "concede": [
+        "We can still do this, right?"
+    ],
+    "support": [
+        "Take it, quick!"
+    ],
+    "passFail": [
+        "Wait, give it back!",
+        "No, come on!"
+    ],
+    "foul": [
+        "Wait, give it back!"
+    ],
+    "save": [
+        "I survived that one!"
+    ]
+}
         }
     };
 ;
@@ -878,43 +1080,78 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
                 }
             ],
             "dialogue": {
-                "powerShot": [
-                    "Feel the power of this one.",
-                    "Full force."
-                ],
-                "ambi": [
-                    "Right foot works too."
-                ],
-                "rushVolley": [
-                    "Hit it before it drops!"
-                ],
-                "goal": [
-                    "That's the weight of my shot.",
-                    "I came back for this."
-                ],
-                "miss": [
-                    "Not enough. Hit it harder."
-                ],
-                "defend": [
-                    "You're not getting past me.",
-                    "I'll stay on you all game."
-                ],
-                "secondBall": [
-                    "Second ball's mine!"
-                ],
-                "kuniSecond": [
-                    "Isagi, I'll finish what you start!"
-                ],
-                "dribble": [
-                    "Bounce off."
-                ],
-                "rival": [
-                    "Shidou. I'm marking you."
-                ],
-                "flow": [
-                    "I came back stronger. Watch."
-                ]
-            }
+    "powerShot": [
+        "Feel the power of this one.",
+        "Full force."
+    ],
+    "ambi": [
+        "Right foot works too."
+    ],
+    "rushVolley": [
+        "Hit it before it drops!"
+    ],
+    "goal": [
+        "That is one.",
+        "That's the weight of my shot.",
+        "I came back for this."
+    ],
+    "miss": [
+        "I have to finish those.",
+        "Not enough. Hit it harder."
+    ],
+    "defend": [
+        "You are not getting through.",
+        "You're not getting past me.",
+        "I'll stay on you all game."
+    ],
+    "secondBall": [
+        "Second ball's mine!"
+    ],
+    "kuniSecond": [
+        "Isagi, I'll finish what you start!"
+    ],
+    "dribble": [
+        "I am going through.",
+        "Bounce off."
+    ],
+    "rival": [
+        "Shidou. I'm marking you."
+    ],
+    "flow": [
+        "I will force an opening."
+    ],
+    "kickoff": [
+        "Let us get on with it."
+    ],
+    "pass": [
+        "Take it forward.",
+        "Keep pushing forward."
+    ],
+    "receive": [
+        "I have it."
+    ],
+    "dribbleFail": [
+        "I lost that duel."
+    ],
+    "shot-attempt": [
+        "I will put this away."
+    ],
+    "concede": [
+        "Next play."
+    ],
+    "support": [
+        "Take it forward."
+    ],
+    "passFail": [
+        "I lost that duel."
+    ],
+    "foul": [
+        "I lost that duel."
+    ],
+    "save": [
+        "You are not getting through."
+    ]
+}
         }
     };
 ;
@@ -1043,35 +1280,74 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
                 }
             ],
             "dialogue": {
-                "sprint": [
-                    "Try to keep up.",
-                    "Nobody catches me in open grass."
-                ],
-                "cut": [
-                    "Inside. Too fast for you.",
-                    "You can't turn with me."
-                ],
-                "zone": [
-                    "This is my zone.",
-                    "From here, I don't miss the angle."
-                ],
-                "goal": [
-                    "That's my speed.",
-                    "Caught the wind. Goal."
-                ],
-                "miss": [
-                    "Too hasty. Again.",
-                    "My legs were ready. My shot wasn't."
-                ],
-                "sync": [
-                    "Isagi, put it in front of me!",
-                    "You see it. I'll run it."
-                ],
-                "flow": [
-                    "Nothing holds these legs now.",
-                    "Faster. I can go faster."
-                ]
-            }
+    "sprint": [
+        "Try to keep up.",
+        "Nobody catches me in open grass."
+    ],
+    "cut": [
+        "Inside. Too fast for you.",
+        "You can't turn with me."
+    ],
+    "zone": [
+        "This is my zone.",
+        "From here, I don't miss the angle."
+    ],
+    "goal": [
+        "A little too late.",
+        "That's my speed.",
+        "Caught the wind. Goal."
+    ],
+    "miss": [
+        "I rushed that.",
+        "Too hasty. Again.",
+        "My legs were ready. My shot wasn't."
+    ],
+    "sync": [
+        "Isagi, put it in front of me!",
+        "You see it. I'll run it."
+    ],
+    "flow": [
+        "Keep your eyes on me."
+    ],
+    "kickoff": [
+        "Try keeping up."
+    ],
+    "pass": [
+        "Do not slow this down.",
+        "Try matching my pace."
+    ],
+    "receive": [
+        "Good. Now watch."
+    ],
+    "dribble": [
+        "Still chasing me?"
+    ],
+    "dribbleFail": [
+        "You caught up that time."
+    ],
+    "shot-attempt": [
+        "This angle will do."
+    ],
+    "defend": [
+        "Too slow with that touch."
+    ],
+    "concede": [
+        "We are not finished."
+    ],
+    "support": [
+        "Do not slow this down."
+    ],
+    "passFail": [
+        "You caught up that time.",
+        "I rushed that."
+    ],
+    "foul": [
+        "You caught up that time."
+    ],
+    "save": [
+        "Too slow with that touch."
+    ]
+}
         }
     };
 ;
@@ -1181,26 +1457,63 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "save": [
-                    "Got it.",
-                    "My body moved first."
-                ],
-                "block": [
-                    "Not past me.",
-                    "I'll stop it with everything."
-                ],
-                "scorpion": [
-                    "Any part of me can score.",
-                    "Like this!"
-                ],
-                "goal": [
-                    "I can score too."
-                ],
-                "flow": [
-                    "I can feel where it's going.",
-                    "Shoot. I'll reach it."
-                ]
-            }
+    "save": [
+        "Caught it."
+    ],
+    "block": [
+        "Not past me.",
+        "I'll stop it with everything."
+    ],
+    "scorpion": [
+        "Any part of me can score.",
+        "Like this!"
+    ],
+    "goal": [
+        "In.",
+        "I can score too."
+    ],
+    "flow": [
+        "My body knows."
+    ],
+    "kickoff": [
+        "Ready."
+    ],
+    "pass": [
+        "There.",
+        "Your ball."
+    ],
+    "receive": [
+        "Got it."
+    ],
+    "dribble": [
+        "I fit through here."
+    ],
+    "dribbleFail": [
+        "Slipped away."
+    ],
+    "shot-attempt": [
+        "I can reach it."
+    ],
+    "miss": [
+        "Wrong angle."
+    ],
+    "defend": [
+        "Caught it."
+    ],
+    "concede": [
+        "Get the next one."
+    ],
+    "support": [
+        "There."
+    ],
+    "passFail": [
+        "Slipped away.",
+        "Wrong angle."
+    ],
+    "foul": [
+        "Slipped away."
+    ]
+}
         }
     };
 ;
@@ -1328,34 +1641,75 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "mark": [
-                    "You're mine all game!",
-                    "Go on, try to lose me!"
-                ],
-                "press": [
-                    "Get back here!",
-                    "I'm not tired. Are you?"
-                ],
-                "duel": [
-                    "Out of my way!",
-                    "Too soft!"
-                ],
-                "trap": [
-                    "Isagi! He's got nowhere to go!",
-                    "I pinned him. Finish it!"
-                ],
-                "fail": [
-                    "Tch. Lucky.",
-                    "Next time I flatten you."
-                ],
-                "goal": [
-                    "See that?! That's Raichi!"
-                ],
-                "flow": [
-                    "I'll chase you to the end of the pitch!",
-                    "You don't get one easy touch!"
-                ]
-            }
+    "mark": [
+        "You're mine all game!",
+        "Go on, try to lose me!"
+    ],
+    "press": [
+        "Get back here!",
+        "I'm not tired. Are you?"
+    ],
+    "duel": [
+        "Out of my way!",
+        "Too soft!"
+    ],
+    "trap": [
+        "Isagi! He's got nowhere to go!",
+        "I pinned him. Finish it!"
+    ],
+    "fail": [
+        "Tch. Lucky.",
+        "Next time I flatten you."
+    ],
+    "goal": [
+        "Did you see that?!",
+        "See that?! That's Raichi!"
+    ],
+    "flow": [
+        "Come on, take me on!"
+    ],
+    "kickoff": [
+        "Do not get in my way!"
+    ],
+    "pass": [
+        "Move! Take it!",
+        "Do not waste my pass!"
+    ],
+    "receive": [
+        "About time!"
+    ],
+    "dribble": [
+        "Try stopping me!"
+    ],
+    "dribbleFail": [
+        "Give that back!"
+    ],
+    "shot-attempt": [
+        "I am blasting this!"
+    ],
+    "miss": [
+        "Damn it! Again!"
+    ],
+    "defend": [
+        "You are going nowhere!"
+    ],
+    "concede": [
+        "Get back in position!"
+    ],
+    "support": [
+        "Move! Take it!"
+    ],
+    "passFail": [
+        "Give that back!",
+        "Damn it! Again!"
+    ],
+    "foul": [
+        "Give that back!"
+    ],
+    "save": [
+        "You are going nowhere!"
+    ]
+}
         }
     };
 ;
@@ -1435,27 +1789,66 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
                 }
             ],
             "dialogue": {
-                "blindRun": [
-                    "He never saw me go.",
-                    "Behind you."
-                ],
-                "ghost": [
-                    "Now. While nobody's looking.",
-                    "This is the only way I win."
-                ],
-                "goal": [
-                    "I did it! I really scored!",
-                    "That one's for my family!"
-                ],
-                "miss": [
-                    "Why can't I finish it?!",
-                    "I got there... and wasted it."
-                ],
-                "flow": [
-                    "I'm not going home yet.",
-                    "One more run. One more!"
-                ]
-            }
+    "blindRun": [
+        "He never saw me go.",
+        "Behind you."
+    ],
+    "ghost": [
+        "Now. While nobody's looking.",
+        "This is the only way I win."
+    ],
+    "goal": [
+        "I made it count!",
+        "I did it! I really scored!",
+        "That one's for my family!"
+    ],
+    "miss": [
+        "I have to do better.",
+        "Why can't I finish it?!",
+        "I got there... and wasted it."
+    ],
+    "flow": [
+        "I can still make a difference."
+    ],
+    "kickoff": [
+        "I have to make this count."
+    ],
+    "pass": [
+        "Go, I will follow.",
+        "I will keep up with you."
+    ],
+    "receive": [
+        "I can work with this."
+    ],
+    "dribble": [
+        "Just one opening."
+    ],
+    "dribbleFail": [
+        "I have to try again."
+    ],
+    "shot-attempt": [
+        "This is my chance."
+    ],
+    "defend": [
+        "I will fight for this ball."
+    ],
+    "concede": [
+        "Keep going. We still have a chance."
+    ],
+    "support": [
+        "Go, I will follow."
+    ],
+    "passFail": [
+        "I have to try again.",
+        "I have to do better."
+    ],
+    "foul": [
+        "I have to try again."
+    ],
+    "save": [
+        "I will fight for this ball."
+    ]
+}
         }
     };
 ;
@@ -1523,37 +1916,378 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
                 }
             ],
             "dialogue": {
-                "save": [
-                    "I've got it. Stay calm.",
-                    "Leave that one to me."
-                ],
-                "setPiece": [
-                    "Everyone, mark up! I'm ready.",
-                    "I know where this is going."
-                ],
-                "support": [
-                    "Here, play it simple."
-                ],
-                "goal": [
-                    "Well done, everyone."
-                ],
-                "flow": [
-                    "Nothing gets past the last line.",
-                    "I'll hold. You attack."
-                ]
-            }
+    "save": [
+        "Safe. Move up."
+    ],
+    "setPiece": [
+        "Everyone, mark up! I'm ready.",
+        "I know where this is going."
+    ],
+    "support": [
+        "Here, I am with you."
+    ],
+    "goal": [
+        "Good work, everyone.",
+        "Well done, everyone."
+    ],
+    "flow": [
+        "I will hold things together."
+    ],
+    "kickoff": [
+        "Stay organized, everyone."
+    ],
+    "pass": [
+        "Here, I am with you.",
+        "Keep the team moving."
+    ],
+    "receive": [
+        "I have it covered."
+    ],
+    "dribble": [
+        "There is room to move."
+    ],
+    "dribbleFail": [
+        "Let us win it back."
+    ],
+    "shot-attempt": [
+        "I will try the shot."
+    ],
+    "miss": [
+        "We will get another chance."
+    ],
+    "defend": [
+        "Safe. Move up."
+    ],
+    "concede": [
+        "Reset and help each other."
+    ],
+    "passFail": [
+        "Let us win it back.",
+        "We will get another chance."
+    ],
+    "foul": [
+        "Let us win it back."
+    ]
+}
         }
     };
 ;
 
 // js/players/wataru-kuon/player.js
 // Character player data: Wataru Kuon (ID 12).
-const PLAYER_12_DATA = { id: 12, name: "Wataru Kuon", debutChapter: 1, appearanceOrder: 12, image: "images/wataru-kuon.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"jumping-power","name":"Jumping Power","description":"Uses his vertical leap to reach high balls and challenge opponents in the air.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/character/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:71, off:76, sho:73, spd:79, def:66, pas:70, dri:71, gk:55 } };
+const PLAYER_12_DATA = {
+  "id": 12,
+  "name": "Wataru Kuon",
+  "debutChapter": 1,
+  "appearanceOrder": 12,
+  "image": "images/wataru-kuon.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "jumping-power",
+      "name": "Jumping Power",
+      "description": "Uses his vertical leap to reach high balls and challenge opponents in the air.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "On reachable lofted balls, reacts 0.18 seconds earlier. Running speed and goalkeeper claims still matter.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/character/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 71,
+    "off": 76,
+    "sho": 73,
+    "spd": 79,
+    "def": 66,
+    "pas": 70,
+    "dri": 71,
+    "gk": 55
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "aerial-reach",
+        "name": "Aerial Reach",
+        "label": "AERIAL REACH",
+        "effect": "aerial-reach",
+        "description": "On reachable lofted balls, reacts 0.18 seconds earlier. Running speed and goalkeeper claims still matter.",
+        "params": {
+          "reaction": 0.18
+        },
+        "interpretation": true,
+        "dialogue": "aerial"
+      },
+      {
+        "id": "aerial-dominance",
+        "name": "Aerial Dominance",
+        "label": "AERIAL DOMINANCE",
+        "effect": "flow-state",
+        "description": "In Flow, improves aerial timing on reachable balls. Defenders and goalkeepers can still win.",
+        "params": {
+          "boost": {
+            "aerial-reach": {
+              "reaction": 0.23
+            },
+            "aerial-header": {
+              "technique": 0.14
+            }
+          }
+        },
+        "interpretation": true,
+        "dialogue": "flow"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "high-point-header",
+        "name": "High-Point Header",
+        "label": "HIGH-POINT HEADER",
+        "effect": "aerial-header",
+        "description": "After reaching an airborne cross within 16 m, attempts a header. Blocks, saves and misses remain possible. Cooldown: 8 ticks.",
+        "params": {
+          "maxMetres": 16,
+          "cooldownTicks": 8,
+          "technique": 0.08
+        },
+        "interpretation": true,
+        "dialogue": "header"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "aerial": [
+        "I can reach that height."
+      ],
+      "header": [
+        "At the highest point!"
+      ],
+      "kickoff": [
+        "Let us keep our shape."
+      ],
+      "pass": [
+        "Use the space ahead.",
+        "Keep the shape around it."
+      ],
+      "receive": [
+        "That delivery works."
+      ],
+      "dribble": [
+        "I have a route through."
+      ],
+      "dribbleFail": [
+        "I misjudged the challenge."
+      ],
+      "shot-attempt": [
+        "I will attack this ball."
+      ],
+      "goal": [
+        "The timing worked."
+      ],
+      "miss": [
+        "I need better timing."
+      ],
+      "defend": [
+        "I was watching that lane."
+      ],
+      "concede": [
+        "Let us organize again."
+      ],
+      "flow": [
+        "I can judge the flight clearly."
+      ],
+      "support": [
+        "Use the space ahead."
+      ],
+      "passFail": [
+        "I misjudged the challenge.",
+        "I need better timing."
+      ],
+      "foul": [
+        "I misjudged the challenge."
+      ],
+      "save": [
+        "I was watching that lane."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/yudai-imamura/player.js
 // Character player data: Yudai Imamura (ID 13).
-const PLAYER_13_DATA = { id: 13, name: "Yudai Imamura", debutChapter: 1, appearanceOrder: 13, image: "images/yudai-imamura.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"speed","name":"Speed","category":"physical","description":"Uses running speed to attack open space during Team Z’s early matches.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/character/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."}},{"id":"ball-technique","name":"Ball Technique","category":"technical","description":"Combines controlled touches with his forward runs to carry the ball in Team Z’s early attacks.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/character/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."}}], stats: { ovr:68, off:72, sho:70, spd:76, def:54, pas:67, dri:72, gk:41 } };
+const PLAYER_13_DATA = {
+  "id": 13,
+  "name": "Yudai Imamura",
+  "debutChapter": 1,
+  "appearanceOrder": 13,
+  "image": "images/yudai-imamura.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "speed",
+      "name": "Speed",
+      "category": "physical",
+      "description": "Uses running speed to attack open space during Team Z’s early matches.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "When nearby support is needed, finds an onside passing angle. Markers can close it.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/character/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      }
+    },
+    {
+      "id": "ball-technique",
+      "name": "Ball Technique",
+      "category": "technical",
+      "description": "Combines controlled touches with his forward runs to carry the ball in Team Z’s early attacks.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "In a clear forward lane, keeps closer control during a carry. Defenders can still tackle. Cooldown: 7 ticks.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/character/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 68,
+    "off": 72,
+    "sho": 70,
+    "spd": 76,
+    "def": 54,
+    "pas": 67,
+    "dri": 72,
+    "gk": 41
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "quick-support",
+        "name": "Quick Support",
+        "label": "QUICK SUPPORT",
+        "effect": "support-movement",
+        "description": "When nearby support is needed, finds an onside passing angle. Markers can close it.",
+        "params": {},
+        "interpretation": true,
+        "dialogue": "support"
+      },
+      {
+        "id": "quick-breakthrough",
+        "name": "Quick Breakthrough",
+        "label": "QUICK BREAKTHROUGH",
+        "effect": "flow-state",
+        "description": "In Flow, offers short support and controls open-lane carries better. His running speed still limits him.",
+        "params": {
+          "boost": {
+            "controlled-carry": {
+              "control": 3
+            }
+          }
+        },
+        "interpretation": true,
+        "dialogue": "flow"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "speed-technique-carry",
+        "name": "Speed-and-Technique Carry",
+        "label": "SPEED-AND-TECHNIQUE CARRY",
+        "effect": "controlled-carry",
+        "description": "In a clear forward lane, keeps closer control during a carry. Defenders can still tackle. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7,
+          "control": 2
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "All right, let us go."
+      ],
+      "pass": [
+        "Here you go, keep it flowing.",
+        "Go on, have a go."
+      ],
+      "receive": [
+        "Nice, leave it to me."
+      ],
+      "dribble": [
+        "A little room is all I need."
+      ],
+      "dribbleFail": [
+        "Ah, lost it."
+      ],
+      "shot-attempt": [
+        "I will have a go."
+      ],
+      "goal": [
+        "Hey, that worked!"
+      ],
+      "miss": [
+        "Ah, just off."
+      ],
+      "defend": [
+        "Got that one."
+      ],
+      "concede": [
+        "Come on, plenty of time."
+      ],
+      "flow": [
+        "This feels good."
+      ],
+      "support": [
+        "Here you go, keep it flowing."
+      ],
+      "passFail": [
+        "Ah, lost it.",
+        "Ah, just off."
+      ],
+      "foul": [
+        "Ah, lost it."
+      ],
+      "save": [
+        "Got that one."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/sae-itoshi/player.js
@@ -1568,22 +2302,583 @@ const PLAYER_15_DATA = { id: 15, name: "Shoei Baro", debutChapter: 5, appearance
 
 // js/players/ikki-niko/player.js
 // Character player data: Ikki Niko (ID 16).
-const PLAYER_16_DATA = { id: 16, name: "Ikki Niko", debutChapter: 1, appearanceOrder: 16, image: "images/ikki-niko.jpg", primaryPosition: "CB", positions: ["CB", "DM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"field-awareness","name":"Field Awareness","description":"Observes player movement and passing lanes to anticipate developing attacks.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Ikki_Niko","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"metavision","name":"Metavision","description":"Scans surrounding play to make quicker interceptions and positional decisions.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Ikki_Niko","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"interceptions","name":"Interceptions","category":"technical","description":"Steps into an anticipated passing route and takes the ball before the intended receiver can control it.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","note":"Niko interrupts Japan U-20’s attacking routes in his defensive assignment.","episode":31}}], stats: { ovr:87, off:82, sho:76, spd:78, def:84, pas:88, dri:67, gk:57 } };
+const PLAYER_16_DATA = {
+  "id": 16,
+  "name": "Ikki Niko",
+  "debutChapter": 1,
+  "appearanceOrder": 16,
+  "image": "images/ikki-niko.jpg",
+  "primaryPosition": "CB",
+  "positions": [
+    "CB",
+    "DM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "field-awareness",
+      "name": "Field Awareness",
+      "description": "Observes player movement and passing lanes to anticipate developing attacks.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Within 44 m, reads dangerous passing routes and moves to cover one. Blind-side runs can escape his attention.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Ikki_Niko",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    },
+    {
+      "id": "metavision",
+      "name": "Metavision",
+      "description": "Scans surrounding play to make quicker interceptions and positional decisions.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Within 44 m, reads dangerous passing routes and moves to cover one. Blind-side runs can escape his attention.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Ikki_Niko",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    },
+    {
+      "id": "interceptions",
+      "name": "Interceptions",
+      "category": "technical",
+      "description": "Steps into an anticipated passing route and takes the ball before the intended receiver can control it.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Moves toward an observed passing route before release. The passer can change plans and Niko can arrive late.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "note": "Niko interrupts Japan U-20’s attacking routes in his defensive assignment.",
+        "episode": 31
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 87,
+    "off": 82,
+    "sho": 76,
+    "spd": 78,
+    "def": 84,
+    "pas": 88,
+    "dri": 67,
+    "gk": 57
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.04,
+      "anticipation": 0.45,
+      "defensiveRead": 0.07
+    },
+    "passives": [
+      {
+        "id": "niko-metavision",
+        "name": "Metavision",
+        "label": "METAVISION",
+        "effect": "space-reading",
+        "description": "Within 44 m, reads dangerous passing routes and moves to cover one. Blind-side runs can escape his attention.",
+        "params": {
+          "rangeMeters": 44
+        },
+        "interpretation": true,
+        "dialogue": "read"
+      },
+      {
+        "id": "watchtower-soccer",
+        "name": "Watchtower Soccer",
+        "label": "WATCHTOWER SOCCER",
+        "effect": "watchtower",
+        "description": "Within 44 m, reads dangerous passing routes and moves to cover one. Blind-side runs can escape his attention.",
+        "params": {
+          "rangeMeters": 44
+        },
+        "interpretation": true,
+        "dialogue": "read"
+      },
+      {
+        "id": "anticipatory-interception",
+        "name": "Anticipatory Interception",
+        "label": "ANTICIPATORY INTERCEPTION",
+        "effect": "anticipatory-interception",
+        "description": "Moves toward an observed passing route before release. The passer can change plans and Niko can arrive late.",
+        "params": {
+          "reaction": 0.12
+        },
+        "interpretation": true,
+        "dialogue": "defend"
+      },
+      {
+        "id": "watchtower-command",
+        "name": "Watchtower Command",
+        "label": "WATCHTOWER COMMAND",
+        "effect": "flow-state",
+        "description": "In Flow, tracks threats and anticipates observed routes better. Blind-side movement and physical speed still limit him.",
+        "params": {
+          "awareness": {
+            "vision": 0.04,
+            "anticipation": 0.1
+          },
+          "boost": {
+            "anticipatory-interception": {
+              "reaction": 0.17
+            }
+          }
+        },
+        "interpretation": true,
+        "dialogue": "flow"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "defensive-trap",
+        "name": "Defensive Trap",
+        "label": "DEFENSIVE TRAP",
+        "effect": "defensive-trap",
+        "description": "Baits an observed passing lane for two ticks. A different pass can exploit the space he leaves. Cooldown: 10 ticks.",
+        "params": {
+          "cooldownTicks": 10
+        },
+        "interpretation": true,
+        "dialogue": "trap"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [
+      {
+        "id": "hidden-playmaker-ace",
+        "name": "Hidden Playmaker × Ace",
+        "label": "HIDDEN PLAYMAKER × ACE",
+        "effect": "ace-supply",
+        "description": "With Niko and Okawa active, Niko seeks a useful pass to Okawa. Defenders can intercept. Shared cooldown: 12 ticks.",
+        "params": {
+          "value": 0.012
+        },
+        "interpretation": true,
+        "dialogue": "supply",
+        "members": [
+          16,
+          17
+        ],
+        "cooldownTicks": 12
+      }
+    ],
+    "dialogue": {
+      "read": [
+        "There is another runner."
+      ],
+      "trap": [
+        "Will you choose that lane?"
+      ],
+      "supply": [
+        "Okawa, there is room ahead."
+      ],
+      "kickoff": [
+        "I will watch how you move."
+      ],
+      "pass": [
+        "There is space on that side.",
+        "Look beyond the first option."
+      ],
+      "receive": [
+        "I see the next option."
+      ],
+      "dribble": [
+        "You left a way through."
+      ],
+      "dribbleFail": [
+        "I missed that adjustment."
+      ],
+      "shot-attempt": [
+        "I can try from here."
+      ],
+      "goal": [
+        "You watched the wrong player."
+      ],
+      "miss": [
+        "I misread the opening."
+      ],
+      "defend": [
+        "That was the route you chose."
+      ],
+      "concede": [
+        "I need to read that earlier."
+      ],
+      "flow": [
+        "I can follow the attack now."
+      ],
+      "support": [
+        "There is space on that side."
+      ],
+      "passFail": [
+        "I missed that adjustment.",
+        "I misread the opening."
+      ],
+      "foul": [
+        "I missed that adjustment."
+      ],
+      "save": [
+        "That was the route you chose."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/hibiki-okawa/player.js
 // Character player data: Hibiki Okawa (ID 17).
-const PLAYER_17_DATA = { id: 17, name: "Hibiki Okawa", debutChapter: 1, appearanceOrder: 17, image: "images/hibiki-okawa.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:73, off:78, sho:79, spd:73, def:55, pas:68, dri:73, gk:42 } };
+const PLAYER_17_DATA = {
+  "id": 17,
+  "name": "Hibiki Okawa",
+  "debutChapter": 1,
+  "appearanceOrder": 17,
+  "image": "images/hibiki-okawa.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "super-shooting",
+      "name": "Super Shooting",
+      "category": "technical",
+      "description": "Disrupts a goalkeeper's timing with a feint before releasing his shot.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Within 20 m, delays a shot against a moving goalkeeper. Pressure or a recovering keeper can stop it. Cooldown: 8 ticks.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Hibiki_Okawa",
+        "note": "Named shooting repertoire; game distances, pressure conditions and cooldowns are interpretation."
+      }
+    },
+    {
+      "id": "chip-shot",
+      "name": "Chip Shot",
+      "category": "technical",
+      "description": "Lifts a finish over opponents by striking beneath the ball.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Within 24 m, lifts a shot over an advanced goalkeeper. It can miss or be saved. Cooldown: 10 ticks.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Hibiki_Okawa",
+        "note": "Named shooting repertoire; game distances, pressure conditions and cooldowns are interpretation."
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 73,
+    "off": 78,
+    "sho": 79,
+    "spd": 73,
+    "def": 55,
+    "pas": 68,
+    "dri": 73,
+    "gk": 42
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "strikers-timing",
+        "name": "Striker's Timing",
+        "label": "STRIKER'S TIMING",
+        "effect": "finishing-run",
+        "description": "Near goal, seeks an onside receiving position. Defenders can track the run.",
+        "params": {},
+        "interpretation": true,
+        "dialogue": "support"
+      },
+      {
+        "id": "finishing-instinct",
+        "name": "Finishing Instinct",
+        "label": "FINISHING INSTINCT",
+        "effect": "flow-state",
+        "description": "In Flow, reads finishing positions and selects suitable shots better. Blocks, saves and misses remain possible.",
+        "params": {
+          "boost": {
+            "timed-finish": {
+              "timing": 0.18
+            },
+            "chip-finish": {
+              "timing": 0.18
+            }
+          }
+        },
+        "interpretation": true,
+        "dialogue": "flow"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "super-shooting",
+        "name": "Super Shooting",
+        "label": "SUPER SHOOTING",
+        "effect": "timed-finish",
+        "description": "Within 20 m, delays a shot against a moving goalkeeper. Pressure or a recovering keeper can stop it. Cooldown: 8 ticks.",
+        "params": {
+          "maxMetres": 20,
+          "cooldownTicks": 8,
+          "timing": 0.12
+        },
+        "interpretation": true,
+        "dialogue": "superShot"
+      },
+      {
+        "id": "chip-shot",
+        "name": "Chip Shot",
+        "label": "CHIP SHOT",
+        "effect": "chip-finish",
+        "description": "Within 24 m, lifts a shot over an advanced goalkeeper. It can miss or be saved. Cooldown: 10 ticks.",
+        "params": {
+          "maxMetres": 24,
+          "cooldownTicks": 10,
+          "timing": 0.12
+        },
+        "interpretation": true,
+        "dialogue": "chip"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "superShot": [
+        "Wait... now!"
+      ],
+      "chip": [
+        "Over the keeper."
+      ],
+      "kickoff": [
+        "Get the ball forward."
+      ],
+      "pass": [
+        "Here, build another chance.",
+        "Let us build the next attack."
+      ],
+      "receive": [
+        "Good, I can use this."
+      ],
+      "dribble": [
+        "There is a way through."
+      ],
+      "dribbleFail": [
+        "Lost that one."
+      ],
+      "shot-attempt": [
+        "I will take the finish."
+      ],
+      "goal": [
+        "That is the finish I wanted!"
+      ],
+      "miss": [
+        "I should score from there."
+      ],
+      "defend": [
+        "I will take that ball."
+      ],
+      "concede": [
+        "Get me another chance."
+      ],
+      "flow": [
+        "I can feel the timing."
+      ],
+      "support": [
+        "Here, build another chance."
+      ],
+      "passFail": [
+        "Lost that one."
+      ],
+      "foul": [
+        "Lost that one."
+      ],
+      "save": [
+        "I will take that ball."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/junichi-wanima/player.js
 // Character player data: Junichi Wanima (ID 18).
-const PLAYER_18_DATA = { id: 18, name: "Junichi Wanima", debutChapter: 1, appearanceOrder: 18, image: "images/junichi-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"twin-combination-play","name":"Twin Combination Play","description":"Coordinates runs and exchanges with Keisuke through their practiced understanding.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Junichi_Wanima","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:73, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } };
+const PLAYER_18_DATA = {
+  "id": 18,
+  "name": "Junichi Wanima",
+  "debutChapter": 1,
+  "appearanceOrder": 18,
+  "image": "images/junichi-wanima.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "twin-combination-play",
+      "name": "Twin Combination Play",
+      "description": "Coordinates runs and exchanges with Keisuke through their practiced understanding.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "With both twins active 4–18 m apart, attempts a one-two. Either pass can be intercepted. Shared cooldown: 12 ticks.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Junichi_Wanima",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 73,
+    "off": 76,
+    "sho": 72,
+    "spd": 76,
+    "def": 65,
+    "pas": 72,
+    "dri": 73,
+    "gk": 45
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "combination-awareness",
+        "name": "Combination Awareness",
+        "label": "COMBINATION AWARENESS",
+        "effect": "support-movement",
+        "description": "When nearby support is needed, finds an onside passing angle. Markers can close it.",
+        "params": {},
+        "interpretation": true,
+        "dialogue": "support"
+      },
+      {
+        "id": "silent-synchronization",
+        "name": "Silent Synchronization",
+        "label": "SILENT SYNCHRONIZATION",
+        "effect": "flow-state",
+        "description": "In Flow, improves short support timing. Twin combinations still require Keisuke on the pitch.",
+        "params": {
+          "awareness": {
+            "anticipation": 0.08
+          }
+        },
+        "interpretation": true,
+        "dialogue": "flow"
+      }
+    ],
+    "weapons": [],
+    "ultimates": [],
+    "reactions": [
+      {
+        "id": "eye-contact",
+        "name": "Eye Contact",
+        "label": "EYE CONTACT",
+        "effect": "wall-pass",
+        "description": "With both twins active 4–18 m apart, attempts a one-two. Either pass can be intercepted. Shared cooldown: 12 ticks.",
+        "params": {
+          "minDistance": 4,
+          "maxDistance": 18,
+          "value": 0.012,
+          "returnValue": 0.015,
+          "precision": 0.2
+        },
+        "interpretation": true,
+        "dialogue": "twin",
+        "members": [
+          18,
+          19
+        ],
+        "cooldownTicks": 12
+      }
+    ],
+    "dialogue": {
+      "twin": [
+        "Hnn.",
+        "Grr."
+      ],
+      "kickoff": [
+        "Hmph."
+      ],
+      "pass": [
+        "Hnn.",
+        "Hmph."
+      ],
+      "receive": [
+        "Ngh.",
+        "Hnn."
+      ],
+      "dribble": [
+        "Grr.",
+        "Hnn!"
+      ],
+      "dribbleFail": [
+        "Ngh..."
+      ],
+      "shot-attempt": [
+        "Hnn!"
+      ],
+      "goal": [
+        "Hmph!",
+        "Hnn!"
+      ],
+      "miss": [
+        "Grr..."
+      ],
+      "defend": [
+        "Hnn."
+      ],
+      "concede": [
+        "Ngh."
+      ],
+      "flow": [
+        "Hnn..."
+      ],
+      "support": [
+        "Hnn."
+      ],
+      "passFail": [
+        "Ngh...",
+        "Grr..."
+      ],
+      "foul": [
+        "Ngh..."
+      ],
+      "save": [
+        "Hnn."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/keisuke-wanima/player.js
 // Character player data: Keisuke Wanima (ID 19).
-const PLAYER_19_DATA = { id: 19, name: "Keisuke Wanima", debutChapter: 1, appearanceOrder: 19, image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"twin-combination-play","name":"Twin Combination Play","description":"Coordinates runs and exchanges with Junichi through their practiced understanding.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Keisuke_Wanima","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } };
+const PLAYER_19_DATA = { id: 19, name: "Keisuke Wanima", debutChapter: 1, appearanceOrder: 19, image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"twin-combination-play","name":"Twin Combination Play","description":"Coordinates runs and exchanges with Junichi through their practiced understanding.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Keisuke_Wanima","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } , battleSim: {"dialogue":{"twin":["My brother wants the return pass.","He says: keep the exchange short."]}}};
 ;
 
 // js/players/reo-mikage/player.js

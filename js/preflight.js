@@ -1104,7 +1104,7 @@ check('Mandatory localization release gate covers current visible update copy in
     for(const key of ["Tapping an empty pitch position now opens the active team’s Reserve Picker on both desktop and mobile, with positional fit labels. Desktop uses a compact centered dialog with aligned player identity, position badges, OVR and fit status for cleaner scanning; choosing a reserve still uses existing placement logic and selected-player placement takes priority.","The Changelog release-history sidebar now keeps subversions hidden inside click-to-open version groups, uses a small + / − expansion indicator, and animates each group open/closed.","Opening Settings now keeps the document scrollbar gutter reserved while background scrolling is locked, preventing the page from shifting sideways when the gear panel opens or closes.","Localization is now a mandatory release gate: every new or changed visible UI string, accessibility label and Changelog note must ship in all supported languages before an update is considered complete.","The Share button prepares a dark-blue report image of both teams with their formations, player ratings, captain, chemistry, roster and budget details.","On supported devices, Share opens the native share sheet with the team image and a message containing both team names and the Blue Lock Draft link; if combined sharing is unavailable, it copies the message and link without downloading the image."])assert(changelog.includes(key)&&gate[key],'Localized current Changelog note');
 });
 check('v0.6.9.4 local languages, English canon references and 404 contract',()=>{
-    const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);
+    const window={},sandbox=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),sandbox);vm.runInContext(read('js/i18n/battle-messages.js'),sandbox);
     const messages=window.BLD_MESSAGES;assert(Object.keys(messages).length>1000);
     for(const [key,value] of Object.entries(messages))for(const language of ['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'])assert(key&&typeof value[language]==='string'&&value[language].trim()&&!/[XＸХ]1\d\d|إكس\s*1\d\d|ZXQ|⁇|\[object Object\]/.test(value[language]),'Complete language entry: '+language+' '+key);
     for(const template of window.BLD_MESSAGE_TEMPLATES)for(const language of ['ms','ja','ar','zh-CN','fr','de','ko','pt','ru','es'])assert(typeof template[language]==='string'&&template[language].trim(),'Localized dynamic format '+language);
@@ -1246,7 +1246,7 @@ check('Demonstrated-role audit covers the canon roster without changing gameplay
     `);
 });
 check('v0.6.9.5 localized quote, alias and weapon catalogs preserve reference provenance',()=>{
-    const window={},context=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),context);
+    const window={},context=vm.createContext({window});vm.runInContext(read('js/i18n/messages.js'),context);vm.runInContext(read('js/i18n/battle-messages.js'),context);
     const messages=window.BLD_MESSAGES;
     for(const quote of data.PLAYER_QUOTES)assert(messages[quote.text],'Quote display translation '+quote.playerId);
     for(const aliases of Object.values(data.PLAYER_ALIASES))for(const alias of aliases)assert(messages[alias.name],'Alias display translation '+alias.name);

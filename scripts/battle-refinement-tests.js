@@ -13,7 +13,7 @@ function runRefinementTests(){
   for(const [slot,id] of Object.entries(team.assignment)){
    const p=team.roster.find(p=>p.id===id),part=expected.find(m=>String(m.player.id)===id),rating=h.bs.playerOVR(team,p);
    assert.equal(rating.position,part.effective,'Builder parity '+name+' '+slot);assert.equal(rating.live,rating.position);
-   p.stamina=50;assert.equal(h.bs.playerOVR(team,p).live,Math.round(part.raw*.85));p.stamina=100;
+   p.stamina=50;assert.equal(h.bs.playerOVR(team,p).live,Math.round(part.raw*(.85+.15*.5)));p.stamina=100;
    const point=h.bs.liveFormationPoint(team.slots[slot],n===1);assert(point.x>=12&&point.x<=88&&point.y>=10&&point.y<=90);
   }
  }

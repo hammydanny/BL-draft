@@ -121,34 +121,73 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
                 }
             ],
             "dialogue": {
-                "sprint": [
-                    "Try to keep up.",
-                    "Nobody catches me in open grass."
-                ],
-                "cut": [
-                    "Inside. Too fast for you.",
-                    "You can't turn with me."
-                ],
-                "zone": [
-                    "This is my zone.",
-                    "From here, I don't miss the angle."
-                ],
-                "goal": [
-                    "That's my speed.",
-                    "Caught the wind. Goal."
-                ],
-                "miss": [
-                    "Too hasty. Again.",
-                    "My legs were ready. My shot wasn't."
-                ],
-                "sync": [
-                    "Isagi, put it in front of me!",
-                    "You see it. I'll run it."
-                ],
-                "flow": [
-                    "Nothing holds these legs now.",
-                    "Faster. I can go faster."
-                ]
-            }
+    "sprint": [
+        "Try to keep up.",
+        "Nobody catches me in open grass."
+    ],
+    "cut": [
+        "Inside. Too fast for you.",
+        "You can't turn with me."
+    ],
+    "zone": [
+        "This is my zone.",
+        "From here, I don't miss the angle."
+    ],
+    "goal": [
+        "A little too late.",
+        "That's my speed.",
+        "Caught the wind. Goal."
+    ],
+    "miss": [
+        "I rushed that.",
+        "Too hasty. Again.",
+        "My legs were ready. My shot wasn't."
+    ],
+    "sync": [
+        "Isagi, put it in front of me!",
+        "You see it. I'll run it."
+    ],
+    "flow": [
+        "Keep your eyes on me."
+    ],
+    "kickoff": [
+        "Try keeping up."
+    ],
+    "pass": [
+        "Do not slow this down.",
+        "Try matching my pace."
+    ],
+    "receive": [
+        "Good. Now watch."
+    ],
+    "dribble": [
+        "Still chasing me?"
+    ],
+    "dribbleFail": [
+        "You caught up that time."
+    ],
+    "shot-attempt": [
+        "This angle will do."
+    ],
+    "defend": [
+        "Too slow with that touch."
+    ],
+    "concede": [
+        "We are not finished."
+    ],
+    "support": [
+        "Do not slow this down."
+    ],
+    "passFail": [
+        "You caught up that time.",
+        "I rushed that."
+    ],
+    "foul": [
+        "You caught up that time."
+    ],
+    "save": [
+        "Too slow with that touch."
+    ]
+}
         }
     };

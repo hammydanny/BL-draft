@@ -60,24 +60,58 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
                 }
             ],
             "dialogue": {
-                "save": [
-                    "I've got it. Stay calm.",
-                    "Leave that one to me."
-                ],
-                "setPiece": [
-                    "Everyone, mark up! I'm ready.",
-                    "I know where this is going."
-                ],
-                "support": [
-                    "Here, play it simple."
-                ],
-                "goal": [
-                    "Well done, everyone."
-                ],
-                "flow": [
-                    "Nothing gets past the last line.",
-                    "I'll hold. You attack."
-                ]
-            }
+    "save": [
+        "Safe. Move up."
+    ],
+    "setPiece": [
+        "Everyone, mark up! I'm ready.",
+        "I know where this is going."
+    ],
+    "support": [
+        "Here, I am with you."
+    ],
+    "goal": [
+        "Good work, everyone.",
+        "Well done, everyone."
+    ],
+    "flow": [
+        "I will hold things together."
+    ],
+    "kickoff": [
+        "Stay organized, everyone."
+    ],
+    "pass": [
+        "Here, I am with you.",
+        "Keep the team moving."
+    ],
+    "receive": [
+        "I have it covered."
+    ],
+    "dribble": [
+        "There is room to move."
+    ],
+    "dribbleFail": [
+        "Let us win it back."
+    ],
+    "shot-attempt": [
+        "I will try the shot."
+    ],
+    "miss": [
+        "We will get another chance."
+    ],
+    "defend": [
+        "Safe. Move up."
+    ],
+    "concede": [
+        "Reset and help each other."
+    ],
+    "passFail": [
+        "Let us win it back.",
+        "We will get another chance."
+    ],
+    "foul": [
+        "Let us win it back."
+    ]
+}
         }
     };

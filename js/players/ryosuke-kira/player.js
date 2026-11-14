@@ -72,31 +72,67 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
                 }
             ],
             "dialogue": {
-                "support": [
-                    "I'm here, use me!",
-                    "Keep it simple. I've got your back."
-                ],
-                "responsibility": [
-                    "This one is mine to finish.",
-                    "I won't hide from this chance."
-                ],
-                "aceFinish": [
-                    "Pick the corner. Stay calm."
-                ],
-                "goal": [
-                    "That's how a striker answers.",
-                    "I'm still here. Remember that."
-                ],
-                "miss": [
-                    "Not good enough. Again.",
-                    "I had that one..."
-                ],
-                "rival": [
-                    "Isagi... I won't fall behind you again."
-                ],
-                "flow": [
-                    "My pride's back. Give me the ball."
-                ]
-            }
+    "support": [
+        "Here, keep it moving."
+    ],
+    "responsibility": [
+        "This one is mine to finish.",
+        "I won't hide from this chance."
+    ],
+    "aceFinish": [
+        "Pick the corner. Stay calm."
+    ],
+    "goal": [
+        "That is what I came to do!",
+        "That's how a striker answers.",
+        "I'm still here. Remember that."
+    ],
+    "miss": [
+        "I should have placed that better.",
+        "Not good enough. Again.",
+        "I had that one..."
+    ],
+    "rival": [
+        "Isagi... I won't fall behind you again."
+    ],
+    "flow": [
+        "I can do more."
+    ],
+    "kickoff": [
+        "Let us play a good match."
+    ],
+    "pass": [
+        "Here, keep it moving.",
+        "I am backing you."
+    ],
+    "receive": [
+        "Thank you. My turn."
+    ],
+    "dribble": [
+        "I can get through."
+    ],
+    "dribbleFail": [
+        "You read that well."
+    ],
+    "shot-attempt": [
+        "I will take this chance."
+    ],
+    "defend": [
+        "I am not giving this away."
+    ],
+    "concede": [
+        "We can still recover."
+    ],
+    "passFail": [
+        "You read that well.",
+        "I should have placed that better."
+    ],
+    "foul": [
+        "You read that well."
+    ],
+    "save": [
+        "I am not giving this away."
+    ]
+}
         }
     };
