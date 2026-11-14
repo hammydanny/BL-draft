@@ -96,7 +96,6 @@ const ISAGI_PLAYER_DATA = {
                         "cooldownTicks": 5
                     },
                     "description": "A variation of Direct Shot: Isagi uses his left foot when the far post is blocked."
-                },                    "description": "In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot."
                 }
             ],
             "ultimates": [
