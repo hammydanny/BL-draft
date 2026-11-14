@@ -194,92 +194,95 @@ const ISAGI_PLAYER_DATA = {
         }
     ],
     "dialogue": {
-        "read": [
-            "I can see where the line will be.",
-            "That gap is opening. Now."
-        ],
-        "blindRun": [
-            "He's watching the ball, not me.",
-            "Out of his sight, into the space."
-        ],
-        "directShot": [
-            "Direct Shot!"
-        ],
-        "leftFoot": [
-            "Lefty Shoot!"
-        ],
-        "backHeel": [
-            "Just kidding. I fooled you, genius! My reverse direct... Back Heel Shot!"
-        ],
-        "volley": [
-            "This is my ultimate... Two-Gun Volley!"
-        ],
-        "goal": [
-            "That is my goal!",
-            "That's the route I saw.",
-            "The picture was complete.",
-            "Every piece fit."
-        ],
-        "sync": [
-            "Hiori, you saw it too.",
-            "Same picture, Hiori."
-        ],
-        "hotline": [
-            "Kurona, give it straight back!",
-            "One-two, Kurona!"
-        ],
-        "creative": [
-            "Bachira pulled them away. That space is mine.",
-            "Keep dancing, Bachira. I'm going."
-        ],
-        "rival": [
-            "This time, your angle is better.",
-            "Use it, Kaiser. I'll take the next one."
-        ],
-        "flow": [
-            "The pieces are coming together."
-        ],
-        "kickoff": [
-            "I can build a route from here."
-        ],
-        "pass": [
-            "That lane is open.",
-            "Use that gap."
-        ],
-        "receive": [
-            "I see the next piece."
-        ],
-        "dribble": [
-            "I found the gap."
-        ],
-        "dribbleFail": [
-            "That route was closed."
-        ],
-        "shot-attempt": [
-            "I can finish from here."
-        ],
-        "miss": [
-            "I need a different answer."
-        ],
-        "defend": [
-            "I saw that option."
-        ],
-        "concede": [
-            "I need to reset the picture."
-        ],
-        "support": [
-            "That lane is open."
-        ],
-        "passFail": [
-            "That route was closed.",
-            "I need a different answer."
-        ],
-        "foul": [
-            "That route was closed."
-        ],
-        "save": [
-            "I saw that option."
-        ]
-    }
+    "read": [
+        "I can see where the line will be.",
+        "That gap is opening. Now."
+    ],
+    "blindRun": [
+        "He's watching the ball, not me.",
+        "Out of his sight, into the space."
+    ],
+    "directShot": [
+        "Direct Shot!"
+    ],
+    "leftFoot": [
+        "Lefty Shoot!"
+    ],
+    "backHeel": [
+        "Turn with this... Back Heel Shot!"
+    ],
+    "volley": [
+        "Two-Gun Volley... which foot will you follow?"
+    ],
+    "goal": [
+        "That's it! This goal is mine!",
+        "That is my goal!"
+    ],
+    "sync": [
+        "Hiori, you saw it too.",
+        "Same picture, Hiori."
+    ],
+    "hotline": [
+        "Kurona, give it straight back!",
+        "One-two, Kurona!"
+    ],
+    "creative": [
+        "Bachira pulled them away. That space is mine.",
+        "Keep dancing, Bachira. I'm going."
+    ],
+    "rival": [
+        "This time, your angle is better.",
+        "Use it, Kaiser. I'll take the next one."
+    ],
+    "flow": [
+        "There it is... I can break through!"
+    ],
+    "kickoff": [
+        "I can build a route from here."
+    ],
+    "pass": [
+        "That lane is open.",
+        "Use that gap."
+    ],
+    "receive": [
+        "I see the next piece."
+    ],
+    "dribble": [
+        "I found the gap."
+    ],
+    "dribbleFail": [
+        "That route was closed."
+    ],
+    "shot-attempt": [
+        "This opening... I'll take it!"
+    ],
+    "miss": [
+        "I need a different answer."
+    ],
+    "defend": [
+        "I saw you. You're not slipping past!"
+    ],
+    "concede": [
+        "I need to reset the picture."
+    ],
+    "support": [
+        "That lane is open."
+    ],
+    "passFail": [
+        "No... he read my pass!"
+    ],
+    "foul": [
+        "Tch... I was late to that challenge."
+    ],
+    "save": [
+        "I saw that option."
+    ],
+    "fouled": [
+        "Hey! I was through there!"
+    ],
+    "offside": [
+        "Too early... I have to time that run!"
+    ]
+}
 }
     };

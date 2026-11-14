@@ -78,3 +78,29 @@ input:focus-visible,select:focus-visible{outline-offset:1px}
 
 /* Light symbol pigment fades into the pale page, independently of dark tokens. */
 :root[data-theme="light"] .background-tech:before{background-color:transparent;background-image:linear-gradient(180deg,#78a9cb 0%,#91b7d2 35%,#c2d6e5 70%,#e9f0f7 100%);opacity:.3}
+
+/* Shared, small-surface Flow motion. Unsupported custom-property animation stays static. */
+@property --flow-angle{syntax:"<angle>";initial-value:90deg;inherits:false}
+:root{--flow-angle:90deg;--flow-stops:#ff3b3b,#ff9a1f,#ffe14a,#3ddc5b,#22d3ee,#4b7bff,#a855f7,#ff3fd0}
+html[data-theme="light"]{--flow-stops:#c51e28,#b85e08,#887000,#127d38,#087c94,#294bc5,#7428c8,#b31b91}
+@keyframes flow-spectrum{to{--flow-angle:450deg}}
+.flow-text,[data-kit-kind="flow"] .character-profile-kit-kind,[data-kit-kind="flow"] .character-profile-kit-name,
+.bs-player-profile-weapon[data-profile-ability-type="FLOW"] .bs-player-profile-weapon-type,
+body.bs-game-route .bs-rating-value.is-flowing,body.bs-game-route .is-flowing .bs-rating-value,
+body.bs-game-route .bs-mini-pitch .bs-formation-player.is-flowing .bs-live-ovr>b,
+.bs-flow-meter.is-full .bs-flow-meter-fill,body.bs-game-route .is-flowing .bs-stamina-fill{
+ background-image:linear-gradient(var(--flow-angle),var(--flow-stops))!important;animation:flow-spectrum 24s linear infinite;
+}
+.character-profile-kit-card[data-kit-kind="flow"],
+.character-profile-kit-card[data-kit-kind="flow"] .character-profile-kit-kind{
+ border-color:transparent;border-image:linear-gradient(var(--flow-angle),var(--flow-stops)) 1;animation:flow-spectrum 24s linear infinite;
+}
+body.bs-game-route .bs-stamina-ring.is-flowing{background-image:conic-gradient(from var(--flow-angle),var(--flow-stops));animation:flow-spectrum 24s linear infinite}
+.bs-player-profile-weapon[data-profile-ability-type="FLOW"] .bs-player-profile-weapon-status.is-active{
+ background:linear-gradient(var(--bg-surface,#102132),var(--bg-surface,#102132)) padding-box,linear-gradient(var(--flow-angle),var(--flow-stops)) border-box;animation:flow-spectrum 24s linear infinite;
+}
+@media(prefers-reduced-motion:reduce){
+ .flow-text,.bs-stamina-ring.is-flowing,.bs-rating-value.is-flowing,[data-kit-kind="flow"],[data-kit-kind="flow"] *,
+ .bs-player-profile-weapon[data-profile-ability-type="FLOW"] *,
+ .bs-flow-meter.is-full .bs-flow-meter-fill,body.bs-game-route .is-flowing *{animation:none!important}
+}

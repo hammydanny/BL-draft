@@ -104,53 +104,59 @@ const PLAYER_13_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "kickoff": [
+    "kickoff": [
         "All right, let us go."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Here you go, keep it flowing.",
         "Go on, have a go."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "Nice, leave it to me."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "A little room is all I need."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "Ah, lost it."
-      ],
-      "shot-attempt": [
-        "I will have a go."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "Hey, let's give it a shot!"
+    ],
+    "goal": [
+        "Hey! Not bad, right?!",
         "Hey, that worked!"
-      ],
-      "miss": [
+    ],
+    "miss": [
         "Ah, just off."
-      ],
-      "defend": [
-        "Got that one."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "Thanks! I'll take that off you."
+    ],
+    "concede": [
         "Come on, plenty of time."
-      ],
-      "flow": [
-        "This feels good."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Now we're getting somewhere!"
+    ],
+    "support": [
         "Here you go, keep it flowing."
-      ],
-      "passFail": [
-        "Ah, lost it.",
-        "Ah, just off."
-      ],
-      "foul": [
-        "Ah, lost it."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "Ah, that was a terrible pass."
+    ],
+    "foul": [
+        "Ah, sorry! Caught you there."
+    ],
+    "save": [
         "Got that one."
-      ]
-    }
+    ],
+    "fouled": [
+        "Hey, easy on the legs!"
+    ],
+    "offside": [
+        "Ah, got a bit carried away!"
+    ]
+}
   }
 };

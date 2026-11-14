@@ -276,7 +276,7 @@ function bindStandaloneBuilderPoolUI(){
     bindStandalonePoolCards();
 }
 
-document.getElementById("menuStandaloneBuilder")?.addEventListener("click",openStandaloneBuilder);
+document.getElementById("menuStandaloneBuilder")?.addEventListener("click",event=>{if(!plainNavigationClick(event))return;event.preventDefault();openStandaloneBuilder();});
 
 // Keep the live pool node, focus and its internal scroll stable while the sheet
 // is open. Reconcile the hidden pitch once when it closes.

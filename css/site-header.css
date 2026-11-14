@@ -3,7 +3,7 @@
 body{padding-top:var(--header-height)}
 .site-header{position:fixed;inset:0 0 auto;z-index:1000;height:var(--header-height);background:var(--header-bg);border-bottom:1px solid var(--border-strong)}
 .site-header-inner{position:relative;display:grid;grid-template-columns:220px auto minmax(0,1fr) 120px;align-items:center;gap:16px;width:min(var(--site-width),calc(100% - var(--shell-gutter)*2));height:100%;margin:auto}
-.site-header button,.site-header summary{font-family:"Rajdhani",sans-serif;cursor:pointer}
+.site-header button,.site-header a,.site-header summary{font-family:"Rajdhani",sans-serif;cursor:pointer}
 .site-header-brand{display:flex;align-items:center;gap:10px;width:220px;height:48px;padding:0;background:transparent;border:0;color:var(--text-primary);text-align:left}
 .site-header-brand-logo{display:block;flex:0 0 var(--logo-size);width:var(--logo-size);height:var(--logo-size);object-fit:contain;visibility:hidden}
 html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[data-theme="light"] .site-header-brand-logo[data-logo-theme="light"]{visibility:visible}
@@ -26,9 +26,9 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
     .directory-group>summary.directory-item>span[aria-hidden="true"]{flex:0 0 auto;line-height:1;pointer-events:none}
 }
 .directory-options{animation:site-reveal var(--motion-enter) ease-out both;border-radius:var(--panel-radius);position:absolute;left:0;top:calc(100% + 10px);display:grid;min-width:200px;padding:6px;gap:3px;background:var(--bg-surface);border:1px solid var(--border-strong);box-shadow:var(--shadow-strong)}
-.directory-options button{min-height:44px;padding:8px 12px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;white-space:nowrap}
+.directory-options :is(button,a){min-height:44px;padding:8px 12px;text-align:left;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:1px;white-space:nowrap}
 .directory-options small{display:block;margin-top:3px;color:var(--text-muted);font-size:12px;letter-spacing:.5px}
-.directory-options button:hover,.directory-options button:focus-visible{border-color:var(--border-subtle);background:var(--bg-hover);color:var(--accent-text)}
+.directory-options :is(button,a):hover,.directory-options :is(button,a):focus-visible{border-color:var(--border-subtle);background:var(--bg-hover);color:var(--accent-text)}
 .site-utilities{display:flex;align-items:center;gap:4px;width:calc(76px + var(--utility-size) + 4px)}
 .site-utility{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:var(--utility-size);padding:0 6px;color:var(--text-secondary);background:var(--bg-surface-raised);border:1px solid var(--border-subtle);border-radius:3px;font-size:12px;font-weight:800;white-space:nowrap}
 .site-utility:hover,.site-utility[aria-expanded="true"]{color:var(--accent-text);border-color:var(--accent)}
@@ -43,8 +43,8 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 .settings-toggle[aria-expanded="true"]{position:relative;z-index:6}
 .settings-toggle svg{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
 .site-breadcrumb{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0;color:var(--text-secondary);font-size:12px;font-weight:800;letter-spacing:.5px;white-space:nowrap}
-.site-breadcrumb button{min-height:32px;padding:4px 0;border:0;background:transparent;color:var(--text-muted);font:inherit}
-.site-breadcrumb button:hover{color:var(--accent-text)}
+.site-breadcrumb :is(button,a){min-height:32px;padding:4px 0;border:0;background:transparent;color:var(--text-muted);font:inherit}
+.site-breadcrumb :is(button,a):hover{color:var(--accent-text)}
 .directory-separator{color:var(--text-muted)}
 .directory-menu-toggle,.directory-backdrop{display:none}
 .site-header [hidden],.page-context [hidden]{display:none}
@@ -211,3 +211,5 @@ html[data-theme="dark"] .site-header-brand-logo[data-logo-theme="dark"],html[dat
 :root[data-header-tight] .directory-item,:root[data-header-tight] .directory-width-probe .directory-item,:root[data-header-tight] .directory-group>summary.directory-item{padding-inline:5px;font-size:12px;letter-spacing:0}
 :root[data-header-tight]:not([data-header-compact]) .sound-toggle strong{display:none}
 :root[data-header-tight] .site-directory{gap:0}
+
+.site-header a,.mobile-directory a{text-decoration:none}

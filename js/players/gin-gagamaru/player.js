@@ -103,7 +103,8 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
             ],
             "dialogue": {
     "save": [
-        "Caught it."
+        "Not getting in.",
+        "Stopped that."
     ],
     "block": [
         "Not past me.",
@@ -114,11 +115,11 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "Like this!"
     ],
     "goal": [
-        "In.",
+        "Oh. I scored. Nice.",
         "I can score too."
     ],
     "flow": [
-        "My body knows."
+        "I can feel the ball coming."
     ],
     "kickoff": [
         "Ready."
@@ -137,13 +138,13 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "Slipped away."
     ],
     "shot-attempt": [
-        "I can reach it."
+        "Can hit it from this angle."
     ],
     "miss": [
         "Wrong angle."
     ],
     "defend": [
-        "Caught it."
+        "Got you. That felt good."
     ],
     "concede": [
         "Get the next one."
@@ -152,11 +153,16 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "There."
     ],
     "passFail": [
-        "Slipped away.",
-        "Wrong angle."
+        "Huh. That went the wrong way."
     ],
     "foul": [
-        "Slipped away."
+        "Ah. Hit him, not the ball."
+    ],
+    "fouled": [
+        "Ow. That was my leg."
+    ],
+    "offside": [
+        "Oh. Past the line."
     ]
 }
         }

@@ -64,7 +64,7 @@
 :lang(ar) :is(button,a,summary,label) {
   unicode-bidi:plaintext;
 }
-:lang(ar) :is(.home-button span,.home-text-button,.home-section-link,.directory-item,.directory-options button,
+:lang(ar) :is(.home-button span,.home-text-button,.home-section-link,.directory-item,.directory-options :is(button,a),
   .lore-actions button span,.lore-actions button b,.database-tabs button,.mobile-database-tabs button,
   .formation-actions button span,.builder-more-actions button,.mobile-chemistry-toggle span,.mobile-reserves-toggle span) {
   direction:rtl;
@@ -183,7 +183,7 @@
 :lang(ar) .directory-options,
 :lang(ar) .site-directory { direction:ltr; }
 :lang(ar) .site-settings :is(h2,p,label),
-:lang(ar) .directory-options button,
+:lang(ar) .directory-options :is(button,a),
 :lang(ar) .directory-item:not(.site-header-brand) {
   direction:rtl;
   unicode-bidi:plaintext;

@@ -1,10 +1,13 @@
 // BLUE LOCK DRAFT // SHARED DIRECTORY + PAGE CONTEXT
+function plainNavigationClick(event){return !event.defaultPrevented&&(event.button==null||event.button===0)&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey;}
 function refreshDirectoryResume(){
     const saved=typeof loadSavedData==="function"?loadSavedData():null;
     document.querySelectorAll('[data-directory-action="resume"]').forEach(button=>{
         button.hidden=!saved?.gameActive;
+        if(button.tagName==="A"&&saved?.gameActive&&typeof auctionRouteForSavedState==="function")button.href=canonicalRouteUrl(auctionRouteForSavedState(saved)).href;
     });
 }
+function directorySectionForRoute(route){return route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":["battleSim","battleSimInitializer","battleSimGame","battleSimResults"].includes(route)?"battle-sim":"home";}
 function updateSiteDirectory(screen){
     const informationPage=document.body.dataset.sitePage;
     if(informationPage){
@@ -26,7 +29,7 @@ function updateSiteDirectory(screen){
         const label=playViewTitle(playScreen.dataset.view),section=playViewSection(playScreen.dataset.view);
         setMobilePageContext(label);
         document.querySelectorAll("[data-directory-section]").forEach(item=>{if(item.dataset.directorySection===section)item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");});
-        document.getElementById("siteBreadcrumb").innerHTML=`<button type="button" data-directory-action="home">HOME</button><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
+        document.getElementById("siteBreadcrumb").innerHTML=`<a href="./" data-directory-action="home">HOME</a><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
         if(typeof SiteI18n!=="undefined")SiteI18n.apply(document.getElementById("siteBreadcrumb"));
         refreshDirectoryResume();return;
     }
@@ -35,12 +38,12 @@ function updateSiteDirectory(screen){
         const label=typeof soloKindLabel==="function"&&soloState?soloKindLabel(soloState):soloScreen.dataset.soloKind==="daily"?"DAILY EGO DRAFT":"DRAFT CHALLENGES";
         setMobilePageContext(label);
         document.querySelectorAll("[data-directory-section]").forEach(item=>{if(item.dataset.directorySection==="challenges")item.setAttribute("aria-current","page");else item.removeAttribute("aria-current");});
-        document.getElementById("siteBreadcrumb").innerHTML=`<button type="button" data-directory-action="home">HOME</button><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
+        document.getElementById("siteBreadcrumb").innerHTML=`<a href="./" data-directory-action="home">HOME</a><span class="directory-separator" aria-hidden="true"> / </span><span aria-current="location">${label}</span>`;
         if(typeof SiteI18n!=="undefined")SiteI18n.apply(document.getElementById("siteBreadcrumb"));
         refreshDirectoryResume();return;
     }
     const route=getRouteFromLocation();
-    const section=route.startsWith("auction")?"play":route==="standaloneTeamBuilder"?"builder":route==="lore"?"database":route==="battleSim"?"battle-sim":"home";
+    const section=directorySectionForRoute(route);
     setMobilePageContext(({play:"AUCTION",builder:"TEAM BUILDER",database:"DATABASE","battle-sim":"BATTLE SIM",home:"HOME"})[section]);
     document.querySelectorAll("[data-directory-section]").forEach(item=>{
         if(item.dataset.directorySection===section)item.setAttribute("aria-current","page");
@@ -50,7 +53,7 @@ function updateSiteDirectory(screen){
     const paths={
         menu:[home],auctionSetup:[home,auction,{text:"SETUP"}],auctionRoom:[home,auction,{text:"ROOM"}],
         auctionResults:[home,auction,{text:"RESULTS"}],auctionTeamBuilder:[home,auction,{text:"TEAM BUILDER"}],
-        standaloneTeamBuilder:[home,{text:"TEAM BUILDER"}],battleSim:[home,{text:"BATTLE SIM"}],lore:[home,database]
+        standaloneTeamBuilder:[home,{text:"TEAM BUILDER"}],battleSim:[home,{text:"BATTLE SIM"}],battleSimInitializer:[home,{text:"BATTLE SIM"},{text:"SETUP"}],battleSimGame:[home,{text:"BATTLE SIM"},{text:"LIVE"}],battleSimResults:[home,{text:"BATTLE SIM"},{text:"RESULTS"}],lore:[home,database]
     };
     const crumbs=[...(paths[route]||paths.menu)];
     const quick=route==="auctionSetup"&&new URL(window.location.href).searchParams.get("draft")==="quick";
@@ -64,7 +67,7 @@ function updateSiteDirectory(screen){
     breadcrumb.innerHTML=crumbs.map((crumb,index)=>{
         const divider=index?'<span class="directory-separator" aria-hidden="true"> / </span>':"";
         return divider+(index===crumbs.length-1?`<span aria-current="location">${crumb.text}</span>`:
-            `<button type="button" data-directory-action="${crumb.action}">${crumb.text}</button>`);
+            `<a href="${({home:"./",setup:"auction/setup/",lore:"lore/"})[crumb.action]||"./"}" data-directory-action="${crumb.action}">${crumb.text}</a>`);
     }).join("");
     refreshDirectoryResume();
     const complete=route==="auctionResults";
@@ -89,7 +92,7 @@ function configureTeamBuilderHeader(standalone){
     document.getElementById("formationHeaderStatus").innerHTML=standalone?"<i></i> STANDALONE MODE":"<i></i> TACTICAL MODE";
     document.getElementById("backToResults").hidden=standalone;
     const teamContext=document.getElementById("formationTeamContext");
-    if(standalone)teamContext.innerHTML='<button type="button" class="context-control battle-sim-context" onclick="openBattleSimPage()">Battle Sim</button>';
+    if(standalone)teamContext.innerHTML='<a class="context-control battle-sim-context" href="battle-sim/initializer/">Battle Sim</a>';
     else teamContext.textContent=teamByNumber(formationTeamNumber).name;
     updateSiteDirectory(formationScreen);
 }
@@ -143,24 +146,24 @@ function initSiteDirectory(){
         <div class="mobile-directory-heading"><div><span data-i18n-ignore>BLUE LOCK DRAFT</span><h2 id="mobileDirectoryTitle">Primary directory</h2></div><button type="button" data-directory-close aria-label="Close navigation">×</button></div>
         <nav class="mobile-directory-links" aria-label="Primary directory">
           <div class="mobile-primary-links">
-            <button type="button" data-directory-action="home" data-directory-href="./" data-directory-section="home"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></button>
-            <button type="button" data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></button>
-            <button type="button" data-directory-action="ego-board" data-directory-href="./?play=board" data-directory-section="challenges"><span aria-hidden="true" data-i18n-ignore>03</span><strong>EGO BOARD</strong></button>
-            <button type="button" data-directory-action="battle-sim" data-directory-href="battle-sim/initializer/" data-directory-section="battle-sim"><span aria-hidden="true" data-i18n-ignore>04</span><strong>BATTLE SIM</strong></button>
-            <button type="button" data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder"><span aria-hidden="true" data-i18n-ignore>05</span><strong>TEAM BUILDER</strong></button>
-            <button type="button" data-directory-action="lore" data-directory-href="lore/" data-directory-section="database"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></button>
+            <a data-directory-action="home" data-directory-href="./" data-directory-section="home" href="./"><span aria-hidden="true" data-i18n-ignore>01</span><strong>HOME</strong></a>
+            <a data-directory-action="setup" data-directory-href="auction/setup/" data-directory-section="play" href="auction/setup/"><span aria-hidden="true" data-i18n-ignore>02</span><strong>AUCTION</strong></a>
+            <a data-directory-action="ego-board" data-directory-href="./?play=board" data-directory-section="challenges" href="./?play=board"><span aria-hidden="true" data-i18n-ignore>03</span><strong>EGO BOARD</strong></a>
+            <a data-directory-action="battle-sim" data-directory-href="battle-sim/initializer/" data-directory-section="battle-sim" href="battle-sim/initializer/"><span aria-hidden="true" data-i18n-ignore>04</span><strong>BATTLE SIM</strong></a>
+            <a data-directory-action="builder" data-directory-href="team-builder/" data-directory-section="builder" href="team-builder/"><span aria-hidden="true" data-i18n-ignore>05</span><strong>TEAM BUILDER</strong></a>
+            <a data-directory-action="lore" data-directory-href="lore/" data-directory-section="database" href="lore/"><span aria-hidden="true" data-i18n-ignore>06</span><strong>DATABASE</strong></a>
           </div>
           <div class="mobile-secondary-links">
-            <button type="button" data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick">QUICK DRAFT</button>
-            <button type="button" data-directory-action="vs-cpu" data-directory-href="./?challenge=cpu">VS CPU</button>
-            <button type="button" data-directory-action="draft-duel" data-directory-href="./?play=duel">DRAFT DUEL</button>
-            <button type="button" data-directory-action="daily-draft" data-directory-href="./?challenge=daily">DAILY EGO DRAFT</button>
-            <button type="button" data-directory-action="draft-challenges" data-directory-href="./?play=challenges">DRAFT CHALLENGES</button>
-            <button type="button" data-directory-action="challenge-lab" data-directory-href="./?play=lab">CHALLENGE LAB</button>
-            <button type="button" data-directory-action="ego-record" data-directory-href="./?play=record">EGO RECORD</button>
-            <button type="button" data-directory-action="resume" data-directory-href="auction/room/" hidden>RESUME AUCTION</button>
-            <button type="button" data-directory-action="characters" data-directory-href="lore/?view=characters">CHARACTERS</button>
-            <button type="button" data-directory-action="chemistry" data-directory-href="lore/?view=chemistry">CHEMISTRY</button>
+            <a data-directory-action="quick-draft" data-directory-href="auction/setup/?draft=quick" href="auction/setup/?draft=quick">QUICK DRAFT</a>
+            <a data-directory-action="vs-cpu" data-directory-href="./?challenge=cpu" href="./?challenge=cpu">VS CPU</a>
+            <a data-directory-action="draft-duel" data-directory-href="./?play=duel" href="./?play=duel">DRAFT DUEL</a>
+            <a data-directory-action="daily-draft" data-directory-href="./?challenge=daily" href="./?challenge=daily">DAILY EGO DRAFT</a>
+            <a data-directory-action="draft-challenges" data-directory-href="./?play=challenges" href="./?play=challenges">DRAFT CHALLENGES</a>
+            <a data-directory-action="challenge-lab" data-directory-href="./?play=lab" href="./?play=lab">CHALLENGE LAB</a>
+            <a data-directory-action="ego-record" data-directory-href="./?play=record" href="./?play=record">EGO RECORD</a>
+            <a data-directory-action="resume" data-directory-href="auction/room/" hidden href="auction/room/">RESUME AUCTION</a>
+            <a data-directory-action="characters" data-directory-href="lore/?view=characters" href="lore/?view=characters">CHARACTERS</a>
+            <a data-directory-action="chemistry" data-directory-href="lore/?view=chemistry" href="lore/?view=chemistry">CHEMISTRY</a>
             <button type="button" data-how-to-play>HOW TO PLAY</button>
             <button type="button" data-about>ABOUT</button>
             <a href="changelog/">CHANGELOG</a><a href="privacy/">PRIVACY</a><a href="legal/">LEGAL</a>
@@ -236,7 +239,7 @@ function initSiteDirectory(){
     drawer.addEventListener("keydown",trapSiteDialogFocus);
     drawer.addEventListener("click",event=>{
         const action=event.target.closest("[data-directory-action]");
-        if(action){closeDirectory(true);runDirectoryAction(action.dataset.directoryAction);}
+        if(action){if(!plainNavigationClick(event))return;event.preventDefault();closeDirectory(true);runDirectoryAction(action.dataset.directoryAction);}
         else if(event.target.closest("[data-how-to-play],[data-about]")){
             const about=!!event.target.closest("[data-about]");closeDirectory(true);openInfoModal(about?"about":"how");
         }else if(event.target.closest("a[href]"))closeDirectory(true);
@@ -247,7 +250,7 @@ function initSiteDirectory(){
     }));
     header.addEventListener("click",event=>{
         const action=event.target.closest("[data-directory-action]");
-        if(action){closeDirectory();runDirectoryAction(action.dataset.directoryAction);}
+        if(action){if(!plainNavigationClick(event))return;event.preventDefault();closeDirectory();runDirectoryAction(action.dataset.directoryAction);}
         else if(event.target.closest("[data-how-to-play],[data-about]")){closeDirectory();closeSettings();}
     });
     document.addEventListener("click",event=>{
@@ -260,11 +263,11 @@ function initSiteDirectory(){
             const openGroup=groups.find(group=>group.open);groups.forEach(group=>group.open=false);openGroup?.querySelector("summary").focus();
         }
         if(event.key==="ArrowDown"&&event.target.matches("summary.directory-item")){
-            event.preventDefault();event.target.parentElement.open=true;event.target.parentElement.querySelector("button").focus();
+            event.preventDefault();event.target.parentElement.open=true;event.target.parentElement.querySelector("a,button").focus();
         }
         const options=event.target.closest(".directory-options");
         if(options&&["ArrowDown","ArrowUp","Home","End"].includes(event.key)){
-            event.preventDefault();const controls=[...options.querySelectorAll("button")].filter(button=>!button.hidden);
+            event.preventDefault();const controls=[...options.querySelectorAll("a,button")].filter(button=>!button.hidden);
             const index=controls.indexOf(document.activeElement);
             const next=event.key==="Home"?0:event.key==="End"?controls.length-1:(index+(event.key==="ArrowDown"?1:-1)+controls.length)%controls.length;
             controls[next]?.focus();

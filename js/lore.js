@@ -123,8 +123,26 @@ function battleSimReactionsFor(player){
     }
     return out;
 }
+// Read the same data fields used by the engine; do not infer cooldowns from prose.
+function battleSimUsageMarkup(player,entry,group){
+ const limits=battleSimAbilityLimits(entry,group==="reactions",player),lines=[];
+ const copy=(key,values={})=>{const english=key.replace(/\{(\w+)\}/g,(_,k)=>values[k]??"");return '<span data-battle-message="'+esc(key)+'" data-battle-values="'+esc(JSON.stringify(values))+'" data-battle-english="'+esc(english)+'">'+esc(english)+'</span>';};
+ if(limits.cooldownTicks){lines.push(copy("Cooldown: {ticks} ticks",{ticks:limits.cooldownTicks}));
+  if(limits.flowCooldownTicks!==limits.cooldownTicks)lines.push(copy("During Flow: {ticks} ticks",{ticks:limits.flowCooldownTicks}));
+  if(limits.group){const peers=[...(player.battleSim?.weapons||[]),...(player.battleSim?.specials||[])].filter(a=>a!==entry&&battleSimAbilityLimits(a,false,player).group===limits.group);if(peers.length)lines.push(copy("Shared with: {ability}",{ability:""})+" "+peers.map(a=>copy(a.name)).join(" / "));}
+  if(group==="reactions")lines.push(copy("Shared by both partners"));
+ }
+ if(limits.oncePerFlow)lines.push(copy("Once per Flow activation"));
+ return lines.length?'<p class="character-profile-kit-limit">'+lines.join(" · ")+"</p>":"";
+}
 function characterPersonLink(id){const player=playerById(id);if(!secretPlayerAvailable(player))return "";return `<a class="character-profile-person-link" data-character-id="${id}" href="${characterDossierHref(id)}">${esc(player.name)}</a>`;}
 function dossierSection(code,title,content){return `<section class="character-profile-section"><div class="character-profile-section-heading"><span>${code}</span><h3>${title}</h3></div>${content}</section>`;}
+// Older Isagi records duplicate simulated rules in both description fields.
+// Keep the canonical records intact and display football-only paraphrases here.
+function footballWeaponDescription(player,weapon){
+ const canon={"spatial-metavision":"Uses central and peripheral vision to read the pitch and find space.","direct-shot":"Strikes an incoming pass first-time, without taking a controlling touch.","two-gun-volley":"Feints a volley with one leg before striking with the other.","reverse-back-heel-shot":"Uses a backheel strike to shoot from an unexpected body angle."};
+ return !player.secretCharacter&&Number(player.id)===1&&weapon.description===weapon.battleSimDescription?(canon[weapon.id]||weapon.description):weapon.description;
+}
 function characterLoreProfileMarkup(player){
     const record=playerRecord(player.id),weapons=player.weapons||[],history=[
         ...record.affiliations,
@@ -164,18 +182,14 @@ function characterLoreProfileMarkup(player){
     const kitData=player.battleSim||{};
     const kitKind=(group,entry)=>group==="reactions"?"CHEMICAL REACTION":[entry.effect,...(Array.isArray(entry.effects)?entry.effects:[])].includes("flow-state")?"FLOW":group==="passives"?"PASSIVE":group==="ultimates"?"ULTIMATE":"SPECIAL";
     const kindClass={"PASSIVE":"passive","SPECIAL":"special","ULTIMATE":"ultimate","FLOW":"flow","CHEMICAL REACTION":"reaction"};
-    const kitEntries=["passives","weapons","ultimates"].flatMap(group=>(Array.isArray(kitData[group])?kitData[group]:[]).map(entry=>({group,entry}))).filter(({entry})=>entry&&entry.name&&entry.description);
-    const kitFor=weapon=>kitEntries.find(({entry})=>entry.description===weapon.battleSimDescription||entry.id===weapon.id)||null;
-    const simLine=weapon=>{if(!(weapon.battleSimType&&weapon.battleSimType!=="TBD"))return "";const k=kitFor(weapon);
-        if(!k)return `<p class="character-profile-weapon-battle-sim"><b>BATTLE SIM · ${esc(weapon.battleSimType)}</b> ${esc(weapon.battleSimDescription||"")}</p>`;
-        const kind=kitKind(k.group,k.entry);return `<p class="character-profile-weapon-battle-sim character-profile-weapon-kit-link" data-kit-kind="${kindClass[kind]}"><b>BATTLE SIM</b> <span class="character-profile-kit-kind">${kind}</span> <span class="character-profile-kit-ref">${esc(k.entry.name)}</span></p>`;};
-    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(weapon.description)}</p>${simLine(weapon)}</article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
+    const kitEntries=["passives","specials","weapons","ultimates"].flatMap(group=>(Array.isArray(kitData[group])?kitData[group]:[]).map(entry=>({group,entry}))).filter(({entry})=>entry&&entry.name&&entry.description);
+    const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(footballWeaponDescription(player,weapon))}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
     // Battle Sim kit: every ability the player uses in Battle Sim, in a fixed order (passives, signature
     // moves, ultimate, Flow, then chemical reactions), each with its plain "when / what / limit" description.
     const kindOrder={"PASSIVE":0,"SPECIAL":1,"ULTIMATE":2,"FLOW":3};
     // Chemical reactions: one shared definition (declared in either partner's kit), shown in both dossiers.
     const reactions=battleSimReactionsFor(player).map(({entry,partner})=>({group:"reactions",entry,partner}));
-    const kitCard=({group,entry,partner})=>{const kind=kitKind(group,entry);return `<article class="character-profile-weapon-card character-profile-kit-card" data-kit-kind="${kindClass[kind]}"><div class="character-profile-weapon-heading"><h4 class="character-profile-kit-name">${esc(entry.name)}</h4><span class="character-profile-weapon-kind character-profile-kit-kind" data-weapon-category="battle-sim">${kind}</span></div>${partner?`<p class="character-profile-kit-partner"><span>WITH:</span> ${characterPersonLink(partner.id)}</p>`:""}<p class="character-profile-weapon-description">${esc(entry.description)}</p></article>`;};
+    const kitCard=({group,entry,partner})=>{const kind=kitKind(group,entry);return `<article class="character-profile-weapon-card character-profile-kit-card" data-kit-kind="${kindClass[kind]}"><div class="character-profile-weapon-heading"><h4 class="character-profile-kit-name">${esc(entry.name)}</h4><span class="character-profile-weapon-kind character-profile-kit-kind" data-weapon-category="battle-sim">${kind}</span></div>${partner?`<p class="character-profile-kit-partner"><span>WITH:</span> ${characterPersonLink(partner.id)}</p>`:""}<p class="character-profile-weapon-description">${esc(entry.description)}</p>${battleSimUsageMarkup(player,entry,group)}</article>`;};
     const kitAll=kitEntries.slice().sort((a,b)=>kindOrder[kitKind(a.group,a.entry)]-kindOrder[kitKind(b.group,b.entry)]).concat(reactions);
     const kitCards=kitAll.length?`<h4 class="character-profile-kit-heading">BATTLE SIM KIT</h4><div class="character-profile-weapons-grid character-profile-kit-grid">${kitAll.map(kitCard).join("")}</div>`:"";
     const pairCards=links.map(link=>{
@@ -199,9 +213,9 @@ function characterLoreProfileMarkup(player){
         }
         return `<article class="character-profile-team-card"><div class="character-profile-chemistry-top"><h4>${esc(context.name)}</h4><div class="character-profile-score ${chemistryTier(context.score)}"><small>CONTEXT</small><strong>${context.score}</strong><span>${chemistryTierLabel(context.score)}</span></div></div><p>${esc(context.description)}</p><div class="character-profile-context-members">${membersMarkup}</div></article>`;
     }).join("");
-    return `<div class="character-profile-page"><div class="character-profile-back-row"><button type="button" class="character-profile-back" data-character-back>← ALL CHARACTERS</button><span>PLAYER // DOSSIER ${playerDisplayId(player)}</span></div>
+    return `<div class="character-profile-page"><div class="character-profile-back-row"><a class="character-profile-back" data-character-back href="lore/?view=characters">← ALL CHARACTERS</a><span>PLAYER // DOSSIER ${playerDisplayId(player)}</span></div>
       <section class="character-profile-hero" aria-label="Player identity"><div class="character-profile-portrait"><img data-player-image src="${PLAYER_IMAGE_FALLBACK}" data-portrait-src="${playerImageUrl(player)}" alt="${esc(player.name)}" loading="eager" decoding="async" width="280" height="350"></div><div class="character-profile-overview"><span class="character-profile-kicker">${player.secretCharacter?"SPECIAL DOSSIER // UNLISTED CHARACTER":"FIELD INTELLIGENCE // MANGA APPEARANCE CH. "+player.debutChapter}</span><h2>${esc(player.name)}</h2>${playerAliasesMarkup(player)}${playerNationalityMarkup(player)}<div class="character-profile-positions">${positionBadges(player)}</div><div class="character-profile-ovr"><span>OVERALL RATING</span><strong>${playerOverall(player)}</strong><b class="evaluation-grade">${playerStatGrade(playerOverall(player))}</b></div><p class="character-profile-rating-note">PROJECT RATING // FAN-MADE GAMEPLAY VALUES</p><div class="character-profile-description"><h3>PLAYER PROFILE</h3><p>${esc(characterLoreDescription(player))}</p></div>${(player.quote||quotes.length)?`<div class="character-profile-quote" data-i18n-ignore>${player.quote?`<blockquote>“${esc(player.quote)}”</blockquote>`:""}${quotes.map(quote=>`<blockquote>“${esc(quote.text)}”</blockquote>`).join("")}</div>`:""}<div class="character-profile-categories">${record.categories.map(category=>`<span>${esc(category.label)}</span>`).join("")}</div></div></section>
-      <nav class="character-profile-jump" aria-label="Dossier sections"><a href="#dossier-attributes" aria-current="location">ATTRIBUTES</a><a href="#dossier-positions">POSITIONS</a><a href="#dossier-weapons">PLAYSTYLE</a><a href="#dossier-chemistry">CHEMISTRY</a><a href="#dossier-history">HISTORY</a></nav>
+      <nav class="character-profile-jump" aria-label="Dossier sections"><a href="${characterDossierHref(player.id)}#dossier-attributes" aria-current="location">ATTRIBUTES</a><a href="${characterDossierHref(player.id)}#dossier-positions">POSITIONS</a><a href="${characterDossierHref(player.id)}#dossier-weapons">PLAYSTYLE</a><a href="${characterDossierHref(player.id)}#dossier-chemistry">CHEMISTRY</a><a href="${characterDossierHref(player.id)}#dossier-history">HISTORY</a></nav>
       <div id="dossier-attributes">${dossierSection("01 // PROJECT RATINGS","CORE ATTRIBUTES",`<div class="character-attribute-layout">${playerStatsRadar(player,"lore")}<div class="character-profile-stat-grid">${rows}<p class="character-attribute-note">S 90–100 · A 80–89 · B 70–79 · C 60–69 · D 50–59 · E 40–49 · F 30–39 · G 0–29. GK remains a separate specialist metric.</p></div></div>`)}</div>
       <div id="dossier-positions">${dossierSection("02 // POSITIONAL ANALYSIS","ROLES &amp; EVIDENCE",positions)}</div>
       <div id="dossier-weapons">${dossierSection("03 // WEAPON / PLAYSTYLE","FOOTBALL WEAPONS",weaponCards+kitCards)}</div>
@@ -241,7 +255,7 @@ function renderCharacterLore(){
     const total=revealSecrets?players.filter(player=>player.secretCharacter).length:players.filter(player=>!player.secretCharacter).length;
     const count=document.getElementById("characterLoreCount");if(count)count.textContent=`${filtered.length} / ${total} ${revealSecrets?"SECRET CHARACTERS":"PLAYERS"}`;
 }
-function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);if(characterDirectoryReturn?.view==="chemistry"){const back=grid.querySelector("[data-character-back]");if(back)back.textContent="← CHEMISTRY";}prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
+function renderCharacterProfile(player){stopDossierNavigation();const grid=document.getElementById("characterLoreGrid");if(!grid)return;grid.classList.add("character-lore-profile-grid");grid.innerHTML=characterLoreProfileMarkup(player);if(characterDirectoryReturn?.view==="chemistry"){const back=grid.querySelector("[data-character-back]");if(back){back.textContent="← CHEMISTRY";back.href="lore/?view=chemistry";}}prioritizeVisiblePortraits(grid);trackDossierSections(grid);}
 function syncDatabaseMetadata(title,description){
     document.title=`${title} — Blue Lock Draft`;
     for(const selector of ['meta[name="description"]','meta[property="og:description"]'])document.querySelector(selector)?.setAttribute("content",description);
@@ -292,17 +306,17 @@ function openLoreMenu(options={}){stopDossierNavigation();setVisibleScreen(docum
 function openCharacterLore(options={}){const id=new URL(window.location.href).searchParams.get("character");if(id&&playerById(id)){openCharacterProfileById(id,{...options,skipHistory:true});return;}if(id){updateRoute("lore",{databaseView:"characters",replace:true});return;}setVisibleScreen(document.getElementById("character-lore-screen"),options);renderCharacterLore();restoreCharacterDirectory();syncDatabaseMetadata("Character Database","Search, filter and compare Blue Lock players. Browse fan-made OVR, S–G grades, positions and detailed dossiers.");}
 function openChemistryLore(options={}){stopDossierNavigation();setVisibleScreen(document.getElementById("chemistry-lore-screen"),options);renderChemistryLore();restoreCharacterDirectory();syncDatabaseMetadata("Chemistry Database","Explore player chemistry, relationship tiers and team histories. Check any two players using the existing game model.");}
 function bindLoreUI(){
-    const navigate=event=>{const person=event.target.closest("[data-character-id]");if(!person||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();openCharacterProfileById(person.dataset.characterId);};
+    const navigate=event=>{const person=event.target.closest("[data-character-id]");if(!person||(event.button!=null&&event.button!==0)||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();openCharacterProfileById(person.dataset.characterId);};
     document.getElementById("character-lore-screen")?.addEventListener("click",event=>{
         if(event.target.closest("[data-open-mobile-comparison]")){openMobileCharacterComparison();return;}
-        if(event.target.closest("[data-character-back]")){event.preventDefault();returnToCharacterDirectory();return;}
+        if(event.target.closest("[data-character-back]")){if(!plainNavigationClick(event))return;event.preventDefault();returnToCharacterDirectory();return;}
         const compare=event.target.closest("[data-compare-player]");if(compare){const withinPanel=!!compare.closest(".character-comparison"),withinBar=!!compare.closest(".mobile-compare-bar");toggleCharacterComparison(compare.dataset.comparePlayer);if(withinPanel){const next=document.querySelector(".character-comparison [data-compare-clear]")||document.getElementById("characterLoreSearch");next?.focus({preventScroll:true});}else if(withinBar){(document.querySelector(".mobile-compare-chips button")||document.getElementById("characterLoreSearch"))?.focus({preventScroll:true});}return;}
         if(event.target.closest("[data-compare-clear]")){characterCompareIds.clear();renderCharacterComparison();const status=document.getElementById("characterLoreCompareStatus");if(status)status.textContent="Comparison cleared.";document.getElementById("characterLoreSearch")?.focus();return;}
-        const jump=event.target.closest('.character-profile-jump a');if(jump){event.preventDefault();scrollDossierSection(jump);return;}navigate(event);
+        const jump=event.target.closest('.character-profile-jump a');if(jump){if(!plainNavigationClick(event))return;event.preventDefault();scrollDossierSection(jump);return;}navigate(event);
     });
     document.getElementById("chemistry-lore-screen")?.addEventListener("click",navigate);
     document.getElementById("characterLoreCompareView")?.addEventListener("click",()=>{if(mobileLoreMedia.matches){openMobileCharacterComparison();return;}const panel=document.getElementById("characterLoreComparison");panel?.scrollIntoView({behavior:"instant",block:"start"});const title=document.getElementById("characterCompareTitle");title?.setAttribute("tabindex","-1");title?.focus({preventScroll:true});});
-    document.getElementById("menuLore")?.addEventListener("click",openLoreMenu);document.getElementById("loreCharacters")?.addEventListener("click",openCharacterLore);document.getElementById("loreChemistry")?.addEventListener("click",openChemistryLore);
+    document.getElementById("menuLore")?.addEventListener("click",event=>{if(!plainNavigationClick(event))return;event.preventDefault();openLoreMenu();});document.getElementById("loreCharacters")?.addEventListener("click",event=>{if(!plainNavigationClick(event))return;event.preventDefault();openCharacterLore();});document.getElementById("loreChemistry")?.addEventListener("click",event=>{if(!plainNavigationClick(event))return;event.preventDefault();openChemistryLore();});
     for(const [kind,render] of [["character",renderCharacterLore],["chemistry",renderChemistryLore]]){
         let pending;document.getElementById(kind+"LoreSearch")?.addEventListener("input",()=>{
             const search=document.getElementById(kind+"LoreSearch");
@@ -346,7 +360,7 @@ function setupMobileLore(){
         }
         const nav=document.createElement("nav");nav.className="mobile-database-tabs";nav.setAttribute("aria-label","DATABASE");
         nav.innerHTML=`<a data-mobile-database-view="characters" href="${canonicalRouteUrl("lore",{databaseView:"characters"})}" ${kind==="character"?'aria-current="page"':""}>CHARACTERS</a><a data-mobile-database-view="chemistry" href="${canonicalRouteUrl("lore",{databaseView:"chemistry"})}" ${kind==="chemistry"?'aria-current="page"':""}>CHEMISTRY</a>`;
-        toolbar.before(nav);nav.onclick=event=>{const link=event.target.closest("a");if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();updateRoute("lore",{databaseView:link.dataset.mobileDatabaseView});};
+        toolbar.before(nav);nav.onclick=event=>{const link=event.target.closest("a");if(!link||(event.button!=null&&event.button!==0)||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;event.preventDefault();updateRoute("lore",{databaseView:link.dataset.mobileDatabaseView});};
     }
     const chemistryToolbar=document.querySelector(".chemistry-lore-toolbar");
     if(chemistryToolbar&&!document.getElementById("mobileChemistryCheck")){

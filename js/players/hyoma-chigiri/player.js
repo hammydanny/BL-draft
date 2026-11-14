@@ -134,9 +134,8 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "From here, I don't miss the angle."
     ],
     "goal": [
-        "A little too late.",
-        "That's my speed.",
-        "Caught the wind. Goal."
+        "Still chasing? The ball's already in.",
+        "A little too late."
     ],
     "miss": [
         "I rushed that.",
@@ -148,7 +147,7 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "You see it. I'll run it."
     ],
     "flow": [
-        "Keep your eyes on me."
+        "Blink, and you'll lose me."
     ],
     "kickoff": [
         "Try keeping up."
@@ -167,10 +166,10 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "You caught up that time."
     ],
     "shot-attempt": [
-        "This angle will do."
+        "Just try reaching this corner."
     ],
     "defend": [
-        "Too slow with that touch."
+        "Too slow with that ball."
     ],
     "concede": [
         "We are not finished."
@@ -179,14 +178,19 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "Do not slow this down."
     ],
     "passFail": [
-        "You caught up that time.",
-        "I rushed that."
+        "Tch. That pass killed the pace."
     ],
     "foul": [
-        "You caught up that time."
+        "Yeah, I caught his leg."
     ],
     "save": [
         "Too slow with that touch."
+    ],
+    "fouled": [
+        "You needed a foul to catch me?"
+    ],
+    "offside": [
+        "Too quick off the mark, then."
     ]
 }
         }

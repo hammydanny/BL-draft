@@ -171,62 +171,71 @@ const PLAYER_16_DATA = {
       }
     ],
     "dialogue": {
-      "read": [
+    "read": [
         "There is another runner."
-      ],
-      "trap": [
+    ],
+    "trap": [
         "Will you choose that lane?"
-      ],
-      "supply": [
+    ],
+    "supply": [
         "Okawa, there is room ahead."
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "I will watch how you move."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "There is space on that side.",
         "Look beyond the first option."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "I see the next option."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "You left a way through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "I missed that adjustment."
-      ],
-      "shot-attempt": [
-        "I can try from here."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "You left me a shot."
+    ],
+    "goal": [
+        "You forgot I could score too.",
         "You watched the wrong player."
-      ],
-      "miss": [
+    ],
+    "miss": [
         "I misread the opening."
-      ],
-      "defend": [
-        "That was the route you chose."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I saw you coming. My ball."
+    ],
+    "concede": [
         "I need to read that earlier."
-      ],
-      "flow": [
-        "I can follow the attack now."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "I see it now. Keep trying to hide."
+    ],
+    "support": [
         "There is space on that side."
-      ],
-      "passFail": [
-        "I missed that adjustment.",
-        "I misread the opening."
-      ],
-      "foul": [
-        "I missed that adjustment."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "I didn't see him close that lane."
+    ],
+    "foul": [
+        "I reached in too late."
+    ],
+    "save": [
         "That was the route you chose."
-      ]
-    }
+    ],
+    "fouled": [
+        "You couldn't take the ball cleanly?"
+    ],
+    "interception": [
+        "Exactly where I wanted that pass."
+    ],
+    "offside": [
+        "I lost track of the last defender."
+    ]
+}
   }
 };

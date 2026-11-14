@@ -350,9 +350,9 @@ function targetGoal(number){return{x:number===1?99:1,y:50};}
 function ownGoal(number){return{x:number===1?4:96,y:50};}
 function slotZone(number,slot){return zoneAt(formationStart(number,slot));}
 function inOpponentBox(number,where){const q=point(where);return(number===1?q.x>=83:q.x<=17)&&q.y>=20&&q.y<=80;}
-function dribbleMeters(p){return clamp(.85+effective(p,"spd")*.068,1.4,8.2);}
+function dribbleMeters(p){return sprintSpeed(p)*.8*(.86+.14*clamp(effective(p,"dri"),0,100)/100);}
 function offBallOrder(state){const carrier=state.teams[state.possession]&&playerIn(state.teams[state.possession],state.carrierId);return[...active(state.teams[1]),...active(state.teams[2])].filter(p=>!carrier||p.id!==carrier.id||p.teamNumber!==carrier.teamNumber).map(p=>({p,spd:effective(p,"spd"),id:idOf(p.id)})).sort((a,b)=>b.spd-a.spd||a.p.teamNumber-b.p.teamNumber||a.id.localeCompare(b.id)).map(x=>x.p);}
-function movementMeters(p){return clamp(.75+effective(p,"spd")*.051,1.25,6.1);}
+function movementMeters(p){return sprintSpeed(p)*.6;}
 function receiverPressure(state,number,where){return opposing(state,number).filter(p=>p.role!=="GK"&&distance(p,where)<=RECEIVE_PRESSURE_M).length;}
 // Goalkeeper positioning: on the line between the goal centre and the ball (covering both posts), a few
 // metres off the line as the ball approaches, and further out as a sweeper when play is far away.
@@ -472,7 +472,11 @@ function activateBattleSimUltimate(state,p){
  }
  return null;
 }
+// Central speaker policy: narration is unaffected; both synthetic keepers are silent.
+function canSpeak(p){return !!p&&!isBlueLockMan(p)&&!isBlueLockManId(p.id)&&p.name!=="Blue Lock Man";}
+function dialogueAllowed(state,line){if(!line)return false;const id=idOf(line.playerId);const p=[...(state?.teams?.[1]?.roster||[]),...(state?.teams?.[2]?.roster||[])].find(p=>idOf(p.id)===id);return canSpeak(p||{id,name:String(line.text||"").split(":")[0].trim()});}
 function battleSimAbilityDialogue(p,ability){
+ if(!canSpeak(p))return [];
  return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
 }
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0&&!isBlueLockMan(p)){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;const runtime=battleSimRuntimeState(p);runtime.usedUltimates=[];runtime.flowActivationCount=(Number(runtime.flowActivationCount)||0)+1;}}}}}
@@ -492,10 +496,11 @@ function basicActionDialogue(type,actors,state,options={},roleIndex=0){
   "flow-activation":["I’m in the zone!"],corner:["So close!"],"goal-kick":["That one’s gone wide."],
   kickoff:["Let’s get started!"],play:["Keep moving!"],offside:["I was level!","Hold your run!"],"throw-in":["Too heavy!","Our throw!"]};
  const phrases=lines[type]||["Keep moving!"];
- return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{i+=roleIndex;const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"defend":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:"foul",corner:"miss","goal-kick":"miss",offside:"passFail",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
- if(p.battleSim?.dialogue?.[key]){const line=kitLine(state,p,key,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}];});
+ return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{if(!canSpeak(p))return [];i+=roleIndex;if(type==="offside"&&i>0&&p.battleSim?.dialogue?.kickoff)return [];const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"interception":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:i?"fouled":"foul",corner:"miss","goal-kick":"miss",offside:"offside",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
+ const voiceKey=key==="interception"&&!p.battleSim?.dialogue?.interception?"defend":key==="fouled"&&!p.battleSim?.dialogue?.fouled&&idOf(p.id)==="18"?"foul":key==="offside"&&idOf(p.id)==="18"?"passFail":key;
+ if(p.battleSim?.dialogue?.[voiceKey]){const line=kitLine(state,p,voiceKey,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}];});
 }
-function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","offside","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:((options.dialogue&&options.dialogue.length)?options.dialogue:basicActionDialogue(type,options.actors||[],state,options)).map(d=>d.key?{playerId:idOf(d.playerId),text:String(d.text||""),key:String(d.key)}:{playerId:idOf(d.playerId),text:String(d.text||"")})};if(options.passRoute){
+function addEvent(state,options){const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","offside","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:((options.dialogue&&options.dialogue.length)?options.dialogue:basicActionDialogue(type,options.actors||[],state,options)).filter(Boolean).map(d=>d.key?{playerId:idOf(d.playerId),text:String(d.text||""),key:String(d.key)}:{playerId:idOf(d.playerId),text:String(d.text||"")})};if(options.passRoute){
   const r=options.passRoute;
   event.passRoute={kind:r.kind==="long"?"long":"short",from:point(r.from),to:point(r.to),chemistry:clamp(Number(r.chemistry)||65,0,100)};
  }
@@ -510,6 +515,7 @@ function addEvent(state,options){const type=options.type||"play",actionTypes=new
  event.dialogue=event.dialogue.flatMap(d=>{const p=(options.actors||[]).find(p=>idOf(p.id)===d.playerId);if(!p?.battleSim?.dialogue?.kickoff||d.key)return[d];const roleIndex=Math.max(0,(options.actors||[]).indexOf(p)),chosen=basicActionDialogue(type,[p],state,options,roleIndex);return chosen;});
  if(type==="interception"&&!event.ability){const d=(options.actors||[])[1],read=d&&kitAbility(d,"anticipatory-interception");if(read){const trap=d.battleSimState?.trapUntil>=state.tick?kitAbility(d,"defensive-trap"):null;event.ability=abilityBadge(trap||read,trap?"weapon":"passive");}}
  if(type==="goal"){const gk=keeper(state.teams[options.teamNumber===1?2:1]),line=gk&&kitLine(state,gk,"concede",false);if(line)event.dialogue.push(line);}
+ event.dialogue=event.dialogue.filter(d=>dialogueAllowed(state,d));
  if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);state.events.push(event);return event;}
 
 function stagePendingSetPiece(state){
@@ -527,12 +533,13 @@ function pause(state,reason){
 }
 
 function dialogue(state,p,kind,good){
+ if(!canSpeak(p))return null;
  // Data-driven character lines (localized by key) take precedence over the generic set.
  // Kit-driven lines for every character with a kit (localized by key); generic lines otherwise.
  const key=(kind==="pass"||kind==="receive")&&!good?"passFail":kind==="defend"&&!good?"dribbleFail":kind==="dribble"&&!good?"dribbleFail":kind==="shot"&&!good?"miss":kind==="shot"&&good?"goal":kind;
- if(p.battleSim&&p.battleSim.dialogue&&Array.isArray(p.battleSim.dialogue[key])){const line=kitLine(state,p,key,true);if(line)return line;}
+ if(p.battleSim&&p.battleSim.dialogue&&Array.isArray(p.battleSim.dialogue[key])){const line=kitLine(state,p,key,["shot","flow"].includes(kind));return line;}
  const lines={pass:good?["Here!","One touch!","Play it forward!"]:["Too slow!","I should have seen that!"],receive:good?["Got it!","I’m on it!","Keep moving!"]:["That was difficult to reach!"],dribble:good?["There’s the gap!","Past you!","Can’t catch me!"]:["They closed the lane!","I lost control!"],shot:good?["It’s in!","Yes!","What a finish!"]:["Not enough!","I need to do better!"],"shot-attempt":good?["I’m taking this!","Let’s test the keeper!","Here comes the shot!"]:["I need a better opening!"],flow:good?["I’m in the zone!","This is my moment!","Nothing can stop me now!"]:["I need to find my rhythm!"],defend:good?["Won it back!","Read that!","Not today!"]:["They got away!"],save:good?["I’ve got it!","Safe hands!","Not past me!"]:["Rebound!"]};
- return{playerId:p.id,text:p.name+": "+String.fromCharCode(34)+randomPick(lines[kind]||lines.pass,state.random)+String.fromCharCode(34)};
+ return{playerId:p.id,text:p.name+": "+String.fromCharCode(34)+(lines[kind]||lines.pass)[lineIndex(state,p,kind,(lines[kind]||lines.pass).length)]+String.fromCharCode(34)};
 }
 function opposing(state,number){return active(state.teams[number===1?2:1]);}
 function defenderNear(state,number,where){const list=opposing(state,number).filter(p=>p.role!=="GK");list.sort((a,b)=>(distance(a,where)*1.7-effective(a,"def")*.13-effective(a,"spd")*.05)-(distance(b,where)*1.7-effective(b,"def")*.13-effective(b,"spd")*.05));return list[0]||keeper(state.teams[number===1?2:1]);}
@@ -552,7 +559,7 @@ function lerpPoint(a,b,t){const p=point(a),q=point(b);return{x:p.x+(q.x-p.x)*t,y
 // Projection of `where` onto the segment from->to: metres along it and perpendicular distance.
 function plainPoint(v){return v&&v.x-v.x===0&&v.y-v.y===0?v:point(v);}
 function laneGeometry(from,to,where){const a=plainPoint(from),b=plainPoint(to),q=plainPoint(where),bx=(b.x-a.x)*XM,by=(b.y-a.y)*YM,qx=(q.x-a.x)*XM,qy=(q.y-a.y)*YM,len=Math.max(.001,Math.hypot(bx,by)),along=(qx*bx+qy*by)/len;return{len,along,perp:Math.abs(qx*by-qy*bx)/len};}
-function runSpeed(p,state=match){return 4.4+effective(p,"spd",state)*.036;} // metres per second
+function runSpeed(p,state=match){return sprintSpeed(p,state)*.85;} // metres per second
 function roleGroup(role){
  const r=String(role||"").toUpperCase();
  if(r==="GK")return "GK";if(/^(LWB|RWB|WB|LB|RB)$/.test(r))return "FB";if(/CB/.test(r))return "CB";if(/DM/.test(r))return "DM";
@@ -871,14 +878,17 @@ function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[t
 // One cooldown per reaction identity per team: both partners read and start the same entry.
 function reactionKey(def,teamNumber){return (Number(teamNumber)===2?2:1)+":"+def.id;}
 function reactionReady(state,def,teamNumber){const cd=state.reactionCooldowns&&state.reactionCooldowns[reactionKey(def,teamNumber)];return !(Number(cd)>Number(state.tick));}
-function useReaction(state,def,teamNumber){if(!state.reactionCooldowns||typeof state.reactionCooldowns!=="object")state.reactionCooldowns={};state.reactionCooldowns[reactionKey(def,teamNumber)]=Number(state.tick)+Math.max(1,Number(def.cooldownTicks)||12);}
+function useReaction(state,def,teamNumber){if(!state.reactionCooldowns||typeof state.reactionCooldowns!=="object")state.reactionCooldowns={};state.reactionCooldowns[reactionKey(def,teamNumber)]=Number(state.tick)+battleSimAbilityLimits(def,true).cooldownTicks;}
 
 /* ---------- Character dialogue ---------- */
 // Situational lines from the kit; no line repeats within the last six, minor lines are throttled.
 function kitLine(state,p,key,major){
+ if(!canSpeak(p))return null;
+ // Quiet voices skip some routine actions deterministically; major moments still land.
+ if(!major&&["3","16","18"].includes(idOf(p.id))&&lineIndex(state,p,"silence:"+key,3)!==0)return null;
  const lines=p&&p.battleSim&&p.battleSim.dialogue&&p.battleSim.dialogue[key];if(!Array.isArray(lines)||!lines.length)return null;
  const st=abilityState(p),now=Number(state.tick)||0;
- if(!major&&now-(Number(st.lastLineTick)||-99)<3)return null;
+ if(!major&&now-(Number.isFinite(st.lastLineTick)?st.lastLineTick:-99)<3)return null;
  const fresh=lines.filter(l=>!st.recentLines.includes(l)),others=lines.filter(l=>l!==st.recentLines[st.recentLines.length-1]),pool=fresh.length?fresh:others.length?others:lines,line=pool[lineIndex(state,p,key,pool.length)];
  st.recentLines.push(line);if(st.recentLines.length>6)st.recentLines.shift();st.lastLineTick=now;
  return{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+line+String.fromCharCode(34),key:line};
@@ -1166,7 +1176,7 @@ function moveOffBall(state){
   // Settled players make small, deterministic adjustments instead of freezing or oscillating.
   if(distance(p,target)<.3){const phase=(state.tick+Number(p.id||0))*.7;target={x:p.x+Math.sin(phase)*.3,y:p.y+Math.cos(phase)*.4};}
   // Players far from their job make a longer recovery run (still SPD-based and stamina-costed).
-  const old=point(p),gap=distance(p,target);moveToward(p,target,movementMeters(p)*Math.max(target.sprint||1,1+clamp((gap-6)/18,0,.8))*(1-.45*beatenSeverity(state,p)));
+  const old=point(p),gap=distance(p,target);moveToward(p,target,Math.min(sprintSpeed(p,state),movementMeters(p)*Math.max(target.sprint||1,1+clamp((gap-6)/18,0,.8)))*(1-.45*beatenSeverity(state,p)));
   p.lastMove={x:(p.x-old.x)*XM,y:(p.y-old.y)*YM};   // metres moved this tick (body orientation for disguised finishes)
   if(isBlueLockMan(p))p.stamina=100;else if(!isFlowing(p))p.stamina=clamp(p.stamina-distance(old,p)*.007,0,100);
  });
@@ -1645,8 +1655,8 @@ function ballOutOfPlay(state,carrier,receiver,raw,route){
    behind them react later. Whoever can first physically reach the ball's path wins it; nobody is
    moved further than they could run in the ball's travel time. Distances are virtual-pitch metres. */
 const BALL_ROLL_DECEL=1.7,THROUGH_ARRIVAL_SPEED=6.5,LOFTED_SPEED=19,CONTROL_RADIUS_M=1.1,KEEPER_REACH_M=1.9,THROUGH_STEP_M=1.5;
-function sprintSpeed(p,state=match){return 4.3+effective(p,"spd",state)*.048;}  // metres per second (SPD 60 ≈ 7.2, 90 ≈ 8.6)
-function sprintAccel(p,state=match){return 3.9+effective(p,"spd",state)*.02;}   // metres per second²
+function sprintSpeed(p,state=match){return clamp(1.1+effective(p,"spd",state)*.0875,3.4,10.2);}  // metres per second (SPD 60 ≈ 7.2, 90 ≈ 8.6)
+function sprintAccel(p,state=match){return 2.9+effective(p,"spd",state)*.032;}   // metres per second²
 function timeToCover(dist,vmax,acc,v0=0){
  dist=Math.max(0,dist);v0=Math.min(Math.max(0,v0),vmax);
  const ta=(vmax-v0)/acc,da=(v0+vmax)/2*ta;
@@ -2583,7 +2593,7 @@ function battleSimProfileStatus(player,type,abilityId,state=match){
    return{label:"READY THIS FLOW",kind:"ready"};
   }
   if(entry.effect==="flow-state")return isFlowing(player)?{label:"IN EFFECT",kind:"active"}:{label:"REQUIRES FLOW",kind:"inactive"};
-  if(entry.params&&entry.params.cooldownTicks){const cd=runtime.cooldowns||{},group=kitParam(entry,"cooldownGroup",entry.id),end=Math.max(Number(cd[group])||0,Number(cd[entry.id])||0,group==="direct-shot"?Number(cd["left-footed-direct-shot"])||0:0),left=Math.max(0,end-tick);return left>0?{label:"ON COOLDOWN · "+left+" TICKS LEFT",kind:"cooldown",ticksLeft:left}:{label:"READY",kind:"ready",ticksLeft:0};}
+  if(entry.params&&entry.params.cooldownTicks){const cd=runtime.cooldowns||{},group=kitParam(entry,"cooldownGroup",entry.id),end=Math.max(Number(cd[group])||0,Number(cd[entry.id])||0,Number(cd[entry.effect])||0,group==="direct-shot"?Number(cd["left-footed-direct-shot"])||0:0),left=Math.max(0,end-tick);return left>0?{label:"ON COOLDOWN · "+left+" TICKS LEFT",kind:"cooldown",ticksLeft:left}:{label:"READY",kind:"ready",ticksLeft:0};}
   return type==="PASSIVE"?{label:"IN EFFECT",kind:"active"}:{label:"READY",kind:"ready",ticksLeft:0};
  }
  if(type==="PASSIVE"){
@@ -2923,7 +2933,7 @@ function renderEvent(event,archive){
   });
   put(panel,list);put(item,panel);
  }
-if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.forEach(line=>{
+if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.filter(line=>dialogueAllowed(match,line)).forEach(line=>{
   // Character lines carry their source key and are shown in the reader's language.
   if(line.key&&line.text.endsWith(String.fromCharCode(34)+line.key+String.fromCharCode(34))){const p=make("p","bs-event-line"),speaker=line.text.slice(0,line.text.length-line.key.length-2),quote=make("span","bs-event-line-text",line.key);quote.dataset.battleMessage=line.key;quote.dataset.battleEnglish=line.key;p.append(speaker+String.fromCharCode(8220),quote,String.fromCharCode(8221));put(lines,p);}
   else put(lines,make("p","",line.text));});put(item,lines);}

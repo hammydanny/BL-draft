@@ -83,9 +83,8 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "Pick the corner. Stay calm."
     ],
     "goal": [
-        "That is what I came to do!",
-        "That's how a striker answers.",
-        "I'm still here. Remember that."
+        "There! That's what I can do!",
+        "That is what I came to do!"
     ],
     "miss": [
         "I should have placed that better.",
@@ -96,7 +95,7 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "Isagi... I won't fall behind you again."
     ],
     "flow": [
-        "I can do more."
+        "I'm not settling for just keeping up!"
     ],
     "kickoff": [
         "Let us play a good match."
@@ -115,23 +114,28 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "You read that well."
     ],
     "shot-attempt": [
-        "I will take this chance."
+        "Watch me finish this!"
     ],
     "defend": [
-        "I am not giving this away."
+        "Sorry, I'm taking that ball!"
     ],
     "concede": [
         "We can still recover."
     ],
     "passFail": [
-        "You read that well.",
-        "I should have placed that better."
+        "That should have reached you..."
     ],
     "foul": [
-        "You read that well."
+        "All right, that's my foul."
     ],
     "save": [
         "I am not giving this away."
+    ],
+    "fouled": [
+        "Referee, he stopped me!"
+    ],
+    "offside": [
+        "Offside? I went too soon."
     ]
 }
         }

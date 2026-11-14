@@ -127,23 +127,20 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "Either foot. Your choice was the mistake."
     ],
     "goal": [
-        "A rational result.",
-        "Efficient. As calculated.",
-        "That was the correct answer."
+        "That's how it's done.",
+        "Good. Now do it again."
     ],
     "miss": [
-        "Recalculate.",
-        "An error. Corrected next time."
+        "I won't waste the next one."
     ],
     "defend": [
-        "Option removed.",
-        "Read and removed."
+        "You took too long."
     ],
     "route": [
         "Kaiser, your route is better. Take it."
     ],
     "flow": [
-        "Maintain this standard."
+        "Keep up. I won't wait."
     ],
     "kickoff": [
         "Begin."
@@ -159,7 +156,7 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "A poor choice."
     ],
     "shot-attempt": [
-        "The angle is sufficient."
+        "I'll finish it here."
     ],
     "concede": [
         "Correct the positioning."
@@ -168,14 +165,19 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "Use this angle."
     ],
     "passFail": [
-        "A poor choice.",
-        "Recalculate."
+        "That pass was careless."
     ],
     "foul": [
-        "A poor choice."
+        "A late challenge. My fault."
     ],
     "save": [
         "Option removed."
+    ],
+    "fouled": [
+        "A foul. Your decision."
+    ],
+    "offside": [
+        "I mistimed the run."
     ]
 }
         }

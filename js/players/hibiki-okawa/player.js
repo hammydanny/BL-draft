@@ -122,58 +122,65 @@ const PLAYER_17_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "superShot": [
+    "superShot": [
         "Wait... now!"
-      ],
-      "chip": [
+    ],
+    "chip": [
         "Over the keeper."
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "Get the ball forward."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Here, build another chance.",
         "Let us build the next attack."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "Good, I can use this."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "There is a way through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "Lost that one."
-      ],
-      "shot-attempt": [
-        "I will take the finish."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "Watch this finish!"
+    ],
+    "goal": [
+        "That's your ace! Remember it!",
         "That is the finish I wanted!"
-      ],
-      "miss": [
+    ],
+    "miss": [
         "I should score from there."
-      ],
-      "defend": [
-        "I will take that ball."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I'll win it myself, then!"
+    ],
+    "concede": [
         "Get me another chance."
-      ],
-      "flow": [
-        "I can feel the timing."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Give me the chance. I'll take it on!"
+    ],
+    "support": [
         "Here, build another chance."
-      ],
-      "passFail": [
-        "Lost that one."
-      ],
-      "foul": [
-        "Lost that one."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "That pass wasn't good enough."
+    ],
+    "foul": [
+        "Tch. Fine, it was a foul."
+    ],
+    "save": [
         "I will take that ball."
-      ]
-    }
+    ],
+    "fouled": [
+        "You stopped a scoring chance there!"
+    ],
+    "offside": [
+        "Wait, I was offside there?"
+    ]
+}
   }
 };

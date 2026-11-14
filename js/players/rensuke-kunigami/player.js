@@ -144,8 +144,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Hit it before it drops!"
     ],
     "goal": [
-        "That is one.",
-        "That's the weight of my shot.",
+        "I'm taking the next one too.",
         "I came back for this."
     ],
     "miss": [
@@ -153,9 +152,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Not enough. Hit it harder."
     ],
     "defend": [
-        "You are not getting through.",
-        "You're not getting past me.",
-        "I'll stay on you all game."
+        "You're not shaking me off."
     ],
     "secondBall": [
         "Second ball's mine!"
@@ -171,7 +168,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Shidou. I'm marking you."
     ],
     "flow": [
-        "I will force an opening."
+        "I'm breaking through. Move."
     ],
     "kickoff": [
         "Let us get on with it."
@@ -187,7 +184,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "I lost that duel."
     ],
     "shot-attempt": [
-        "I will put this away."
+        "Try stopping this shot."
     ],
     "concede": [
         "Next play."
@@ -196,13 +193,19 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Take it forward."
     ],
     "passFail": [
-        "I lost that duel."
+        "Tch. I gave that away."
     ],
     "foul": [
-        "I lost that duel."
+        "Fine. Call the foul."
     ],
     "save": [
         "You are not getting through."
+    ],
+    "fouled": [
+        "Get off me."
+    ],
+    "offside": [
+        "Tch. Too far ahead."
     ]
 }
         }

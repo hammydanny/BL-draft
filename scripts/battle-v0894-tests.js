@@ -170,7 +170,7 @@ function reactionTests(){
 function dossierTests(){
  const src=fs.readFileSync(path.join(root,'js/lore.js'),'utf8');
  assert(/character-profile-kit-partner/.test(src)&&/WITH:/.test(src),'dossier reaction cards name the partner');
- assert(/kindOrder/.test(src)&&/character-profile-weapon-kit-link/.test(src),'weapon cards link to kit cards instead of repeating descriptions');
+ assert(/kindOrder/.test(src)&&!/const simLine=/.test(src)&&!src.includes("${simLine(weapon)}"),'football weapon cards keep canon descriptions without duplicated sim copy');
  const css=fs.readFileSync(path.join(root,'style.css'),'utf8');assert(/flow-text[\s\S]*background-clip:text/.test(css)&&/@supports/.test(css),'rainbow Flow text with a fallback');
  const bs=fs.readFileSync(path.join(root,'js/battle-sim.js'),'utf8');const mini=bs.slice(bs.indexOf('function renderMiniFormation'),bs.indexOf('function renderMiniFormation')+2500);assert(!/number===2,liveFormationPoint|number===2,"bs-mini/.test(mini),'mini formations share one orientation (forwards top, goalkeeper bottom)');
  console.log('PASS v0.8.9.4 presentation: partner lines, kit references, rainbow Flow with fallback, one mini-formation orientation');

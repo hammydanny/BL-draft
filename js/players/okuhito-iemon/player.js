@@ -61,7 +61,7 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
             ],
             "dialogue": {
     "save": [
-        "Safe. Move up."
+        "Stopped it! Stay with the rebound!"
     ],
     "setPiece": [
         "Everyone, mark up! I'm ready.",
@@ -71,11 +71,11 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
         "Here, I am with you."
     ],
     "goal": [
-        "Good work, everyone.",
+        "Yes! We needed that one!",
         "Well done, everyone."
     ],
     "flow": [
-        "I will hold things together."
+        "I've got your backs. Keep going!"
     ],
     "kickoff": [
         "Stay organized, everyone."
@@ -94,23 +94,28 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
         "Let us win it back."
     ],
     "shot-attempt": [
-        "I will try the shot."
+        "There's a chance! I'll try it!"
     ],
     "miss": [
         "We will get another chance."
     ],
     "defend": [
-        "Safe. Move up."
+        "Got it! Everybody, move up!"
     ],
     "concede": [
         "Reset and help each other."
     ],
     "passFail": [
-        "Let us win it back.",
-        "We will get another chance."
+        "My mistake! I'll help win it back."
     ],
     "foul": [
-        "Let us win it back."
+        "Sorry. I got there late."
+    ],
+    "fouled": [
+        "Ref, that caught my foot."
+    ],
+    "offside": [
+        "Hold the run a moment longer."
     ]
 }
         }

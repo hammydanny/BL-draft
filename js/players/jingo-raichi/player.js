@@ -141,11 +141,12 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Next time I flatten you."
     ],
     "goal": [
+        "HAH! Now who's just a defender?!",
         "Did you see that?!",
         "See that?! That's Raichi!"
     ],
     "flow": [
-        "Come on, take me on!"
+        "Come on! I'll chase you all game!"
     ],
     "kickoff": [
         "Do not get in my way!"
@@ -164,12 +165,13 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Give that back!"
     ],
     "shot-attempt": [
-        "I am blasting this!"
+        "Move! I'm shooting!"
     ],
     "miss": [
         "Damn it! Again!"
     ],
     "defend": [
+        "HAH! You thought you'd get past me?!",
         "You are going nowhere!"
     ],
     "concede": [
@@ -179,14 +181,19 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Move! Take it!"
     ],
     "passFail": [
-        "Give that back!",
-        "Damn it! Again!"
+        "Oi! I gave that straight to them!"
     ],
     "foul": [
-        "Give that back!"
+        "What?! I was going for the ball!"
     ],
     "save": [
         "You are going nowhere!"
+    ],
+    "fouled": [
+        "Oi! Play the ball, then!"
+    ],
+    "offside": [
+        "Tch! Next time, get the timing right!"
     ]
 }
         }

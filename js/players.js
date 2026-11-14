@@ -222,3 +222,10 @@ function positionRatingGrid(player){
     return `<div class="position-rating ${canon?"canon":""} ${primary?"primary":""}"><span>${pos}</span><strong>${score}</strong></div>`;
   }).join("")}</div>`;
 }
+
+// Shared presentation/runtime limit metadata. Reactions use the engine's existing 12-tick default.
+function battleSimAbilityLimits(entry,reaction=false,player=null){
+ const a=entry||{},ticks=reaction?Math.max(1,Number(a.cooldownTicks)||12):Math.max(0,Number(a.params?.cooldownTicks??a.cooldownTicks)||0);
+ const flow=(player?.battleSim?.passives||[]).find(p=>p.effect==="flow-state"||(p.effects||[]).includes("flow-state")),boost=flow?.params?.boost?.[a.effect||a.id];
+ return {cooldownTicks:ticks,flowCooldownTicks:Math.max(0,Number(boost?.cooldownTicks??a.flowParams?.cooldownTicks??ticks)||0),group:a.params?.cooldownGroup||null,oncePerFlow:!!a.oncePerFlow};
+}

@@ -81,6 +81,7 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "This is the only way I win."
     ],
     "goal": [
+        "Yes! I can score here too!",
         "I made it count!",
         "I did it! I really scored!",
         "That one's for my family!"
@@ -91,7 +92,7 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "I got there... and wasted it."
     ],
     "flow": [
-        "I can still make a difference."
+        "Look at me! I'm still in this!"
     ],
     "kickoff": [
         "I have to make this count."
@@ -110,10 +111,10 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "I have to try again."
     ],
     "shot-attempt": [
-        "This is my chance."
+        "Come on... I have to score this!"
     ],
     "defend": [
-        "I will fight for this ball."
+        "I'm not letting you have it!"
     ],
     "concede": [
         "Keep going. We still have a chance."
@@ -122,14 +123,19 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "Go, I will follow."
     ],
     "passFail": [
-        "I have to try again.",
-        "I have to do better."
+        "No, that was my chance to help!"
     ],
     "foul": [
-        "I have to try again."
+        "I couldn't stop in time..."
     ],
     "save": [
         "I will fight for this ball."
+    ],
+    "fouled": [
+        "Hey, I was still going!"
+    ],
+    "offside": [
+        "I found the gap... just too early."
     ]
 }
         }

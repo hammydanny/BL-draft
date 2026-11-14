@@ -10,7 +10,7 @@ function runInformationNavigationTests(){
   if(file==='404.html')vm.runInNewContext(/<script>([\s\S]*?)<\/script>/.exec(html)[1],{URL,location:pageUrl,document:{querySelector:()=>baseNode}});
   const baseURI=baseNode.href;
   const buttons=new Map();
-  for(const tag of html.matchAll(/<button\b[^>]*>/g)){
+  for(const tag of html.matchAll(/<(?:button|a)\b[^>]*>/g)){
    const action=/data-directory-action="([^"]+)"/.exec(tag[0])?.[1],href=/data-directory-href="([^"]+)"/.exec(tag[0])?.[1];if(action&&href)buttons.set(action,href);
   }
   let assigned=null;

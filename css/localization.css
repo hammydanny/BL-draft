@@ -8,7 +8,7 @@
 .preference-options label{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.3}
 .page-context-team{max-width:100%;overflow-wrap:anywhere}.players-remaining{flex-wrap:wrap}
 .site-breadcrumb{min-width:0;max-width:100%;overflow:hidden}.site-breadcrumb>[aria-current]{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.directory-options button{white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.directory-options :is(button,a){white-space:normal;overflow-wrap:anywhere;line-height:1.3}
 :root .site-directory.directory-width-probe{position:fixed;left:-20000px;top:0;display:flex;width:max-content;height:auto;max-height:none;overflow:visible;padding:0;gap:4px;border:0}
 :root .directory-width-probe .directory-item{width:max-content;min-width:0;white-space:nowrap;padding-inline:12px;flex-shrink:0}
 .directory-width-probe .directory-options{display:none}
@@ -19,7 +19,7 @@
 :lang(ar) .page-context,:lang(ar) .site-directory,:lang(ar) .site-settings,:lang(ar) .character-profile-content,:lang(ar) .home-shell,:lang(ar) .site-footer{ text-align:start }
 :lang(ar) h1,:lang(ar) h2,:lang(ar) h3,:lang(ar) button,:lang(ar) label,:lang(ar) summary,:lang(ar) .page-context-code,:lang(ar) .page-context-status{letter-spacing:0}
 :lang(ar) .page-context h1,:lang(ar) .home-mode-title,:lang(ar) .character-profile-overview h2{font-style:normal;line-height:1.25}
-:lang(ar) .directory-options button{text-align:start}
+:lang(ar) .directory-options :is(button,a){text-align:start}
 :lang(ar) .site-header-brand{direction:ltr}
 :lang(ar) .primary-button>b,:lang(ar) .home-button>b,:lang(ar) .home-preview-controls button[data-preview-step]{transform:scaleX(-1)}
 :lang(zh-CN),:lang(ja){line-break:strict}:lang(ko){word-break:keep-all;overflow-wrap:anywhere}

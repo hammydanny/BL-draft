@@ -197,93 +197,96 @@ const ISAGI_PLAYER_DATA = {
         }
     ],
     "dialogue": {
-        "read": [
-            "I can see where the line will be.",
-            "That gap is opening. Now."
-        ],
-        "blindRun": [
-            "He's watching the ball, not me.",
-            "Out of his sight, into the space."
-        ],
-        "directShot": [
-            "Direct Shot!"
-        ],
-        "leftFoot": [
-            "Lefty Shoot!"
-        ],
-        "backHeel": [
-            "Just kidding. I fooled you, genius! My reverse direct... Back Heel Shot!"
-        ],
-        "volley": [
-            "This is my ultimate... Two-Gun Volley!"
-        ],
-        "goal": [
-            "That is my goal!",
-            "That's the route I saw.",
-            "The picture was complete.",
-            "Every piece fit."
-        ],
-        "sync": [
-            "Hiori, you saw it too.",
-            "Same picture, Hiori."
-        ],
-        "hotline": [
-            "Kurona, give it straight back!",
-            "One-two, Kurona!"
-        ],
-        "creative": [
-            "Bachira pulled them away. That space is mine.",
-            "Keep dancing, Bachira. I'm going."
-        ],
-        "rival": [
-            "This time, your angle is better.",
-            "Use it, Kaiser. I'll take the next one."
-        ],
-        "flow": [
-            "The pieces are coming together."
-        ],
-        "kickoff": [
-            "I can build a route from here."
-        ],
-        "pass": [
-            "That lane is open.",
-            "Use that gap."
-        ],
-        "receive": [
-            "I see the next piece."
-        ],
-        "dribble": [
-            "I found the gap."
-        ],
-        "dribbleFail": [
-            "That route was closed."
-        ],
-        "shot-attempt": [
-            "I can finish from here."
-        ],
-        "miss": [
-            "I need a different answer."
-        ],
-        "defend": [
-            "I saw that option."
-        ],
-        "concede": [
-            "I need to reset the picture."
-        ],
-        "support": [
-            "That lane is open."
-        ],
-        "passFail": [
-            "That route was closed.",
-            "I need a different answer."
-        ],
-        "foul": [
-            "That route was closed."
-        ],
-        "save": [
-            "I saw that option."
-        ]
-    }
+    "read": [
+        "I can see where the line will be.",
+        "That gap is opening. Now."
+    ],
+    "blindRun": [
+        "He's watching the ball, not me.",
+        "Out of his sight, into the space."
+    ],
+    "directShot": [
+        "Direct Shot!"
+    ],
+    "leftFoot": [
+        "Lefty Shoot!"
+    ],
+    "backHeel": [
+        "Turn with this... Back Heel Shot!"
+    ],
+    "volley": [
+        "Two-Gun Volley... which foot will you follow?"
+    ],
+    "goal": [
+        "That's it! This goal is mine!",
+        "That is my goal!"
+    ],
+    "sync": [
+        "Hiori, you saw it too.",
+        "Same picture, Hiori."
+    ],
+    "hotline": [
+        "Kurona, give it straight back!",
+        "One-two, Kurona!"
+    ],
+    "creative": [
+        "Bachira pulled them away. That space is mine.",
+        "Keep dancing, Bachira. I'm going."
+    ],
+    "rival": [
+        "This time, your angle is better.",
+        "Use it, Kaiser. I'll take the next one."
+    ],
+    "flow": [
+        "There it is... I can break through!"
+    ],
+    "kickoff": [
+        "I can build a route from here."
+    ],
+    "pass": [
+        "That lane is open.",
+        "Use that gap."
+    ],
+    "receive": [
+        "I see the next piece."
+    ],
+    "dribble": [
+        "I found the gap."
+    ],
+    "dribbleFail": [
+        "That route was closed."
+    ],
+    "shot-attempt": [
+        "This opening... I'll take it!"
+    ],
+    "miss": [
+        "I need a different answer."
+    ],
+    "defend": [
+        "I saw you. You're not slipping past!"
+    ],
+    "concede": [
+        "I need to reset the picture."
+    ],
+    "support": [
+        "That lane is open."
+    ],
+    "passFail": [
+        "No... he read my pass!"
+    ],
+    "foul": [
+        "Tch... I was late to that challenge."
+    ],
+    "save": [
+        "I saw that option."
+    ],
+    "fouled": [
+        "Hey! I was through there!"
+    ],
+    "offside": [
+        "Too early... I have to time that run!"
+    ]
+}
 }
     };
 ;
@@ -374,9 +377,8 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "Pick the corner. Stay calm."
     ],
     "goal": [
-        "That is what I came to do!",
-        "That's how a striker answers.",
-        "I'm still here. Remember that."
+        "There! That's what I can do!",
+        "That is what I came to do!"
     ],
     "miss": [
         "I should have placed that better.",
@@ -387,7 +389,7 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "Isagi... I won't fall behind you again."
     ],
     "flow": [
-        "I can do more."
+        "I'm not settling for just keeping up!"
     ],
     "kickoff": [
         "Let us play a good match."
@@ -406,23 +408,28 @@ const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearance
         "You read that well."
     ],
     "shot-attempt": [
-        "I will take this chance."
+        "Watch me finish this!"
     ],
     "defend": [
-        "I am not giving this away."
+        "Sorry, I'm taking that ball!"
     ],
     "concede": [
         "We can still recover."
     ],
     "passFail": [
-        "You read that well.",
-        "I should have placed that better."
+        "That should have reached you..."
     ],
     "foul": [
-        "You read that well."
+        "All right, that's my foul."
     ],
     "save": [
         "I am not giving this away."
+    ],
+    "fouled": [
+        "Referee, he stopped me!"
+    ],
+    "offside": [
+        "Offside? I went too soon."
     ]
 }
         }
@@ -559,23 +566,20 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "Either foot. Your choice was the mistake."
     ],
     "goal": [
-        "A rational result.",
-        "Efficient. As calculated.",
-        "That was the correct answer."
+        "That's how it's done.",
+        "Good. Now do it again."
     ],
     "miss": [
-        "Recalculate.",
-        "An error. Corrected next time."
+        "I won't waste the next one."
     ],
     "defend": [
-        "Option removed.",
-        "Read and removed."
+        "You took too long."
     ],
     "route": [
         "Kaiser, your route is better. Take it."
     ],
     "flow": [
-        "Maintain this standard."
+        "Keep up. I won't wait."
     ],
     "kickoff": [
         "Begin."
@@ -591,7 +595,7 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "A poor choice."
     ],
     "shot-attempt": [
-        "The angle is sufficient."
+        "I'll finish it here."
     ],
     "concede": [
         "Correct the positioning."
@@ -600,14 +604,19 @@ const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrde
         "Use this angle."
     ],
     "passFail": [
-        "A poor choice.",
-        "Recalculate."
+        "That pass was careless."
     ],
     "foul": [
-        "A poor choice."
+        "A late challenge. My fault."
     ],
     "save": [
         "Option removed."
+    ],
+    "fouled": [
+        "A foul. Your decision."
+    ],
+    "offside": [
+        "I mistimed the run."
     ]
 }
         }
@@ -744,10 +753,10 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "There, the monster opened a door!"
     ],
     "beeShot": [
-        "Buzz! Bee Shot!",
-        "Straight past you!"
+        "Buzz! Bee Shot!"
     ],
     "goal": [
+        "Hehe! That one's mine!",
         "That was fun!",
         "That was so much fun!",
         "Did you see that dance?"
@@ -760,7 +769,7 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "One more! The monster's hungry!"
     ],
     "flow": [
-        "Now we can really play!"
+        "Come on, let's get wilder!"
     ],
     "kickoff": [
         "Shall we play?"
@@ -773,9 +782,10 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "Ooh, my turn!"
     ],
     "shot-attempt": [
-        "Let us try this!"
+        "Let's see you catch this!"
     ],
     "defend": [
+        "Hehe, I'll borrow that!",
         "Mine now!"
     ],
     "concede": [
@@ -785,14 +795,19 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "Try something fun with this!"
     ],
     "passFail": [
-        "You caught me that time!",
-        "Oops, a little off!"
+        "Aw, you spoiled my pass!"
     ],
     "foul": [
-        "You caught me that time!"
+        "Oops, got your leg."
     ],
     "save": [
         "Mine now!"
+    ],
+    "fouled": [
+        "Hey, we're playing football!"
+    ],
+    "offside": [
+        "Aw, I got ahead of myself!"
     ]
 }
         }
@@ -886,6 +901,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Ugh, the ref saw that..."
     ],
     "defend": [
+        "Mine! I got it, I got it!",
         "I survived that one!",
         "I'm not giving up!",
         "Survived another one!"
@@ -894,6 +910,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Mine! Loose ball's mine!"
     ],
     "goal": [
+        "I SCORED?! Yes! I actually scored!",
         "I am still in this!",
         "Did everyone see?! I scored!"
     ],
@@ -902,7 +919,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Nooo, why not!"
     ],
     "flow": [
-        "I am not done yet!"
+        "I'm still standing! Come on!"
     ],
     "kickoff": [
         "Please let this go well!"
@@ -921,7 +938,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Wait, give it back!"
     ],
     "shot-attempt": [
-        "Please go in!"
+        "Go in! Please, just go in!"
     ],
     "concede": [
         "We can still do this, right?"
@@ -930,14 +947,19 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Take it, quick!"
     ],
     "passFail": [
-        "Wait, give it back!",
-        "No, come on!"
+        "No, no! That wasn't for you!"
     ],
     "foul": [
-        "Wait, give it back!"
+        "Ref! Come on, that wasn't that bad!"
     ],
     "save": [
         "I survived that one!"
+    ],
+    "fouled": [
+        "REF! You saw that, right?!"
+    ],
+    "offside": [
+        "Offside?! I finally got through!"
     ]
 }
         }
@@ -1091,8 +1113,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Hit it before it drops!"
     ],
     "goal": [
-        "That is one.",
-        "That's the weight of my shot.",
+        "I'm taking the next one too.",
         "I came back for this."
     ],
     "miss": [
@@ -1100,9 +1121,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Not enough. Hit it harder."
     ],
     "defend": [
-        "You are not getting through.",
-        "You're not getting past me.",
-        "I'll stay on you all game."
+        "You're not shaking me off."
     ],
     "secondBall": [
         "Second ball's mine!"
@@ -1118,7 +1137,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Shidou. I'm marking you."
     ],
     "flow": [
-        "I will force an opening."
+        "I'm breaking through. Move."
     ],
     "kickoff": [
         "Let us get on with it."
@@ -1134,7 +1153,7 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "I lost that duel."
     ],
     "shot-attempt": [
-        "I will put this away."
+        "Try stopping this shot."
     ],
     "concede": [
         "Next play."
@@ -1143,13 +1162,19 @@ const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appear
         "Take it forward."
     ],
     "passFail": [
-        "I lost that duel."
+        "Tch. I gave that away."
     ],
     "foul": [
-        "I lost that duel."
+        "Fine. Call the foul."
     ],
     "save": [
         "You are not getting through."
+    ],
+    "fouled": [
+        "Get off me."
+    ],
+    "offside": [
+        "Tch. Too far ahead."
     ]
 }
         }
@@ -1293,9 +1318,8 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "From here, I don't miss the angle."
     ],
     "goal": [
-        "A little too late.",
-        "That's my speed.",
-        "Caught the wind. Goal."
+        "Still chasing? The ball's already in.",
+        "A little too late."
     ],
     "miss": [
         "I rushed that.",
@@ -1307,7 +1331,7 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "You see it. I'll run it."
     ],
     "flow": [
-        "Keep your eyes on me."
+        "Blink, and you'll lose me."
     ],
     "kickoff": [
         "Try keeping up."
@@ -1326,10 +1350,10 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "You caught up that time."
     ],
     "shot-attempt": [
-        "This angle will do."
+        "Just try reaching this corner."
     ],
     "defend": [
-        "Too slow with that touch."
+        "Too slow with that ball."
     ],
     "concede": [
         "We are not finished."
@@ -1338,14 +1362,19 @@ const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanc
         "Do not slow this down."
     ],
     "passFail": [
-        "You caught up that time.",
-        "I rushed that."
+        "Tch. That pass killed the pace."
     ],
     "foul": [
-        "You caught up that time."
+        "Yeah, I caught his leg."
     ],
     "save": [
         "Too slow with that touch."
+    ],
+    "fouled": [
+        "You needed a foul to catch me?"
+    ],
+    "offside": [
+        "Too quick off the mark, then."
     ]
 }
         }
@@ -1458,7 +1487,8 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
             ],
             "dialogue": {
     "save": [
-        "Caught it."
+        "Not getting in.",
+        "Stopped that."
     ],
     "block": [
         "Not past me.",
@@ -1469,11 +1499,11 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "Like this!"
     ],
     "goal": [
-        "In.",
+        "Oh. I scored. Nice.",
         "I can score too."
     ],
     "flow": [
-        "My body knows."
+        "I can feel the ball coming."
     ],
     "kickoff": [
         "Ready."
@@ -1492,13 +1522,13 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "Slipped away."
     ],
     "shot-attempt": [
-        "I can reach it."
+        "Can hit it from this angle."
     ],
     "miss": [
         "Wrong angle."
     ],
     "defend": [
-        "Caught it."
+        "Got you. That felt good."
     ],
     "concede": [
         "Get the next one."
@@ -1507,11 +1537,16 @@ const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearance
         "There."
     ],
     "passFail": [
-        "Slipped away.",
-        "Wrong angle."
+        "Huh. That went the wrong way."
     ],
     "foul": [
-        "Slipped away."
+        "Ah. Hit him, not the ball."
+    ],
+    "fouled": [
+        "Ow. That was my leg."
+    ],
+    "offside": [
+        "Oh. Past the line."
     ]
 }
         }
@@ -1662,11 +1697,12 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Next time I flatten you."
     ],
     "goal": [
+        "HAH! Now who's just a defender?!",
         "Did you see that?!",
         "See that?! That's Raichi!"
     ],
     "flow": [
-        "Come on, take me on!"
+        "Come on! I'll chase you all game!"
     ],
     "kickoff": [
         "Do not get in my way!"
@@ -1685,12 +1721,13 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Give that back!"
     ],
     "shot-attempt": [
-        "I am blasting this!"
+        "Move! I'm shooting!"
     ],
     "miss": [
         "Damn it! Again!"
     ],
     "defend": [
+        "HAH! You thought you'd get past me?!",
         "You are going nowhere!"
     ],
     "concede": [
@@ -1700,14 +1737,19 @@ const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearance
         "Move! Take it!"
     ],
     "passFail": [
-        "Give that back!",
-        "Damn it! Again!"
+        "Oi! I gave that straight to them!"
     ],
     "foul": [
-        "Give that back!"
+        "What?! I was going for the ball!"
     ],
     "save": [
         "You are going nowhere!"
+    ],
+    "fouled": [
+        "Oi! Play the ball, then!"
+    ],
+    "offside": [
+        "Tch! Next time, get the timing right!"
     ]
 }
         }
@@ -1798,6 +1840,7 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "This is the only way I win."
     ],
     "goal": [
+        "Yes! I can score here too!",
         "I made it count!",
         "I did it! I really scored!",
         "That one's for my family!"
@@ -1808,7 +1851,7 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "I got there... and wasted it."
     ],
     "flow": [
-        "I can still make a difference."
+        "Look at me! I'm still in this!"
     ],
     "kickoff": [
         "I have to make this count."
@@ -1827,10 +1870,10 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "I have to try again."
     ],
     "shot-attempt": [
-        "This is my chance."
+        "Come on... I have to score this!"
     ],
     "defend": [
-        "I will fight for this ball."
+        "I'm not letting you have it!"
     ],
     "concede": [
         "Keep going. We still have a chance."
@@ -1839,14 +1882,19 @@ const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appear
         "Go, I will follow."
     ],
     "passFail": [
-        "I have to try again.",
-        "I have to do better."
+        "No, that was my chance to help!"
     ],
     "foul": [
-        "I have to try again."
+        "I couldn't stop in time..."
     ],
     "save": [
         "I will fight for this ball."
+    ],
+    "fouled": [
+        "Hey, I was still going!"
+    ],
+    "offside": [
+        "I found the gap... just too early."
     ]
 }
         }
@@ -1917,7 +1965,7 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
             ],
             "dialogue": {
     "save": [
-        "Safe. Move up."
+        "Stopped it! Stay with the rebound!"
     ],
     "setPiece": [
         "Everyone, mark up! I'm ready.",
@@ -1927,11 +1975,11 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
         "Here, I am with you."
     ],
     "goal": [
-        "Good work, everyone.",
+        "Yes! We needed that one!",
         "Well done, everyone."
     ],
     "flow": [
-        "I will hold things together."
+        "I've got your backs. Keep going!"
     ],
     "kickoff": [
         "Stay organized, everyone."
@@ -1950,23 +1998,28 @@ const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appeara
         "Let us win it back."
     ],
     "shot-attempt": [
-        "I will try the shot."
+        "There's a chance! I'll try it!"
     ],
     "miss": [
         "We will get another chance."
     ],
     "defend": [
-        "Safe. Move up."
+        "Got it! Everybody, move up!"
     ],
     "concede": [
         "Reset and help each other."
     ],
     "passFail": [
-        "Let us win it back.",
-        "We will get another chance."
+        "My mistake! I'll help win it back."
     ],
     "foul": [
-        "Let us win it back."
+        "Sorry. I got there late."
+    ],
+    "fouled": [
+        "Ref, that caught my foot."
+    ],
+    "offside": [
+        "Hold the run a moment longer."
     ]
 }
         }
@@ -2073,60 +2126,69 @@ const PLAYER_12_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "aerial": [
+    "aerial": [
         "I can reach that height."
-      ],
-      "header": [
+    ],
+    "header": [
         "At the highest point!"
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "Let us keep our shape."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Use the space ahead.",
         "Keep the shape around it."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "That delivery works."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "I have a route through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "I misjudged the challenge."
-      ],
-      "shot-attempt": [
-        "I will attack this ball."
-      ],
-      "goal": [
-        "The timing worked."
-      ],
-      "miss": [
+    ],
+    "shot-attempt": [
+        "This is the ball I wanted!"
+    ],
+    "goal": [
+        "Perfect timing! That goal is mine!",
+        "The timing... yes!"
+    ],
+    "miss": [
         "I need better timing."
-      ],
-      "defend": [
-        "I was watching that lane."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I won that duel. Stay alert!"
+    ],
+    "concede": [
         "Let us organize again."
-      ],
-      "flow": [
-        "I can judge the flight clearly."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Send it high. I'll fight for it!"
+    ],
+    "support": [
         "Use the space ahead."
-      ],
-      "passFail": [
-        "I misjudged the challenge.",
-        "I need better timing."
-      ],
-      "foul": [
-        "I misjudged the challenge."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "They were waiting for that pass."
+    ],
+    "foul": [
+        "Tch. Too much contact."
+    ],
+    "save": [
         "I was watching that lane."
-      ]
-    }
+    ],
+    "fouled": [
+        "That's a foul in the challenge."
+    ],
+    "interception": [
+        "You left that pass too obvious."
+    ],
+    "offside": [
+        "I misjudged their defensive line."
+    ]
+}
   }
 };
 ;
@@ -2238,54 +2300,60 @@ const PLAYER_13_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "kickoff": [
+    "kickoff": [
         "All right, let us go."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Here you go, keep it flowing.",
         "Go on, have a go."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "Nice, leave it to me."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "A little room is all I need."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "Ah, lost it."
-      ],
-      "shot-attempt": [
-        "I will have a go."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "Hey, let's give it a shot!"
+    ],
+    "goal": [
+        "Hey! Not bad, right?!",
         "Hey, that worked!"
-      ],
-      "miss": [
+    ],
+    "miss": [
         "Ah, just off."
-      ],
-      "defend": [
-        "Got that one."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "Thanks! I'll take that off you."
+    ],
+    "concede": [
         "Come on, plenty of time."
-      ],
-      "flow": [
-        "This feels good."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Now we're getting somewhere!"
+    ],
+    "support": [
         "Here you go, keep it flowing."
-      ],
-      "passFail": [
-        "Ah, lost it.",
-        "Ah, just off."
-      ],
-      "foul": [
-        "Ah, lost it."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "Ah, that was a terrible pass."
+    ],
+    "foul": [
+        "Ah, sorry! Caught you there."
+    ],
+    "save": [
         "Got that one."
-      ]
-    }
+    ],
+    "fouled": [
+        "Hey, easy on the legs!"
+    ],
+    "offside": [
+        "Ah, got a bit carried away!"
+    ]
+}
   }
 };
 ;
@@ -2474,63 +2542,72 @@ const PLAYER_16_DATA = {
       }
     ],
     "dialogue": {
-      "read": [
+    "read": [
         "There is another runner."
-      ],
-      "trap": [
+    ],
+    "trap": [
         "Will you choose that lane?"
-      ],
-      "supply": [
+    ],
+    "supply": [
         "Okawa, there is room ahead."
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "I will watch how you move."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "There is space on that side.",
         "Look beyond the first option."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "I see the next option."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "You left a way through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "I missed that adjustment."
-      ],
-      "shot-attempt": [
-        "I can try from here."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "You left me a shot."
+    ],
+    "goal": [
+        "You forgot I could score too.",
         "You watched the wrong player."
-      ],
-      "miss": [
+    ],
+    "miss": [
         "I misread the opening."
-      ],
-      "defend": [
-        "That was the route you chose."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I saw you coming. My ball."
+    ],
+    "concede": [
         "I need to read that earlier."
-      ],
-      "flow": [
-        "I can follow the attack now."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "I see it now. Keep trying to hide."
+    ],
+    "support": [
         "There is space on that side."
-      ],
-      "passFail": [
-        "I missed that adjustment.",
-        "I misread the opening."
-      ],
-      "foul": [
-        "I missed that adjustment."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "I didn't see him close that lane."
+    ],
+    "foul": [
+        "I reached in too late."
+    ],
+    "save": [
         "That was the route you chose."
-      ]
-    }
+    ],
+    "fouled": [
+        "You couldn't take the ball cleanly?"
+    ],
+    "interception": [
+        "Exactly where I wanted that pass."
+    ],
+    "offside": [
+        "I lost track of the last defender."
+    ]
+}
   }
 };
 ;
@@ -2660,59 +2737,66 @@ const PLAYER_17_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "superShot": [
+    "superShot": [
         "Wait... now!"
-      ],
-      "chip": [
+    ],
+    "chip": [
         "Over the keeper."
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "Get the ball forward."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Here, build another chance.",
         "Let us build the next attack."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "Good, I can use this."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "There is a way through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "Lost that one."
-      ],
-      "shot-attempt": [
-        "I will take the finish."
-      ],
-      "goal": [
+    ],
+    "shot-attempt": [
+        "Watch this finish!"
+    ],
+    "goal": [
+        "That's your ace! Remember it!",
         "That is the finish I wanted!"
-      ],
-      "miss": [
+    ],
+    "miss": [
         "I should score from there."
-      ],
-      "defend": [
-        "I will take that ball."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I'll win it myself, then!"
+    ],
+    "concede": [
         "Get me another chance."
-      ],
-      "flow": [
-        "I can feel the timing."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Give me the chance. I'll take it on!"
+    ],
+    "support": [
         "Here, build another chance."
-      ],
-      "passFail": [
-        "Lost that one."
-      ],
-      "foul": [
-        "Lost that one."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "That pass wasn't good enough."
+    ],
+    "foul": [
+        "Tch. Fine, it was a foul."
+    ],
+    "save": [
         "I will take that ball."
-      ]
-    }
+    ],
+    "fouled": [
+        "You stopped a scoring chance there!"
+    ],
+    "offside": [
+        "Wait, I was offside there?"
+    ]
+}
   }
 };
 ;

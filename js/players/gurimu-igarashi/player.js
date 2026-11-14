@@ -84,6 +84,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Ugh, the ref saw that..."
     ],
     "defend": [
+        "Mine! I got it, I got it!",
         "I survived that one!",
         "I'm not giving up!",
         "Survived another one!"
@@ -92,6 +93,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Mine! Loose ball's mine!"
     ],
     "goal": [
+        "I SCORED?! Yes! I actually scored!",
         "I am still in this!",
         "Did everyone see?! I scored!"
     ],
@@ -100,7 +102,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Nooo, why not!"
     ],
     "flow": [
-        "I am not done yet!"
+        "I'm still standing! Come on!"
     ],
     "kickoff": [
         "Please let this go well!"
@@ -119,7 +121,7 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Wait, give it back!"
     ],
     "shot-attempt": [
-        "Please go in!"
+        "Go in! Please, just go in!"
     ],
     "concede": [
         "We can still do this, right?"
@@ -128,14 +130,19 @@ const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appeara
         "Take it, quick!"
     ],
     "passFail": [
-        "Wait, give it back!",
-        "No, come on!"
+        "No, no! That wasn't for you!"
     ],
     "foul": [
-        "Wait, give it back!"
+        "Ref! Come on, that wasn't that bad!"
     ],
     "save": [
         "I survived that one!"
+    ],
+    "fouled": [
+        "REF! You saw that, right?!"
+    ],
+    "offside": [
+        "Offside?! I finally got through!"
     ]
 }
         }

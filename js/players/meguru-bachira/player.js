@@ -127,10 +127,10 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "There, the monster opened a door!"
     ],
     "beeShot": [
-        "Buzz! Bee Shot!",
-        "Straight past you!"
+        "Buzz! Bee Shot!"
     ],
     "goal": [
+        "Hehe! That one's mine!",
         "That was fun!",
         "That was so much fun!",
         "Did you see that dance?"
@@ -143,7 +143,7 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "One more! The monster's hungry!"
     ],
     "flow": [
-        "Now we can really play!"
+        "Come on, let's get wilder!"
     ],
     "kickoff": [
         "Shall we play?"
@@ -156,9 +156,10 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "Ooh, my turn!"
     ],
     "shot-attempt": [
-        "Let us try this!"
+        "Let's see you catch this!"
     ],
     "defend": [
+        "Hehe, I'll borrow that!",
         "Mine now!"
     ],
     "concede": [
@@ -168,14 +169,19 @@ const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearan
         "Try something fun with this!"
     ],
     "passFail": [
-        "You caught me that time!",
-        "Oops, a little off!"
+        "Aw, you spoiled my pass!"
     ],
     "foul": [
-        "You caught me that time!"
+        "Oops, got your leg."
     ],
     "save": [
         "Mine now!"
+    ],
+    "fouled": [
+        "Hey, we're playing football!"
+    ],
+    "offside": [
+        "Aw, I got ahead of myself!"
     ]
 }
         }

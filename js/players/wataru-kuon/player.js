@@ -97,59 +97,68 @@ const PLAYER_12_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-      "aerial": [
+    "aerial": [
         "I can reach that height."
-      ],
-      "header": [
+    ],
+    "header": [
         "At the highest point!"
-      ],
-      "kickoff": [
+    ],
+    "kickoff": [
         "Let us keep our shape."
-      ],
-      "pass": [
+    ],
+    "pass": [
         "Use the space ahead.",
         "Keep the shape around it."
-      ],
-      "receive": [
+    ],
+    "receive": [
         "That delivery works."
-      ],
-      "dribble": [
+    ],
+    "dribble": [
         "I have a route through."
-      ],
-      "dribbleFail": [
+    ],
+    "dribbleFail": [
         "I misjudged the challenge."
-      ],
-      "shot-attempt": [
-        "I will attack this ball."
-      ],
-      "goal": [
-        "The timing worked."
-      ],
-      "miss": [
+    ],
+    "shot-attempt": [
+        "This is the ball I wanted!"
+    ],
+    "goal": [
+        "Perfect timing! That goal is mine!",
+        "The timing... yes!"
+    ],
+    "miss": [
         "I need better timing."
-      ],
-      "defend": [
-        "I was watching that lane."
-      ],
-      "concede": [
+    ],
+    "defend": [
+        "I won that duel. Stay alert!"
+    ],
+    "concede": [
         "Let us organize again."
-      ],
-      "flow": [
-        "I can judge the flight clearly."
-      ],
-      "support": [
+    ],
+    "flow": [
+        "Send it high. I'll fight for it!"
+    ],
+    "support": [
         "Use the space ahead."
-      ],
-      "passFail": [
-        "I misjudged the challenge.",
-        "I need better timing."
-      ],
-      "foul": [
-        "I misjudged the challenge."
-      ],
-      "save": [
+    ],
+    "passFail": [
+        "They were waiting for that pass."
+    ],
+    "foul": [
+        "Tch. Too much contact."
+    ],
+    "save": [
         "I was watching that lane."
-      ]
-    }
+    ],
+    "fouled": [
+        "That's a foul in the challenge."
+    ],
+    "interception": [
+        "You left that pass too obvious."
+    ],
+    "offside": [
+        "I misjudged their defensive line."
+    ]
+}
   }
 };
