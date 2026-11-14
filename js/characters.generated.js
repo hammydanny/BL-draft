@@ -7,14 +7,13 @@ const ISAGI_PLAYER_DATA = {
         stats: { ovr:94, off:98, sho:94, spd:82, def:78, pas:91, dri:84, gk:48 },
         nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}},
         weapons: [
-            {"id":"spatial-metavision","name":"Metavision","description":"Repeatedly scans the surrounding field, combining peripheral information into an updated picture of the next scoring route.","battleSimType":"Passive","battleSimDescription":"Isagi sees teammates' runs and gaps from further away than other players, so he spots more passing chances and starts his own runs before the ball is played. It does not make him faster.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"awareness","name":"Awareness","description":"Notices shifts in player positions, open lanes, danger and passing options before they become obvious.","battleSimType":"Passive","battleSimDescription":"Part of Metavision: Isagi notices a teammate's run, and the right moment for a through ball, earlier than most players.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"adaptability","name":"Adaptability","description":"Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.","battleSimType":"Passive","battleSimDescription":"If opponents stop one of Isagi's runs, cut out one of his passes or save one of his shots, he remembers it and tries something different next time. This only lasts for the current match.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"off-the-ball-movements","name":"Off-the-Ball Movements","description":"Times sharp runs into blind spots and open space to arrive where defenders lose track of him.","battleSimType":"Passive","battleSimDescription":"Isagi runs into the space behind the defender marking him while that defender is watching the ball. Only the best defenders follow these runs; the rest react late when the pass comes.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
-            {"id":"direct-shot","name":"Direct Shot","description":"Meets the incoming ball with a first-time strike, denying defenders the extra moment a controlling touch would give them.","battleSimType":"Special Move","battleSimDescription":"When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"Threatens a volley with one foot, changes the shooting leg in mid-air and finishes after the defender commits to the first motion.","battleSimType":"Ultimate","battleSimDescription":"Isagi's ultimate, only in Flow. When a pass reaches him within 20 m and a defender jumps in to block, he fakes the shot with one foot and volleys with the other into the open side. The goalkeeper can still save it. At most one goal (two attempts) per match.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"Disguises a forward strike before redirecting the ball behind him with a backheel to bypass a closing defender.","battleSimType":"Special Move","battleSimDescription":"Rare. Within 16 m of goal, with his back to goal and a defender right behind him, Isagi flicks a backheel shot past that defender. It is hard to pull off, and he must wait a long time before trying it again.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
-            {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"Finishes first-time with his left foot when a defender closes the angle for his preferred right-footed strike.","battleSimType":"Special Move","battleSimDescription":"The same first-time shot, but with his left foot to the near post. He uses it when the far post is blocked. It is slightly less accurate.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
+            {"id":"spatial-metavision","name":"Metavision","description":"Reads the defensive line and identifies gaps up to 50 m away, allowing Isagi to spot passing lanes and position himself before the defense reacts.","battleSimType":"Passive","battleSimDescription":"Reads the defensive line and identifies gaps up to 50 m away, allowing Isagi to spot passing lanes and position himself before the defense reacts.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"adaptability","name":"Adaptability","description":"Revises his reading as opponents respond, rules out failing routes and combines available skills before committing to a scoring opportunity.","battleSimType":"Passive","battleSimDescription":"Remembers failed runs, intercepted passes and saved shots. Isagi avoids repeating the same pattern found in his last three failed events.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"off-the-ball-movements","name":"Blind Spot Movement","description":"When Isagi is being marked, he moves into the defender's blind spot.","battleSimType":"Passive","battleSimDescription":"When Isagi is being marked, he moves into the defender's blind spot.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"mental"},
+            {"id":"direct-shot","name":"Direct Shot","description":"When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness.","battleSimType":"Special Move","battleSimDescription":"When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"two-gun-volley","name":"Two-Gun Volley","description":"In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness.","battleSimType":"Ultimate","battleSimDescription":"In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"reverse-back-heel-shot","name":"Reverse Back Heel Shot","description":"In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot.","battleSimType":"Ultimate","battleSimDescription":"In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yoichi_Isagi","note":"Existing latest-main weapon retained; no unverified chapter number added."},"category":"technical"},
+            {"id":"left-footed-direct-shot","name":"Left-Footed Direct Shot","category":"technical","description":"A variation of Direct Shot: Isagi uses his left foot when the far post is blocked.","battleSimType":"Special Move","battleSimDescription":"A variation of Direct Shot: Isagi uses his left foot when the far post is blocked.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_211","chapter":211,"note":"Isagi scores with the explicitly named left-footed direct shot against Ubers."}}
         ]
     ,
         battleSim: {
@@ -34,16 +33,17 @@ const ISAGI_PLAYER_DATA = {
                     "name": "Metavision",
                     "label": "METAVISION",
                     "effect": "space-reading",
+                    "params": { "rangeMeters": 50 },
                     "dialogue": "read",
-                    "description": "Isagi sees teammates' runs and gaps from further away than other players, so he spots more passing chances and starts his own runs before the ball is played. It does not make him faster."
+                    "description": "Reads the defensive line and identifies gaps up to 50 m away, allowing Isagi to spot passing lanes and position himself before the defense reacts."
                 },
                 {
                     "id": "off-the-ball-movements",
-                    "name": "Blind-Spot Movement",
-                    "label": "BLIND-SPOT MOVEMENT",
+                    "name": "Blind Spot Movement",
+                    "label": "BLIND SPOT MOVEMENT",
                     "effect": "blind-spot-run",
                     "dialogue": "blindRun",
-                    "description": "Isagi runs into the space behind the defender marking him while that defender is watching the ball. Only the best defenders follow these runs; the rest react late when the pass comes."
+                    "description": "When Isagi is being marked, he moves into the defender's blind spot."
                 },
                 {
                     "id": "adaptability",
@@ -51,12 +51,11 @@ const ISAGI_PLAYER_DATA = {
                     "label": "ADAPTABILITY",
                     "effect": "tactical-memory",
                     "params": {
-                        "maxEntries": 6,
-                        "maxCount": 3,
-                        "decayTicks": 90,
+                        "maxEntries": 3,
+                        "rollingWindow": 3,
                         "weight": 0.1
                     },
-                    "description": "If opponents stop one of Isagi's runs, cut out one of his passes or save one of his shots, he remembers it and tries something different next time. This only lasts for the current match."
+                    "description": "Remembers failed runs, intercepted passes and saved shots. Isagi avoids repeating the same pattern found in his last three failed events."
                 },
                 {
                     "id": "puzzle-completion",
@@ -83,12 +82,11 @@ const ISAGI_PLAYER_DATA = {
                     "effect": "first-time-finish",
                     "dialogue": "directShot",
                     "params": {
-                        "maxMetres": 24,
                         "technique": 0.25,
-                        "pressureRelief": 2.5,
-                        "blockFactor": 0.7
+                        "blockFactor": 0.7,
+                        "cooldownTicks": 5
                     },
-                    "description": "When a pass reaches Isagi within 24 m of goal, he can shoot straight away without controlling it first. Defenders have less time to block, but the goalkeeper can still save it."
+                    "description": "When Isagi receives a pass and shoots first-time, defenders have 30% less blocking effectiveness."
                 },
                 {
                     "id": "left-footed-direct-shot",
@@ -97,40 +95,42 @@ const ISAGI_PLAYER_DATA = {
                     "effect": "weak-foot-finish",
                     "dialogue": "leftFoot",
                     "params": {
-                        "technique": -0.12
+                        "technique": -0.12,
+                        "cooldownTicks": 5
                     },
-                    "description": "The same first-time shot, but with his left foot to the near post. He uses it when the far post is blocked. It is slightly less accurate."
-                },
+                    "description": "A variation of Direct Shot: Isagi uses his left foot when the far post is blocked."
+                },                    "description": "In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot."
+                }
+            ],
+            "ultimates": [
                 {
                     "id": "reverse-back-heel-shot",
                     "name": "Reverse Back Heel Shot",
                     "label": "REVERSE BACK HEEL SHOT",
                     "effect": "disguised-finish",
                     "dialogue": "backHeel",
+                    "condition": { "duringFlow": true },
+                    "oncePerFlow": true,
                     "params": {
-                        "maxMetres": 16,
-                        "technique": -0.45,
-                        "cooldownTicks": 40,
-                        "tightMetres": 3
+                        "maxMetres": 20,
+                        "technique": -0.45
                     },
-                    "description": "Rare. Within 16 m of goal, with his back to goal and a defender right behind him, Isagi flicks a backheel shot past that defender. It is hard to pull off, and he must wait a long time before trying it again."
-                }
-            ],
-            "ultimates": [
+                    "description": "In Flow, when a defender tackles Isagi within 20 m of goal, he keeps possession and immediately flicks a backheel shot."
+                },
                 {
                     "id": "two-gun-volley",
                     "name": "Two-Gun Volley",
                     "label": "TWO-GUN VOLLEY",
                     "effect": "feint-volley",
                     "dialogue": "volley",
+                    "condition": { "duringFlow": true, "receivedPass": true },
+                    "oncePerFlow": true,
                     "params": {
                         "maxMetres": 20,
                         "technique": 0.45,
-                        "maxGoalsPerMatch": 1,
-                        "maxAttemptsPerMatch": 2,
                         "commitRange": 4.5
                     },
-                    "description": "Isagi's ultimate, only in Flow. When a pass reaches him within 20 m and a defender jumps in to block, he fakes the shot with one foot and volleys with the other into the open side. The goalkeeper can still save it. At most one goal (two attempts) per match."
+                    "description": "In Flow, when Isagi receives a pass within 20 m of goal and a defender is blocking, he fakes a volley with one foot and strikes with the other, ignoring defenders' blocking effectiveness."
                 }
             ],
             "reactions": [
@@ -197,22 +197,10 @@ const ISAGI_PLAYER_DATA = {
                     "He's watching the ball, not me.",
                     "Out of his sight, into the space."
                 ],
-                "directShot": [
-                    "No touch. Straight in.",
-                    "First time. No time for them."
-                ],
-                "leftFoot": [
-                    "The other side is open.",
-                    "Left foot. Change the angle."
-                ],
-                "backHeel": [
-                    "He's expecting a turn.",
-                    "Behind me. This way."
-                ],
-                "volley": [
-                    "Show one, strike with the other.",
-                    "He's committed. Switch."
-                ],
+                "directShot": ["Direct Shot!"],
+                "leftFoot": ["Lefty Shoot!"],
+                "backHeel": ["Just kidding. I fooled you, genius! My reverse direct... Back Heel Shot!"],
+                "volley": ["This is my ultimate... Two-Gun Volley!"],
                 "goal": [
                     "That's the route I saw.",
                     "The picture was complete.",

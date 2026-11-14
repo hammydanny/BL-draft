@@ -111,7 +111,7 @@ function isagiTests(){
  const {b}=setup();
  const base=(place,first=true)=>scene(b,(s,get,def)=>{const isg=get(1,ISAGI),c=get(1,HIORI);place(s,get,def,isg,c);
   if(first)s.lastReception={playerId:String(isg.id),teamNumber:1,passerId:String(c.id),tick:s.tick-1,kind:'short',through:false,from:{x:c.x,y:c.y},to:{x:isg.x,y:isg.y}};return {carrier:isg,passer:c};});
- // Direct Shot: only first-time from a pass, only inside 24 m; better than the conventional finish, still beatable by the keeper.
+ // Direct Shot: first-time from a pass, without the former 24 m cap; defenders block 30% less effectively.
  let t=base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:30});b.setPosition(isg,{x:86,y:52});b.setPosition(def(0),{x:88,y:56});});
  let techs=b.shotTechniques(t.s,t.carrier).map(x=>x.id);assert(techs.includes('direct-shot'),'first-time chance offers Direct Shot: '+techs);
  const direct=b.shotTechniques(t.s,t.carrier).find(x=>x.id==='direct-shot'),plain=b.shotModel(t.s,t.carrier,false,null,null).goalChance,withTech=b.shotModel(t.s,t.carrier,false,null,null,null,null,direct).goalChance;
@@ -121,21 +121,21 @@ function isagiTests(){
  t=base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:30});b.setPosition(isg,{x:86,y:52});},false);
  assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='direct-shot'),'no Direct Shot without a first-time pass');
  t=base((s,get,def,isg,c)=>{b.setPosition(c,{x:60,y:30});b.setPosition(isg,{x:70,y:50});});
- assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='direct-shot'),'no Direct Shot from 30 m');
+ assert(b.shotTechniques(t.s,t.carrier).some(x=>x.id==='direct-shot'),'Direct Shot has no 24 m range cap');
  // Left-Footed Direct Shot: the near-post alternative wins when the far-post lane is blocked.
  t=base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:70});b.setPosition(isg,{x:87,y:40});b.setPosition(def(0),{x:91,y:45.5});b.setPosition(def(1),{x:93,y:49});});
  const opts=b.shotTechniques(t.s,t.carrier),far=opts.find(x=>x.id==='direct-shot'),near=opts.find(x=>x.id==='left-footed-direct-shot');
  assert(far&&near,'both feet are options');const cFar=b.shotModel(t.s,t.carrier,false,null,null,null,null,far).goalChance,cNear=b.shotModel(t.s,t.carrier,false,null,null,null,null,near).goalChance;
  assert(cNear>cFar,'left foot to the near post when the far post is blocked: '+cNear.toFixed(3)+' vs '+cFar.toFixed(3));
- // Reverse Back Heel: rare and contextual (moving away from goal, tight defender, inside 14 m), then on cooldown.
- t=base((s,get,def,isg,c)=>{b.setPosition(isg,{x:90,y:50});isg.lastMove={x:-3,y:0};b.setPosition(def(0),{x:91.5,y:50.5});},false);
- assert(b.shotTechniques(t.s,t.carrier).some(x=>x.id==='reverse-back-heel-shot'),'back heel offered with a defender tight behind');
- const heel=b.shotTechniques(t.s,t.carrier).find(x=>x.id==='reverse-back-heel-shot');t.s.random=()=>.99;b.resolveShot(t.s,t.carrier,false,null,heel);
- assert.equal(t.s.events.find(e=>e.type==='shot-attempt').ability.id,'reverse-back-heel-shot','the attempt is labelled');
- t.carrier.lastMove={x:-3,y:0};b.setPosition(t.carrier,{x:90,y:50});assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='reverse-back-heel-shot'),'back heel cooldown');
- t=base((s,get,def,isg,c)=>{b.setPosition(isg,{x:90,y:50});isg.lastMove={x:3,y:0};b.setPosition(def(0),{x:91.5,y:50.5});},false);
- assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='reverse-back-heel-shot'),'not while running at goal');
- // Two-Gun Volley: Flow + first-time pass + committing defender; at most one goal and two attempts per match.
+ // Reverse Back Heel: in Flow, a tackle within 20 m preserves Isagi's possession for the immediate shot.
+ t=base((s,get,def,isg,c)=>{b.setPosition(isg,{x:90,y:50});b.setPosition(def(0),{x:91.5,y:50.5});isg.flow=100;},false);
+ assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='reverse-back-heel-shot'),'Back Heel is not a normal shot option');
+ assert.equal(b.battleSimProfileStatus(t.carrier,'ULTIMATE','reverse-back-heel-shot',t.s).kind,'ready','Back Heel is a Flow ultimate');
+ t.s.random=()=>.999999;b.resolveDribble(t.s,t.carrier);
+ assert(t.s.events.some(e=>e.type==='shot-attempt'&&e.ability&&e.ability.id==='reverse-back-heel-shot'),'a tackle triggers Back Heel');
+ assert(t.carrier.battleSimState.usedUltimates.includes('reverse-back-heel-shot'),'Back Heel is consumed for this Flow');
+ assert.equal(b.battleSimProfileStatus(t.carrier,'ULTIMATE','reverse-back-heel-shot',t.s).kind,'used','Back Heel cannot repeat in the same Flow');
+ // Two-Gun Volley: Flow + first-time pass + blocking defender; once per Flow.
  const volleyScene=()=>base((s,get,def,isg,c)=>{b.setPosition(c,{x:80,y:25});b.setPosition(isg,{x:88,y:48});b.setPosition(def(0),{x:89.5,y:49});isg.flow=100;});
  t=volleyScene();assert(b.shotTechniques(t.s,t.carrier).some(x=>x.id==='two-gun-volley'),'volley offered in Flow after a pass with a committing defender');
  t.carrier.flow=50;assert(!b.shotTechniques(t.s,t.carrier).some(x=>x.id==='two-gun-volley'),'never outside Flow');t.carrier.flow=100;
@@ -144,22 +144,22 @@ function isagiTests(){
  t.s.random=()=>0;b.resolveShot(t.s,t.carrier,false,null,volley);assert.equal(t.s.score[1],1,'volley can score');
  const after=volleyScene();Object.assign(after.carrier.battleSimState=after.carrier.battleSimState||{},t.carrier.battleSimState);
  assert(!b.shotTechniques(after.s,after.carrier).some(x=>x.id==='two-gun-volley'),'one Two-Gun Volley goal per match');
- // Adaptability: bounded memory that decays and survives a save.
+ // Adaptability: a rolling last-three failure memory that persists across elapsed time and saves.
  const m=b.createMatch();b.setMatch(m);const isg=b.active(m.teams[1]).find(p=>Number(p.id)===ISAGI),gkm=b.keeper(m.teams[2]);
  for(let i=0;i<10;i++){m.tick=i;b.learn(m,isg,'lane',i,gkm);}b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);b.learn(m,isg,'shot','far',gkm);
- assert(isg.battleSimState.memory.length<=6,'memory is bounded');assert.equal(b.memoryCount(m,isg,'shot','far'),3,'counts are capped');
- m.tick=200;assert.equal(b.memoryCount(m,isg,'shot','far'),0,'memory fades');m.tick=12;
+ assert.equal(isg.battleSimState.memory.length,3,'memory is a rolling three-event window');assert.equal(b.memoryCount(m,isg,'shot','far'),3,'counts are capped');
+ m.tick=200;assert.equal(b.memoryCount(m,isg,'shot','far'),3,'last-three memory does not decay with time');m.tick=12;
  const restored=b.hydrateMatch(JSON.parse(JSON.stringify(b.snapshotMatch(m))));const isg2=b.active(restored.teams[1]).find(p=>Number(p.id)===ISAGI);
  assert.equal(b.memoryCount(restored,isg2,'shot','far'),3,'tactical memory is saved');
  const forged=JSON.parse(JSON.stringify(b.snapshotMatch(m)));const fp=forged.teams[1].roster.find(p=>Number(p.id)===ISAGI);
  fp.battleSimState.memory=Array.from({length:50},(_, i)=>({kind:i%2?'shot':'evil',key:'x'.repeat(99),count:1e9,tick:'NaN'}));fp.intent={type:'teleport',target:{x:1e9,y:-5}};
  const clean=b.hydrateMatch(forged),cp=b.active(clean.teams[1]).find(p=>Number(p.id)===ISAGI);
- assert(cp.battleSimState.memory.length<=6&&cp.battleSimState.memory.every(e=>e.count<=3&&e.key.length<=12&&e.kind!=='evil'),'forged memory is sanitised');assert(!cp.intent,'forged intents are dropped');
+ assert.equal(cp.battleSimState.memory.length,3,'forged memory is trimmed to three events');assert(cp.battleSimState.memory.every(e=>e.count<=3&&e.key.length<=12&&e.kind!=='evil'),'forged memory is sanitised');assert(!cp.intent,'forged intents are dropped');
  // Data: ratings untouched, kit is data-driven and every effect has a handler.
  const data=b.resolveSharedPlayer({id:ISAGI});assert.deepEqual({...data.stats},{ovr:94,off:98,sho:94,spd:82,def:78,pas:91,dri:84,gk:48},'Isagi ratings unchanged');
  const effects=['space-reading','blind-spot-run','tactical-memory','first-time-finish','weak-foot-finish','disguised-finish','feint-volley'];
  effects.forEach(e=>assert(b.kitAbility(data,e),'kit declares '+e));
- assert(!JSON.stringify(data.battleSim).includes('statBonuses')&&!JSON.stringify(data.battleSim).includes('statMultipliers'),'no stat bonuses or SHO multipliers');
+ assert((data.battleSim.ultimates||[]).some(x=>x.id==='reverse-back-heel-shot'&&x.oncePerFlow),'Back Heel is once per Flow');assert((data.battleSim.ultimates||[]).some(x=>x.id==='two-gun-volley'&&x.oncePerFlow),'Two-Gun is once per Flow');assert(!data.weapons.some(w=>w.id==='awareness'),'Awareness removed');assert(!JSON.stringify(data.battleSim).includes('statBonuses')&&!JSON.stringify(data.battleSim).includes('statMultipliers'),'no stat bonuses or SHO multipliers');
  console.log('PASS v0.8.9 Isagi: Direct Shot '+plain.toFixed(2)+'→'+withTech.toFixed(2)+' (first-time, ≤24 m, keeper contests), left foot '+cNear.toFixed(2)+' vs '+cFar.toFixed(2)+', back heel contextual with cooldown, Two-Gun Volley limited, bounded/decaying/saved/sanitised memory, ratings unchanged');
 }
 
@@ -227,7 +227,7 @@ function fullMatchTests(){
    let vg=0;s.events.forEach((e,i)=>{if(e.ability)abilities++;if(e.reaction)reactions[e.reaction.id]=(reactions[e.reaction.id]||0)+1;
     if(e.ability&&e.ability.id==='two-gun-volley'&&s.events[i+1]&&s.events[i+1].type==='goal')vg++;
     if(e.runRoute)assert([e.runRoute.from,e.runRoute.to].every(p=>p.x>=0&&p.x<=100&&p.y>=0&&p.y<=100),'run routes stay on the pitch');});
-   assert(vg<=1,'at most one Two-Gun Volley goal per match');volleyGoals+=vg;
+   volleyGoals+=vg;
    if(!stars.length)assert(!s.events.some(e=>e.ability||e.reaction),'no Isagi abilities without Isagi');
    const restored=b.hydrateMatch(JSON.parse(JSON.stringify(b.snapshotMatch(s))));assert(restored,'finished match with abilities restores');
   }
