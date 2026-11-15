@@ -131,8 +131,8 @@ const ISAGI_PLAYER_DATA = {
             "dialogue": "moveIt",
             "condition": { "duringFlow": true },
             "oncePerFlow": true,
-            "params": { "teammateRangeMeters": 8, "goalRangeMeters": 24 },
-            "description": "When Isagi is near a teammate with the ball who is near the goal, he steals it for himself. Once per Flow."
+            "params": { "teammateRangeMeters": 3, "goalRangeMeters": 24 },
+            "description": "In Flow within 3 m of a teammate near goal, takes the ball only for a better shooting chance. Uses one action; defenders can challenge him. Once per Flow."
         },
         {
             "id": "two-gun-volley",
@@ -159,7 +159,7 @@ const ISAGI_PLAYER_DATA = {
             "name": "Reflexive Synchronization",
             "label": "REFLEXIVE SYNCHRONIZATION",
             "effect": "synchronized-through",
-            "cooldownTicks": 10,
+            "cooldownTicks": 5,
             "dialogue": "sync",
             "params": {
                 "precision": 0.95,
@@ -186,7 +186,7 @@ const ISAGI_PLAYER_DATA = {
                 "formationWidthMeters": 2.2,
                 "sequenceTicks": 3
             },
-            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown.",
+            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown after the sequence ends or is interrupted.",
             "members": [
                 1,
                 26
@@ -253,13 +253,13 @@ const ISAGI_PLAYER_DATA = {
         "Use it, Kaiser. I'll take the next one."
     ],
     "flow": [
-        "I see it now... All the pieces have been complete."
+        "I see it now... every piece fits."
     ],
     "moveIt": [
         "MOVE IT!"
     ],
     "hotline": [
-        "Let's make out Kurona!"
+        "Kurona, let's go!"
     ],
     "kickoff": [
         "I can build a route from here."
@@ -2946,13 +2946,433 @@ const PLAYER_13_DATA = {
 ;
 
 // js/players/sae-itoshi/player.js
-// Character player data: Sae Itoshi (ID 14).
-const PLAYER_14_DATA = { id: 14, name: "Sae Itoshi", debutChapter: 4, appearanceOrder: 14, image: "images/sae-itoshi.jpg", primaryPosition: "AM", positions: ["AM", "CM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Japan_U-20","note":"Listed in the original Japan U-20 national-team roster; recorded country representation, not an inference from club."}}, weapons: [{"id":"precision-passing","name":"Precision Passing","description":"Controls pass weight and timing to supply teammates through narrow openings.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Sae_Itoshi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"counter-dribbling","name":"Counter Dribbling","description":"Reads a defender’s approach before using precise touches to move past them.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Sae_Itoshi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"spatial-awareness","name":"Spatial Awareness","category":"mental","description":"Reads the positions and movement of both teams to identify the passing lane or shooting angle the defence has left open.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","note":"Sae reads the Blue Lock defence and creates Japan U-20’s first goal from a narrow angle.","episode":31}},{"id":"precision-shooting","name":"Precision Shooting","category":"technical","description":"Places curved strikes into narrow goal openings, making his own finishing a threat alongside his passing.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae","note":"Sae scores Japan U-20’s opening goal himself from the side of the penalty area.","episode":31}}], stats: { ovr:96, off:95, sho:91, spd:88, def:78, pas:98, dri:96, gk:58 } };
+// Public simulation kit; canonical football data and ratings preserved.
+const PLAYER_14_DATA = {
+  "id": 14,
+  "name": "Sae Itoshi",
+  "debutChapter": 4,
+  "appearanceOrder": 14,
+  "image": "images/sae-itoshi.jpg",
+  "primaryPosition": "AM",
+  "positions": [
+    "AM",
+    "CM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Japan_U-20",
+      "note": "Listed in the original Japan U-20 national-team roster; recorded country representation, not an inference from club."
+    }
+  },
+  "weapons": [
+    {
+      "id": "precision-passing",
+      "name": "Precision Passing",
+      "description": "Controls pass weight and timing to supply teammates through narrow openings.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Sae_Itoshi",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "counter-dribbling",
+      "name": "Counter Dribbling",
+      "description": "Reads a defender’s approach before using precise touches to move past them.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Sae_Itoshi",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "spatial-awareness",
+      "name": "Spatial Awareness",
+      "category": "mental",
+      "description": "Reads the positions and movement of both teams to identify the passing lane or shooting angle the defence has left open.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "note": "Sae reads the Blue Lock defence and creates Japan U-20’s first goal from a narrow angle.",
+        "episode": 31
+      }
+    },
+    {
+      "id": "precision-shooting",
+      "name": "Precision Shooting",
+      "category": "technical",
+      "description": "Places curved strikes into narrow goal openings, making his own finishing a threat alongside his passing.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/31-itoshi-sae",
+        "note": "Sae scores Japan U-20’s opening goal himself from the side of the penalty area.",
+        "episode": 31
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 96,
+    "off": 95,
+    "sho": 91,
+    "spd": 88,
+    "def": 78,
+    "pas": 98,
+    "dri": 96,
+    "gk": 58
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.14,
+      "space": 0.13,
+      "anticipation": 0.48,
+      "scan": 8
+    },
+    "tendencies": {
+      "pass": 0.16,
+      "dribble": 0.03
+    },
+    "passives": [
+      {
+        "id": "sae-spatial-awareness",
+        "name": "Spatial Awareness",
+        "label": "SPATIAL AWARENESS",
+        "effect": "space-reading",
+        "description": "Reads attacking runs and passing lanes within 55 m. He must still reach the space.",
+        "params": {
+          "rangeMeters": 55
+        },
+        "interpretation": true
+      },
+      {
+        "id": "perfect-kick-technique",
+        "name": "Perfect Kick Technique",
+        "label": "PERFECT KICK TECHNIQUE",
+        "effect": "weighted-kick",
+        "description": "Reduces delivery errors on passes; defenders can still intercept.",
+        "params": {
+          "precision": 0.82
+        },
+        "interpretation": true
+      },
+      {
+        "id": "beautiful-destruction",
+        "name": "Beautiful Destruction",
+        "label": "BEAUTIFUL DESTRUCTION",
+        "effect": "flow-state",
+        "description": "In Flow, reads attacking openings earlier and counters a defender who steps in. Physical limits still apply.",
+        "params": {
+          "awareness": {
+            "vision": 0.09,
+            "space": 0.1,
+            "anticipation": 0.12
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "counter-dribbling",
+        "name": "Counter Dribbling",
+        "label": "COUNTER DRIBBLING",
+        "effect": "counter-dribble",
+        "description": "When a nearby defender steps toward him, tries a reachable escape touch. Can fail. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      },
+      {
+        "id": "sae-precision-distribution",
+        "name": "Precision Distribution",
+        "label": "PRECISION DISTRIBUTION",
+        "effect": "decisive-delivery",
+        "description": "Attempts a precise forward delivery over 18 m. Defenders can intercept. Cooldown: 8 ticks.",
+        "params": {
+          "cooldownTicks": 8,
+          "precision": 0.72
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "pass": [
+        "Use it."
+      ],
+      "receive": [
+        "Use it."
+      ],
+      "dribble": [
+        "Too slow."
+      ],
+      "shot-attempt": [
+        "Too slow."
+      ],
+      "goal": [
+        "That is the difference."
+      ],
+      "miss": [
+        "A careless touch."
+      ],
+      "dribbleFail": [
+        "A careless touch."
+      ],
+      "passFail": [
+        "A careless touch."
+      ],
+      "defend": [
+        "I see the route."
+      ],
+      "flow": [
+        "Show me something worthwhile."
+      ],
+      "support": [
+        "Use it."
+      ],
+      "kickoff": [
+        "Show me something worthwhile."
+      ],
+      "foul": [
+        "A careless touch."
+      ],
+      "fouled": [
+        "Too slow."
+      ],
+      "offside": [
+        "A careless touch."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/shoei-baro/player.js
-// Character player data: Shoei Baro (ID 15).
-const PLAYER_15_DATA = { id: 15, name: "Shoei Baro", debutChapter: 5, appearanceOrder: 15, image: "images/shoei-baro.jpg", primaryPosition: "CF", positions: ["CF", "RW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"middle-range-shooting","name":"Middle-Range Shooting","description":"Creates shooting space within his established range for powerful finishes.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Shoei_Baro","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"chop-dribble","name":"Chop Dribble","description":"Uses sharp lateral cuts to change direction while carrying the ball.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Shoei_Baro","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"predator-eye","name":"Predator Eye","description":"Watches the goalkeeper and times his shot when their view or reaction is restricted.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Shoei_Baro","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"physical-strength","name":"Physical Strength","category":"physical","description":"Uses his muscular frame to hold a shooting position and resist defenders attempting to push him off the ball.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e3-soccers-zero","note":"Barou repeatedly breaks through Team Z’s physical challenges while carrying and shooting.","episode":3}}], stats: { ovr:93, off:96, sho:96, spd:89, def:74, pas:76, dri:91, gk:53 } };
+// Public simulation kit; canonical football data and ratings preserved.
+const PLAYER_15_DATA = {
+  "id": 15,
+  "name": "Shoei Baro",
+  "debutChapter": 5,
+  "appearanceOrder": 15,
+  "image": "images/shoei-baro.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "RW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "middle-range-shooting",
+      "name": "Middle-Range Shooting",
+      "description": "Creates shooting space within his established range for powerful finishes.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Shoei_Baro",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "chop-dribble",
+      "name": "Chop Dribble",
+      "description": "Uses sharp lateral cuts to change direction while carrying the ball.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Shoei_Baro",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "predator-eye",
+      "name": "Predator Eye",
+      "description": "Watches the goalkeeper and times his shot when their view or reaction is restricted.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Shoei_Baro",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    },
+    {
+      "id": "physical-strength",
+      "name": "Physical Strength",
+      "category": "physical",
+      "description": "Uses his muscular frame to hold a shooting position and resist defenders attempting to push him off the ball.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e3-soccers-zero",
+        "note": "Barou repeatedly breaks through Team Z’s physical challenges while carrying and shooting.",
+        "episode": 3
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 93,
+    "off": 96,
+    "sho": 96,
+    "spd": 89,
+    "def": 74,
+    "pas": 76,
+    "dri": 91,
+    "gk": 53
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.06,
+      "anticipation": 0.18
+    },
+    "tendencies": {
+      "shoot": 0.16,
+      "direct": 0.1,
+      "pass": -0.03
+    },
+    "passives": [
+      {
+        "id": "kings-ego",
+        "name": "King's Ego",
+        "label": "KING'S EGO",
+        "effect": "goal-hunger",
+        "description": "Prefers shooting from dangerous positions and carrying toward goal. Still passes when another chance is better.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "predator-eye",
+        "name": "Predator Eye",
+        "label": "PREDATOR EYE",
+        "effect": "keeper-window",
+        "description": "Watches a screened or moving goalkeeper for a shooting window within 29 m. Blocks and saves remain possible.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "villainous-king",
+        "name": "Villainous King",
+        "label": "VILLAINOUS KING",
+        "effect": "flow-state",
+        "description": "In Flow, attacks openings directly and sharpens his reading of the goalkeeper. Defenders can recover.",
+        "params": {
+          "awareness": {
+            "space": 0.08,
+            "anticipation": 0.12
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "chop-dribble",
+        "name": "Chop Dribble",
+        "label": "CHOP DRIBBLE",
+        "effect": "committed-cut",
+        "description": "Cuts away from a nearby defender who steps toward his original path. Can fail. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      },
+      {
+        "id": "middle-range-shot",
+        "name": "Middle-Range Shot",
+        "label": "MIDDLE-RANGE SHOT",
+        "effect": "middle-range-finish",
+        "description": "Attempts a powerful shot from 16–29 m with a suitable angle. Can miss, be blocked or saved. Cooldown: 6 ticks.",
+        "params": {
+          "cooldownTicks": 6
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "pass": [
+        "Give me the ball!"
+      ],
+      "receive": [
+        "Give me the ball!"
+      ],
+      "dribble": [
+        "Get out of my way!"
+      ],
+      "shot-attempt": [
+        "Get out of my way!"
+      ],
+      "goal": [
+        "Bow to your king!"
+      ],
+      "miss": [
+        "Tch. Next one is mine."
+      ],
+      "dribbleFail": [
+        "Tch. Next one is mine."
+      ],
+      "passFail": [
+        "Tch. Next one is mine."
+      ],
+      "defend": [
+        "You are not getting through!"
+      ],
+      "flow": [
+        "This field belongs to me!"
+      ],
+      "support": [
+        "Give me the ball!"
+      ],
+      "kickoff": [
+        "This field belongs to me!"
+      ],
+      "foul": [
+        "Tch. Next one is mine."
+      ],
+      "fouled": [
+        "Get out of my way!"
+      ],
+      "offside": [
+        "Tch. Next one is mine."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/ikki-niko/player.js
@@ -3892,8 +4312,227 @@ const PLAYER_20_DATA = {
 ;
 
 // js/players/seishiro-nagi/player.js
-// Character player data: Seishiro Nagi (ID 21).
-const PLAYER_21_DATA = { id: 21, name: "Seishiro Nagi", debutChapter: 22, appearanceOrder: 21, image: "images/seishiro-nagi.jpg", primaryPosition: "CF", positions: ["CF", "AM", "FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"trapping","name":"Trapping","description":"Absorbs difficult passes with controlled touches and sets up unconventional finishes.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/nagi/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"two-stage-fake-volley","name":"Two-Stage Fake Volley","category":"technical","description":"Lifts the ball away from a defender’s first block, then volleys the descending ball before they can reset.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/32-blue-genes","note":"Nagi’s opening goal against Japan U-20 uses successive airborne touches to escape the block.","episode":32}},{"id":"five-shot-revolver-fake-volley","name":"Five-Shot Revolver Fake Volley","category":"technical","description":"Chains airborne shooting feints and touches to draw repeated blocks, then strikes after the defenders exhaust their reactions.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_190","chapter":190,"note":"Nagi’s named five-shot fake-volley sequence scores against Bastard München; a separate demonstrated finishing technique."}}], stats: { ovr:91, off:94, sho:92, spd:82, def:69, pas:84, dri:96, gk:55 } };
+// Public simulation kit; canonical football data and ratings preserved.
+const PLAYER_21_DATA = {
+  "id": 21,
+  "name": "Seishiro Nagi",
+  "debutChapter": 22,
+  "appearanceOrder": 21,
+  "image": "images/seishiro-nagi.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "AM",
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "trapping",
+      "name": "Trapping",
+      "description": "Absorbs difficult passes with controlled touches and sets up unconventional finishes.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/nagi/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "two-stage-fake-volley",
+      "name": "Two-Stage Fake Volley",
+      "category": "technical",
+      "description": "Lifts the ball away from a defender’s first block, then volleys the descending ball before they can reset.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/32-blue-genes",
+        "note": "Nagi’s opening goal against Japan U-20 uses successive airborne touches to escape the block.",
+        "episode": 32
+      }
+    },
+    {
+      "id": "five-shot-revolver-fake-volley",
+      "name": "Five-Shot Revolver Fake Volley",
+      "category": "technical",
+      "description": "Chains airborne shooting feints and touches to draw repeated blocks, then strikes after the defenders exhaust their reactions.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Chapter_190",
+        "chapter": 190,
+        "note": "Nagi’s named five-shot fake-volley sequence scores against Bastard München; a separate demonstrated finishing technique."
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 91,
+    "off": 94,
+    "sho": 92,
+    "spd": 82,
+    "def": 69,
+    "pas": 84,
+    "dri": 96,
+    "gk": 55
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.04,
+      "anticipation": 0.13
+    },
+    "tendencies": {
+      "shoot": 0.05
+    },
+    "passives": [
+      {
+        "id": "perfect-trapping",
+        "name": "Perfect Trapping",
+        "label": "PERFECT TRAPPING",
+        "effect": "perfect-trap",
+        "description": "Improves control of reachable ground and aerial deliveries. Defenders can intercept before he receives.",
+        "params": {
+          "control": 7
+        },
+        "interpretation": true
+      },
+      {
+        "id": "genius-awakening",
+        "name": "Genius Awakening",
+        "label": "GENIUS AWAKENING",
+        "effect": "flow-state",
+        "description": "In Flow, improvises better touches and finishing opportunities. Unreachable balls stay unreachable.",
+        "params": {
+          "awareness": {
+            "space": 0.05,
+            "anticipation": 0.08
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "creative-trap",
+        "name": "Creative Trap",
+        "label": "CREATIVE TRAP",
+        "effect": "reception-escape",
+        "description": "After receiving under pressure, tries a short touch away from his marker. Can lose the ball. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      },
+      {
+        "id": "two-stage-fake-volley",
+        "name": "Two-Stage Fake Volley",
+        "label": "TWO-STAGE FAKE VOLLEY",
+        "effect": "aerial-feint-finish",
+        "description": "After an aerial pass within 18 m, feints at one challenging defender before a volley. Can fail. Cooldown: 10 ticks.",
+        "params": {
+          "cooldownTicks": 10
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "five-shot-revolver-fake-volley",
+        "name": "Five-Shot Revolver Fake Volley",
+        "label": "FIVE-SHOT REVOLVER FAKE VOLLEY",
+        "effect": "revolver-finish",
+        "description": "In Flow after an aerial pass from Reo within 12 m, attempts a difficult chain of feints against two nearby defenders. Can fail. Once per Flow.",
+        "params": {},
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true,
+          "receivedPass": true
+        },
+        "dialogue": "flow"
+      }
+    ],
+    "reactions": [
+      {
+        "id": "treasure-partnership",
+        "name": "Treasure Partnership",
+        "label": "TREASURE PARTNERSHIP",
+        "effect": "trap-supply",
+        "members": [
+          20,
+          21
+        ],
+        "cooldownTicks": 12,
+        "dialogue": "partnership",
+        "description": "With Reo on the pitch: Reo attempts a lofted forward pass for Nagi to control. Interceptions and failed control remain possible. Shared cooldown: 12 ticks."
+      }
+    ],
+    "dialogue": {
+      "pass": [
+        "There. Take it."
+      ],
+      "receive": [
+        "There. Take it."
+      ],
+      "dribble": [
+        "What a pain."
+      ],
+      "shot-attempt": [
+        "What a pain."
+      ],
+      "goal": [
+        "That was kind of fun."
+      ],
+      "miss": [
+        "Ah... messed that up."
+      ],
+      "dribbleFail": [
+        "Ah... messed that up."
+      ],
+      "passFail": [
+        "Ah... messed that up."
+      ],
+      "defend": [
+        "I can reach that."
+      ],
+      "flow": [
+        "Okay. Now I want to win."
+      ],
+      "support": [
+        "There. Take it."
+      ],
+      "kickoff": [
+        "Okay. Now I want to win."
+      ],
+      "foul": [
+        "Ah... messed that up."
+      ],
+      "fouled": [
+        "What a pain."
+      ],
+      "offside": [
+        "Ah... messed that up."
+      ],
+      "partnership": [
+        "Reo. Right there."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/zantetsu-tsurugi/player.js
@@ -4077,8 +4716,213 @@ const PLAYER_22_DATA = {
 ;
 
 // js/players/rin-itoshi/player.js
-// Character player data: Rin Itoshi (ID 23).
-const PLAYER_23_DATA = { id: 23, name: "Rin Itoshi", debutChapter: 40, appearanceOrder: 23, image: "images/rin-itoshi.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"kicking-accuracy","name":"Kicking Accuracy","description":"Varies shot placement, curve and trajectory to attack precise scoring routes.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/rin/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"field-control","name":"Field Control","description":"Reads teammates and opponents to arrange passing and scoring sequences.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/rin/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"destructive-duels","name":"Destructive Duels","description":"Challenges opponents through their strongest qualities and responds with tailored techniques.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/rin/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:95, off:97, sho:97, spd:90, def:83, pas:91, dri:92, gk:60 } };
+// Public simulation kit; canonical football data and ratings preserved.
+const PLAYER_23_DATA = {
+  "id": 23,
+  "name": "Rin Itoshi",
+  "debutChapter": 40,
+  "appearanceOrder": 23,
+  "image": "images/rin-itoshi.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "kicking-accuracy",
+      "name": "Kicking Accuracy",
+      "description": "Varies shot placement, curve and trajectory to attack precise scoring routes.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/rin/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "field-control",
+      "name": "Field Control",
+      "description": "Reads teammates and opponents to arrange passing and scoring sequences.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/rin/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    },
+    {
+      "id": "destructive-duels",
+      "name": "Destructive Duels",
+      "description": "Challenges opponents through their strongest qualities and responds with tailored techniques.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/rin/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 95,
+    "off": 97,
+    "sho": 97,
+    "spd": 90,
+    "def": 83,
+    "pas": 91,
+    "dri": 92,
+    "gk": 60
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.1,
+      "space": 0.12,
+      "anticipation": 0.45,
+      "defensiveRead": 0.08,
+      "scan": 7
+    },
+    "tendencies": {
+      "shoot": 0.09,
+      "pass": 0.04
+    },
+    "rivals": [
+      14
+    ],
+    "passives": [
+      {
+        "id": "field-control",
+        "name": "Field Control",
+        "label": "FIELD CONTROL",
+        "effect": "space-reading",
+        "description": "Reads visible runs and defensive gaps within 55 m. Opponents keep control of their own movement.",
+        "params": {
+          "rangeMeters": 55
+        },
+        "interpretation": true
+      },
+      {
+        "id": "kicking-accuracy",
+        "name": "Kicking Accuracy",
+        "label": "KICKING ACCURACY",
+        "effect": "weighted-kick",
+        "description": "Reduces technical passing errors and chooses shooting angles. Distance and pressure still matter.",
+        "params": {
+          "precision": 0.88
+        },
+        "interpretation": true
+      },
+      {
+        "id": "destructive-impulse",
+        "name": "Destructive Impulse",
+        "label": "DESTRUCTIVE IMPULSE",
+        "effect": "flow-state",
+        "description": "In Flow, pursues direct duels and sharp attacking turns more aggressively. He can still lose possession.",
+        "params": {
+          "awareness": {
+            "space": 0.07,
+            "anticipation": 0.12,
+            "defensiveRead": 0.05
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "precision-curve-shot",
+        "name": "Precision Curve Shot",
+        "label": "PRECISION CURVE SHOT",
+        "effect": "curve-finish",
+        "description": "Attempts a curved shot within 30 m when a side angle is available. Blocks, misses and saves remain possible. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      },
+      {
+        "id": "tactical-manipulation",
+        "name": "Tactical Manipulation",
+        "label": "TACTICAL MANIPULATION",
+        "effect": "committed-cut",
+        "description": "Baits a nearby defender into stepping toward him, then tries a reachable change of direction. Can fail. Cooldown: 9 ticks.",
+        "params": {
+          "cooldownTicks": 9
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "pass": [
+        "Keep up."
+      ],
+      "receive": [
+        "Keep up."
+      ],
+      "dribble": [
+        "Move. I am breaking through."
+      ],
+      "shot-attempt": [
+        "Move. I am breaking through."
+      ],
+      "goal": [
+        "That is all you have?"
+      ],
+      "miss": [
+        "I will crush you next time."
+      ],
+      "dribbleFail": [
+        "I will crush you next time."
+      ],
+      "passFail": [
+        "I will crush you next time."
+      ],
+      "defend": [
+        "I read that."
+      ],
+      "flow": [
+        "I will destroy you myself."
+      ],
+      "support": [
+        "Keep up."
+      ],
+      "kickoff": [
+        "I will destroy you myself."
+      ],
+      "foul": [
+        "I will crush you next time."
+      ],
+      "fouled": [
+        "Move. I am breaking through."
+      ],
+      "offside": [
+        "I will crush you next time."
+      ],
+      "rival": [
+        "Sae. Watch me break through."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/jyubei-aryu/player.js
@@ -4436,7 +5280,7 @@ const PLAYER_25_DATA = {
 ;
 
 // js/players/ranze-kurona/player.js
-// Character kit; public ratings and canonical football profile preserved.
+// Public simulation kit; canonical football data and ratings preserved.
 const PLAYER_26_DATA = {
   "id": 26,
   "name": "Ranze Kurona",
@@ -4497,7 +5341,112 @@ const PLAYER_26_DATA = {
     "gk": 55
   },
   "battleSim": {
+    "awareness": {
+      "vision": 0.03,
+      "space": 0.06,
+      "anticipation": 0.2
+    },
+    "tendencies": {
+      "pass": 0.14,
+      "shoot": -0.08
+    },
+    "passives": [
+      {
+        "id": "quick-turning",
+        "name": "Quick Turning",
+        "label": "QUICK TURNING",
+        "effect": "quick-turn",
+        "description": "Turns toward nearby support earlier without increasing his top speed. Defenders can track him.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "short-pass-awareness",
+        "name": "Short-Pass Awareness",
+        "label": "SHORT-PASS AWARENESS",
+        "effect": "support-movement",
+        "description": "Offers reachable short passing angles near the ball carrier. Keeps his defensive role when possession changes.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "planetary-orbit",
+        "name": "Planetary Orbit",
+        "label": "PLANETARY ORBIT",
+        "effect": "flow-state",
+        "description": "In Flow, maintains closer support and reads short exchanges earlier. He remains a supporting player.",
+        "params": {
+          "awareness": {
+            "vision": 0.05,
+            "space": 0.07,
+            "anticipation": 0.08
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "rapid-one-two",
+        "name": "Rapid One-Two",
+        "label": "RAPID ONE-TWO",
+        "effect": "short-combination",
+        "description": "Plays a short pass, then runs for a possible return. Either pass can be intercepted. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
     "dialogue": {
+      "pass": [
+        "Here, here!"
+      ],
+      "receive": [
+        "Here, here!"
+      ],
+      "dribble": [
+        "Turn, turn!"
+      ],
+      "shot-attempt": [
+        "Turn, turn!"
+      ],
+      "goal": [
+        "We did it, did it!"
+      ],
+      "miss": [
+        "Again, again!"
+      ],
+      "dribbleFail": [
+        "Again, again!"
+      ],
+      "passFail": [
+        "Again, again!"
+      ],
+      "defend": [
+        "Got it, got it!"
+      ],
+      "flow": [
+        "Closer, closer!"
+      ],
+      "support": [
+        "Here, here!"
+      ],
+      "kickoff": [
+        "Closer, closer!"
+      ],
+      "foul": [
+        "Again, again!"
+      ],
+      "fouled": [
+        "Turn, turn!"
+      ],
+      "offside": [
+        "Again, again!"
+      ],
       "hotline": [
         "Go, Go!"
       ]

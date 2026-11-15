@@ -46,10 +46,13 @@ function runBattleSimTests(){
  for(let i=0;i<3;i++){bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree.rule,"pass-only","pass-only rule remains active for three ticks");}
  bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree,null,"Universal Decree expires after its third affected tick");
  const centerState=bs.createMatch();attachJohn(centerState);bs.johnUse(centerState,"universal-decree","center-only");
+ // Isolate the decree effect from a separate special consuming this tick.
+ bs.johnPaccini(centerState).battleSimState.cooldowns["dimensional-repositioning"]=1000;
  const centerMover=bs.active(centerState.teams[2]).filter(p=>p.role!=="GK").sort((a,b)=>Math.hypot(bs.point(b).x-50,bs.point(b).y-50)-Math.hypot(bs.point(a).x-50,bs.point(a).y-50))[0];
  const centerDistance=Math.hypot(bs.point(centerMover).x-50,bs.point(centerMover).y-50);
  bs.playerTick(centerState);assert(Math.hypot(bs.point(centerMover).x-50,bs.point(centerMover).y-50)<centerDistance,"center-only rule moves players towards the center");
  const blindState=bs.createMatch();attachJohn(blindState);bs.johnUse(blindState,"universal-decree","blindness");
+ bs.johnPaccini(blindState).battleSimState.cooldowns["dimensional-repositioning"]=1000;
  bs.playerTick(blindState);assert.equal(blindState.blindnessUntil,blindState.decree.untilTick,"blindness rule removes pitch vision for the decree duration");
  const authorityState=bs.createMatch(),authorityJohn=attachJohn(authorityState);bs.setMatch(authorityState);
  authorityJohn.flow=100;authorityJohn.flowActivationPending=true;authorityJohn.battleSimState.cooldowns["universal-decree"]=1000;
@@ -61,7 +64,7 @@ function runBattleSimTests(){
  const baseGoals={1:authorityState.teams[1].stats.goals,2:authorityState.teams[2].stats.goals};
  authorityState.nextNotableAt=Number.MAX_SAFE_INTEGER;
  const coinRolls=[.1,.9,.9,.1,.9,.1],expectedWinners=coinRolls.map(roll=>roll<.5?1:2);let randomCalls=0,flipCalls=0;
- authorityState.random=()=>{const call=randomCalls++;if(call%2===0)return .5;return coinRolls[flipCalls++];};authorityState.random.getState=()=>0;
+ authorityState.random=()=>{const call=randomCalls++;if(call%4!==1)return .5;return coinRolls[flipCalls++];};authorityState.random.getState=()=>0;
  for(let i=0;i<6;i++){
   const winner=expectedWinners[i],beforeTick=authorityState.tick,beforeEvents=authorityState.events.length,beforeScore=authorityState.score[winner],beforeGoals=authorityState.teams[winner].stats.goals,beforeTotal=authorityState.score[1]+authorityState.score[2];
   bs.playerTick(authorityState);

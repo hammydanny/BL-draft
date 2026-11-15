@@ -1,0 +1,23 @@
+{
+  "baseCommit": "9660045319f1e7a67a6586458ac46f54df56dc90",
+  "publicNonKitProfilesVerified": 88,
+  "secretRecordsAndSourceBytesVerified": 10,
+  "changedKitIds": [
+    1,
+    14,
+    15,
+    21,
+    23,
+    26
+  ],
+  "unchangedSharedFiles": {
+    "js/chemistry.js": "e1bd0f4ae225731c7a55af5fa6124a28fad77798b9b6270882962ddefb791d6a",
+    "js/formations.js": "eaaf83b20bc0de6143c02679f5ef1ccace1656d0f915a276d6a385c54d99588b",
+    "js/players/yo-hiori/player.js": "a2648cf2749e5e51868138015e8957f869bdb5e1199b7e9f3e44436b2d494cbf",
+    "js/players/john-paccini/player.js": "bc05fecf85edc61a204e24993976e602c789766540d915891df6a748ca55ac67",
+    "js/players/john-paccini/BATTLE-SIM-KIT.md": "5612144bbe286e1121252dc4b6595bf730214e5daf611979510c85720b082acf"
+  },
+  "status": "passed",
+  "remoteWritesPerformed": false,
+  "recordStage": "prepublication-review"
+}

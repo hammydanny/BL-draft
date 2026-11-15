@@ -58,6 +58,7 @@ require('./battle-v0894-tests.js').runBattleV0894Tests();
 require('./battle-v8982-tests.js').runBattleV8982Tests();
 require('./battle-polish-tests.js').runPolishTests();
 require('./battle-evolution-tests.js').runEvolutionTests();
+require('./battle-restoration-tests.js').runRestorationTests();
 require('./battle-presentation-tests.js').runPresentationTests();
 require('./battle-refinement-tests.js').runRefinementTests();
 require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});

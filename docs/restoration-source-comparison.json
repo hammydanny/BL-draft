@@ -1,0 +1,38 @@
+{
+  "restoredFrom": "16b4b043fec75ca412f02e56d48140f99e604207",
+  "functions": {
+    "matchIntroStarters": {
+      "expected": "1458b1efc15690364922bbe9c4ad469b4b33dfd9c8339f14d9b5f4fdcf7b6a0c",
+      "actual": "1458b1efc15690364922bbe9c4ad469b4b33dfd9c8339f14d9b5f4fdcf7b6a0c",
+      "matches": true
+    },
+    "renderMatchIntro": {
+      "expected": "eb846a7f0784595c27bc382bfc7df2770fb8241823d9fc1a581ff6cfdbc6e0db",
+      "actual": "eb846a7f0784595c27bc382bfc7df2770fb8241823d9fc1a581ff6cfdbc6e0db",
+      "matches": true
+    },
+    "spotlightMatchIntroPlayer": {
+      "expected": "a98331479a3e7edbd5b043d19e85b44ff2e3a980fb6a13be15447913e3641b46",
+      "actual": "a98331479a3e7edbd5b043d19e85b44ff2e3a980fb6a13be15447913e3641b46",
+      "matches": true
+    },
+    "showMatchIntroTeam": {
+      "expected": "c1125a9db59aab553b1c66f2ed5cd9b151e485f4e4934e270872440a3bd2bfd6",
+      "actual": "c1125a9db59aab553b1c66f2ed5cd9b151e485f4e4934e270872440a3bd2bfd6",
+      "matches": true
+    },
+    "showMatchIntroFinish": {
+      "expected": "f1599ed804a1698a37487473fe0f96a43b6acdc88a975396fb17c676041fc5f3",
+      "actual": "f1599ed804a1698a37487473fe0f96a43b6acdc88a975396fb17c676041fc5f3",
+      "matches": true
+    }
+  },
+  "css": {
+    "rules": 179,
+    "expected": "0c68b33d5828b7df3c723b8d65794b093cf7e997f017b341f853acee1b1e014b",
+    "actual": "0c68b33d5828b7df3c723b8d65794b093cf7e997f017b341f853acee1b1e014b",
+    "matches": true
+  },
+  "revealMilliseconds": 760,
+  "browserScreenshotsVerified": false
+}

@@ -128,8 +128,8 @@ const ISAGI_PLAYER_DATA = {
             "dialogue": "moveIt",
             "condition": { "duringFlow": true },
             "oncePerFlow": true,
-            "params": { "teammateRangeMeters": 8, "goalRangeMeters": 24 },
-            "description": "When Isagi is near a teammate with the ball who is near the goal, he steals it for himself. Once per Flow."
+            "params": { "teammateRangeMeters": 3, "goalRangeMeters": 24 },
+            "description": "In Flow within 3 m of a teammate near goal, takes the ball only for a better shooting chance. Uses one action; defenders can challenge him. Once per Flow."
         },
         {
             "id": "two-gun-volley",
@@ -156,7 +156,7 @@ const ISAGI_PLAYER_DATA = {
             "name": "Reflexive Synchronization",
             "label": "REFLEXIVE SYNCHRONIZATION",
             "effect": "synchronized-through",
-            "cooldownTicks": 10,
+            "cooldownTicks": 5,
             "dialogue": "sync",
             "params": {
                 "precision": 0.95,
@@ -183,7 +183,7 @@ const ISAGI_PLAYER_DATA = {
                 "formationWidthMeters": 2.2,
                 "sequenceTicks": 3
             },
-            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown.",
+            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown after the sequence ends or is interrupted.",
             "members": [
                 1,
                 26
@@ -250,13 +250,13 @@ const ISAGI_PLAYER_DATA = {
         "Use it, Kaiser. I'll take the next one."
     ],
     "flow": [
-        "I see it now... All the pieces have been complete."
+        "I see it now... every piece fits."
     ],
     "moveIt": [
         "MOVE IT!"
     ],
     "hotline": [
-        "Let's make out Kurona!"
+        "Kurona, let's go!"
     ],
     "kickoff": [
         "I can build a route from here."

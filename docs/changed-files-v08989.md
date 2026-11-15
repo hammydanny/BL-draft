@@ -1,0 +1,54 @@
+# Changed files for 0.8.9.8.10
+
+Against main `1cb12df50e7c7902c8d69afc9469355d7451c1fb`. 50 changed/new repository-relative files; no deletions.
+
+- `404.html`
+- `auction/results/index.html`
+- `auction/room/index.html`
+- `auction/setup/index.html`
+- `auction/team-builder/index.html`
+- `battle-sim/game/index.html`
+- `battle-sim/initializer/index.html`
+- `battle-sim/results/index.html`
+- `changelog/index.html`
+- `css/battle-sim.css`
+- `docs/changed-files-v08989.md`
+- `docs/integration-protection-v08989.json`
+- `docs/integration-release-v089810.md`
+- `docs/protection-audit-v08989.json`
+- `docs/release-v0.8.9.8.9.md`
+- `docs/restoration-match-metrics.json`
+- `docs/restoration-source-comparison.json`
+- `docs/validation-v0.8.9.8.9.json`
+- `index.html`
+- `js/battle-sim.js`
+- `js/characters.generated.js`
+- `js/i18n/battle-messages.js`
+- `js/i18n/messages.js`
+- `js/players-loader.js`
+- `js/players/BATTLE-SIM-CHECKLIST.md`
+- `js/players/isagi/player.js`
+- `js/players/ranze-kurona/player.js`
+- `js/players/rin-itoshi/player.js`
+- `js/players/sae-itoshi/player.js`
+- `js/players/seishiro-nagi/player.js`
+- `js/players/shoei-baro/player.js`
+- `js/version.js`
+- `legal/index.html`
+- `lore/index.html`
+- `privacy/index.html`
+- `scripts/battle-evolution-tests.js`
+- `scripts/battle-restoration-tests.js`
+- `scripts/battle-sim-tests.js`
+- `scripts/battle-v089-tests.js`
+- `scripts/battle-v8982-tests.js`
+- `scripts/collaborator-preservation-tests.js`
+- `scripts/fixtures/collaborator-v8988.json`
+- `scripts/fixtures/isagi-before-restoration.json`
+- `scripts/fixtures/protected-main-v8988.json`
+- `scripts/fixtures/roster-v088.json`
+- `scripts/fixtures/roster-v0881.json`
+- `scripts/preflight.js`
+- `scripts/release-manifest.json`
+- `service-worker.js`
+- `team-builder/index.html`

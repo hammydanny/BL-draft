@@ -1,0 +1,98 @@
+{
+  "version": "0.8.9.8.9",
+  "supportedChapter": 368,
+  "baseCommit": "9660045319f1e7a67a6586458ac46f54df56dc90",
+  "lastVerifiedMain": "9660045319f1e7a67a6586458ac46f54df56dc90",
+  "sourceFingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+  "finalCoreExit": 0,
+  "finalPerformance": {
+    "exit": 0,
+    "millisecondsPerTick": 5.27,
+    "unchangedLimit": 10
+  },
+  "remainingSuites": {
+    "battle-v089-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 44283
+    },
+    "battle-v0891-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 102366
+    },
+    "battle-v0894-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 22788
+    },
+    "battle-v8982-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 959
+    },
+    "battle-polish-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 526
+    },
+    "battle-evolution-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 12698
+    },
+    "battle-restoration-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 8777
+    },
+    "battle-presentation-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 58104
+    },
+    "battle-refinement-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 187
+    },
+    "chapter-tracker-tests.js": {
+      "fingerprint": "9b63794c4b5d558848ada01160ebdc4443147d66abdf06992769485bb7d598ac",
+      "status": "passed",
+      "elapsedMilliseconds": 22
+    }
+  },
+  "initialFullPreflight": {
+    "command": "node scripts/preflight.js",
+    "exit": 1,
+    "failure": "Pre-optimization performance measurement 10.03 ms/tick exceeded the unchanged 10 ms limit.",
+    "resolution": "Cached immutable effect lookup; reran final core, the complete failed v0.8.8.5 suite and every downstream preflight suite successfully.",
+    "singleFullCommandRerunAfterFix": false
+  },
+  "additionalChecks": {
+    "localizationCoverageMissing": 0,
+    "localizationIntegrityErrors": 0,
+    "localizationWarnings": 0,
+    "versionStaleReferences": 0,
+    "releaseFingerprintChangedAssets": 0,
+    "generatedShellDrift": 0,
+    "collaboratorPreservation": "passed",
+    "cachedLookupSemantics": "passed",
+    "sourceRestorationComparison": "passed",
+    "publicNonKitProfilesVerified": 88,
+    "secretRecordsAndSourceFilesVerified": 10
+  },
+  "browserVisualQA": {
+    "verified": false,
+    "screenshotsAvailable": false,
+    "limitation": "No usable browser session; desktop/mobile rendered comparisons remain unverified."
+  },
+  "remoteActions": {
+    "commits": 0,
+    "pushes": 0,
+    "pullRequests": 0,
+    "deployments": 0
+  },
+  "status": "all component checks passed; review patch uncommitted",
+  "recordStage": "prepublication-review"
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "seed": 7,
+    "score": {
+      "1": 3,
+      "2": 2
+    },
+    "shots": [
+      8,
+      10
+    ],
+    "completedLoftedPassesToNagi": 7,
+    "flowActivations": {
+      "15": 2,
+      "23": 1
+    },
+    "abilities": {
+      "planet-hotline": 11,
+      "rapid-one-two": 2,
+      "precision-distribution": 15,
+      "sae-precision-distribution": 14,
+      "middle-range-shot": 11,
+      "precision-curve-shot": 1,
+      "short-pass-awareness": 8,
+      "left-footed-direct-shot": 1,
+      "predator-eye": 2,
+      "high-point-clearance": 4,
+      "field-control": 2,
+      "power-shield": 1,
+      "villainous-king": 2,
+      "destructive-impulse": 1
+    },
+    "reactions": {}
+  },
+  {
+    "seed": 29,
+    "score": {
+      "1": 2,
+      "2": 3
+    },
+    "shots": [
+      12,
+      11
+    ],
+    "completedLoftedPassesToNagi": 9,
+    "flowActivations": {
+      "15": 2
+    },
+    "abilities": {
+      "precision-curve-shot": 3,
+      "sae-precision-distribution": 7,
+      "rapid-one-two": 6,
+      "short-pass-awareness": 11,
+      "planet-hotline": 15,
+      "predator-eye": 3,
+      "middle-range-shot": 8,
+      "precision-distribution": 14,
+      "field-control": 1,
+      "villainous-king": 2,
+      "high-point-clearance": 2,
+      "chop-dribble": 1
+    },
+    "reactions": {}
+  },
+  {
+    "seed": 71,
+    "score": {
+      "1": 2,
+      "2": 3
+    },
+    "shots": [
+      11,
+      9
+    ],
+    "completedLoftedPassesToNagi": 14,
+    "flowActivations": {
+      "15": 1,
+      "23": 1
+    },
+    "abilities": {
+      "planet-hotline": 15,
+      "stylish-coverage": 2,
+      "precision-distribution": 20,
+      "sae-precision-distribution": 14,
+      "short-pass-awareness": 8,
+      "field-control": 6,
+      "middle-range-shot": 9,
+      "rapid-one-two": 4,
+      "creative-trap": 1,
+      "precision-curve-shot": 1,
+      "predator-eye": 1,
+      "villainous-king": 1,
+      "high-point-clearance": 1,
+      "destructive-impulse": 1
+    },
+    "reactions": {}
+  }
+]

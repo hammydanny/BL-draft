@@ -1,4 +1,4 @@
-// Character kit; public ratings and canonical football profile preserved.
+// Public simulation kit; canonical football data and ratings preserved.
 const PLAYER_26_DATA = {
   "id": 26,
   "name": "Ranze Kurona",
@@ -59,7 +59,112 @@ const PLAYER_26_DATA = {
     "gk": 55
   },
   "battleSim": {
+    "awareness": {
+      "vision": 0.03,
+      "space": 0.06,
+      "anticipation": 0.2
+    },
+    "tendencies": {
+      "pass": 0.14,
+      "shoot": -0.08
+    },
+    "passives": [
+      {
+        "id": "quick-turning",
+        "name": "Quick Turning",
+        "label": "QUICK TURNING",
+        "effect": "quick-turn",
+        "description": "Turns toward nearby support earlier without increasing his top speed. Defenders can track him.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "short-pass-awareness",
+        "name": "Short-Pass Awareness",
+        "label": "SHORT-PASS AWARENESS",
+        "effect": "support-movement",
+        "description": "Offers reachable short passing angles near the ball carrier. Keeps his defensive role when possession changes.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "planetary-orbit",
+        "name": "Planetary Orbit",
+        "label": "PLANETARY ORBIT",
+        "effect": "flow-state",
+        "description": "In Flow, maintains closer support and reads short exchanges earlier. He remains a supporting player.",
+        "params": {
+          "awareness": {
+            "vision": 0.05,
+            "space": 0.07,
+            "anticipation": 0.08
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "rapid-one-two",
+        "name": "Rapid One-Two",
+        "label": "RAPID ONE-TWO",
+        "effect": "short-combination",
+        "description": "Plays a short pass, then runs for a possible return. Either pass can be intercepted. Cooldown: 7 ticks.",
+        "params": {
+          "cooldownTicks": 7
+        },
+        "interpretation": true,
+        "dialogue": "dribble"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
     "dialogue": {
+      "pass": [
+        "Here, here!"
+      ],
+      "receive": [
+        "Here, here!"
+      ],
+      "dribble": [
+        "Turn, turn!"
+      ],
+      "shot-attempt": [
+        "Turn, turn!"
+      ],
+      "goal": [
+        "We did it, did it!"
+      ],
+      "miss": [
+        "Again, again!"
+      ],
+      "dribbleFail": [
+        "Again, again!"
+      ],
+      "passFail": [
+        "Again, again!"
+      ],
+      "defend": [
+        "Got it, got it!"
+      ],
+      "flow": [
+        "Closer, closer!"
+      ],
+      "support": [
+        "Here, here!"
+      ],
+      "kickoff": [
+        "Closer, closer!"
+      ],
+      "foul": [
+        "Again, again!"
+      ],
+      "fouled": [
+        "Turn, turn!"
+      ],
+      "offside": [
+        "Again, again!"
+      ],
       "hotline": [
         "Go, Go!"
       ]

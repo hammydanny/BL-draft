@@ -26,16 +26,16 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Ikki Niko (16) | [x] | [x] | [x] |
 | Hibiki Okawa (17) | [x] | [x] | [x] |
 | Junichi Wanima (18) | [x] | [x] | [x] |
-| Sae Itoshi (14) | [ ] | [ ] | [ ] |
-| Shoei Baro (15) | [ ] | [ ] | [ ] |
+| Sae Itoshi (14) | [x] | [x] | [x] |
+| Shoei Baro (15) | [x] | [x] | [x] |
 | Keisuke Wanima (19) | [x] | [x] | [x] |
 | Reo Mikage (20) | [x] | [x] | [x] |
-| Seishiro Nagi (21) | [ ] | [ ] | [ ] |
+| Seishiro Nagi (21) | [x] | [x] | [x] |
 | Zantetsu Tsurugi (22) | [x] | [x] | [x] |
-| Rin Itoshi (23) | [ ] | [ ] | [ ] |
+| Rin Itoshi (23) | [x] | [x] | [x] |
 | Jyubei Aryu (24) | [x] | [x] | [x] |
 | Aoshi Tokimitsu (25) | [x] | [x] | [x] |
-| Ranze Kurona (26) | [ ] | [ ] | [ ] |
+| Ranze Kurona (26) | [x] | [x] | [x] |
 | Yo Hiori (27) | [ ] | [ ] | [ ] |
 | Tabito Karasu (28) | [ ] | [ ] | [ ] |
 | Eita Otoya (29) | [ ] | [ ] | [ ] |
@@ -113,3 +113,7 @@ Kuon, Imamura, Niko, Okawa and Junichi use physical movement, passing, aerial co
 Every new kit must pair canon-grounded, fallible football effects with contextual character dialogue, including success/failure and quiet or nonverbal personalities. Reuse physical movement and shared reactions, localize names/descriptions/lines in all 11 languages, and verify deterministic saves plus ordinary seeded matches. Limited-canon players stay simple. Do not mark a kit complete from declarations or string counts alone.
 
 0.8.9.8.8: Keisuke, Reo, Zantetsu, Aryu, Tokimitsu and Nishioka use engine effects and localized simulation dialogue. Keisuke shares Junichi’s existing Eye Contact. Nishioka remains an estimated profile with a conservative interpreted kit. Kurona and Hiori receive partner-reaction support only; their individual kits remain pending. Nagi, Baro and Sae are not part of this batch. Browser visual QA is unverified in this environment.
+
+## v0.8.9.8.9 restoration batch
+
+Sae (14), Barou (15), Nagi (21), Rin (23), and Kurona (26) have physical, fallible kit handlers and eleven-language presentation. Hiori stays unchecked: only his shared one-action cross is corrected. Planet Hotline remains declared once in Isagi’s kit, with cooldown after termination. See `docs/release-v0.8.9.8.9.md` for exact guards, ordinary-match activation limits and validation.

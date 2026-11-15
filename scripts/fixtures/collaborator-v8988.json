@@ -4,20 +4,19 @@
     "js/players/isagi/player.js": "0a26fc996047b1d20b4b5d3507218b07b9691518c1dac128d036fd74e56dfe12",
     "js/players/isagi/BATTLE-SIM-CHECKLIST.md": "f5e08546b6b5d87fcb5d364880288afd626846487fa4f9fcab819d6d81c61f76",
     "js/players/yo-hiori/player.js": "a2648cf2749e5e51868138015e8957f869bdb5e1199b7e9f3e44436b2d494cbf",
-    "js/players/john-paccini/player.js": "bc05fecf85edc61a204e24993976e602c789766540d915891df6a748ca55ac67",
-    "js/players/john-paccini/BATTLE-SIM-KIT.md": "5612144bbe286e1121252dc4b6595bf730214e5daf611979510c85720b082acf"
+    "js/players/john-paccini/player.js": "3d01f2bd85114bcd3c0d0ed8843550a3aa07acd4db5acc5014053053f4f54dcc",
+    "js/players/john-paccini/BATTLE-SIM-KIT.md": "4df5e3d85d988bf63bdfa2fdeb6a7b37bbd2fa37ec05d0a7fbcc611cc90d0c2a"
   },
   "functions": {
     "runPlanetHotline": "51031625423ad4c7486d3104d3a98bf6466bd5698f6bfcd9fbf39fcc8f3679a9",
     "johnPaccini": "e81986f501fa498d9fe32ca5875f79d0cb37dfb9194a72bf657e7553c3aeb381",
-    "johnSay": "5ac319b2431724e01ed8fe6ee10be4c0d76093ea2037482d43be4bc9524046ba",
+    "johnSay": "7513d2ec9f57fc8f8856e4f3992d9f1ab361f81b656a82cc7c6c9d9014374ab4",
     "johnCooldown": "1576be05f08c111d5240da12304c33a5fcb995ef9455a97e0fb2d45431823d1d",
-    "johnUse": "fbd3566e19ca4697ab35adb5eefd7a072ce4482f171a8e52956078c160925a17",
-    "johnAutomaticSpecial": "772cd47d3e1649d46767c645f809f6d0862a6c749a917c6dc019466c4ae1d26d",
-    "johnHistorySnapshot": "9a604061b6db2a6e7a38a599aac33e180457c889a337b84a6efcabe746657596",
-    "johnRestore": "55d43c2272ca6ea34f8d2b36c722001149d15d4bc49c4d8f4c31c20fd407acc2",
+    "johnUse": "1150bd402b2e355a6abd9f3d3b80ba40de810cea284f9468811f46ddfb8fa7ea",
+    "johnAutomaticSpecial": "641c05699bbfcdd5e421d0563cdbb8e9e66ec75d3b119f48779e444cc3e64c6e",
     "flowAware": "549b44d43ff766a0b8328d4aafab85cddb116771e5d88749b6bb62b16470ca00",
     "watchtowerTarget": "ada746abf19fce0ebee7738958727c14a6f15c4d4d38546c7494e639f6763c4e",
     "playReaction": "b97cb7c36be25af9f9265e7de2c4875defba96ffb84382cd70101336a2a4cc20"
-  }
+  },
+  "integrationBase": "1cb12df50e7c7902c8d69afc9469355d7451c1fb"
 }

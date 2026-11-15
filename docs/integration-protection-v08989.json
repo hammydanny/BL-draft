@@ -1,0 +1,17 @@
+{
+  "baseCommit": "1cb12df50e7c7902c8d69afc9469355d7451c1fb",
+  "publicNonKitProfilesVerified": 88,
+  "secretRecordsAndSourceBytesVerified": 10,
+  "changedKitIds": [
+    1,
+    14,
+    15,
+    21,
+    23,
+    26
+  ],
+  "latestJohnDataAndDocumentation": "byte-identical",
+  "johnTestAssertions": "all preserved; decree fixtures isolate competing special; deterministic coin rolls allow time and two movement draws",
+  "chemistryAndFormationDefinitions": "byte-identical",
+  "status": "passed"
+}

@@ -9,7 +9,7 @@ const ISAGI=1,HIORI=27,KURONA=26,BACHIRA=4,KAISER=49;
 
 function setup(stars=[ISAGI,HIORI,KURONA,BACHIRA,KAISER],formation='4-3-3'){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,20,22,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const home=stars.concat(pool.slice(0,14-stars.length)),away=pool.slice(20,34);
  const teams=[1,2].map(n=>{const ids=n===1?home:away;let a=positionalAssignment(h,formation,ids,n);
   // The characters under test start in their own positions; the rest of the XI fills around them.
@@ -167,8 +167,8 @@ function reactionTests(){
  const {b}=setup();
  // Hiori: a run he reads is played more precisely and labelled; another passer gets no reaction.
  const sync=passerId=>scene(b,(s,get,def)=>{const c=passerId===HIORI?get(1,HIORI):b.active(s.teams[1]).find(p=>p.role!=='GK'&&![ISAGI,HIORI,KURONA,BACHIRA,KAISER].includes(Number(p.id))),isg=get(1,ISAGI);
-  b.setPosition(c,{x:55,y:50});b.setPosition(isg,{x:72,y:42});isg.intent={type:'run',target:{x:73,y:42},until:s.tick+3,primed:true,blindSpot:false,dir:{x:1,y:0}};
-  b.setPosition(def(0),{x:75,y:30});b.setPosition(def(1),{x:75,y:58});return {carrier:c,receiver:isg};});
+  b.setPosition(c,{x:65,y:25});b.setPosition(isg,{x:85,y:45});isg.intent={type:'run',target:{x:86,y:45},until:s.tick+3,primed:true,blindSpot:false,dir:{x:1,y:0}};
+  b.setPosition(def(0),{x:90,y:20});b.setPosition(def(1),{x:90,y:70});return {carrier:c,receiver:isg};});
  let t=sync(HIORI);const tagged=b.passOptions(t.s,t.carrier).filter(o=>o.receiver===t.receiver&&o.through&&o.reaction);
  assert(tagged.length&&tagged[0].reaction.def.id==='reflexive-synchronization'&&tagged[0].precision<1,'Hiori synchronises with Isagi\'s run');
  assert(tagged[0].model.success<1,'a reaction is never guaranteed');
@@ -177,7 +177,7 @@ function reactionTests(){
  t=sync(0);assert(!b.passOptions(t.s,t.carrier).some(o=>o.reaction),'other passers do not trigger it');
  // Kurona: wall pass when Isagi is pressed, then the return is played into his run.
  t=scene(b,(s,get,def)=>{const isg=get(1,ISAGI),k=get(1,KURONA);b.setPosition(isg,{x:70,y:50});b.setPosition(k,{x:74,y:38});b.setPosition(def(0),{x:72,y:51});return {carrier:isg,partner:k};});
- assert(b.runPlanetHotline(t.s),'Syaafi coordinated sequence starts');assert(t.s.reactionCooldowns['1:planet-hotline']>t.s.tick,'shared main cooldown');
+ assert(b.runPlanetHotline(t.s),'Syaafi coordinated sequence starts');assert(t.s.planetHotline?!t.s.reactionCooldowns?.['1:planet-hotline']:t.s.reactionCooldowns['1:planet-hotline']===t.s.tick+10,'shared cooldown starts only at termination');
  const t2=scene(b,(s,get,def)=>{const isg=get(1,ISAGI),k=get(1,KURONA);b.setPosition(isg,{x:70,y:50});b.setPosition(k,{x:74,y:38});return {carrier:isg,partner:k};});
  assert(b.runPlanetHotline(t2.s),'nearby partners can start without pressure');
  // Bachira: a dribble that drags defenders opens space Isagi attacks.
