@@ -733,7 +733,7 @@ function updateIntents(state){
   for(const r of kitReactions(state,carrier)){
    if(!(r.def.effect==="synchronized-through"||kitParam(r.def,"startsRun",false))||r.partner!==carrier||r.owner.intent&&r.owner.intent.type==="run"||!reactionReady(state,r.def,r.owner.teamNumber))continue;
    const c=candidates.find(x=>x.p===r.owner)||(aheadM(n,r.owner)>=line-22?{p:r.owner,gap:findRunGap(state,team,r.owner,line)}:null);if(!c||!c.gap)continue;
-   const target=pitchAt(n,line-.6,c.gap.y);c.p.intent={type:"run",target,buffer:.6,band:c.gap.band,tick:state.tick,until:state.tick+3,primed:true,blindSpot:!!kitAbility(c.p,"blind-spot-run")&&onBlindSide(state,c.p,target),dir:{x:n===1?1:-1,y:0}};runners++;
+   const target=pitchAt(n,line-.6,c.gap.y);c.p.intent={type:"run",target,buffer:.6,band:c.gap.band,tick:state.tick,until:state.tick+1,primed:true,blindSpot:!!kitAbility(c.p,"blind-spot-run")&&onBlindSide(state,c.p,target),dir:{x:n===1?1:-1,y:0}};runners++;
   }
   for(const c of candidates){
    if(c.p.intent)continue;
@@ -973,6 +973,7 @@ function playReaction(state,carrier,option){
  const chained=option.receiver.intent&&option.receiver.intent.reaction===r.def.id;
  if(!chained)useReaction(state,r.def,r.owner.teamNumber);
  const speaker=r.def.id==="eye-contact"?r.partner:r.owner,line=kitLine(state,speaker,r.def.dialogue||r.def.id,true);
+ const syncLine=r.def.effect==="synchronized-through"&&idOf(carrier.id)==="27"&&idOf(option.receiver.id)==="1"?kitLine(state,r.partner,r.def.dialogue||"sync",true):null;
  // Wall pass: the passer sets off for the return into the space behind his marker.
  if(r.def.effect==="wall-pass"&&!chained&&r.owner===carrier){
   const n=carrier.teamNumber,goal=targetGoal(n),dir=Math.atan2((goal.y-carrier.y)*YM,(goal.x-carrier.x)*XM),target=shiftM(carrier,Math.abs(Math.cos(dir))*12,(goal.y-carrier.y)*YM*.15,n);
@@ -980,7 +981,7 @@ function playReaction(state,carrier,option){
  }
  if(chained)option.receiver.intent=null;
  state.reactionCount=(Number(state.reactionCount)||0)+1;
- return{reaction:{id:String(r.def.id),label:String(r.def.label||r.def.name).toUpperCase(),partners:[idOf(r.owner.id),idOf(r.partner.id)]},dialogue:line?[line]:undefined};
+ return{reaction:{id:String(r.def.id),label:String(r.def.label||r.def.name).toUpperCase(),partners:[idOf(r.owner.id),idOf(r.partner.id)]},dialogue:[line,syncLine].filter(Boolean).length?[line,syncLine].filter(Boolean):undefined};
 }
 // Creative Instinct: a dribble that drags two or more defenders leaves space; the partner reads it.
 function afterDribble(state,carrier,beaten){
