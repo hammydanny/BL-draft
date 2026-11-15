@@ -489,14 +489,14 @@ function johnRestore(state,snap,history,reverseEvent,reverseSteps){
  state.johnHistory=Array.isArray(history)?history:[];
  state.status="playing";state.stoppage="";state.manualPaused=false;
  const root=state===match&&!fastForwarding&&reverseEvent?byId("bs-live-feed"):null;
- if(root&&typeof root.querySelectorAll==="function"&&Array.isArray(reverseSteps)&&reverseSteps.length){
+ if(root&&typeof root.querySelectorAll==="function"){
   clearFeedQueue();
   root.querySelectorAll("[data-event-id]").forEach(node=>{const eventId=Number(node.dataset?.eventId);if(Number.isFinite(eventId)&&eventId>keptEvents.length)node.remove();});
   root._queuedThrough=keptEvents.length;
-  reverseEvent.reversePresentations=reverseSteps.map(step=>capturePresentation(step.data));
- }else if(reverseEvent){
-  reverseEvent.presentation=capturePresentation(state);
  }
+ // Reverse Fate is a state rewind, not a replay of the discarded ticks. Present
+ // the restored snapshot directly so the live-feed animation cannot hold the sim.
+ if(reverseEvent)reverseEvent.presentation=capturePresentation(state);
 }function battleSimRuntimeState(p){
  if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
  if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};

@@ -101,6 +101,8 @@ function runBattleSimTests(){
  assert.equal(reverseState.events.length,targetEventCount+1,"Only the retained history and single activation message remain");
  assert.equal(reverseState.events.at(-1).type,"reverse-fate","The Reverse Fate message survives the rewind");
  assert.equal(reverseState.events.filter(e=>e.type==="reverse-fate").length,1,"The rewind does not duplicate Reverse Fate messages");
+ assert.equal(reverseState.events.at(-1).presentation.timeSeconds,targetData.timeSeconds,"Reverse Fate presents the restored state immediately");
+ assert.equal(reverseState.events.at(-1).reversePresentations,undefined,"Reverse Fate does not replay discarded ticks through a blocking presentation sequence");
  assert.equal(reverseState.johnHistory.length,3,"Snapshots from the reverted ticks are removed from history");
  assert.equal(new Set(reverseState.events.map(e=>e.id)).size,reverseState.events.length,"Event IDs remain unique after truncation");
  for(const n of [1,2]){
