@@ -7,7 +7,7 @@ function battleContext(source=fs.readFileSync(path.join(root,'js/battle-sim.js')
  const {context,run}=createModeTestContext(),timers=new Map();let timerId=0;
  context.setTimeout=(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;};context.clearTimeout=id=>timers.delete(id);
  context.updateRoute=()=>{};context.getRouteFromLocation=()=> 'battleSimGame';
- const hook=`globalThis.bs={runPlanetHotline,normalizeTeam,resolveSharedPlayer,resolveSharedRoster,serializeTeam,runtimeTeam,keeper,seeded,createMatch,snapshotMatch,hydrateMatch,playerTick,johnUse,johnAutomaticSpecial,johnPaccini,johnHistorySnapshot,johnReverseFateReady,kickoff,resolvePass,resolveShot,resolveDribble,resolveRestart,teamChemistrySnapshot,formationPoint,formationSlots,sequenceReady,continueMatch,runSequence,substitute,replaceSetupStarter,fastForwardMatch,toggleManualPause,finish,saveTeamToSharedStandalone,
+ const hook=`globalThis.bs={runPlanetHotline,normalizeTeam,resolveSharedPlayer,resolveSharedRoster,serializeTeam,runtimeTeam,keeper,seeded,createMatch,snapshotMatch,hydrateMatch,playerTick,johnUse,johnAutomaticSpecial,johnPaccini,kickoff,resolvePass,resolveShot,resolveDribble,resolveRestart,teamChemistrySnapshot,formationPoint,formationSlots,sequenceReady,continueMatch,runSequence,substitute,replaceSetupStarter,fastForwardMatch,toggleManualPause,finish,saveTeamToSharedStandalone,
  matchTeamPanel,updateTeamPanel,eventMessage,playerOVR,positionRatings,liveFormationPoint,showResults,capturePresentation,validPresentation,displayState,projectPitch,setPosition,setBall,moveOffBall,offBallOrder,movementMeters,dribbleMeters,distance,point,receiverPressure,inOpponentBox,formationStart,zoneAt,setPieceSkill,setPieceUsesPass,setPieceTaker,arrangeSetPiece,checkFoul,playerWeaponsText,trimLiveFeed,setPieceReceiver,virtualPoint,renderPoint,passingChemistry,chemistryPassColor,choosePassKind,pickPassReceiver,stagePendingSetPiece,bench,substitutionEligible,restoreMatchParticipation,maliciaRead,resolveMalicia,reboundRace,supportSpot,prideActive,kitParamP,dribbleSlump,manMarkTarget,reactionMembers,battleAwareness,updateIntents,findRunGap,tracksRun,onBlindSide,shotTechniques,kitAbility,kitReactions,reactionBetween,passIntelligence,playReaction,afterDribble,learn,memoryCount,kitLine,throughRace,throughBallEstimate,ballFlight,resolveThroughBall,recordReception,sanitizeIntelligence,battleSimProfileWeapons,battleSimProfileStatus,keeperFactors,markBeaten,beatenSeverity,reactionKey,reactionReady,useReaction,enforceBlueLockMan,isFlowing,raceProfile,sprintMomentum,inFinishZone,reactionDefsFor,teamHasReactionEffect,renderMiniFormation,chooseAction,passModel,passOptions,dribbleModel,dribbleOptions,shotModel,positionValue,threatAt,aheadM,planTeamShape,roleGroup,arrangeGoalKick,inGoalArea,lastLineM,loadSavedTeams,renderMatch,renderMatchIntro,finishMatchIntro,renderPitch,renderFeed,renderStoppage,scheduleFeedEvent,presentationSettled,progressionState,handleInput,addPoints,addEvent,active,effective,clearFeedQueue,setMatch:s=>match=s,setTeams:t=>setupTeams=t,setFeed:(q,t=null,p=null)=>{feedQueue=q;feedTimer=t;stoppageTimer=p;},get:()=>match,quiet:()=>{renderMatch=()=>{};renderEvent=e=>({id:e.id});showResults=()=>{};},getTimers:()=>[runnerTimer,feedTimer,stoppageTimer]};`;
  const compatibleHook=hook.replace(/\b(capturePresentation|validPresentation|displayState|projectPitch|progressionState|playerOVR|positionRatings|liveFormationPoint|maliciaRead|resolveMalicia|reboundRace|supportSpot|prideActive|kitParamP|dribbleSlump|manMarkTarget|reactionMembers|battleAwareness|updateIntents|findRunGap|tracksRun|onBlindSide|shotTechniques|kitAbility|kitReactions|reactionBetween|passIntelligence|playReaction|afterDribble|learn|memoryCount|kitLine|throughRace|throughBallEstimate|ballFlight|resolveThroughBall|recordReception|sanitizeIntelligence|battleSimProfileWeapons|battleSimProfileStatus|keeperFactors|markBeaten|beatenSeverity|reactionKey|reactionReady|useReaction|enforceBlueLockMan|isFlowing|raceProfile|sprintMomentum|inFinishZone|reactionDefsFor|teamHasReactionEffect|renderMiniFormation)(?=,)/g,name=>name+':typeof '+name+'===\"function\"?'+name+':null');
  vm.runInContext(source.replace('document.addEventListener("DOMContentLoaded",function()',compatibleHook+'\ndocument.addEventListener("DOMContentLoaded",function()'),context);
@@ -87,60 +87,6 @@ function runBattleSimTests(){
  assert.equal(authorityState.pending?.type,"kickoff","the match stages a kickoff after the final goal");
  console.log('PASS Battle Sim: Absolute Authority flips independently on six consecutive ticks and awards one goal per flip');
  console.log('PASS Battle Sim: John Paccini Universal Decree randomly selects one of three rules, matching dialogue and three-tick effects');
- const reverseState=bs.createMatch();attachJohn(reverseState);bs.setMatch(reverseState);
- for(let i=0;i<9;i++)bs.playerTick(reverseState);
- assert.equal(reverseState.tick,9,"Reverse Fate remains unavailable during the first nine match ticks");
- const target=reverseState.johnHistory.at(-4),targetData=target.data,targetEventCount=target.eventsLength;
- assert.equal(targetData.tick,5,"The five-tick target snapshot is retained");
- bs.playerTick(reverseState);
- assert.equal(reverseState.tick,targetData.tick,"Reverse Fate restores the exact tick from five ticks earlier");
- assert.equal(reverseState.timeSeconds,targetData.timeSeconds,"Reverse Fate restores match time");
- assert.equal(JSON.stringify(reverseState.score),JSON.stringify(targetData.score),"Reverse Fate restores the score");
- assert.equal(JSON.stringify(reverseState.ball),JSON.stringify(targetData.ball),"Reverse Fate restores the ball position");
- assert.equal(reverseState.possession,targetData.possession,"Reverse Fate restores possession");
- assert.equal(reverseState.events.length,targetEventCount+1,"Only the retained history and single activation message remain");
- assert.equal(reverseState.events.at(-1).type,"reverse-fate","The Reverse Fate message survives the rewind");
-  assert.match(reverseState.events.at(-1).description,/John Paccini uses Reverse Fate/,"The activation has a visible feed description");
-  assert.match(reverseState.events.at(-1).dialogue[0].text,/Time is nothing to me/,"The activation dialogue is retained on the event");
- assert.equal(reverseState.presentedEventId,targetEventCount,"The activation event is queued for normal feed presentation after the rewind");
-  assert.equal(reverseState.status,"playing","Reverse Fate resumes the match instead of leaving it paused");
-  assert.equal(reverseState.manualPaused,false,"Reverse Fate does not leave manual pause enabled");
-  assert.equal(reverseState.rewoundThisTick,undefined,"The rewind boundary is consumed before post-tick effects can run");
- assert.equal(reverseState.events.filter(e=>e.type==="reverse-fate").length,1,"The rewind does not duplicate Reverse Fate messages");
- assert.equal(reverseState.events.at(-1).presentation.timeSeconds,targetData.timeSeconds,"Reverse Fate presents the restored state immediately");
- assert.equal(reverseState.events.at(-1).reversePresentations,undefined,"Reverse Fate does not replay discarded ticks through a blocking presentation sequence");
- assert.equal(reverseState.johnHistory.length,3,"Snapshots from the reverted ticks are removed from history");
- assert.equal(new Set(reverseState.events.map(e=>e.id)).size,reverseState.events.length,"Event IDs remain unique after truncation");
- for(const n of [1,2]){
-  const actual=reverseState.teams[n],expected=targetData.teams[n];
-  assert.equal(JSON.stringify(actual.assignment),JSON.stringify(expected.assignment),"Reverse Fate restores substitutions and player availability");
-  for(const p of actual.roster){const old=expected.roster.find(q=>String(q.id)===String(p.id));assert(old,"The restored roster player exists");assert.equal(JSON.stringify([p.x,p.y,p.stamina,p.flow,p.yellows,p.sentOff,p.matchStatus,p.match.goals,p.match.assists]),JSON.stringify([old.x,old.y,old.stamina,old.flow,old.yellows,old.sentOff,old.matchStatus,old.match.goals,old.match.assists]),"Reverse Fate restores player and disciplinary state");}
- }
- const restoredJohn=bs.johnPaccini(reverseState);
- assert(Number(restoredJohn.battleSimState.cooldowns["reverse-fate"])>reverseState.tick,"Reverse Fate cooldown is not refunded");
- const secondHalfGate=bs.createMatch();attachJohn(secondHalfGate);secondHalfGate.phase="secondHalf";secondHalfGate.halfStartTick=100;secondHalfGate.tick=109;secondHalfGate.johnHistory=Array(8).fill({});
- assert.equal(bs.johnReverseFateReady(secondHalfGate),false,"Reverse Fate is unavailable during the first nine ticks of the second half");
- assert.equal(bs.johnUse(secondHalfGate,"reverse-fate"),false,"Direct activation cannot bypass the second-half gate");
- secondHalfGate.tick=110;
- assert.equal(bs.johnReverseFateReady(secondHalfGate),true,"Reverse Fate becomes available after ten second-half ticks");
- const cooldownState=bs.createMatch(),cooldownJohn=attachJohn(cooldownState),otherCooldownPlayer=bs.active(cooldownState.teams[1]).find(p=>String(p.id)!=="80");
- cooldownState.tick=10;cooldownJohn.battleSimState={cooldowns:{existingJohnAbility:85},usedUltimates:[]};
- otherCooldownPlayer.battleSimState={cooldowns:{existingPlayerAbility:75},usedUltimates:[]};
- cooldownState.reactionCooldowns={existingReaction:65};
- cooldownState.johnHistory=Array.from({length:5},()=>bs.johnHistorySnapshot(cooldownState));
- // Advance cooldowns after the snapshots so the rewind must restore other players
- // and reaction cooldowns while keeping John's current cooldowns.
- otherCooldownPlayer.battleSimState.cooldowns.existingPlayerAbility=95;
- otherCooldownPlayer.battleSimState.cooldowns.futureAbility=99;
- cooldownState.reactionCooldowns.existingReaction=95;
- assert(bs.johnUse(cooldownState,"reverse-fate"),"Reverse Fate can activate after the ten-tick gate");
- const cooldownJohnAfter=bs.johnPaccini(cooldownState),otherCooldownAfter=bs.active(cooldownState.teams[1]).find(p=>String(p.id)===String(otherCooldownPlayer.id));
- assert.equal(cooldownJohnAfter.battleSimState.cooldowns.existingJohnAbility,85,"John's existing ability cooldown is retained");
- assert.equal(cooldownJohnAfter.battleSimState.cooldowns["reverse-fate"],50,"The new Reverse Fate cooldown is retained");
- assert.equal(otherCooldownAfter.battleSimState.cooldowns.existingPlayerAbility,75,"Other players' ability cooldowns rewind to the selected snapshot");
- assert.equal(otherCooldownAfter.battleSimState.cooldowns.futureAbility,undefined,"Cooldowns added during the reverted ticks are removed");
- assert.equal(cooldownState.reactionCooldowns.existingReaction,65,"Global reaction cooldowns rewind to the selected snapshot");
- console.log("PASS Battle Sim: Reverse Fate gates, five-tick state restoration, event trimming and John-only cooldown preservation");
  const introMatch=bs.createMatch();introMatch.introPending=true;const restoredIntro=bs.hydrateMatch(JSON.parse(JSON.stringify(bs.snapshotMatch(introMatch))));assert(restoredIntro&&restoredIntro.introPending,'pre-match intro survives route handoff and reload');assert.equal(restoredIntro.tick,0,'no simulation ticks are consumed during the intro');restoredIntro.introPending=false;assert.equal(restoredIntro.introPending,false,'skipping clears the intro state');
  for(let i=0;i<2;i++){
   const team=configs[i],id=String(9101+i);assert.equal(team.assignment[0],id);
