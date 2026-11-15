@@ -120,13 +120,19 @@ function runBattleSimTests(){
  otherCooldownPlayer.battleSimState={cooldowns:{existingPlayerAbility:75},usedUltimates:[]};
  cooldownState.reactionCooldowns={existingReaction:65};
  cooldownState.johnHistory=Array.from({length:5},()=>bs.johnHistorySnapshot(cooldownState));
+ // Advance cooldowns after the snapshots so the rewind must restore other players
+ // and reaction cooldowns while keeping John's current cooldowns.
+ otherCooldownPlayer.battleSimState.cooldowns.existingPlayerAbility=95;
+ otherCooldownPlayer.battleSimState.cooldowns.futureAbility=99;
+ cooldownState.reactionCooldowns.existingReaction=95;
  assert(bs.johnUse(cooldownState,"reverse-fate"),"Reverse Fate can activate after the ten-tick gate");
  const cooldownJohnAfter=bs.johnPaccini(cooldownState),otherCooldownAfter=bs.active(cooldownState.teams[1]).find(p=>String(p.id)===String(otherCooldownPlayer.id));
  assert.equal(cooldownJohnAfter.battleSimState.cooldowns.existingJohnAbility,85,"John's existing ability cooldown is retained");
  assert.equal(cooldownJohnAfter.battleSimState.cooldowns["reverse-fate"],50,"The new Reverse Fate cooldown is retained");
- assert.equal(otherCooldownAfter.battleSimState.cooldowns.existingPlayerAbility,75,"Other players' ability cooldowns are retained");
- assert.equal(cooldownState.reactionCooldowns.existingReaction,65,"Global reaction cooldowns are retained");
- console.log("PASS Battle Sim: Reverse Fate gates, direct five-tick restoration, event trimming and cooldown retention");
+ assert.equal(otherCooldownAfter.battleSimState.cooldowns.existingPlayerAbility,75,"Other players' ability cooldowns rewind to the selected snapshot");
+ assert.equal(otherCooldownAfter.battleSimState.cooldowns.futureAbility,undefined,"Cooldowns added during the reverted ticks are removed");
+ assert.equal(cooldownState.reactionCooldowns.existingReaction,65,"Global reaction cooldowns rewind to the selected snapshot");
+ console.log("PASS Battle Sim: Reverse Fate gates, five-tick state restoration, event trimming and John-only cooldown preservation");
  const introMatch=bs.createMatch();introMatch.introPending=true;const restoredIntro=bs.hydrateMatch(JSON.parse(JSON.stringify(bs.snapshotMatch(introMatch))));assert(restoredIntro&&restoredIntro.introPending,'pre-match intro survives route handoff and reload');assert.equal(restoredIntro.tick,0,'no simulation ticks are consumed during the intro');restoredIntro.introPending=false;assert.equal(restoredIntro.introPending,false,'skipping clears the intro state');
  for(let i=0;i<2;i++){
   const team=configs[i],id=String(9101+i);assert.equal(team.assignment[0],id);

@@ -465,9 +465,11 @@ function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff
 
 function johnHistorySnapshot(state){const data=JSON.parse(JSON.stringify(state,(key,value)=>key==="events"||key==="johnHistory"||key==="random"?undefined:value));return{data:data,eventsLength:state.events.length,randomState:state.random.getState()};}
 function johnRestore(state,snap,history,reverseEvent,reverseSteps){
- const cooldowns=new Map();
- [1,2].forEach(n=>(state.teams[n].roster||[]).forEach(p=>{const current=p.battleSimState?.cooldowns;if(current&&typeof current==="object")cooldowns.set(n+":"+idOf(p.id),JSON.parse(JSON.stringify(current)));}));
- const hadReactionCooldowns=Object.prototype.hasOwnProperty.call(state,"reactionCooldowns"),reactionCooldowns=hadReactionCooldowns?JSON.parse(JSON.stringify(state.reactionCooldowns)):undefined;
+ // Only John keeps his current cooldowns. Every other cooldown is part of the
+ // rewindable match state and must come from the selected snapshot.
+ const currentJohn=johnPaccini(state),johnId=currentJohn?idOf(currentJohn.id):null;
+ const johnCooldowns=currentJohn&&currentJohn.battleSimState?.cooldowns&&typeof currentJohn.battleSimState.cooldowns==="object"
+  ?JSON.parse(JSON.stringify(currentJohn.battleSimState.cooldowns)):null;
  const currentEvents=Array.isArray(state.events)?state.events:[];
  const keptEvents=currentEvents.slice(0,Math.max(0,Math.min(currentEvents.length,Number(snap.eventsLength)||0)));
  const restored=JSON.parse(JSON.stringify(snap.data));
@@ -478,10 +480,12 @@ function johnRestore(state,snap,history,reverseEvent,reverseSteps){
  state.events.forEach((event,index)=>{event.id=index+1;});
  state.presentedEventId=state.events.length;
  state.random=seeded(state.seed,snap.randomState);
- [1,2].forEach(n=>(state.teams[n].roster||[]).forEach(p=>{
-  const key=n+":"+idOf(p.id);if(cooldowns.has(key))battleSimRuntimeState(p).cooldowns=JSON.parse(JSON.stringify(cooldowns.get(key)));
- }));
- if(hadReactionCooldowns)state.reactionCooldowns=reactionCooldowns;else delete state.reactionCooldowns;
+ if(johnId!==null&&johnCooldowns){
+  for(const n of [1,2]){
+   const restoredJohn=(state.teams[n].roster||[]).find(p=>idOf(p.id)===johnId);
+   if(restoredJohn){battleSimRuntimeState(restoredJohn).cooldowns=johnCooldowns;break;}
+  }
+ }
  state.johnHistory=Array.isArray(history)?history:[];
  state.status="playing";state.stoppage="";state.manualPaused=false;
  const root=state===match&&!fastForwarding&&reverseEvent?byId("bs-live-feed"):null;
