@@ -437,14 +437,14 @@ function effective(p,k,state=match){
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
 
 
-function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const p=(state.teams[n].roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p)return p;}return null;}
+function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
 function johnSay(state,j,text,type){addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:text,actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
  if(id==="universal-decree"){const rule=["freeze","center-only","blindness"].includes(choice)?choice:"freeze";johnCooldown(state,j,id,13);johnSay(state,j,"I have decided that this is how things will work...","universal-decree");const lines={freeze:"The world will stand still. Every player. Every step.","center-only":"All paths lead to the center. You will move where I decree.",blindness:"Then let the pitch disappear. Play without sight."};state.decree={rule:rule,untilTick:state.tick+3};johnSay(state,j,lines[rule],"decree-rule");return true;}
  if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnSay(state,j,"Time is nothing to me...","reverse-fate");johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Five ticks erased. Even the score is rewritten.","reverse-fate");return true;}
  if(id==="reverse-fate"){const history=state.johnHistory||[];if(history.length<5)return false;const snap=history[history.length-5];johnCooldown(state,j,id,40);johnSay(state,j,"Time is nothing to me...","reverse-fate");johnRestore(state,snap);state.johnHistory=history.slice(0,-5);johnSay(state,j,"Five ticks erased. Even the score is rewritten.","reverse-fate");return true;}
- if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);state.tick++;state.timeSeconds+=10;setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning");addEvent(state,{type:"dimensional-repositioning",teamNumber:j.teamNumber,notable:true,description:carrier.name+" is displaced to a random legal pitch location.",actors:[j,carrier]});return true;}return false;}
+ if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();johnCooldown(state,j,id,15);state.tick++;state.timeSeconds+=10;setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning");addEvent(state,{type:"dimensional-repositioning",teamNumber:j.teamNumber,notable:true,description:carrier.name+" is displaced to a random legal pitch location.",actors:[j,carrier]});return true;}return false;}
 
 function johnHistorySnapshot(state){const teams={};for(const n of [1,2])teams[n]=JSON.parse(JSON.stringify(state.teams[n]));return{tick:state.tick,timeSeconds:state.timeSeconds,phase:state.phase,score:{...state.score},teams:teams,possession:state.possession,carrierId:state.carrierId,ball:{...state.ball},ballZone:state.ballZone,lastPasser:state.lastPasser,eventsLength:state.events.length,randomState:state.random.getState()};}
 function johnRestore(state,snap){const old=johnPaccini(state),cooldowns=old?JSON.parse(JSON.stringify(battleSimRuntimeState(old).cooldowns||{})):{};state.tick=snap.tick;state.timeSeconds=snap.timeSeconds;state.phase=snap.phase;state.score={...snap.score};state.teams=JSON.parse(JSON.stringify(snap.teams));const restored=johnPaccini(state);if(restored)battleSimRuntimeState(restored).cooldowns=cooldowns;state.possession=snap.possession;state.carrierId=snap.carrierId;state.ball={...snap.ball};state.ballZone=snap.ballZone;state.lastPasser=snap.lastPasser;state.events=state.events.slice(0,snap.eventsLength);state.presentedEventId=Math.min(state.presentedEventId||0,state.events.length);state.random=seeded(state.seed,snap.randomState);state.pending=null;state.forced=null;state.requiredSub=null;state.status="playing";state.stoppage="";}
@@ -459,6 +459,7 @@ function battleSimNearbyDefenders(state,p,where,range=RECEIVE_PRESSURE_M){
  return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=range).length;
 }
 function activateBattleSimSpecial(state,p,trigger){
+ if(state&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return null;
  const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.specials)?p.battleSim.specials:[];
  for(const ability of abilities){
   if(!ability||ability.effect||ability.trigger!==trigger)continue;
@@ -476,6 +477,7 @@ function hasJustReceivedPass(state,p){
  return !!team&&!!playerIn(team,passerId);
 }
 function activateBattleSimUltimate(state,p){
+ if(state&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return null;
  const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.ultimates)?p.battleSim.ultimates:[];
  const runtime=battleSimRuntimeState(p);
  for(const ability of abilities){
@@ -1215,6 +1217,7 @@ function planTeamShape(state,team,plans){
  targets.forEach((t,id)=>plans.set(n+":"+idOf(id),t));
 }
 function moveOffBall(state){
+ if(state.blindnessUntil>=state.tick){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:3+state.random()*94,y:4+state.random()*92},movementMeters(p))));const carrier=playerIn(state.teams[state.possession],state.carrierId);if(carrier)setBall(state,carrier);return;}
  if(state.shapePossession!==state.possession){state.shapePossession=state.possession;state.transitionTick=state.tick;}
  updateIntents(state);
  const plans=new Map(),runners=offBallOrder(state);
@@ -2314,7 +2317,7 @@ function resolveRestart(state,pending){
 }
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();state.tick++;
+ const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
@@ -2395,7 +2398,7 @@ function runSequence(state){
  else playerTick(state);
  state.runnerActive=false;storeActiveMatch();renderMatch();
 }
-function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
+function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
 
 const INTRO_REVEAL_MS=760;
 function clearMatchIntroTimer(){if(introTimer!==null){clearTimeout(introTimer);introTimer=null;}}
