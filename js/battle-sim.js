@@ -3134,6 +3134,15 @@ function renderStoppage(){
  }
  if(wasHidden){root.classList.remove("bs-stoppage-pop");void root.offsetWidth;root.classList.add("bs-stoppage-pop");}
 }
+
+function renderJohnControls(state,center){
+ const j=johnPaccini(state);let panel=byId("bs-john-controls");
+ if(!j){if(panel)panel.remove();return;}
+ if(!panel){panel=make("section","bs-stoppage-panel");panel.id="bs-john-controls";const head=make("div","bs-panel-topline");put(head,make("h2","","JOHN PACCINI // CONTROL"));put(panel,head);const row=make("div","bs-set-piece-controls");row.id="bs-john-buttons";put(panel,row);center.insertBefore(panel,center.querySelector(".bs-live-feed-panel"));}
+ const row=byId("bs-john-buttons");row.replaceChildren();
+ (j.battleSim?.specials||[]).forEach(a=>{const b=make("button","bs-button bs-button--secondary",a.name);b.type="button";b.setAttribute("data-john-ability",a.id);const cd=Number(j.battleSimState?.cooldowns?.[a.id]||0);b.disabled=cd>state.tick;if(cd>state.tick)b.textContent+=" · "+(cd-state.tick)+"T";put(row,b);});
+}
+
 function renderMatch(){
  if(!match)return;
  const state=displayState();
@@ -3162,7 +3171,7 @@ function renderMatch(){
   const teams=root.querySelectorAll(":scope > .bs-match-team-panel");teams.forEach((panel,i)=>{const team=state.teams[i+1];if(panel.dataset.structure!==panelSignature(team)){const replacement=matchTeamPanel(i+1,state);for(const selector of [".bs-team-dossier",".bs-match-tactics"]){const old=panel.querySelector(selector),next=replacement.querySelector(selector);if(old&&next)next.open=old.open;}root.replaceChild(replacement,panel);}else updateTeamPanel(panel,team,state);});
  }
  const fp=root.querySelector(".bs-live-feed-panel");if(fp)fp.style.setProperty("--bs-possession-color",state.teams[state.possession].color);
- renderPitch(state);renderFeed();renderStoppage();
+ renderJohnControls(state,root.querySelector(".bs-center-stage"));renderPitch(state);renderFeed();renderStoppage();
  updateMatchPlayerProfileStatuses(root);
  updateSequenceControls();
  window.SiteI18n?.apply(byId("bs-match-view"));
@@ -3284,6 +3293,7 @@ function handleDragEnd(){
 function handleClick(event){
  const b=event.target.closest("button");if(!b)return;
  if(b.hasAttribute("data-refresh-saved-teams")){savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=savedTeams.length?"Saved teams refreshed. Select a squad from CHOOSE SQUAD.":"No saved squads found yet. Save one in Team Builder first.";}else if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
+ else if(b.hasAttribute("data-john-ability")){const id=b.getAttribute("data-john-ability");let choice=null;if(id==="universal-decree"){choice=window.prompt("Choose decree: freeze, center-only, or blindness","freeze");if(choice===null)return;choice=choice.trim().toLowerCase();}if(johnUse(match,id,choice)){storeActiveMatch();renderMatch();}}
  else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
  else if(b.id==="bs-return-setup"||b.id==="bs-return-setup-results"){
   if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({teams:setupTeams.map(serializeTeam)}));}catch(e){}}
