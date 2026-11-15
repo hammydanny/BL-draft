@@ -202,7 +202,7 @@
   "js/battle-sim.js": "691bba9713db4546",
   "js/challenge-lab.js": "7520952ae6cc2ec1",
   "js/chapter-tracker.js": "959cf7dbcd13b587",
-  "js/characters.generated.js": "ab1d2bc12cba57cc",
+  "js/characters.generated.js": "6bb276210d347853",
   "js/chemistry.js": "e1bd0f4ae225731c",
   "js/draft-duel.js": "0b1d8f5a9813f3d1",
   "js/ego-record.js": "6f833848cd8541bb",
@@ -217,7 +217,7 @@
   "js/lore.js": "1c13f17cb5acbc2b",
   "js/player-images.js": "b56b4c9d6067a61b",
   "js/player-reference.js": "e63e3eb31b356146",
-  "js/players-loader.js": "381e518796393874",
+  "js/players-loader.js": "330920888cbbcf37",
   "js/players.js": "b0851dc362b5041d",
   "js/players/achanpong/player.js": "abdd90bd80963fef",
   "js/players/achanpong/reference.js": "b9cd3aece645f3fe",
@@ -303,7 +303,7 @@
   "js/players/jin-kiyora/reference.js": "8fe06df0bb35553e",
   "js/players/jingo-raichi/player.js": "eadce7a84578d0a4",
   "js/players/jingo-raichi/reference.js": "d3a0e0881a88b3f8",
-  "js/players/john-paccini/player.js": "f203720c5163a5e6",
+  "js/players/john-paccini/player.js": "0e8a082cbcda8961",
   "js/players/john-paccini/reference.js": "255df13be4e7138a",
   "js/players/jon/player.js": "797a3930c359edc2",
   "js/players/jon/reference.js": "0079ee6401b7da09",
@@ -439,8 +439,8 @@
   "js/ui/site-directory.js": "a71fd069ddd0c36f",
   "js/ui/site-information.js": "92c826a85f589f51",
   "js/ui/solo-draft-ui.js": "3cd8d670d45dc321",
-  "js/version.js": "ed2b6d0add18148a",
+  "js/version.js": "21bed050499bca58",
   "style.css": "5b3fe33d550919a1",
-  "service-worker.js": "27925616a92ff9b9"
+  "service-worker.js": "1d778080b789a66c"
  }
 }
