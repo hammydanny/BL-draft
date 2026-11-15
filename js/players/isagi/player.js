@@ -156,13 +156,14 @@ const ISAGI_PLAYER_DATA = {
             "name": "Reflexive Synchronization",
             "label": "REFLEXIVE SYNCHRONIZATION",
             "effect": "synchronized-through",
-            "cooldownTicks": 12,
+            "cooldownTicks": 10,
             "dialogue": "sync",
             "params": {
-                "precision": 0.55,
-                "value": 0.012
+                "precision": 0.95,
+                "value": 0.02,
+                "passKind": "long"
             },
-            "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
+            "description": "When Yo Hiori has possession and Isagi is on the pitch, Isagi makes a timed forward run and Hiori plays a highly accurate lofted cross to him. The one-tick combination can still be intercepted. Shared 10-tick cooldown.",
             "members": [
                 1,
                 27
