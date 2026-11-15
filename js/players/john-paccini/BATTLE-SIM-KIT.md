@@ -9,10 +9,7 @@ Design source for secret character SC-2 (player ID 80). John is intentionally a 
 - **Omniscient Spectator** — John knows every event that will happen.
 
 ### Specials
-- **Universal Decree** — 13-tick cooldown; usable at any time. First says: “I have decided that this is how things will work...” Then chooses one rule for the next 3 ticks:
-  1. All players cannot move. Dialogue: “The world will stand still. Every player. Every step.”
-  2. All players can only move towards the center. Dialogue: “All paths lead to the center. You will move where I decree.”
-  3. All players completely lose vision. Dialogue: “Then let the pitch disappear. Play without sight.”
+- **Universal Decree** — Automatically activates when ready; 24-tick cooldown. For the next 3 ticks, every player can only pass. Movement, shots, dribbles, tackles and all other actions are restricted. The old freeze, center-only and blindness choices are removed.
 - **Reverse Fate** — 40-tick cooldown; usable at any time. Says: “Time is nothing to me...” Rewinds exactly 5 ticks, restoring player positions, possession, ball location, stamina, Flow and score; removes the prior 5 events. John's cooldowns are not refunded. Goals can be undone.
 - **Dimensional Repositioning** — 15-tick cooldown; usable at any time. Says: “You were standing somewhere else a moment ago...” Consumes a separate tick and teleports the current ball carrier to a random legal pitch location, excluding the goal. Ignores formations and is not a pass or dribble.
 
