@@ -419,6 +419,7 @@ function hasBall(p,state=match){
 }
 function battleSimPassiveMultiplier(p,k,state=match){
  if(!p||!p.battleSim||!state||!state.teams)return 1;
+ if(idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return 1;
  let multiplier=1;
  (Array.isArray(p.battleSim.passives)?p.battleSim.passives:[]).forEach(passive=>{
   if(passive&&passive.condition==="off-ball"&&!hasBall(p,state)){
@@ -435,6 +436,21 @@ function effective(p,k,state=match){
  return(Number(p.stats[k])||1)*staminaMultiplier*flowMultiplier*battleSimPassiveMultiplier(p,k,state);
 }
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
+
+
+function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
+function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning"}[type]||"Special Ability");addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
+function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
+function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
+ if(id==="universal-decree"){johnCooldown(state,j,id,24);state.decree={rule:"pass-only",untilTick:state.tick+3};johnSay(state,j,"No one may do anything but pass. The field obeys.","universal-decree","Universal Decree");return true;}
+ if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");return true;}
+ if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning","Dimensional Repositioning");return true;}return false;}
+function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(state.johnHistory||[]).length<5)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const choices=["freeze","center-only","blindness"];const choice=ability.id==="universal-decree"?choices[Math.floor(state.random()*choices.length)]:null;if(johnUse(state,ability.id,choice))return true;}return false;}
+
+
+function johnHistorySnapshot(state){const data=JSON.parse(JSON.stringify(state,(key,value)=>key==="events"||key==="johnHistory"||key==="random"?undefined:value));return{data:data,eventsLength:state.events.length,randomState:state.random.getState()};}
+function johnRestore(state,snap){const old=johnPaccini(state),cooldowns=old?JSON.parse(JSON.stringify(battleSimRuntimeState(old).cooldowns||{})):{};const preserved=(state.events||[]).filter(e=>e&&Array.isArray(e.actors)&&e.actors.some(a=>idOf(a.id)==="80")&&["universal-decree","reverse-fate","dimensional-repositioning","absolute-authority"].includes(e.type));const restored=JSON.parse(JSON.stringify(snap.data));Object.keys(state).forEach(k=>{if(k!=="events"&&k!=="johnHistory"&&k!=="random")delete state[k];});Object.assign(state,restored);state.events=(state.events||[]).slice(0,snap.eventsLength).concat(preserved);state.events.forEach((event,index)=>{event.id=index+1;});state.presentedEventId=Math.min(state.presentedEventId||0,state.events.length);state.random=seeded(state.seed,snap.randomState);const john=johnPaccini(state);if(john)battleSimRuntimeState(john).cooldowns=cooldowns;state.status="playing";state.stoppage="";}
+
 function battleSimRuntimeState(p){
  if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
  if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
@@ -445,6 +461,7 @@ function battleSimNearbyDefenders(state,p,where,range=RECEIVE_PRESSURE_M){
  return opposing(state,p.teamNumber).filter(d=>d.role!=="GK"&&distance(d,where)<=range).length;
 }
 function activateBattleSimSpecial(state,p,trigger){
+ if(state&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return null;
  const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.specials)?p.battleSim.specials:[];
  for(const ability of abilities){
   if(!ability||ability.effect||ability.trigger!==trigger)continue;
@@ -462,6 +479,7 @@ function hasJustReceivedPass(state,p){
  return !!team&&!!playerIn(team,passerId);
 }
 function activateBattleSimUltimate(state,p){
+ if(state&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return null;
  const abilities=p&&p.battleSim&&Array.isArray(p.battleSim.ultimates)?p.battleSim.ultimates:[];
  const runtime=battleSimRuntimeState(p);
  for(const ability of abilities){
@@ -478,10 +496,7 @@ function activateBattleSimUltimate(state,p){
 // Central speaker policy: narration is unaffected; both synthetic keepers are silent.
 function canSpeak(p){return !!p&&!isBlueLockMan(p)&&!isBlueLockManId(p.id)&&p.name!=="Blue Lock Man";}
 function dialogueAllowed(state,line){if(!line)return false;const id=idOf(line.playerId);const p=[...(state?.teams?.[1]?.roster||[]),...(state?.teams?.[2]?.roster||[])].find(p=>idOf(p.id)===id);return canSpeak(p||{id,name:String(line.text||"").split(":")[0].trim()});}
-function battleSimAbilityDialogue(p,ability){
- if(!canSpeak(p))return [];
- return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
-}
+function battleSimAbilityDialogue(p,ability){if(!canSpeak(p))return [];if(idOf(p.id)==="80")return [{playerId:idOf(p.id),text:p.name+": \"...\""}];return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0&&!isBlueLockMan(p)){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;const runtime=battleSimRuntimeState(p);runtime.usedUltimates=[];runtime.flowActivationCount=(Number(runtime.flowActivationCount)||0)+1;}}}}}
 function drain(p,success,action){if(isBlueLockMan(p)){p.stamina=100;return;}if(isFlowing(p))return;const durable=kitAbility(p,"durable"),scale=durable?kitParam(durable,"drain",.75):1,amount=scale*(action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2);p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
 function playerWeaponsText(player){
@@ -499,7 +514,7 @@ function basicActionDialogue(type,actors,state,options={},roleIndex=0){
   "flow-activation":["I’m in the zone!"],corner:["So close!"],"goal-kick":["That one’s gone wide."],
   kickoff:["Let’s get started!"],play:["Keep moving!"],offside:["I was level!","Hold your run!"],"throw-in":["Too heavy!","Our throw!"]};
  const phrases=lines[type]||["Keep moving!"];
- return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{if(!canSpeak(p))return [];i+=roleIndex;if(type==="offside"&&i>0&&p.battleSim?.dialogue?.kickoff)return [];const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"interception":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:i?"fouled":"foul",corner:"miss","goal-kick":"miss",offside:"offside",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
+ return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{if(!canSpeak(p))return [];if(idOf(p.id)==="80")return [{playerId:idOf(p.id),text:p.name+": \"...\""}];i+=roleIndex;if(type==="offside"&&i>0&&p.battleSim?.dialogue?.kickoff)return [];const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"interception":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:i?"fouled":"foul",corner:"miss","goal-kick":"miss",offside:"offside",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
  const voiceKey=key==="interception"&&!p.battleSim?.dialogue?.interception?"defend":key==="fouled"&&!p.battleSim?.dialogue?.fouled&&idOf(p.id)==="18"?"foul":key==="offside"&&idOf(p.id)==="18"?"passFail":key;
  if(p.battleSim?.dialogue?.[voiceKey]){const line=kitLine(state,p,voiceKey,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}];});
 }
@@ -645,7 +660,7 @@ function flowAware(p,base){
   defensiveRead:clamp(base.defensiveRead+add("defensiveRead"),0,1.25),
   scan:clamp(base.scan+add("scan"),18,60)};
 }
-function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
+function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;if(match&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(match.tick||0))return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
 function kitParam(ability,key,fallback){const v=ability&&ability.params&&ability.params[key];return v==null?fallback:v;}
 function abilityState(p){const r=battleSimRuntimeState(p);if(!Array.isArray(r.memory))r.memory=[];if(!r.uses||typeof r.uses!=="object")r.uses={};if(!Array.isArray(r.recentLines))r.recentLines=[];return r;}
 function abilityBadge(ability,kind){return ability?{id:String(ability.id),label:String(ability.label||ability.name||ability.id).toUpperCase(),kind:kind||"ability"}:null;}
@@ -871,14 +886,14 @@ function shotTechniques(state,p){
 function reactionMembers(def,holder){return(Array.isArray(def.members)&&def.members.length===2?def.members:[holder.id,def.partnerId]).map(idOf);}
 function kitReactions(state,p){
  const out=[],team=state.teams[p.teamNumber];if(!team)return out;const act=active(team),seen=new Set();
- act.forEach(holder=>{(holder.battleSim&&Array.isArray(holder.battleSim.reactions)?holder.battleSim.reactions:[]).forEach(r=>{
+ act.forEach(holder=>{if(idOf(holder.id)!=="80"&&Number(holder.battleSimDisabledUntil||0)>=Number(state.tick||0))return;(holder.battleSim&&Array.isArray(holder.battleSim.reactions)?holder.battleSim.reactions:[]).forEach(r=>{
   if(!r||seen.has(r.id))return;const [a,b]=reactionMembers(r,holder),owner=act.find(x=>idOf(x.id)===a),partner=act.find(x=>idOf(x.id)===b);
   if(!owner||!partner)return;seen.add(r.id);if(owner===p||partner===p)out.push({def:r,owner,partner});
  });});
  return out;
 }
 // Cheap gate for hot paths: does any active player on this team hold a reaction with this effect?
-function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[teamNumber];return !!team&&active(team).some(h=>h.battleSim&&Array.isArray(h.battleSim.reactions)&&h.battleSim.reactions.some(r=>r&&r.effect===effect));}
+function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[teamNumber];return !!team&&active(team).some(h=>(idOf(h.id)==="80"||Number(h.battleSimDisabledUntil||0)<Number(state.tick||0))&&h.battleSim&&Array.isArray(h.battleSim.reactions)&&h.battleSim.reactions.some(r=>r&&r.effect===effect));}
 // One cooldown per reaction identity per team: both partners read and start the same entry.
 function reactionKey(def,teamNumber){return (Number(teamNumber)===2?2:1)+":"+def.id;}
 function reactionReady(state,def,teamNumber){const cd=state.reactionCooldowns&&state.reactionCooldowns[reactionKey(def,teamNumber)];return !(Number(cd)>Number(state.tick));}
@@ -1201,6 +1216,7 @@ function planTeamShape(state,team,plans){
  targets.forEach((t,id)=>plans.set(n+":"+idOf(id),t));
 }
 function moveOffBall(state){
+ if(state.blindnessUntil>=state.tick){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:3+state.random()*94,y:4+state.random()*92},movementMeters(p))));const carrier=playerIn(state.teams[state.possession],state.carrierId);if(carrier)setBall(state,carrier);return;}
  if(state.shapePossession!==state.possession){state.shapePossession=state.possession;state.transitionTick=state.tick;}
  updateIntents(state);
  const plans=new Map(),runners=offBallOrder(state);
@@ -1577,7 +1593,7 @@ function resolvePass(state,carrier,opts={}){
  if(!option){moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" carries the ball.",actors:[carrier]});return;}
  if(option.through){resolveThroughBall(state,carrier,option,opts);return;}
  const receiver=option.receiver,kind=option.kind,model=option.model;
- const from=model.from,to=model.to,metres=model.len,chance=model.success,route={kind,from,to,chemistry:model.chem};
+ const from=model.from,to=model.to,metres=model.len,chance=johnPaccini(state)?0.5:model.success,route={kind,from,to,chemistry:model.chem};
  if(model.offside){awardOffside(state,carrier,receiver,route);return;}
  const roll=state.random();team.stats.attempted++;carrier.match.passesAttempted++;if(option.style==="cutback")team.stats.cutbacks=(team.stats.cutbacks||0)+1;
  const extras=opts.setPiece||opts.kickoff?{}:passExtras(state,carrier,option);
@@ -1896,7 +1912,7 @@ function resolveDribble(state,carrier,opts={}){
  const end=opts.target?point(opts.target):(best||{end:shiftM(carrier,dribbleMeters(carrier),0,team.number)}).end,sharp=opts.target?!!opts.sharp:!!(best&&best.sharp);
  const power=kitAbility(carrier,"power-dribble"),pushKit=opts.push?kitAbility(carrier,"push-dribble"):null,cutKit=opts.cut?kitAbility(carrier,"speed-cut"):null,maxStride=pushKit&&opts.stride?Number(opts.stride):dribbleMeters(carrier)*(power?kitParamP(carrier,power,"stride",1.2):1);
  const stride=Math.min(maxStride,distance(before,end)||maxStride);
- const model=dribbleModel(state,carrier,end,undefined,{sharp,push:!!pushKit,cut:!!cutKit}),defenders=model.defenders,chance=model.chance;
+ const model=dribbleModel(state,carrier,end,undefined,{sharp,push:!!pushKit,cut:!!cutKit}),defenders=model.defenders,chance=johnPaccini(state)?0.5:model.chance;
  // Only a defender who genuinely engages the carrier is "beaten" (and can foul him).
  const def=model.def&&model.access>=.35?model.def:null;
  const nearbyDefenderInfo=defenderFeedDetails(defenders,[carrier],model.def);
@@ -1962,7 +1978,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  if(tech?.feintId){const deceived=state.random()<tech.deception;tech={...tech,ignoreId:deceived?tech.feintId:null,feintId:null,deception:0};}
  const special=!penalty&&!ultimate&&!tech?activateBattleSimSpecial(state,shooter,"shot"):null;
  const {team,defteam,gk,metres,shoot,gkStat,goalChance:rawChance}=shotModel(state,shooter,penalty,ultimate,special,null,null,tech);
- const goalChance=rawChance,roll=state.random();team.stats.shots++;shooter.match.shots++;
+ const goalChance=johnPaccini(state)?0.5:rawChance,roll=state.random(),savedOnTarget=!!johnPaccini(state)&&roll<0.5&&state.random()<clamp(.42+(gkStat-70)*.005,.15,.72);team.stats.shots++;shooter.match.shots++;
  if(!penalty){opportunity(state,null,"shot:"+(metres<12?"<12m":metres<18?"12-18m":metres<25?"18-25m":"25m+"));const mates=active(team).filter(m=>m!==shooter&&m.role!=="GK"&&inOpponentBox(team.number,m)).length;opportunity(state,null,"shot:teammates-in-box-"+Math.min(3,mates));}
  const activeAbility=ultimate||special,runtime=tech&&tech.ability?abilityState(shooter):null;
  if(tech&&tech.ultimate&&tech.ability&&tech.ability.oncePerFlow){const used=battleSimRuntimeState(shooter).usedUltimates,id=idOf(tech.ability.id);if(!used.includes(id))used.push(id);}
@@ -1983,7 +1999,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  const learnShot=()=>{if(roll>=goalChance)learn(state,shooter,"shot",tech&&tech.aimSide||"centre",gk);};
  const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
  state.lastPasser=null;
- if(roll<goalChance){
+ if(roll<goalChance&&!savedOnTarget){
   team.stats.onTarget++;team.stats.goals++;shooter.match.onTarget++;shooter.match.goals++;addPoints(shooter,1.35);
   if(tech&&tech.ability)runtime.uses[String(tech.ability.id)].goals++;
   const goalLine=kitLine(state,shooter,"goal",true);
@@ -2300,13 +2316,18 @@ function resolveRestart(state,pending){
 }
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;state.tick++;
+ const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
+ if(johnAutomaticSpecial(state)){ensureTickEvent(state,eventsBefore);return;}
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
+ if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);state.teams[q.winner].stats.goals=(Number(state.teams[q.winner].stats.goals)||0)+1;if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(6-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
+ if(state.decree&&state.tick>state.decree.untilTick)state.decree=null;
+ if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
+ if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
  moveOffBall(state);
  // Planet Hotline owns each of its three ticks; normal decisions are suspended.
  if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
@@ -2346,7 +2367,8 @@ function simulateTick(state){
   ensureTickEvent(state,eventsBefore);return;
  }
  if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;
- const action=chooseAction(state,carrier);
+ const action=state.decree&&state.tick<=state.decree.untilTick?{type:"pass"}:chooseAction(state,carrier);
+ if(state.blindnessUntil>=state.tick){const picks=carrier.role==="GK"?["dribble","pass"]:["shot","dribble","pass"],pick=picks[Math.floor(state.random()*picks.length)];if(pick==="shot")resolveShot(state,carrier,false,null,null,null,null);else if(pick==="dribble")resolveDribble(state,carrier);else resolvePass(state,carrier);ensureTickEvent(state,eventsBefore);return;}
  if(action&&action.type==="shot"){const ultimate=action.technique?null:activateBattleSimUltimate(state,carrier);resolveShot(state,carrier,false,ultimate,action.technique,action.adapted,action.pride);}
  else if(action&&action.type==="dribble")resolveDribble(state,carrier,{target:action.end,sharp:action.sharp,push:action.push,cut:action.cut,stride:action.stride});
  else if(action&&action.type==="malicia")resolveMalicia(state,carrier,action.read);
@@ -2356,7 +2378,7 @@ function simulateTick(state){
 function playerTick(state){
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.battleSimState&&Array.isArray(p.battleSimState.usedUltimates)&&!isFlowing(p))p.battleSimState.usedUltimates=[];}));
  simulateTick(state);
- [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});}}));
+ [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;const winner=state.random()<.5?1:2;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,winner:winner,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority");}}}));
 }
 function finish(state){
  if(state.status==="finished")return;state.timeSeconds=FULL;state.phase="fullTime";state.status="finished";state.manualPaused=false;state.runnerActive=false;state.pending=null;state.forced=null;state.requiredSub=null;state.stoppage="";
@@ -2376,7 +2398,7 @@ function runSequence(state){
  else playerTick(state);
  state.runnerActive=false;storeActiveMatch();renderMatch();
 }
-function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});return s;}
+function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
 
 const INTRO_REVEAL_MS=760;
 function clearMatchIntroTimer(){if(introTimer!==null){clearTimeout(introTimer);introTimer=null;}}
@@ -3115,6 +3137,8 @@ function renderStoppage(){
  }
  if(wasHidden){root.classList.remove("bs-stoppage-pop");void root.offsetWidth;root.classList.add("bs-stoppage-pop");}
 }
+
+
 function renderMatch(){
  if(!match)return;
  const state=displayState();
@@ -3143,7 +3167,7 @@ function renderMatch(){
   const teams=root.querySelectorAll(":scope > .bs-match-team-panel");teams.forEach((panel,i)=>{const team=state.teams[i+1];if(panel.dataset.structure!==panelSignature(team)){const replacement=matchTeamPanel(i+1,state);for(const selector of [".bs-team-dossier",".bs-match-tactics"]){const old=panel.querySelector(selector),next=replacement.querySelector(selector);if(old&&next)next.open=old.open;}root.replaceChild(replacement,panel);}else updateTeamPanel(panel,team,state);});
  }
  const fp=root.querySelector(".bs-live-feed-panel");if(fp)fp.style.setProperty("--bs-possession-color",state.teams[state.possession].color);
- renderPitch(state);renderFeed();renderStoppage();
+ const johnPanel=byId("bs-john-controls");if(johnPanel)johnPanel.remove();renderPitch(state);renderFeed();renderStoppage();
  updateMatchPlayerProfileStatuses(root);
  updateSequenceControls();
  window.SiteI18n?.apply(byId("bs-match-view"));
@@ -3205,6 +3229,8 @@ function substitute(team,slot,reserveId){
  team.substitutions.push({slot,on:idOf(p.id),off:idOf(out.id),tick:Number(match.tick)||0,timeSeconds:Number(match.timeSeconds)||0});
  if(required&&required.teamNumber===team.number&&String(required.slot)===slot)match.requiredSub=null;
  addEvent(match,{type:"substitution",teamNumber:team.number,notable:true,zone:p.zone,description:team.name+" substitute "+p.name+" for "+out.name+".",actors:[p,out],dialogue:[{playerId:p.id,text:p.name+": \"I am ready.\""}]});
+ const johnWasSubbed=out&&(idOf(out.id)==="80"||out.name==="John Paccini");
+ if(johnWasSubbed){team.assignment[slot]=out.id;out.role=team.slots[Number(slot)]?.label||"CF";out.matchStatus="starter";p.role="BENCH";p.matchStatus="subbed-off";setPosition(out,p);if(idOf(match.carrierId)===idOf(p.id)&&match.possession===team.number){match.carrierId=out.id;setBall(match,out);}team.substitutions.push({slot,on:idOf(out.id),off:idOf(p.id),tick:Number(match.tick)||0,timeSeconds:Number(match.timeSeconds)||0,automatic:true});addEvent(match,{type:"john-return",teamNumber:team.number,notable:true,description:"John Paccini refuses the substitution and puts himself straight back on the pitch.",actors:[out,p],dialogue:[{playerId:idOf(out.id),text:out.name+": "+JSON.stringify("I was not finished.")}]});}
  storeActiveMatch();return true;
 }
 function toggleManualPause(){
@@ -3265,7 +3291,7 @@ function handleDragEnd(){
 function handleClick(event){
  const b=event.target.closest("button");if(!b)return;
  if(b.hasAttribute("data-refresh-saved-teams")){savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=savedTeams.length?"Saved teams refreshed. Select a squad from CHOOSE SQUAD.":"No saved squads found yet. Save one in Team Builder first.";}else if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
- else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
+  else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
  else if(b.id==="bs-return-setup"||b.id==="bs-return-setup-results"){
   if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({teams:setupTeams.map(serializeTeam)}));}catch(e){}}
   if(typeof updateRoute==="function")updateRoute("battleSimInitializer");else{renderInit();window.scrollTo({top:0,behavior:"instant"});}
