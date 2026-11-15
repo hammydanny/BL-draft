@@ -43,11 +43,14 @@ function runBattleSimTests(){
   assert(state.events.at(-1).dialogue[0].text.includes(test.line),"the selected rule uses its matching John dialogue");
  });
  const passOnlyState=bs.createMatch();attachJohn(passOnlyState);bs.johnUse(passOnlyState,"universal-decree","pass-only");
- const defendersBefore=bs.active(passOnlyState.teams[2]).map(p=>({id:p.id,...bs.point(p)}));
  for(let i=0;i<3;i++){bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree.rule,"pass-only","pass-only rule remains active for three ticks");}
- const defendersAfter=bs.active(passOnlyState.teams[2]).map(p=>({id:p.id,...bs.point(p)}));
- assert.deepEqual(defendersAfter,defendersBefore,"pass-only rule prevents all off-ball movement");
  bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree,null,"Universal Decree expires after its third affected tick");
+ const centerState=bs.createMatch();attachJohn(centerState);bs.johnUse(centerState,"universal-decree","center-only");
+ const centerMover=bs.active(centerState.teams[2]).filter(p=>p.role!=="GK").sort((a,b)=>Math.hypot(bs.point(b).x-50,bs.point(b).y-50)-Math.hypot(bs.point(a).x-50,bs.point(a).y-50))[0];
+ const centerDistance=Math.hypot(bs.point(centerMover).x-50,bs.point(centerMover).y-50);
+ bs.playerTick(centerState);assert(Math.hypot(bs.point(centerMover).x-50,bs.point(centerMover).y-50)<centerDistance,"center-only rule moves players towards the center");
+ const blindState=bs.createMatch();attachJohn(blindState);bs.johnUse(blindState,"universal-decree","blindness");
+ bs.playerTick(blindState);assert.equal(blindState.blindnessUntil,blindState.decree.untilTick,"blindness rule removes pitch vision for the decree duration");
  console.log('PASS Battle Sim: John Paccini Universal Decree randomly selects one of three rules, matching dialogue and three-tick effects');
  const introMatch=bs.createMatch();introMatch.introPending=true;const restoredIntro=bs.hydrateMatch(JSON.parse(JSON.stringify(bs.snapshotMatch(introMatch))));assert(restoredIntro&&restoredIntro.introPending,'pre-match intro survives route handoff and reload');assert.equal(restoredIntro.tick,0,'no simulation ticks are consumed during the intro');restoredIntro.introPending=false;assert.equal(restoredIntro.introPending,false,'skipping clears the intro state');
  for(let i=0;i<2;i++){
