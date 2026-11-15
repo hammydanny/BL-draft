@@ -100,9 +100,12 @@ function runBattleSimTests(){
  assert.equal(reverseState.possession,targetData.possession,"Reverse Fate restores possession");
  assert.equal(reverseState.events.length,targetEventCount+1,"Only the retained history and single activation message remain");
  assert.equal(reverseState.events.at(-1).type,"reverse-fate","The Reverse Fate message survives the rewind");
- assert.equal(reverseState.presentedEventId,reverseState.events.length,"The new Reverse Fate dialogue is presented immediately without blocking the live feed");
+  assert.match(reverseState.events.at(-1).description,/John Paccini uses Reverse Fate/,"The activation has a visible feed description");
+  assert.match(reverseState.events.at(-1).dialogue[0].text,/Time is nothing to me/,"The activation dialogue is retained on the event");
+ assert.equal(reverseState.presentedEventId,targetEventCount,"The activation event is queued for normal feed presentation after the rewind");
   assert.equal(reverseState.status,"playing","Reverse Fate resumes the match instead of leaving it paused");
   assert.equal(reverseState.manualPaused,false,"Reverse Fate does not leave manual pause enabled");
+  assert.equal(reverseState.rewoundThisTick,undefined,"The rewind boundary is consumed before post-tick effects can run");
  assert.equal(reverseState.events.filter(e=>e.type==="reverse-fate").length,1,"The rewind does not duplicate Reverse Fate messages");
  assert.equal(reverseState.events.at(-1).presentation.timeSeconds,targetData.timeSeconds,"Reverse Fate presents the restored state immediately");
  assert.equal(reverseState.events.at(-1).reversePresentations,undefined,"Reverse Fate does not replay discarded ticks through a blocking presentation sequence");
