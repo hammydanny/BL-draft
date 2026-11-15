@@ -419,6 +419,7 @@ function hasBall(p,state=match){
 }
 function battleSimPassiveMultiplier(p,k,state=match){
  if(!p||!p.battleSim||!state||!state.teams)return 1;
+ if(idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(state.tick||0))return 1;
  let multiplier=1;
  (Array.isArray(p.battleSim.passives)?p.battleSim.passives:[]).forEach(passive=>{
   if(passive&&passive.condition==="off-ball"&&!hasBall(p,state)){
@@ -887,14 +888,14 @@ function shotTechniques(state,p){
 function reactionMembers(def,holder){return(Array.isArray(def.members)&&def.members.length===2?def.members:[holder.id,def.partnerId]).map(idOf);}
 function kitReactions(state,p){
  const out=[],team=state.teams[p.teamNumber];if(!team)return out;const act=active(team),seen=new Set();
- act.forEach(holder=>{(holder.battleSim&&Array.isArray(holder.battleSim.reactions)?holder.battleSim.reactions:[]).forEach(r=>{
+ act.forEach(holder=>{if(idOf(holder.id)!=="80"&&Number(holder.battleSimDisabledUntil||0)>=Number(state.tick||0))return;(holder.battleSim&&Array.isArray(holder.battleSim.reactions)?holder.battleSim.reactions:[]).forEach(r=>{
   if(!r||seen.has(r.id))return;const [a,b]=reactionMembers(r,holder),owner=act.find(x=>idOf(x.id)===a),partner=act.find(x=>idOf(x.id)===b);
   if(!owner||!partner)return;seen.add(r.id);if(owner===p||partner===p)out.push({def:r,owner,partner});
  });});
  return out;
 }
 // Cheap gate for hot paths: does any active player on this team hold a reaction with this effect?
-function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[teamNumber];return !!team&&active(team).some(h=>h.battleSim&&Array.isArray(h.battleSim.reactions)&&h.battleSim.reactions.some(r=>r&&r.effect===effect));}
+function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[teamNumber];return !!team&&active(team).some(h=>(idOf(h.id)==="80"||Number(h.battleSimDisabledUntil||0)<Number(state.tick||0))&&h.battleSim&&Array.isArray(h.battleSim.reactions)&&h.battleSim.reactions.some(r=>r&&r.effect===effect));}
 // One cooldown per reaction identity per team: both partners read and start the same entry.
 function reactionKey(def,teamNumber){return (Number(teamNumber)===2?2:1)+":"+def.id;}
 function reactionReady(state,def,teamNumber){const cd=state.reactionCooldowns&&state.reactionCooldowns[reactionKey(def,teamNumber)];return !(Number(cd)>Number(state.tick));}
