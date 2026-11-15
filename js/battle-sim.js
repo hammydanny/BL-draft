@@ -2321,6 +2321,8 @@ function simulateTick(state){
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
+ if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
+ if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
  moveOffBall(state);
  // Planet Hotline owns each of its three ticks; normal decisions are suspended.
  if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
@@ -2361,6 +2363,7 @@ function simulateTick(state){
  }
  if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;
  const action=chooseAction(state,carrier);
+ if(state.blindnessUntil>=state.tick){const picks=carrier.role==="GK"?["dribble","pass"]:["shot","dribble","pass"],pick=picks[Math.floor(state.random()*picks.length)];if(pick==="shot")resolveShot(state,carrier,false,null,null,null,null);else if(pick==="dribble")resolveDribble(state,carrier);else resolvePass(state,carrier);ensureTickEvent(state,eventsBefore);return;}
  if(action&&action.type==="shot"){const ultimate=action.technique?null:activateBattleSimUltimate(state,carrier);resolveShot(state,carrier,false,ultimate,action.technique,action.adapted,action.pride);}
  else if(action&&action.type==="dribble")resolveDribble(state,carrier,{target:action.end,sharp:action.sharp,push:action.push,cut:action.cut,stride:action.stride});
  else if(action&&action.type==="malicia")resolveMalicia(state,carrier,action.read);
