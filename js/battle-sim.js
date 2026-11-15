@@ -455,10 +455,10 @@ function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [
 function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning"}[type]||"Special Ability");addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
- if(id==="universal-decree"){johnCooldown(state,j,id,24);state.decree={rule:"pass-only",untilTick:state.tick+3};johnSay(state,j,"No one may do anything but pass. The field obeys.","universal-decree","Universal Decree");return true;}
+ if(id==="universal-decree"){const rules=["pass-only","center-only","blindness"],rule=rules.includes(choice)?choice:randomPick(rules,state.random),dialogueKey={"pass-only":"decreeFreeze","center-only":"decreeCenter",blindness:"decreeBlind"}[rule],lines=j.battleSim?.dialogue?.[dialogueKey],text=Array.isArray(lines)&&lines.length?lines[0]:"",ability=(j.battleSim?.specials||[]).find(a=>a&&a.id===id),duration=Number(ability?.params?.durationTicks);johnCooldown(state,j,id,24);state.decree={rule,untilTick:state.tick+(Number.isInteger(duration)&&duration>0?duration:3)};johnSay(state,j,text,"universal-decree","Universal Decree");return true;}
  if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");return true;}
  if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning","Dimensional Repositioning");return true;}return false;}
-function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(state.johnHistory||[]).length<5)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const choices=["freeze","center-only","blindness"];const choice=ability.id==="universal-decree"?choices[Math.floor(state.random()*choices.length)]:null;if(johnUse(state,ability.id,choice))return true;}return false;}
+function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(state.johnHistory||[]).length<5)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const allowed=["pass-only","center-only","blindness"],configured=Array.isArray(ability.params?.rules)?ability.params.rules.filter(rule=>allowed.includes(rule)):allowed,choices=configured.length?configured:allowed,choice=ability.id==="universal-decree"?randomPick(choices,state.random):null;if(johnUse(state,ability.id,choice))return true;}return false;}
 
 
 function johnHistorySnapshot(state){const data=JSON.parse(JSON.stringify(state,(key,value)=>key==="events"||key==="johnHistory"||key==="random"?undefined:value));return{data:data,eventsLength:state.events.length,randomState:state.random.getState()};}
@@ -2342,12 +2342,32 @@ function simulateTick(state){
  if(johnAutomaticSpecial(state)){ensureTickEvent(state,eventsBefore);return;}
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
+ // Expire the previous decree before applying any rule to this tick.
+ if(state.decree&&state.tick>state.decree.untilTick)state.decree=null;
+ const decreeActive=!!(state.decree&&state.tick<=state.decree.untilTick);
+ if(decreeActive&&state.decree.rule==="pass-only"){
+  const team=state.teams[state.possession],carrier=team&&playerIn(team,state.carrierId);
+  if(!state.forced&&carrier&&!carrier.sentOff){
+   setBall(state,carrier);
+   if(state.throwInPending){state.throwInPending=false;resolvePass(state,carrier,{throwIn:true,offsideExempt:true,passKind:"short",maxMetres:28});}
+   else if(state.kickoffPassPending){state.kickoffPassPending=false;resolvePass(state,carrier,{passKind:"short",kickoff:true});}
+   else{if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;resolvePass(state,carrier);}
+  }
+  ensureTickEvent(state,eventsBefore);
+  return;
+ }
+ if(decreeActive&&state.decree.rule==="center-only"){
+  [1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));
+  const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);
+  addEvent(state,{type:"universal-decree",description:"Universal Decree: every player may only move towards the center.",actors:[johnPaccini(state)]});
+  ensureTickEvent(state,eventsBefore);return;
+ }
+ if(decreeActive&&state.decree.rule==="blindness")state.blindnessUntil=state.decree.untilTick;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
  if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);state.teams[q.winner].stats.goals=(Number(state.teams[q.winner].stats.goals)||0)+1;if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(6-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- if(state.decree&&state.tick>state.decree.untilTick)state.decree=null;
  if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
+ moveOffBall(state);
  moveOffBall(state);
  // Planet Hotline owns each of its three ticks; normal decisions are suspended.
  if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
