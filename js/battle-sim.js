@@ -3233,6 +3233,8 @@ function substitute(team,slot,reserveId){
  team.substitutions.push({slot,on:idOf(p.id),off:idOf(out.id),tick:Number(match.tick)||0,timeSeconds:Number(match.timeSeconds)||0});
  if(required&&required.teamNumber===team.number&&String(required.slot)===slot)match.requiredSub=null;
  addEvent(match,{type:"substitution",teamNumber:team.number,notable:true,zone:p.zone,description:team.name+" substitute "+p.name+" for "+out.name+".",actors:[p,out],dialogue:[{playerId:p.id,text:p.name+": \"I am ready.\""}]});
+ const johnWasSubbed=out&&(idOf(out.id)==="80"||out.name==="John Paccini");
+ if(johnWasSubbed){team.assignment[slot]=out.id;out.role=team.slots[Number(slot)]?.label||"CF";out.matchStatus="starter";p.role="BENCH";p.matchStatus="subbed-off";setPosition(out,p);if(idOf(match.carrierId)===idOf(p.id)&&match.possession===team.number){match.carrierId=out.id;setBall(match,out);}team.substitutions.push({slot,on:idOf(out.id),off:idOf(p.id),tick:Number(match.tick)||0,timeSeconds:Number(match.timeSeconds)||0,automatic:true});addEvent(match,{type:"john-return",teamNumber:team.number,notable:true,description:"John Paccini refuses the substitution and puts himself straight back on the pitch.",actors:[out,p],dialogue:[{playerId:idOf(out.id),text:out.name+": "+JSON.stringify("I was not finished.")}]});}
  storeActiveMatch();return true;
 }
 function toggleManualPause(){
