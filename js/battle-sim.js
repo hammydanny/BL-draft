@@ -479,7 +479,7 @@ function johnRestore(state,snap,history,reverseEvent,reverseSteps){
  state.events=keptEvents;
  if(reverseEvent)state.events.push(reverseEvent);
  state.events.forEach((event,index)=>{event.id=index+1;});
- state.presentedEventId=state.events.length;
+ state.presentedEventId=keptEvents.length;
  state.random=seeded(state.seed,snap.randomState);
  if(johnId!==null&&johnCooldowns){
   for(const n of [1,2]){
@@ -3221,7 +3221,7 @@ function renderFeed(){
   match.events.slice(firstVisible,root._queuedThrough).forEach(e=>root.prepend(renderEvent(e,false)));
   trimLiveFeed(root);
  }
- match.events.slice(root._queuedThrough).forEach(e=>{feedQueue.push(e);feedQueueIds.add(String(e.id));});root._queuedThrough=match.events.length;
+ match.events.slice(root._queuedThrough).forEach(e=>{if(e.type==="reverse-fate"){const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();if(!root.querySelector('[data-event-id="'+String(e.id)+'"]'))root.prepend(renderEvent(e,false));match.presentedEventId=e.id;}else{feedQueue.push(e);feedQueueIds.add(String(e.id));}});root._queuedThrough=match.events.length;
  if(!match.events.length&&!root.querySelector(".bs-empty-feed"))put(root,make("p","bs-empty-feed","Every match tick will appear here."));
  scheduleFeedEvent();
  const count=byId("bs-event-count");if(count)count.textContent=(match.presentedEventId||0)+" EVENTS";
