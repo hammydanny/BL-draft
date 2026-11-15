@@ -1591,7 +1591,7 @@ function resolvePass(state,carrier,opts={}){
  if(!option){moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" carries the ball.",actors:[carrier]});return;}
  if(option.through){resolveThroughBall(state,carrier,option,opts);return;}
  const receiver=option.receiver,kind=option.kind,model=option.model;
- const from=model.from,to=model.to,metres=model.len,chance=model.success,route={kind,from,to,chemistry:model.chem};
+ const from=model.from,to=model.to,metres=model.len,chance=johnPaccini(state)?0.5:model.success,route={kind,from,to,chemistry:model.chem};
  if(model.offside){awardOffside(state,carrier,receiver,route);return;}
  const roll=state.random();team.stats.attempted++;carrier.match.passesAttempted++;if(option.style==="cutback")team.stats.cutbacks=(team.stats.cutbacks||0)+1;
  const extras=opts.setPiece||opts.kickoff?{}:passExtras(state,carrier,option);
@@ -1910,7 +1910,7 @@ function resolveDribble(state,carrier,opts={}){
  const end=opts.target?point(opts.target):(best||{end:shiftM(carrier,dribbleMeters(carrier),0,team.number)}).end,sharp=opts.target?!!opts.sharp:!!(best&&best.sharp);
  const power=kitAbility(carrier,"power-dribble"),pushKit=opts.push?kitAbility(carrier,"push-dribble"):null,cutKit=opts.cut?kitAbility(carrier,"speed-cut"):null,maxStride=pushKit&&opts.stride?Number(opts.stride):dribbleMeters(carrier)*(power?kitParamP(carrier,power,"stride",1.2):1);
  const stride=Math.min(maxStride,distance(before,end)||maxStride);
- const model=dribbleModel(state,carrier,end,undefined,{sharp,push:!!pushKit,cut:!!cutKit}),defenders=model.defenders,chance=model.chance;
+ const model=dribbleModel(state,carrier,end,undefined,{sharp,push:!!pushKit,cut:!!cutKit}),defenders=model.defenders,chance=johnPaccini(state)?0.5:model.chance;
  // Only a defender who genuinely engages the carrier is "beaten" (and can foul him).
  const def=model.def&&model.access>=.35?model.def:null;
  const nearbyDefenderInfo=defenderFeedDetails(defenders,[carrier],model.def);
