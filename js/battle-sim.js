@@ -488,7 +488,7 @@ function johnRestore(state,snap,history,reverseEvent,reverseSteps){
   }
  }
  state.johnHistory=Array.isArray(history)?history:[];
- state.status="playing";state.stoppage="";state.manualPaused=false;
+ state.status="playing";state.stoppage="";state.manualPaused=false;state.rewoundThisTick=true;
  const root=state===match&&!fastForwarding&&reverseEvent?byId("bs-live-feed"):null;
  if(root&&typeof root.querySelectorAll==="function"){
   clearFeedQueue();
@@ -2463,6 +2463,7 @@ function simulateTick(state){
 function playerTick(state){
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.battleSimState&&Array.isArray(p.battleSimState.usedUltimates)&&!isFlowing(p))p.battleSimState.usedUltimates=[];}));
  simulateTick(state);
+ if(state.rewoundThisTick){delete state.rewoundThisTick;return;}
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority","Absolute Authority");}}}));
 
 }
@@ -3142,7 +3143,7 @@ function renderEvent(event,archive){
   });
   put(panel,list);put(item,panel);
  }
-if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.filter(line=>dialogueAllowed(match,line)).forEach(line=>{
+if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.filter(line=>event.type==="reverse-fate"||dialogueAllowed(match,line)).forEach(line=>{
   // Character lines carry their source key and are shown in the reader's language.
   if(line.key&&line.text.endsWith(String.fromCharCode(34)+line.key+String.fromCharCode(34))){const p=make("p","bs-event-line"),speaker=line.text.slice(0,line.text.length-line.key.length-2),quote=make("span","bs-event-line-text",line.key);quote.dataset.battleMessage=line.key;quote.dataset.battleEnglish=line.key;p.append(speaker+String.fromCharCode(8220),quote,String.fromCharCode(8221));put(lines,p);}
   else put(lines,make("p","",line.text));});put(item,lines);}
@@ -3221,7 +3222,7 @@ function renderFeed(){
   match.events.slice(firstVisible,root._queuedThrough).forEach(e=>root.prepend(renderEvent(e,false)));
   trimLiveFeed(root);
  }
- match.events.slice(root._queuedThrough).forEach(e=>{if(e.type==="reverse-fate"){const empty=root.querySelector(".bs-empty-feed");if(empty)empty.remove();if(!root.querySelector('[data-event-id="'+String(e.id)+'"]'))root.prepend(renderEvent(e,false));match.presentedEventId=e.id;}else{feedQueue.push(e);feedQueueIds.add(String(e.id));}});root._queuedThrough=match.events.length;
+ match.events.slice(root._queuedThrough).forEach(e=>{if(!feedQueueIds.has(String(e.id))){feedQueue.push(e);feedQueueIds.add(String(e.id));}});root._queuedThrough=match.events.length;
  if(!match.events.length&&!root.querySelector(".bs-empty-feed"))put(root,make("p","bs-empty-feed","Every match tick will appear here."));
  scheduleFeedEvent();
  const count=byId("bs-event-count");if(count)count.textContent=(match.presentedEventId||0)+" EVENTS";
