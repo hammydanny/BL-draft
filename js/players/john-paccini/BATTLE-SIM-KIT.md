@@ -9,7 +9,7 @@ Design source for secret character SC-2 (player ID 80). John is intentionally a 
 - **Omniscient Spectator** — John knows every event that will happen.
 
 ### Specials
-- **Universal Decree** — Automatically activates when ready; 24-tick cooldown. For the next 3 ticks, every player can only pass. Movement, shots, dribbles, tackles and all other actions are restricted. The old freeze, center-only and blindness choices are removed.
+- **Universal Decree** — Automatically activates when ready; 24-tick cooldown. John randomly selects one of three rules for the next 3 ticks: every player can pass only; every player can only move towards the center; or every player has 0 vision of the pitch. Each rule uses its corresponding John Paccini dialogue.
 - **Reverse Fate** — 40-tick cooldown; usable at any time. Says: “Time is nothing to me...” Rewinds exactly 5 ticks, restoring player positions, possession, ball location, stamina, Flow and score; removes the prior 5 events. John's cooldowns are not refunded. Goals can be undone.
 - **Dimensional Repositioning** — 15-tick cooldown; usable at any time. Says: “You were standing somewhere else a moment ago...” Consumes a separate tick and teleports the current ball carrier to a random legal pitch location, excluding the goal. Ignores formations and is not a pass or dribble.
 
