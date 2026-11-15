@@ -8,4 +8,6 @@
 - [x] Chemistry dialogue hooks for selected teammates/rivals on relevant pass/goal events
 - [x] Final match rating recognizes special-move contribution
 - [x] Ultimate: Two-Gun Volley (full Flow + near-goal trigger; 100% success, bypasses GK stats)
+- [x] Ultimate: Move It (steals possession from a nearby teammate near goal; once per Flow)
+- [x] Flow: Metavision — Puzzle Completion (full-pitch awareness, stronger anticipation and defensive reading)
 - [ ] Expand chemistry pair coverage and playtest
