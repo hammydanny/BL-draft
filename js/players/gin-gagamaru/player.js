@@ -224,7 +224,37 @@ const PLAYER_8_DATA = {
       ],
       "criticalGoal": [
         "I can score too."
+      ],
+      "beast": [
+        "Gotcha!",
+        "Body moved on its own."
+      ],
+      "beastFail": [
+        "Huh. Too fast."
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "beast-reflex",
+        "name": "Beast Reflex",
+        "label": "BEAST REFLEX",
+        "effect": "beast-reflex",
+        "dialogue": "beast",
+        "params": {
+          "ballSpeed": 26,
+          "reaction": 0.18,
+          "standingReach": 2.2,
+          "diveReach": 2.4,
+          "base": 0.16,
+          "maxChance": 0.42
+        },
+        "description": "In Flow, when a shot has already beaten his normal save, Gagamaru throws himself at it if he can physically reach it in time. He saves at most about 4 in 10 and pushes the ball loose; powerful or well-placed shots still score. Once per Flow."
+      }
+    ]
   }
 };

@@ -90,9 +90,10 @@ const PLAYER_7_DATA = {
         "effect": "sprint-momentum",
         "params": {
           "carry": 0.35,
-          "race": 5
+          "race": 5,
+          "raceTopSpeed": 1.04
         },
-        "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
+        "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. In long races he holds a slightly higher top speed than explosive starters. Sharp turns at speed cost him control."
       },
       {
         "id": "high-speed-awareness",
@@ -268,7 +269,39 @@ const PLAYER_7_DATA = {
       ],
       "criticalGoal": [
         "A little too late."
+      ],
+      "panther": [
+        "Nobody catches me at top speed!"
+      ],
+      "pantherCut": [
+        "Forty-four degrees. My angle."
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "red-panther-44-breakthrough",
+        "name": "Red Panther: 44° Breakthrough",
+        "label": "RED PANTHER: 44° BREAKTHROUGH",
+        "effect": "red-panther-breakthrough",
+        "dialogue": "panther",
+        "params": {
+          "minAhead": 45,
+          "maxAhead": 84,
+          "space": 6,
+          "zoneMetres": 19,
+          "angle": 44,
+          "runSeconds": 1.05,
+          "maxRuns": 4,
+          "technique": 0.12,
+          "value": 0.006
+        },
+        "description": "In Flow from a wide position with at least 6 m of open space ahead, Chigiri sprints down the flank for up to 4 ticks, cuts inside to the 44° angle about 19 m from goal, then shoots for the far post. Each stage is a real action and a tackle can stop it. Once per Flow."
+      }
+    ]
   }
 };

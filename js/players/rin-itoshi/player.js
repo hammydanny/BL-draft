@@ -114,13 +114,15 @@ const PLAYER_23_DATA = {
         "name": "Destructive Impulse",
         "label": "DESTRUCTIVE IMPULSE",
         "effect": "flow-state",
-        "description": "In Flow, pursues direct duels and sharp attacking turns more aggressively. He can still lose possession.",
+        "description": "In Flow, reads the pitch further and goes looking for duels with strong defenders (DEF 80+), sometimes refusing the safe backward pass. Defenders can still win the ball.",
         "params": {
           "awareness": {
             "space": 0.07,
             "anticipation": 0.12,
             "defensiveRead": 0.05
-          }
+          },
+          "duelSeek": 0.006,
+          "duelDef": 80
         },
         "interpretation": true
       }
@@ -151,7 +153,66 @@ const PLAYER_23_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "puppeteers-endgame",
+        "name": "Puppeteer's Endgame",
+        "label": "PUPPETEER'S ENDGAME",
+        "effect": "puppeteer-endgame",
+        "dialogue": "puppeteer",
+        "params": {
+          "maxMetres": 40,
+          "rangeMeters": 9,
+          "bait": 0.35,
+          "technique": 0.08,
+          "value": 0.004
+        },
+        "description": "In Flow within 40 m of goal, with a defender within 9 m and two real routes past him, Rin shows one route to bait the defender, then uses the other (pass, dribble or shot). If the defender does not bite, Rin keeps the ball with a safe pass. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "destroyer-collision-course",
+        "name": "Destroyer: Collision Course",
+        "label": "DESTROYER: COLLISION COURSE",
+        "effect": "collision-course",
+        "dialogue": "collision",
+        "params": {
+          "maxMetres": 38,
+          "rangeMeters": 5,
+          "force": 4,
+          "value": 0.03
+        },
+        "description": "In Flow within 38 m of goal, Rin runs straight at the strongest defender in his path within 5 m. It is a normal dribbling duel with a small physical edge; the defender can win the ball. Winning it does not guarantee a goal. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "spin-gear-shot",
+        "name": "Spin Gear Shot",
+        "label": "SPIN GEAR SHOT",
+        "effect": "spin-gear-shot",
+        "dialogue": "spinGear",
+        "params": {
+          "maxMetres": 14,
+          "contestMetres": 3.5,
+          "technique": -0.05,
+          "relief": 1.6
+        },
+        "description": "In Flow, when Rin meets an airborne pass within 14 m of goal with a defender within 3.5 m, he strikes it acrobatically before the defender can close him down. A difficult finish that can be blocked, saved or missed. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -201,6 +262,25 @@ const PLAYER_23_DATA = {
       ],
       "rival": [
         "Sae. Watch me break through."
+      ],
+      "puppeteer": [
+        "Move. Exactly where I want you.",
+        "You're already inside my plan."
+      ],
+      "puppeteerFail": [
+        "Tch. You saw it."
+      ],
+      "collision": [
+        "I'll crush you head-on!"
+      ],
+      "collisionWin": [
+        "Broken. Pathetic."
+      ],
+      "collisionFail": [
+        "Again. Next time I break you."
+      ],
+      "spinGear": [
+        "Spin... and destroy!"
       ]
     }
   }

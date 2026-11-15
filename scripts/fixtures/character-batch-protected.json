@@ -1719,6 +1719,24 @@
               }
             },
             "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+          },
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "ambidextrous-checkmate",
+            "name": "Ambidextrous Checkmate",
+            "label": "AMBIDEXTROUS CHECKMATE",
+            "effect": "ambidextrous-checkmate",
+            "dialogue": "checkmate",
+            "params": {
+              "maxMetres": 24,
+              "technique": 0.2,
+              "value": 0.008
+            },
+            "description": "In Flow within 24 m of goal, when a defender steps in to block one side of his shot, Noa switches to his other foot and shoots the other way. If the defender holds his ground, Noa does not force it and passes instead. The keeper can still save. Once per Flow."
           }
         ],
         "reactions": [
@@ -1837,6 +1855,25 @@
               }
             },
             "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+          },
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "monsters-dance",
+            "name": "Monster's Dance",
+            "label": "MONSTER'S DANCE",
+            "effect": "monster-dance",
+            "dialogue": "dance",
+            "params": {
+              "maxMetres": 38,
+              "rangeMeters": 7,
+              "maxDuels": 2,
+              "risk": 5
+            },
+            "description": "In Flow within 38 m of goal, after beating a defender, Bachira dribbles straight at up to two more defenders within 7 m on the way to goal. Each duel is resolved on its own and is riskier than the last; any defender can win the ball. Once per Flow."
           }
         ],
         "reactions": [
@@ -1961,9 +1998,14 @@
             "dialogue": "dribble",
             "params": {
               "shield": 6,
-              "looseBall": 0.1
+              "looseBall": 0.1,
+              "secondBall": 2
             },
-            "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+            "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He reacts faster to loose balls and, when his team attacks, waits 9–17 m from goal for second balls. He can still be tackled.",
+            "effects": [
+              "physical-shield",
+              "second-ball-hunter"
+            ]
           },
           {
             "id": "wild-card-physique",
@@ -2052,6 +2094,26 @@
               }
             },
             "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+          },
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "wild-card-power-finish",
+            "name": "Wild Card: Power Finish",
+            "label": "WILD CARD: POWER FINISH",
+            "effect": "power-finish",
+            "dialogue": "powerFinish",
+            "params": {
+              "maxMetres": 22,
+              "contestMetres": 2.6,
+              "technique": 0.15,
+              "hold": 2.2,
+              "parry": 0.15
+            },
+            "description": "In Flow, 5–22 m from goal, right after winning a physical contest or receiving with a defender within 2.6 m, Kunigami holds the defender off and strikes hard with whichever foot has the clearer side. The defender's strength matters; blocks and saves remain possible. Once per Flow."
           }
         ],
         "reactions": [
@@ -2093,9 +2155,10 @@
             "effect": "sprint-momentum",
             "params": {
               "carry": 0.35,
-              "race": 5
+              "race": 5,
+              "raceTopSpeed": 1.04
             },
-            "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
+            "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. In long races he holds a slightly higher top speed than explosive starters. Sharp turns at speed cost him control."
           },
           {
             "id": "high-speed-awareness",
@@ -2195,6 +2258,32 @@
               "value": 0.01
             },
             "description": "When Isagi has the ball, Chigiri sets off on a run at the same moment and Isagi spots it even from far away, playing a more accurate through ball. Offside still counts and defenders can still catch the pass."
+          }
+        ],
+        "ultimates": [
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "red-panther-44-breakthrough",
+            "name": "Red Panther: 44° Breakthrough",
+            "label": "RED PANTHER: 44° BREAKTHROUGH",
+            "effect": "red-panther-breakthrough",
+            "dialogue": "panther",
+            "params": {
+              "minAhead": 45,
+              "maxAhead": 84,
+              "space": 6,
+              "zoneMetres": 19,
+              "angle": 44,
+              "runSeconds": 1.05,
+              "maxRuns": 4,
+              "technique": 0.12,
+              "value": 0.006
+            },
+            "description": "In Flow from a wide position with at least 6 m of open space ahead, Chigiri sprints down the flank for up to 4 ticks, cuts inside to the 44° angle about 19 m from goal, then shoots for the far post. Each stage is a real action and a tackle can stop it. Once per Flow."
           }
         ]
       }
@@ -2300,6 +2389,29 @@
               "technique": 0.15
             },
             "description": "Only when he plays outfield: when a cross reaches him within 12 m of goal, he can finish it acrobatically in the air. Defenders and the goalkeeper can still stop it."
+          }
+        ],
+        "ultimates": [
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "beast-reflex",
+            "name": "Beast Reflex",
+            "label": "BEAST REFLEX",
+            "effect": "beast-reflex",
+            "dialogue": "beast",
+            "params": {
+              "ballSpeed": 26,
+              "reaction": 0.18,
+              "standingReach": 2.2,
+              "diveReach": 2.4,
+              "base": 0.16,
+              "maxChance": 0.42
+            },
+            "description": "In Flow, when a shot has already beaten his normal save, Gagamaru throws himself at it if he can physically reach it in time. He saves at most about 4 in 10 and pushes the ball loose; powerful or well-placed shots still score. Once per Flow."
           }
         ]
       }
@@ -2423,6 +2535,55 @@
               "read": 0.12
             },
             "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
+          },
+          {
+            "id": "ace-neutralization",
+            "name": "Ace Neutralization",
+            "label": "ACE NEUTRALIZATION",
+            "members": [
+              9,
+              26
+            ],
+            "effect": "ace-neutralization",
+            "cooldownTicks": 12,
+            "dialogue": "aceRaichi",
+            "interpretation": true,
+            "params": {
+              "markMetres": 4.5,
+              "rangeMeters": 18,
+              "passMetres": 32,
+              "dangerMetres": 30,
+              "dangerOff": 88,
+              "windowTicks": 3,
+              "read": 0.15,
+              "closing": 1
+            },
+            "description": "With Kurona on the pitch: when Raichi is tight (within 4.5 m) on a dangerous attacker (within 30 m of goal, or OFF 88+ in Raichi's half) and Kurona is within 18 m, Kurona steps into the passing line for up to 3 ticks and reads passes to that attacker earlier. The attacker can escape and the pass can go elsewhere. Cooldown: 12 ticks."
+          }
+        ],
+        "ultimates": [
+          {
+            "interpretation": true,
+            "oncePerFlow": true,
+            "condition": {
+              "duringFlow": true
+            },
+            "id": "relentless-lockdown",
+            "name": "Relentless Lockdown",
+            "label": "RELENTLESS LOCKDOWN",
+            "effect": "relentless-lockdown",
+            "dialogue": "lockdown",
+            "params": {
+              "triggerMetres": 8,
+              "dangerOff": 85,
+              "dangerMetres": 34,
+              "ticks": 3,
+              "gapMetres": 0.9,
+              "stamina": 1.5,
+              "deny": 0.08,
+              "breakMetres": 12
+            },
+            "description": "In Flow, when the attacker Raichi is marking is dangerous in Raichi's half (OFF 85+ or within 34 m of goal), he shadows him goal-side for 3 ticks, using 1.5 stamina per tick. Passes to that attacker are harder to receive. Speed, dribbling or a 12 m gap breaks it. Once per Flow."
           }
         ]
       }

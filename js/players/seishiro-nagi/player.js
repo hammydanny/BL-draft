@@ -88,9 +88,10 @@ const PLAYER_21_DATA = {
         "name": "Perfect Trapping",
         "label": "PERFECT TRAPPING",
         "effect": "perfect-trap",
-        "description": "Improves control of reachable ground and aerial deliveries. Defenders can intercept before he receives.",
+        "description": "Improves control of reachable ground and aerial deliveries. After controlling a high or long ball he is readier to shoot straight away. Defenders can intercept before he receives.",
         "params": {
-          "control": 7
+          "control": 7,
+          "improvise": 0.004
         },
         "interpretation": true
       },
@@ -141,15 +142,19 @@ const PLAYER_21_DATA = {
         "name": "Five-Shot Revolver Fake Volley",
         "label": "FIVE-SHOT REVOLVER FAKE VOLLEY",
         "effect": "revolver-finish",
-        "description": "In Flow after an aerial pass from Reo within 12 m, attempts a difficult chain of feints against two nearby defenders. Can fail. Once per Flow.",
-        "params": {},
+        "description": "In Flow, after an airborne pass within 14 m of goal with two defenders within 5 m, Nagi attempts a chain of fake volleys before shooting. Any feint can be stopped and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
+        "params": {
+          "maxMetres": 14,
+          "pressureMetres": 5,
+          "defenders": 2
+        },
         "interpretation": true,
         "oncePerFlow": true,
         "condition": {
           "duringFlow": true,
           "receivedPass": true
         },
-        "dialogue": "flow"
+        "dialogue": "revolver"
       }
     ],
     "reactions": [
@@ -215,6 +220,10 @@ const PLAYER_21_DATA = {
       ],
       "partnership": [
         "Reo. Right there."
+      ],
+      "revolver": [
+        "Huh... this is actually fun.",
+        "Five shots. Guess which one's real."
       ]
     }
   }

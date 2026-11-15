@@ -643,6 +643,24 @@ const PLAYER_3_DATA = {
           }
         },
         "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "ambidextrous-checkmate",
+        "name": "Ambidextrous Checkmate",
+        "label": "AMBIDEXTROUS CHECKMATE",
+        "effect": "ambidextrous-checkmate",
+        "dialogue": "checkmate",
+        "params": {
+          "maxMetres": 24,
+          "technique": 0.2,
+          "value": 0.008
+        },
+        "description": "In Flow within 24 m of goal, when a defender steps in to block one side of his shot, Noa switches to his other foot and shoots the other way. If the defender holds his ground, Noa does not force it and passes instead. The keeper can still save. Once per Flow."
       }
     ],
     "reactions": [
@@ -732,6 +750,12 @@ const PLAYER_3_DATA = {
       ],
       "criticalGoal": [
         "Good. Now do it again."
+      ],
+      "checkmate": [
+        "Your choice was predictable. Checkmate."
+      ],
+      "checkmateFail": [
+        "Read correctly. Recalculating."
       ]
     }
   }
@@ -891,6 +915,25 @@ const PLAYER_4_DATA = {
           }
         },
         "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "monsters-dance",
+        "name": "Monster's Dance",
+        "label": "MONSTER'S DANCE",
+        "effect": "monster-dance",
+        "dialogue": "dance",
+        "params": {
+          "maxMetres": 38,
+          "rangeMeters": 7,
+          "maxDuels": 2,
+          "risk": 5
+        },
+        "description": "In Flow within 38 m of goal, after beating a defender, Bachira dribbles straight at up to two more defenders within 7 m on the way to goal. Each duel is resolved on its own and is riskier than the last; any defender can win the ball. Once per Flow."
       }
     ],
     "reactions": [
@@ -986,6 +1029,16 @@ const PLAYER_4_DATA = {
       ],
       "criticalGoal": [
         "Did you see that dance?"
+      ],
+      "dance": [
+        "Let's dance, monster!",
+        "One more! This is so fun!"
+      ],
+      "danceEnd": [
+        "Ahaha! Did you see that?"
+      ],
+      "danceFail": [
+        "Aw, so close! Again!"
       ]
     }
   }
@@ -1287,9 +1340,14 @@ const PLAYER_6_DATA = {
         "dialogue": "dribble",
         "params": {
           "shield": 6,
-          "looseBall": 0.1
+          "looseBall": 0.1,
+          "secondBall": 2
         },
-        "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+        "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He reacts faster to loose balls and, when his team attacks, waits 9–17 m from goal for second balls. He can still be tackled.",
+        "effects": [
+          "physical-shield",
+          "second-ball-hunter"
+        ]
       },
       {
         "id": "wild-card-physique",
@@ -1378,6 +1436,26 @@ const PLAYER_6_DATA = {
           }
         },
         "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "wild-card-power-finish",
+        "name": "Wild Card: Power Finish",
+        "label": "WILD CARD: POWER FINISH",
+        "effect": "power-finish",
+        "dialogue": "powerFinish",
+        "params": {
+          "maxMetres": 22,
+          "contestMetres": 2.6,
+          "technique": 0.15,
+          "hold": 2.2,
+          "parry": 0.15
+        },
+        "description": "In Flow, 5–22 m from goal, right after winning a physical contest or receiving with a defender within 2.6 m, Kunigami holds the defender off and strikes hard with whichever foot has the clearer side. The defender's strength matters; blocks and saves remain possible. Once per Flow."
       }
     ],
     "reactions": [
@@ -1476,6 +1554,10 @@ const PLAYER_6_DATA = {
       ],
       "criticalGoal": [
         "I came back for this."
+      ],
+      "powerFinish": [
+        "Strength and both feet—that's my answer!",
+        "I'm not losing this contest!"
       ]
     }
   }
@@ -1575,9 +1657,10 @@ const PLAYER_7_DATA = {
         "effect": "sprint-momentum",
         "params": {
           "carry": 0.35,
-          "race": 5
+          "race": 5,
+          "raceTopSpeed": 1.04
         },
-        "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
+        "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. In long races he holds a slightly higher top speed than explosive starters. Sharp turns at speed cost him control."
       },
       {
         "id": "high-speed-awareness",
@@ -1753,8 +1836,40 @@ const PLAYER_7_DATA = {
       ],
       "criticalGoal": [
         "A little too late."
+      ],
+      "panther": [
+        "Nobody catches me at top speed!"
+      ],
+      "pantherCut": [
+        "Forty-four degrees. My angle."
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "red-panther-44-breakthrough",
+        "name": "Red Panther: 44° Breakthrough",
+        "label": "RED PANTHER: 44° BREAKTHROUGH",
+        "effect": "red-panther-breakthrough",
+        "dialogue": "panther",
+        "params": {
+          "minAhead": 45,
+          "maxAhead": 84,
+          "space": 6,
+          "zoneMetres": 19,
+          "angle": 44,
+          "runSeconds": 1.05,
+          "maxRuns": 4,
+          "technique": 0.12,
+          "value": 0.006
+        },
+        "description": "In Flow from a wide position with at least 6 m of open space ahead, Chigiri sprints down the flank for up to 4 ticks, cuts inside to the 44° angle about 19 m from goal, then shoots for the far post. Each stage is a real action and a tackle can stop it. Once per Flow."
+      }
+    ]
   }
 };
 ;
@@ -1986,8 +2101,38 @@ const PLAYER_8_DATA = {
       ],
       "criticalGoal": [
         "I can score too."
+      ],
+      "beast": [
+        "Gotcha!",
+        "Body moved on its own."
+      ],
+      "beastFail": [
+        "Huh. Too fast."
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "beast-reflex",
+        "name": "Beast Reflex",
+        "label": "BEAST REFLEX",
+        "effect": "beast-reflex",
+        "dialogue": "beast",
+        "params": {
+          "ballSpeed": 26,
+          "reaction": 0.18,
+          "standingReach": 2.2,
+          "diveReach": 2.4,
+          "base": 0.16,
+          "maxChance": 0.42
+        },
+        "description": "In Flow, when a shot has already beaten his normal save, Gagamaru throws himself at it if he can physically reach it in time. He saves at most about 4 in 10 and pushes the ball loose; powerful or well-placed shots still score. Once per Flow."
+      }
+    ]
   }
 };
 ;
@@ -2170,6 +2315,30 @@ const PLAYER_9_DATA = {
           "read": 0.12
         },
         "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
+      },
+      {
+        "id": "ace-neutralization",
+        "name": "Ace Neutralization",
+        "label": "ACE NEUTRALIZATION",
+        "members": [
+          9,
+          26
+        ],
+        "effect": "ace-neutralization",
+        "cooldownTicks": 12,
+        "dialogue": "aceRaichi",
+        "interpretation": true,
+        "params": {
+          "markMetres": 4.5,
+          "rangeMeters": 18,
+          "passMetres": 32,
+          "dangerMetres": 30,
+          "dangerOff": 88,
+          "windowTicks": 3,
+          "read": 0.15,
+          "closing": 1
+        },
+        "description": "With Kurona on the pitch: when Raichi is tight (within 4.5 m) on a dangerous attacker (within 30 m of goal, or OFF 88+ in Raichi's half) and Kurona is within 18 m, Kurona steps into the passing line for up to 3 ticks and reads passes to that attacker earlier. The attacker can escape and the pass can go elsewhere. Cooldown: 12 ticks."
       }
     ],
     "dialogue": {
@@ -2250,8 +2419,46 @@ const PLAYER_9_DATA = {
       ],
       "criticalGoal": [
         "See that?! That's Raichi!"
+      ],
+      "lockdown": [
+        "You're not breathing without me!",
+        "I'm sticking to you, bastard!"
+      ],
+      "lockdownEnd": [
+        "Ha! Couldn't shake me!"
+      ],
+      "lockdownFail": [
+        "Damn it, slippery bastard!"
+      ],
+      "aceRaichi": [
+        "Kurona! He's yours!"
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "relentless-lockdown",
+        "name": "Relentless Lockdown",
+        "label": "RELENTLESS LOCKDOWN",
+        "effect": "relentless-lockdown",
+        "dialogue": "lockdown",
+        "params": {
+          "triggerMetres": 8,
+          "dangerOff": 85,
+          "dangerMetres": 34,
+          "ticks": 3,
+          "gapMetres": 0.9,
+          "stamina": 1.5,
+          "deny": 0.08,
+          "breakMetres": 12
+        },
+        "description": "In Flow, when the attacker Raichi is marking is dangerous in Raichi's half (OFF 85+ or within 34 m of goal), he shadows him goal-side for 3 ticks, using 1.5 stamina per tick. Passes to that attacker are harder to receive. Speed, dribbling or a 12 m gap breaks it. Once per Flow."
+      }
+    ]
   }
 };
 ;
@@ -3051,11 +3258,16 @@ const PLAYER_14_DATA = {
         "name": "Spatial Awareness",
         "label": "SPATIAL AWARENESS",
         "effect": "space-reading",
-        "description": "Reads attacking runs and passing lanes within 55 m. He must still reach the space.",
+        "description": "Reads attacking runs and passing lanes within 55 m. Prefers passes that put a teammate into a real shooting position over keeping possession. He must still reach the space, and defenders can cut out the pass.",
         "params": {
-          "rangeMeters": 55
+          "rangeMeters": 55,
+          "weight": 0.05
         },
-        "interpretation": true
+        "interpretation": true,
+        "effects": [
+          "space-reading",
+          "chance-creation"
+        ]
       },
       {
         "id": "perfect-kick-technique",
@@ -3090,9 +3302,10 @@ const PLAYER_14_DATA = {
         "name": "Counter Dribbling",
         "label": "COUNTER DRIBBLING",
         "effect": "counter-dribble",
-        "description": "When a nearby defender steps toward him, tries a reachable escape touch. Can fail. Cooldown: 7 ticks.",
+        "description": "When a nearby defender steps toward him, tries a reachable escape touch. When nobody is committing, he avoids dribbling for its own sake. Can fail. Cooldown: 7 ticks.",
         "params": {
-          "cooldownTicks": 7
+          "cooldownTicks": 7,
+          "pointless": 0.004
         },
         "interpretation": true,
         "dialogue": "dribble"
@@ -3111,7 +3324,50 @@ const PLAYER_14_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "beautiful-destruction-perfect-thread",
+        "name": "Beautiful Destruction: Perfect Thread",
+        "label": "BEAUTIFUL DESTRUCTION: PERFECT THREAD",
+        "effect": "perfect-thread",
+        "dialogue": "thread",
+        "params": {
+          "minForward": 8,
+          "minLength": 14,
+          "attackAhead": 66,
+          "narrow": 0.65,
+          "precision": 0.5,
+          "pace": 1.15,
+          "accuracy": 0.04,
+          "minSuccess": 0.3,
+          "value": 0.01
+        },
+        "description": "In Flow, Sae finds a narrow forward lane (at least 14 m) to a teammate in the attacking third and plays it with exact weight and pace. Defenders in the lane can still intercept, and the receiver must still control it. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "counter-dribble-deadly-release",
+        "name": "Counter-Dribble: Deadly Release",
+        "label": "COUNTER-DRIBBLE: DEADLY RELEASE",
+        "effect": "deadly-release",
+        "dialogue": "release",
+        "params": {
+          "read": 0.14,
+          "technique": 0.08,
+          "value": 0.02
+        },
+        "description": "In Flow, when a defender steps in to tackle him, Sae cuts away and, only if that works, instantly passes or shoots through the opening. The defender can win the ball first, and the release can be blocked or intercepted. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -3158,6 +3414,16 @@ const PLAYER_14_DATA = {
       ],
       "offside": [
         "A careless touch."
+      ],
+      "thread": [
+        "Run. The ball is already there.",
+        "Only an idiot would miss this lane."
+      ],
+      "release": [
+        "Too eager. That's your mistake."
+      ],
+      "releaseFail": [
+        "...Sloppy."
       ]
     }
   }
@@ -3268,8 +3534,12 @@ const PLAYER_15_DATA = {
         "name": "King's Ego",
         "label": "KING'S EGO",
         "effect": "goal-hunger",
-        "description": "Prefers shooting from dangerous positions and carrying toward goal. Still passes when another chance is better.",
-        "params": {},
+        "description": "When Barou has a realistic shot (about a 10% chance or better), he shoots instead of playing a safe sideways or backward pass, and takes on defenders when it moves him toward goal. He still passes when a teammate's chance is clearly better.",
+        "params": {
+          "realistic": 0.1,
+          "supportPenalty": 0.006,
+          "duel": 0.003
+        },
         "interpretation": true
       },
       {
@@ -3277,8 +3547,11 @@ const PLAYER_15_DATA = {
         "name": "Predator Eye",
         "label": "PREDATOR EYE",
         "effect": "keeper-window",
-        "description": "Watches a screened or moving goalkeeper for a shooting window within 29 m. Blocks and saves remain possible.",
-        "params": {},
+        "description": "Watches the goalkeeper within 29 m. When the keeper is screened or moving across, Barou aims for the open side. If the keeper is still moving and nobody is within 3.5 m of Barou, he may take one small touch to wait for a better moment. Blocks and saves remain possible.",
+        "params": {
+          "calmMetres": 3.5,
+          "patience": 0.003
+        },
         "interpretation": true
       },
       {
@@ -3322,7 +3595,52 @@ const PLAYER_15_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "devour-villains-shadow",
+        "name": "Devour: Villain's Shadow",
+        "label": "DEVOUR: VILLAIN'S SHADOW",
+        "effect": "devour-shadow",
+        "dialogue": "devour",
+        "params": {
+          "defendersDrawn": 2,
+          "drawRadius": 8,
+          "carrierRange": 38,
+          "barouRange": 36,
+          "spaceRange": 26,
+          "windowTicks": 3,
+          "looseBall": 0.2,
+          "passValue": 0.006,
+          "finish": 0.1,
+          "relief": 1
+        },
+        "description": "In Flow, when a teammate within 38 m of goal draws two or more defenders, Barou sprints into the space they leave (within 26 m of goal). If the ball reaches him within 3 ticks by a pass, rebound or loose ball, he strikes before they recover. Defenders can follow his run. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "predator-eye-blindside-execution",
+        "name": "Predator Eye: Blindside Execution",
+        "label": "PREDATOR EYE: BLINDSIDE EXECUTION",
+        "effect": "blindside-execution",
+        "dialogue": "blindside",
+        "goalDialogue": "blindsideGoal",
+        "params": {
+          "maxMetres": 24,
+          "technique": 0.04,
+          "parry": 0.1
+        },
+        "description": "In Flow, 6–24 m from goal, when the keeper's view is screened, he is moving across or he has left one side uncovered, Barou fires a powerful shot to the side the keeper cannot cover. Nobody may stand right on that line; the shot can still be blocked, saved or missed. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -3369,6 +3687,23 @@ const PLAYER_15_DATA = {
       ],
       "offside": [
         "Tch. Next one is mine."
+      ],
+      "devour": [
+        "Draw them in. The goal is mine.",
+        "Your football just became my prey."
+      ],
+      "devourSuccess": [
+        "Thanks for the meal.",
+        "The king takes what you built!"
+      ],
+      "devourFail": [
+        "Tch. Nobody fed the king."
+      ],
+      "blindside": [
+        "The keeper's blind. Execution."
+      ],
+      "blindsideGoal": [
+        "Witness the king's execution!"
       ]
     }
   }
@@ -3528,7 +3863,28 @@ const PLAYER_16_DATA = {
         "dialogue": "trap"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "watchtower-checkmate",
+        "name": "Watchtower Checkmate",
+        "label": "WATCHTOWER CHECKMATE",
+        "effect": "watchtower-checkmate",
+        "dialogue": "checkmate",
+        "params": {
+          "dangerMetres": 32,
+          "windowTicks": 3,
+          "read": 0.25,
+          "closing": 2,
+          "offsetMetres": 1.8
+        },
+        "description": "In Flow, when Niko predicts a dangerous pass (to a player within 32 m of his goal) and can reach it within 2 ticks, he waits just beside that passing line for up to 3 ticks. If the pass is played, he reads it earlier and reaches 2 m further. The passer can choose another option, and faster players can still beat him. Once per Flow."
+      }
+    ],
     "reactions": [
       {
         "id": "hidden-playmaker-ace",
@@ -3616,6 +3972,15 @@ const PLAYER_16_DATA = {
       ],
       "criticalGoal": [
         "You watched the wrong player."
+      ],
+      "checkmate": [
+        "I saw that pass before you did."
+      ],
+      "checkmateWin": [
+        "Checkmate. That route was closed."
+      ],
+      "checkmateFail": [
+        "...Wrong read."
       ]
     }
   }
@@ -4253,7 +4618,29 @@ const PLAYER_20_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "chameleon-evolution",
+        "name": "Chameleon: Evolution",
+        "label": "CHAMELEON: EVOLUTION",
+        "effect": "chameleon-evolution",
+        "dialogue": "evolution",
+        "params": {
+          "memoryTicks": 80,
+          "finishMetres": 20,
+          "technique": 0.12,
+          "read": 0.08,
+          "value": 0.006,
+          "rangeMeters": 8
+        },
+        "description": "In Flow, after seeing a copyable move in the last 80 ticks, Reo turns it into a two-part move: a copied finish straight after receiving within 20 m, or a copied feint past a defender within 8 m followed by an instant pass. He uses his own ratings and it can fail. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -4305,6 +4692,13 @@ const PLAYER_20_DATA = {
       ],
       "offside": [
         "I read the line a step late."
+      ],
+      "evolution": [
+        "Got it. Now it's mine.",
+        "Chameleon... evolve!"
+      ],
+      "evolutionFail": [
+        "Not yet... I'll get it next time."
       ]
     }
   }
@@ -4402,9 +4796,10 @@ const PLAYER_21_DATA = {
         "name": "Perfect Trapping",
         "label": "PERFECT TRAPPING",
         "effect": "perfect-trap",
-        "description": "Improves control of reachable ground and aerial deliveries. Defenders can intercept before he receives.",
+        "description": "Improves control of reachable ground and aerial deliveries. After controlling a high or long ball he is readier to shoot straight away. Defenders can intercept before he receives.",
         "params": {
-          "control": 7
+          "control": 7,
+          "improvise": 0.004
         },
         "interpretation": true
       },
@@ -4455,15 +4850,19 @@ const PLAYER_21_DATA = {
         "name": "Five-Shot Revolver Fake Volley",
         "label": "FIVE-SHOT REVOLVER FAKE VOLLEY",
         "effect": "revolver-finish",
-        "description": "In Flow after an aerial pass from Reo within 12 m, attempts a difficult chain of feints against two nearby defenders. Can fail. Once per Flow.",
-        "params": {},
+        "description": "In Flow, after an airborne pass within 14 m of goal with two defenders within 5 m, Nagi attempts a chain of fake volleys before shooting. Any feint can be stopped and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
+        "params": {
+          "maxMetres": 14,
+          "pressureMetres": 5,
+          "defenders": 2
+        },
         "interpretation": true,
         "oncePerFlow": true,
         "condition": {
           "duringFlow": true,
           "receivedPass": true
         },
-        "dialogue": "flow"
+        "dialogue": "revolver"
       }
     ],
     "reactions": [
@@ -4529,6 +4928,10 @@ const PLAYER_21_DATA = {
       ],
       "partnership": [
         "Reo. Right there."
+      ],
+      "revolver": [
+        "Huh... this is actually fun.",
+        "Five shots. Guess which one's real."
       ]
     }
   }
@@ -4604,9 +5007,10 @@ const PLAYER_22_DATA = {
         "name": "Explosive Acceleration",
         "label": "EXPLOSIVE ACCELERATION",
         "effect": "explosive-acceleration",
-        "description": "Accelerates faster over the first few metres. Top speed still comes from his unchanged SPD.",
+        "description": "Accelerates much faster over the first few metres, so he wins short races. Over long races his top speed is slightly lower than a sustained sprinter's. His SPD rating is unchanged.",
         "params": {
-          "acceleration": 1.5
+          "acceleration": 1.5,
+          "raceTopSpeed": 0.96
         },
         "interpretation": true
       },
@@ -4661,7 +5065,26 @@ const PLAYER_22_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "lightning-start",
+        "name": "Lightning Start",
+        "label": "LIGHTNING START",
+        "effect": "lightning-start",
+        "dialogue": "lightning",
+        "params": {
+          "maxMetres": 14,
+          "reaction": 0.1,
+          "firstStep": 0.25
+        },
+        "description": "In Flow, in a race for a through ball or loose ball within 14 m of him, Zantetsu reacts instantly and is already moving fast on his first step. Other players can still get there first. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -4709,6 +5132,12 @@ const PLAYER_22_DATA = {
       ],
       "offside": [
         "Too much acceleration. Bad timing."
+      ],
+      "lightning": [
+        "Fastest start wins!"
+      ],
+      "lightningFail": [
+        "What?! I was faster!"
       ]
     }
   }
@@ -4832,13 +5261,15 @@ const PLAYER_23_DATA = {
         "name": "Destructive Impulse",
         "label": "DESTRUCTIVE IMPULSE",
         "effect": "flow-state",
-        "description": "In Flow, pursues direct duels and sharp attacking turns more aggressively. He can still lose possession.",
+        "description": "In Flow, reads the pitch further and goes looking for duels with strong defenders (DEF 80+), sometimes refusing the safe backward pass. Defenders can still win the ball.",
         "params": {
           "awareness": {
             "space": 0.07,
             "anticipation": 0.12,
             "defensiveRead": 0.05
-          }
+          },
+          "duelSeek": 0.006,
+          "duelDef": 80
         },
         "interpretation": true
       }
@@ -4869,7 +5300,66 @@ const PLAYER_23_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "puppeteers-endgame",
+        "name": "Puppeteer's Endgame",
+        "label": "PUPPETEER'S ENDGAME",
+        "effect": "puppeteer-endgame",
+        "dialogue": "puppeteer",
+        "params": {
+          "maxMetres": 40,
+          "rangeMeters": 9,
+          "bait": 0.35,
+          "technique": 0.08,
+          "value": 0.004
+        },
+        "description": "In Flow within 40 m of goal, with a defender within 9 m and two real routes past him, Rin shows one route to bait the defender, then uses the other (pass, dribble or shot). If the defender does not bite, Rin keeps the ball with a safe pass. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "destroyer-collision-course",
+        "name": "Destroyer: Collision Course",
+        "label": "DESTROYER: COLLISION COURSE",
+        "effect": "collision-course",
+        "dialogue": "collision",
+        "params": {
+          "maxMetres": 38,
+          "rangeMeters": 5,
+          "force": 4,
+          "value": 0.03
+        },
+        "description": "In Flow within 38 m of goal, Rin runs straight at the strongest defender in his path within 5 m. It is a normal dribbling duel with a small physical edge; the defender can win the ball. Winning it does not guarantee a goal. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "spin-gear-shot",
+        "name": "Spin Gear Shot",
+        "label": "SPIN GEAR SHOT",
+        "effect": "spin-gear-shot",
+        "dialogue": "spinGear",
+        "params": {
+          "maxMetres": 14,
+          "contestMetres": 3.5,
+          "technique": -0.05,
+          "relief": 1.6
+        },
+        "description": "In Flow, when Rin meets an airborne pass within 14 m of goal with a defender within 3.5 m, he strikes it acrobatically before the defender can close him down. A difficult finish that can be blocked, saved or missed. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -4919,6 +5409,25 @@ const PLAYER_23_DATA = {
       ],
       "rival": [
         "Sae. Watch me break through."
+      ],
+      "puppeteer": [
+        "Move. Exactly where I want you.",
+        "You're already inside my plan."
+      ],
+      "puppeteerFail": [
+        "Tch. You saw it."
+      ],
+      "collision": [
+        "I'll crush you head-on!"
+      ],
+      "collisionWin": [
+        "Broken. Pathetic."
+      ],
+      "collisionFail": [
+        "Again. Next time I break you."
+      ],
+      "spinGear": [
+        "Spin... and destroy!"
       ]
     }
   }
@@ -5031,7 +5540,25 @@ const PLAYER_24_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "glamorous-last-reach",
+        "name": "Glamorous Last Reach",
+        "label": "GLAMOROUS LAST REACH",
+        "effect": "last-reach",
+        "dialogue": "lastReach",
+        "params": {
+          "reach": 3.4,
+          "block": 0.36
+        },
+        "description": "In Flow, when an opponent shoots and Aryu is just outside the normal blocking line (1.8–3.4 m from the ball's path), he stretches his long legs to block it. It works at most about 4 times in 10; otherwise the shot continues. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -5082,6 +5609,12 @@ const PLAYER_24_DATA = {
       ],
       "offside": [
         "I spoiled the line."
+      ],
+      "lastReach": [
+        "Glamorous reach!"
+      ],
+      "lastReachFail": [
+        "Not glamorous at all..."
       ]
     }
   }
@@ -5192,7 +5725,7 @@ const PLAYER_25_DATA = {
         "name": "Assertive Flow",
         "label": "ASSERTIVE FLOW",
         "effect": "flow-state",
-        "description": "In Flow, commits to his decisions and shields more efficiently. Carries still require space.",
+        "description": "Before Flow, his choices waver a little. In Flow he commits to his decisions, shields more efficiently and drives forward with power. Carries still require space, and defenders can still win the ball.",
         "params": {
           "awareness": {
             "anticipation": 0.06
@@ -5205,6 +5738,10 @@ const PLAYER_25_DATA = {
               "protection": 7,
               "stride": 1.13
             }
+          },
+          "decision": {
+            "base": -0.15,
+            "flow": 0.35
           }
         },
         "interpretation": true
@@ -5356,8 +5893,10 @@ const PLAYER_26_DATA = {
         "name": "Quick Turning",
         "label": "QUICK TURNING",
         "effect": "quick-turn",
-        "description": "Turns toward nearby support earlier without increasing his top speed. Defenders can track him.",
-        "params": {},
+        "description": "Turns toward nearby support earlier and follows attackers who change their route more often, without increasing his top speed. Attackers can still lose him.",
+        "params": {
+          "track": 0.08
+        },
         "interpretation": true
       },
       {
@@ -5397,6 +5936,21 @@ const PLAYER_26_DATA = {
         },
         "interpretation": true,
         "dialogue": "dribble"
+      },
+      {
+        "id": "orbital-recovery",
+        "name": "Orbital Recovery",
+        "label": "ORBITAL RECOVERY",
+        "effect": "orbital-recovery",
+        "interpretation": true,
+        "dialogue": "orbital",
+        "params": {
+          "cooldownTicks": 8,
+          "radiusMeters": 6,
+          "turnMetres": 1.2,
+          "read": 0.06
+        },
+        "description": "When a pass is played to an opponent within 6 m of Kurona, he turns sharply to challenge the receiver or the passing lane, reaching about 1.2 m further. He can still lose the duel. Cooldown: 8 ticks."
       }
     ],
     "ultimates": [],
@@ -5449,6 +6003,15 @@ const PLAYER_26_DATA = {
       ],
       "hotline": [
         "Go, Go!"
+      ],
+      "orbital": [
+        "Turning back—got you!"
+      ],
+      "aceKurona": [
+        "Leave it to me!"
+      ],
+      "aceWin": [
+        "Got it! Nice pressure!"
       ]
     }
   }

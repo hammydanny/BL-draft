@@ -103,7 +103,25 @@ const PLAYER_24_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "glamorous-last-reach",
+        "name": "Glamorous Last Reach",
+        "label": "GLAMOROUS LAST REACH",
+        "effect": "last-reach",
+        "dialogue": "lastReach",
+        "params": {
+          "reach": 3.4,
+          "block": 0.36
+        },
+        "description": "In Flow, when an opponent shoots and Aryu is just outside the normal blocking line (1.8–3.4 m from the ball's path), he stretches his long legs to block it. It works at most about 4 times in 10; otherwise the shot continues. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -154,6 +172,12 @@ const PLAYER_24_DATA = {
       ],
       "offside": [
         "I spoiled the line."
+      ],
+      "lastReach": [
+        "Glamorous reach!"
+      ],
+      "lastReachFail": [
+        "Not glamorous at all..."
       ]
     }
   }

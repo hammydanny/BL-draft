@@ -175,6 +175,30 @@ const PLAYER_9_DATA = {
           "read": 0.12
         },
         "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
+      },
+      {
+        "id": "ace-neutralization",
+        "name": "Ace Neutralization",
+        "label": "ACE NEUTRALIZATION",
+        "members": [
+          9,
+          26
+        ],
+        "effect": "ace-neutralization",
+        "cooldownTicks": 12,
+        "dialogue": "aceRaichi",
+        "interpretation": true,
+        "params": {
+          "markMetres": 4.5,
+          "rangeMeters": 18,
+          "passMetres": 32,
+          "dangerMetres": 30,
+          "dangerOff": 88,
+          "windowTicks": 3,
+          "read": 0.15,
+          "closing": 1
+        },
+        "description": "With Kurona on the pitch: when Raichi is tight (within 4.5 m) on a dangerous attacker (within 30 m of goal, or OFF 88+ in Raichi's half) and Kurona is within 18 m, Kurona steps into the passing line for up to 3 ticks and reads passes to that attacker earlier. The attacker can escape and the pass can go elsewhere. Cooldown: 12 ticks."
       }
     ],
     "dialogue": {
@@ -255,7 +279,45 @@ const PLAYER_9_DATA = {
       ],
       "criticalGoal": [
         "See that?! That's Raichi!"
+      ],
+      "lockdown": [
+        "You're not breathing without me!",
+        "I'm sticking to you, bastard!"
+      ],
+      "lockdownEnd": [
+        "Ha! Couldn't shake me!"
+      ],
+      "lockdownFail": [
+        "Damn it, slippery bastard!"
+      ],
+      "aceRaichi": [
+        "Kurona! He's yours!"
       ]
-    }
+    },
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "relentless-lockdown",
+        "name": "Relentless Lockdown",
+        "label": "RELENTLESS LOCKDOWN",
+        "effect": "relentless-lockdown",
+        "dialogue": "lockdown",
+        "params": {
+          "triggerMetres": 8,
+          "dangerOff": 85,
+          "dangerMetres": 34,
+          "ticks": 3,
+          "gapMetres": 0.9,
+          "stamina": 1.5,
+          "deny": 0.08,
+          "breakMetres": 12
+        },
+        "description": "In Flow, when the attacker Raichi is marking is dangerous in Raichi's half (OFF 85+ or within 34 m of goal), he shadows him goal-side for 3 ticks, using 1.5 stamina per tick. Passes to that attacker are harder to receive. Speed, dribbling or a 12 m gap breaks it. Once per Flow."
+      }
+    ]
   }
 };

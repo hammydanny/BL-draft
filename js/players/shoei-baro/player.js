@@ -101,8 +101,12 @@ const PLAYER_15_DATA = {
         "name": "King's Ego",
         "label": "KING'S EGO",
         "effect": "goal-hunger",
-        "description": "Prefers shooting from dangerous positions and carrying toward goal. Still passes when another chance is better.",
-        "params": {},
+        "description": "When Barou has a realistic shot (about a 10% chance or better), he shoots instead of playing a safe sideways or backward pass, and takes on defenders when it moves him toward goal. He still passes when a teammate's chance is clearly better.",
+        "params": {
+          "realistic": 0.1,
+          "supportPenalty": 0.006,
+          "duel": 0.003
+        },
         "interpretation": true
       },
       {
@@ -110,8 +114,11 @@ const PLAYER_15_DATA = {
         "name": "Predator Eye",
         "label": "PREDATOR EYE",
         "effect": "keeper-window",
-        "description": "Watches a screened or moving goalkeeper for a shooting window within 29 m. Blocks and saves remain possible.",
-        "params": {},
+        "description": "Watches the goalkeeper within 29 m. When the keeper is screened or moving across, Barou aims for the open side. If the keeper is still moving and nobody is within 3.5 m of Barou, he may take one small touch to wait for a better moment. Blocks and saves remain possible.",
+        "params": {
+          "calmMetres": 3.5,
+          "patience": 0.003
+        },
         "interpretation": true
       },
       {
@@ -155,7 +162,52 @@ const PLAYER_15_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "devour-villains-shadow",
+        "name": "Devour: Villain's Shadow",
+        "label": "DEVOUR: VILLAIN'S SHADOW",
+        "effect": "devour-shadow",
+        "dialogue": "devour",
+        "params": {
+          "defendersDrawn": 2,
+          "drawRadius": 8,
+          "carrierRange": 38,
+          "barouRange": 36,
+          "spaceRange": 26,
+          "windowTicks": 3,
+          "looseBall": 0.2,
+          "passValue": 0.006,
+          "finish": 0.1,
+          "relief": 1
+        },
+        "description": "In Flow, when a teammate within 38 m of goal draws two or more defenders, Barou sprints into the space they leave (within 26 m of goal). If the ball reaches him within 3 ticks by a pass, rebound or loose ball, he strikes before they recover. Defenders can follow his run. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "predator-eye-blindside-execution",
+        "name": "Predator Eye: Blindside Execution",
+        "label": "PREDATOR EYE: BLINDSIDE EXECUTION",
+        "effect": "blindside-execution",
+        "dialogue": "blindside",
+        "goalDialogue": "blindsideGoal",
+        "params": {
+          "maxMetres": 24,
+          "technique": 0.04,
+          "parry": 0.1
+        },
+        "description": "In Flow, 6–24 m from goal, when the keeper's view is screened, he is moving across or he has left one side uncovered, Barou fires a powerful shot to the side the keeper cannot cover. Nobody may stand right on that line; the shot can still be blocked, saved or missed. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -202,6 +254,23 @@ const PLAYER_15_DATA = {
       ],
       "offside": [
         "Tch. Next one is mine."
+      ],
+      "devour": [
+        "Draw them in. The goal is mine.",
+        "Your football just became my prey."
+      ],
+      "devourSuccess": [
+        "Thanks for the meal.",
+        "The king takes what you built!"
+      ],
+      "devourFail": [
+        "Tch. Nobody fed the king."
+      ],
+      "blindside": [
+        "The keeper's blind. Execution."
+      ],
+      "blindsideGoal": [
+        "Witness the king's execution!"
       ]
     }
   }

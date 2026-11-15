@@ -138,7 +138,29 @@ const PLAYER_20_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "chameleon-evolution",
+        "name": "Chameleon: Evolution",
+        "label": "CHAMELEON: EVOLUTION",
+        "effect": "chameleon-evolution",
+        "dialogue": "evolution",
+        "params": {
+          "memoryTicks": 80,
+          "finishMetres": 20,
+          "technique": 0.12,
+          "read": 0.08,
+          "value": 0.006,
+          "rangeMeters": 8
+        },
+        "description": "In Flow, after seeing a copyable move in the last 80 ticks, Reo turns it into a two-part move: a copied finish straight after receiving within 20 m, or a copied feint past a defender within 8 m followed by an instant pass. He uses his own ratings and it can fail. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -190,6 +212,13 @@ const PLAYER_20_DATA = {
       ],
       "offside": [
         "I read the line a step late."
+      ],
+      "evolution": [
+        "Got it. Now it's mine.",
+        "Chameleon... evolve!"
+      ],
+      "evolutionFail": [
+        "Not yet... I'll get it next time."
       ]
     }
   }

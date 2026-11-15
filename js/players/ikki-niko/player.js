@@ -150,7 +150,28 @@ const PLAYER_16_DATA = {
         "dialogue": "trap"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "watchtower-checkmate",
+        "name": "Watchtower Checkmate",
+        "label": "WATCHTOWER CHECKMATE",
+        "effect": "watchtower-checkmate",
+        "dialogue": "checkmate",
+        "params": {
+          "dangerMetres": 32,
+          "windowTicks": 3,
+          "read": 0.25,
+          "closing": 2,
+          "offsetMetres": 1.8
+        },
+        "description": "In Flow, when Niko predicts a dangerous pass (to a player within 32 m of his goal) and can reach it within 2 ticks, he waits just beside that passing line for up to 3 ticks. If the pass is played, he reads it earlier and reaches 2 m further. The passer can choose another option, and faster players can still beat him. Once per Flow."
+      }
+    ],
     "reactions": [
       {
         "id": "hidden-playmaker-ace",
@@ -238,6 +259,15 @@ const PLAYER_16_DATA = {
       ],
       "criticalGoal": [
         "You watched the wrong player."
+      ],
+      "checkmate": [
+        "I saw that pass before you did."
+      ],
+      "checkmateWin": [
+        "Checkmate. That route was closed."
+      ],
+      "checkmateFail": [
+        "...Wrong read."
       ]
     }
   }

@@ -150,6 +150,25 @@ const PLAYER_4_DATA = {
           }
         },
         "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "monsters-dance",
+        "name": "Monster's Dance",
+        "label": "MONSTER'S DANCE",
+        "effect": "monster-dance",
+        "dialogue": "dance",
+        "params": {
+          "maxMetres": 38,
+          "rangeMeters": 7,
+          "maxDuels": 2,
+          "risk": 5
+        },
+        "description": "In Flow within 38 m of goal, after beating a defender, Bachira dribbles straight at up to two more defenders within 7 m on the way to goal. Each duel is resolved on its own and is riskier than the last; any defender can win the ball. Once per Flow."
       }
     ],
     "reactions": [
@@ -245,6 +264,16 @@ const PLAYER_4_DATA = {
       ],
       "criticalGoal": [
         "Did you see that dance?"
+      ],
+      "dance": [
+        "Let's dance, monster!",
+        "One more! This is so fun!"
+      ],
+      "danceEnd": [
+        "Ahaha! Did you see that?"
+      ],
+      "danceFail": [
+        "Aw, so close! Again!"
       ]
     }
   }

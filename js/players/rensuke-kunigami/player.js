@@ -92,9 +92,14 @@ const PLAYER_6_DATA = {
         "dialogue": "dribble",
         "params": {
           "shield": 6,
-          "looseBall": 0.1
+          "looseBall": 0.1,
+          "secondBall": 2
         },
-        "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+        "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He reacts faster to loose balls and, when his team attacks, waits 9–17 m from goal for second balls. He can still be tackled.",
+        "effects": [
+          "physical-shield",
+          "second-ball-hunter"
+        ]
       },
       {
         "id": "wild-card-physique",
@@ -183,6 +188,26 @@ const PLAYER_6_DATA = {
           }
         },
         "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "wild-card-power-finish",
+        "name": "Wild Card: Power Finish",
+        "label": "WILD CARD: POWER FINISH",
+        "effect": "power-finish",
+        "dialogue": "powerFinish",
+        "params": {
+          "maxMetres": 22,
+          "contestMetres": 2.6,
+          "technique": 0.15,
+          "hold": 2.2,
+          "parry": 0.15
+        },
+        "description": "In Flow, 5–22 m from goal, right after winning a physical contest or receiving with a defender within 2.6 m, Kunigami holds the defender off and strikes hard with whichever foot has the clearer side. The defender's strength matters; blocks and saves remain possible. Once per Flow."
       }
     ],
     "reactions": [
@@ -281,6 +306,10 @@ const PLAYER_6_DATA = {
       ],
       "criticalGoal": [
         "I came back for this."
+      ],
+      "powerFinish": [
+        "Strength and both feet—that's my answer!",
+        "I'm not losing this contest!"
       ]
     }
   }

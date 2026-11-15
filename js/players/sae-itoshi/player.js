@@ -103,11 +103,16 @@ const PLAYER_14_DATA = {
         "name": "Spatial Awareness",
         "label": "SPATIAL AWARENESS",
         "effect": "space-reading",
-        "description": "Reads attacking runs and passing lanes within 55 m. He must still reach the space.",
+        "description": "Reads attacking runs and passing lanes within 55 m. Prefers passes that put a teammate into a real shooting position over keeping possession. He must still reach the space, and defenders can cut out the pass.",
         "params": {
-          "rangeMeters": 55
+          "rangeMeters": 55,
+          "weight": 0.05
         },
-        "interpretation": true
+        "interpretation": true,
+        "effects": [
+          "space-reading",
+          "chance-creation"
+        ]
       },
       {
         "id": "perfect-kick-technique",
@@ -142,9 +147,10 @@ const PLAYER_14_DATA = {
         "name": "Counter Dribbling",
         "label": "COUNTER DRIBBLING",
         "effect": "counter-dribble",
-        "description": "When a nearby defender steps toward him, tries a reachable escape touch. Can fail. Cooldown: 7 ticks.",
+        "description": "When a nearby defender steps toward him, tries a reachable escape touch. When nobody is committing, he avoids dribbling for its own sake. Can fail. Cooldown: 7 ticks.",
         "params": {
-          "cooldownTicks": 7
+          "cooldownTicks": 7,
+          "pointless": 0.004
         },
         "interpretation": true,
         "dialogue": "dribble"
@@ -163,7 +169,50 @@ const PLAYER_14_DATA = {
         "dialogue": "dribble"
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "beautiful-destruction-perfect-thread",
+        "name": "Beautiful Destruction: Perfect Thread",
+        "label": "BEAUTIFUL DESTRUCTION: PERFECT THREAD",
+        "effect": "perfect-thread",
+        "dialogue": "thread",
+        "params": {
+          "minForward": 8,
+          "minLength": 14,
+          "attackAhead": 66,
+          "narrow": 0.65,
+          "precision": 0.5,
+          "pace": 1.15,
+          "accuracy": 0.04,
+          "minSuccess": 0.3,
+          "value": 0.01
+        },
+        "description": "In Flow, Sae finds a narrow forward lane (at least 14 m) to a teammate in the attacking third and plays it with exact weight and pace. Defenders in the lane can still intercept, and the receiver must still control it. Once per Flow."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "counter-dribble-deadly-release",
+        "name": "Counter-Dribble: Deadly Release",
+        "label": "COUNTER-DRIBBLE: DEADLY RELEASE",
+        "effect": "deadly-release",
+        "dialogue": "release",
+        "params": {
+          "read": 0.14,
+          "technique": 0.08,
+          "value": 0.02
+        },
+        "description": "In Flow, when a defender steps in to tackle him, Sae cuts away and, only if that works, instantly passes or shoots through the opening. The defender can win the ball first, and the release can be blocked or intercepted. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "pass": [
@@ -210,6 +259,16 @@ const PLAYER_14_DATA = {
       ],
       "offside": [
         "A careless touch."
+      ],
+      "thread": [
+        "Run. The ball is already there.",
+        "Only an idiot would miss this lane."
+      ],
+      "release": [
+        "Too eager. That's your mistake."
+      ],
+      "releaseFail": [
+        "...Sloppy."
       ]
     }
   }

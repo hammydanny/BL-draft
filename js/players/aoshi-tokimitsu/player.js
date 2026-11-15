@@ -101,7 +101,7 @@ const PLAYER_25_DATA = {
         "name": "Assertive Flow",
         "label": "ASSERTIVE FLOW",
         "effect": "flow-state",
-        "description": "In Flow, commits to his decisions and shields more efficiently. Carries still require space.",
+        "description": "Before Flow, his choices waver a little. In Flow he commits to his decisions, shields more efficiently and drives forward with power. Carries still require space, and defenders can still win the ball.",
         "params": {
           "awareness": {
             "anticipation": 0.06
@@ -114,6 +114,10 @@ const PLAYER_25_DATA = {
               "protection": 7,
               "stride": 1.13
             }
+          },
+          "decision": {
+            "base": -0.15,
+            "flow": 0.35
           }
         },
         "interpretation": true

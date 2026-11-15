@@ -66,9 +66,10 @@ const PLAYER_22_DATA = {
         "name": "Explosive Acceleration",
         "label": "EXPLOSIVE ACCELERATION",
         "effect": "explosive-acceleration",
-        "description": "Accelerates faster over the first few metres. Top speed still comes from his unchanged SPD.",
+        "description": "Accelerates much faster over the first few metres, so he wins short races. Over long races his top speed is slightly lower than a sustained sprinter's. His SPD rating is unchanged.",
         "params": {
-          "acceleration": 1.5
+          "acceleration": 1.5,
+          "raceTopSpeed": 0.96
         },
         "interpretation": true
       },
@@ -123,7 +124,26 @@ const PLAYER_22_DATA = {
         "interpretation": true
       }
     ],
-    "ultimates": [],
+    "ultimates": [
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "lightning-start",
+        "name": "Lightning Start",
+        "label": "LIGHTNING START",
+        "effect": "lightning-start",
+        "dialogue": "lightning",
+        "params": {
+          "maxMetres": 14,
+          "reaction": 0.1,
+          "firstStep": 0.25
+        },
+        "description": "In Flow, in a race for a through ball or loose ball within 14 m of him, Zantetsu reacts instantly and is already moving fast on his first step. Other players can still get there first. Once per Flow."
+      }
+    ],
     "reactions": [],
     "dialogue": {
       "kickoff": [
@@ -171,6 +191,12 @@ const PLAYER_22_DATA = {
       ],
       "offside": [
         "Too much acceleration. Bad timing."
+      ],
+      "lightning": [
+        "Fastest start wins!"
+      ],
+      "lightningFail": [
+        "What?! I was faster!"
       ]
     }
   }

@@ -74,8 +74,10 @@ const PLAYER_26_DATA = {
         "name": "Quick Turning",
         "label": "QUICK TURNING",
         "effect": "quick-turn",
-        "description": "Turns toward nearby support earlier without increasing his top speed. Defenders can track him.",
-        "params": {},
+        "description": "Turns toward nearby support earlier and follows attackers who change their route more often, without increasing his top speed. Attackers can still lose him.",
+        "params": {
+          "track": 0.08
+        },
         "interpretation": true
       },
       {
@@ -115,6 +117,21 @@ const PLAYER_26_DATA = {
         },
         "interpretation": true,
         "dialogue": "dribble"
+      },
+      {
+        "id": "orbital-recovery",
+        "name": "Orbital Recovery",
+        "label": "ORBITAL RECOVERY",
+        "effect": "orbital-recovery",
+        "interpretation": true,
+        "dialogue": "orbital",
+        "params": {
+          "cooldownTicks": 8,
+          "radiusMeters": 6,
+          "turnMetres": 1.2,
+          "read": 0.06
+        },
+        "description": "When a pass is played to an opponent within 6 m of Kurona, he turns sharply to challenge the receiver or the passing lane, reaching about 1.2 m further. He can still lose the duel. Cooldown: 8 ticks."
       }
     ],
     "ultimates": [],
@@ -167,6 +184,15 @@ const PLAYER_26_DATA = {
       ],
       "hotline": [
         "Go, Go!"
+      ],
+      "orbital": [
+        "Turning back—got you!"
+      ],
+      "aceKurona": [
+        "Leave it to me!"
+      ],
+      "aceWin": [
+        "Got it! Nice pressure!"
       ]
     }
   }

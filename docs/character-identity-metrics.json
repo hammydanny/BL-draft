@@ -1,0 +1,305 @@
+{
+ "generated": "0.8.9.8.11",
+ "lineups": [
+  [
+   {
+    "0": 8,
+    "1": 5,
+    "2": 9,
+    "3": 24,
+    "4": 26,
+    "5": 14,
+    "6": 20,
+    "7": 1,
+    "8": 4,
+    "9": 15,
+    "10": 7
+   },
+   {
+    "0": 11,
+    "1": 18,
+    "2": 16,
+    "3": 25,
+    "4": 22,
+    "5": 6,
+    "6": 19,
+    "7": 70,
+    "8": 21,
+    "9": 23,
+    "10": 3
+   }
+  ],
+  [
+   {
+    "0": 8,
+    "1": 5,
+    "2": 9,
+    "3": 24,
+    "4": 26,
+    "5": 14,
+    "6": 20,
+    "7": 1,
+    "8": 4,
+    "9": 15,
+    "10": 7
+   },
+   {
+    "0": 11,
+    "1": 18,
+    "2": 16,
+    "3": 25,
+    "4": 12,
+    "5": 3,
+    "6": 21,
+    "7": 19,
+    "8": 22,
+    "9": 6,
+    "10": 23
+   }
+  ]
+ ],
+ "ordinary": {
+  "mode": "ordinary (no forced Flow)",
+  "matches": 12,
+  "goalsPerMatch": 5.92,
+  "msPerTick": 6.57,
+  "ultimateOutcomes": {
+   "wild-card-power-finish": {
+    "attempts": 3,
+    "success": 1
+   },
+   "devour-villains-shadow": {
+    "attempts": 2,
+    "success": 0
+   },
+   "lightning-start": {
+    "attempts": 1,
+    "success": 1
+   },
+   "monsters-dance": {
+    "attempts": 2,
+    "success": 2
+   },
+   "puppeteers-endgame": {
+    "attempts": 4,
+    "success": 0
+   },
+   "beautiful-destruction-perfect-thread": {
+    "attempts": 1,
+    "success": 1
+   }
+  },
+  "feedEvents": {
+   "reaction:ace-neutralization": 60,
+   "ultimate:optimal-execution": 2,
+   "ultimate:last-line-of-defence": 2,
+   "ultimate:physical-breakthrough": 7,
+   "ultimate:villainous-king": 11,
+   "ultimate:explosive-flow": 1,
+   "ultimate:red-panther-sniper": 5,
+   "ultimate:wild-card-power-finish": 3,
+   "ultimate:devour-villains-shadow": 4,
+   "ultimate:lightning-start": 1,
+   "ultimate:survival-instinct": 1,
+   "ultimate:destructive-impulse": 6,
+   "reaction-win:ace-neutralization": 1,
+   "ultimate:ginga-monster": 4,
+   "ultimate:monsters-dance": 6,
+   "special:orbital-recovery": 7,
+   "ultimate:puppeteers-endgame": 4,
+   "ultimate:genius-awakening": 2,
+   "ultimate:wild-instinct": 2,
+   "ultimate:puzzle-completion": 3,
+   "ultimate:beautiful-destruction": 1,
+   "ultimate:beautiful-destruction-perfect-thread": 1
+  },
+  "flowActivations": {
+   "Noel Noa": 2,
+   "Okuhito Iemon": 2,
+   "Rensuke Kunigami": 7,
+   "Shoei Baro": 11,
+   "Zantetsu Tsurugi": 1,
+   "Hyoma Chigiri": 5,
+   "Gurimu Igarashi": 1,
+   "Rin Itoshi": 6,
+   "Meguru Bachira": 2,
+   "Seishiro Nagi": 2,
+   "Gin Gagamaru": 2,
+   "Yoichi Isagi": 3,
+   "Sae Itoshi": 1
+  },
+  "raichiFinalStamina": [
+   79,
+   75,
+   76,
+   79,
+   81,
+   81,
+   81,
+   81,
+   80,
+   78,
+   80,
+   76
+  ],
+  "opportunities": {
+   "revolver:no-airborne": 30,
+   "tgv:first-time-no-flow": 19,
+   "tgv:no-first-time": 5,
+   "ult:blindside:lane-blocked": 3,
+   "ult:blindside:no-window": 3,
+   "ult:blindside:window": 3,
+   "ult:checkmate:blocker-static": 1,
+   "ult:collision-course:defender-in-path": 9,
+   "ult:collision-course:offered": 1,
+   "ult:deadly-release:no-commitment": 1,
+   "ult:devour-shadow:offered": 2,
+   "ult:perfect-thread:lane": 1,
+   "ult:power-finish:offered": 4,
+   "ult:puppeteer-endgame:offered": 10,
+   "ult:red-panther:central": 1,
+   "ult:red-panther:depth": 8,
+   "ult:red-panther:no-space": 21
+  }
+ },
+ "controlled": {
+  "mode": "controlled Flow windows (held in Flow, fresh allowance every 40 ticks)",
+  "matches": 12,
+  "flowWindows": 116,
+  "goalsPerMatch": 7.67,
+  "msPerTick": 6.83,
+  "ultimateOutcomes": {
+   "puppeteers-endgame": {
+    "attempts": 24,
+    "success": 15
+   },
+   "relentless-lockdown": {
+    "attempts": 108,
+    "success": 30
+   },
+   "beast-reflex": {
+    "attempts": 25,
+    "success": 5
+   },
+   "lightning-start": {
+    "attempts": 52,
+    "success": 43
+   },
+   "watchtower-checkmate": {
+    "attempts": 106,
+    "success": 9
+   },
+   "devour-villains-shadow": {
+    "attempts": 77,
+    "success": 30
+   },
+   "predator-eye-blindside-execution": {
+    "attempts": 16,
+    "success": 7
+   },
+   "wild-card-power-finish": {
+    "attempts": 31,
+    "success": 6
+   },
+   "red-panther-44-breakthrough": {
+    "attempts": 15,
+    "success": 4
+   },
+   "monsters-dance": {
+    "attempts": 7,
+    "success": 6
+   },
+   "beautiful-destruction-perfect-thread": {
+    "attempts": 9,
+    "success": 4
+   },
+   "glamorous-last-reach": {
+    "attempts": 8,
+    "success": 2
+   },
+   "counter-dribble-deadly-release": {
+    "attempts": 3,
+    "success": 3
+   },
+   "spin-gear-shot": {
+    "attempts": 1,
+    "success": 0
+   },
+   "destroyer-collision-course": {
+    "attempts": 2,
+    "success": 2
+   },
+   "chameleon-evolution": {
+    "attempts": 1,
+    "success": 1
+   }
+  },
+  "feedEvents": {
+   "ultimate:relentless-lockdown": 220,
+   "reaction:ace-neutralization": 73,
+   "ultimate:puppeteers-endgame": 25,
+   "ultimate:beast-reflex": 25,
+   "ultimate:lightning-start": 52,
+   "ultimate:watchtower-checkmate": 212,
+   "ultimate:devour-villains-shadow": 166,
+   "ultimate:ginga-monster": 54,
+   "ultimate:predator-eye-blindside-execution": 16,
+   "ultimate:wild-card-power-finish": 31,
+   "ultimate:red-panther-44-breakthrough": 47,
+   "ultimate:monsters-dance": 20,
+   "ultimate:beautiful-destruction-perfect-thread": 4,
+   "special:orbital-recovery": 3,
+   "ultimate:glamorous-last-reach": 8,
+   "ultimate:counter-dribble-deadly-release": 6,
+   "ultimate:last-line-of-defence": 5,
+   "ultimate:spin-gear-shot": 1,
+   "ultimate:destroyer-collision-course": 4,
+   "ultimate:chameleon-evolution": 2
+  },
+  "raichiFinalStamina": [
+   73,
+   66,
+   70,
+   69,
+   64,
+   61,
+   64,
+   70,
+   61,
+   61,
+   70,
+   63
+  ],
+  "opportunities": {
+   "revolver:no-airborne": 22,
+   "revolver:too-far": 1,
+   "tgv:first-time-no-flow": 5,
+   "ult:ambidextrous-checkmate:offered": 1,
+   "ult:blindside:lane-blocked": 31,
+   "ult:blindside:no-window": 15,
+   "ult:blindside:window": 47,
+   "ult:chameleon-evolution:offered": 1,
+   "ult:checkmate:blocker-static": 13,
+   "ult:checkmate:commitment": 1,
+   "ult:checkmate:no-blocker": 1,
+   "ult:collision-course:defender-in-path": 94,
+   "ult:collision-course:offered": 51,
+   "ult:deadly-release:committed": 24,
+   "ult:deadly-release:no-commitment": 64,
+   "ult:deadly-release:offered": 3,
+   "ult:devour-shadow:offered": 66,
+   "ult:evolution:creative-dribble": 50,
+   "ult:evolution:disruption-pass": 13,
+   "ult:evolution:nothing-observed": 28,
+   "ult:perfect-thread:lane": 35,
+   "ult:power-finish:no-control": 2,
+   "ult:power-finish:offered": 57,
+   "ult:puppeteer-endgame:offered": 92,
+   "ult:red-panther-breakthrough:offered": 19,
+   "ult:red-panther:central": 17,
+   "ult:red-panther:depth": 67,
+   "ult:red-panther:no-space": 238,
+   "ult:red-panther:shape": 19
+  }
+ }
+}

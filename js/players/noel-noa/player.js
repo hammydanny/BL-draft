@@ -150,6 +150,24 @@ const PLAYER_3_DATA = {
           }
         },
         "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+      },
+      {
+        "interpretation": true,
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        },
+        "id": "ambidextrous-checkmate",
+        "name": "Ambidextrous Checkmate",
+        "label": "AMBIDEXTROUS CHECKMATE",
+        "effect": "ambidextrous-checkmate",
+        "dialogue": "checkmate",
+        "params": {
+          "maxMetres": 24,
+          "technique": 0.2,
+          "value": 0.008
+        },
+        "description": "In Flow within 24 m of goal, when a defender steps in to block one side of his shot, Noa switches to his other foot and shoots the other way. If the defender holds his ground, Noa does not force it and passes instead. The keeper can still save. Once per Flow."
       }
     ],
     "reactions": [
@@ -239,6 +257,12 @@ const PLAYER_3_DATA = {
       ],
       "criticalGoal": [
         "Good. Now do it again."
+      ],
+      "checkmate": [
+        "Your choice was predictable. Checkmate."
+      ],
+      "checkmateFail": [
+        "Read correctly. Recalculating."
       ]
     }
   }
