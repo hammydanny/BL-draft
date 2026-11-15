@@ -659,7 +659,7 @@ function flowAware(p,base){
   defensiveRead:clamp(base.defensiveRead+add("defensiveRead"),0,1.25),
   scan:clamp(base.scan+add("scan"),18,60)};
 }
-function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
+function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;if(match&&p&&idOf(p.id)!=="80"&&Number(p.battleSimDisabledUntil||0)>=Number(match.tick||0))return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
 function kitParam(ability,key,fallback){const v=ability&&ability.params&&ability.params[key];return v==null?fallback:v;}
 function abilityState(p){const r=battleSimRuntimeState(p);if(!Array.isArray(r.memory))r.memory=[];if(!r.uses||typeof r.uses!=="object")r.uses={};if(!Array.isArray(r.recentLines))r.recentLines=[];return r;}
 function abilityBadge(ability,kind){return ability?{id:String(ability.id),label:String(ability.label||ability.name||ability.id).toUpperCase(),kind:kind||"ability"}:null;}
@@ -2393,7 +2393,7 @@ function runSequence(state){
  else playerTick(state);
  state.runnerActive=false;storeActiveMatch();renderMatch();
 }
-function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});return s;}
+function createMatch(){const seed=randSeed(),s={seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
 
 const INTRO_REVEAL_MS=760;
 function clearMatchIntroTimer(){if(introTimer!==null){clearTimeout(introTimer);introTimer=null;}}
