@@ -435,6 +435,10 @@ function effective(p,k,state=match){
  return(Number(p.stats[k])||1)*staminaMultiplier*flowMultiplier*battleSimPassiveMultiplier(p,k,state);
 }
 function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.battleSim;}
+
+function johnHistorySnapshot(state){const teams={};for(const n of [1,2])teams[n]=JSON.parse(JSON.stringify(state.teams[n]));return{tick:state.tick,timeSeconds:state.timeSeconds,phase:state.phase,score:{...state.score},teams:teams,possession:state.possession,carrierId:state.carrierId,ball:{...state.ball},ballZone:state.ballZone,lastPasser:state.lastPasser,eventsLength:state.events.length,randomState:state.random.getState()};}
+function johnRestore(state,snap){const old=johnPaccini(state),cooldowns=old?JSON.parse(JSON.stringify(battleSimRuntimeState(old).cooldowns||{})):{};state.tick=snap.tick;state.timeSeconds=snap.timeSeconds;state.phase=snap.phase;state.score={...snap.score};state.teams=JSON.parse(JSON.stringify(snap.teams));const restored=johnPaccini(state);if(restored)battleSimRuntimeState(restored).cooldowns=cooldowns;state.possession=snap.possession;state.carrierId=snap.carrierId;state.ball={...snap.ball};state.ballZone=snap.ballZone;state.lastPasser=snap.lastPasser;state.events=state.events.slice(0,snap.eventsLength);state.presentedEventId=Math.min(state.presentedEventId||0,state.events.length);state.random=seeded(state.seed,snap.randomState);state.pending=null;state.forced=null;state.requiredSub=null;state.status="playing";state.stoppage="";}
+
 function battleSimRuntimeState(p){
  if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
  if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
@@ -2300,7 +2304,7 @@ function resolveRestart(state,pending){
 }
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;state.tick++;
+ const eventsBefore=state.events.length;if(!state.johnHistory)state.johnHistory=[];if(state.tick>0)state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
