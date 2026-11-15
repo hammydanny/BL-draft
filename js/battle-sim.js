@@ -453,7 +453,7 @@ function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.b
 
 
 function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
-function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning"}[type]||"Special Ability");return addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
+function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning","absolute-authority":"Absolute Authority"}[type]||"Special Ability");return addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
 function johnReverseFateReady(state){if(!state)return false;if(state.phase==="firstHalf")return Number(state.tick||0)>=10;if(state.phase==="secondHalf"){const start=Number.isInteger(state.halfStartTick)?state.halfStartTick:Number(state.tick||0);return Number(state.tick||0)-start>=10;}return false;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
@@ -2368,6 +2368,17 @@ function simulateTick(state){
  const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
+ // Absolute Authority owns six uninterrupted ticks; each tick performs a fresh fair coin flip and awards one goal.
+ if(state.authoritySequence){
+  const q=state.authoritySequence,winner=state.random()<.5?1:2;
+  q.remaining--;state.score[winner]++;
+  const j=johnPaccini(state),goalNumber=6-q.remaining;
+  state.teams[winner].stats.goals=(Number(state.teams[winner].stats.goals)||0)+1;
+  if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);
+  addEvent(state,{type:"absolute-authority-goal",teamNumber:winner,notable:true,description:"ABSOLUTE AUTHORITY coin flip "+goalNumber+" of 6 awards goal to "+state.teams[winner].name+".",actors:j?[j]:[]});
+  if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}
+  ensureTickEvent(state,eventsBefore);return;
+ }
  if(johnAutomaticSpecial(state)){ensureTickEvent(state,eventsBefore);return;}
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
@@ -2395,9 +2406,7 @@ function simulateTick(state){
  if(decreeActive&&state.decree.rule==="blindness")state.blindnessUntil=state.decree.untilTick;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
- if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);state.teams[q.winner].stats.goals=(Number(state.teams[q.winner].stats.goals)||0)+1;if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(6-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- moveOffBall(state);
+  moveOffBall(state);
  moveOffBall(state);
  // Planet Hotline owns each of its three ticks; normal decisions are suspended.
  if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
@@ -2449,7 +2458,7 @@ function simulateTick(state){
 function playerTick(state){
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.battleSimState&&Array.isArray(p.battleSimState.usedUltimates)&&!isFlowing(p))p.battleSimState.usedUltimates=[];}));
  simulateTick(state);
- [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;const winner=state.random()<.5?1:2;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,winner:winner,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority");}}}));
+ [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority","Absolute Authority");}}}));
 
 }
 function finish(state){
