@@ -639,6 +639,7 @@ function flowAware(p,base){
  return {...base,vision:clamp(base.vision+add("vision"),0,1.25),
   space:clamp(base.space+add("space"),0,1.25),
   anticipation:clamp(base.anticipation+add("anticipation"),0,1),
+  defensiveRead:clamp(base.defensiveRead+add("defensiveRead"),0,1.25),
   scan:clamp(base.scan+add("scan"),18,60)};
 }
 function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
@@ -2271,6 +2272,28 @@ function simulateTick(state){
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
  moveOffBall(state);
+ // Move It: in Flow, Isagi takes the ball from a nearby teammate in the attacking area.
+ const attackingTeam=state.teams[state.possession],currentCarrier=attackingTeam&&playerIn(attackingTeam,state.carrierId);
+ if(currentCarrier){
+  const thief=active(attackingTeam).find(p=>{
+   if(p===currentCarrier||!isFlowing(p))return false;
+   const moveIt=kitAbility(p,"move-it"),runtime=battleSimRuntimeState(p),used=runtime.usedUltimates||[];
+   return !!moveIt&&!used.includes(idOf(moveIt.id))
+    &&distance(p,currentCarrier)<=kitParam(moveIt,"teammateRangeMeters",8)
+    &&distance(currentCarrier,targetGoal(attackingTeam.number))<=kitParam(moveIt,"goalRangeMeters",24);
+  });
+  if(thief){
+   const moveIt=kitAbility(thief,"move-it"),runtime=battleSimRuntimeState(thief);
+   if(!Array.isArray(runtime.usedUltimates))runtime.usedUltimates=[];
+   runtime.usedUltimates.push(idOf(moveIt.id));
+   state.carrierId=thief.id;state.lastPasser=null;setBall(state,thief);
+   addEvent(state,{type:"move-it",teamNumber:attackingTeam.number,notable:true,
+    ability:abilityBadge(moveIt,"ultimate"),
+    dialogue:[{playerId:idOf(thief.id),text:thief.name+": \"MOVE IT!\""}],
+    description:thief.name+" takes the ball from "+currentCarrier.name+" and claims the attack for himself.",
+    actors:[thief,currentCarrier]});
+  }
+ }
  const t=state.teams[state.possession],carrier=t&&playerIn(t,state.carrierId);
  if(!t||!carrier||carrier.sentOff){const n=state.possession===1?2:1,p=active(state.teams[n]).find(p=>p.role!=="GK")||keeper(state.teams[n]);state.possession=n;state.carrierId=p?.id;if(p)setBall(state,p);ensureTickEvent(state,eventsBefore);return;}
  setBall(state,carrier);

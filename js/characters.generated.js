@@ -67,13 +67,14 @@ const ISAGI_PLAYER_DATA = {
             "dialogue": "flow",
             "params": {
                 "awareness": {
-                    "vision": 0.06,
-                    "space": 0.07,
-                    "anticipation": 0.12,
-                    "scan": 5
+                    "vision": 0.12,
+                    "space": 0.12,
+                    "anticipation": 0.4,
+                    "defensiveRead": 0.35,
+                    "scan": 10
                 }
             },
-            "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
+            "description": "In Flow, Isagi anticipates opponents' next actions, positions himself for better interceptions and tackles, and reads the entire pitch."
         }
     ],
     "weapons": [
@@ -121,6 +122,17 @@ const ISAGI_PLAYER_DATA = {
                 "technique": -0.45
             },
             "description": "In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow."
+        },
+        {
+            "id": "move-it",
+            "name": "Move It",
+            "label": "MOVE IT",
+            "effect": "move-it",
+            "dialogue": "moveIt",
+            "condition": { "duringFlow": true },
+            "oncePerFlow": true,
+            "params": { "teammateRangeMeters": 8, "goalRangeMeters": 24 },
+            "description": "When Isagi is near a teammate with the ball who is near the goal, he steals it for himself. Once per Flow."
         },
         {
             "id": "two-gun-volley",
@@ -238,7 +250,10 @@ const ISAGI_PLAYER_DATA = {
         "Use it, Kaiser. I'll take the next one."
     ],
     "flow": [
-        "There it is... I can break through!"
+        "I see it now... All the pieces have been complete."
+    ],
+    "moveIt": [
+        "MOVE IT!"
     ],
     "kickoff": [
         "I can build a route from here."
