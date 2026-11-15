@@ -2349,9 +2349,10 @@ function simulateTick(state){
   const team=state.teams[state.possession],carrier=team&&playerIn(team,state.carrierId);
   if(!state.forced&&carrier&&!carrier.sentOff){
    setBall(state,carrier);
-   if(state.throwInPending){state.throwInPending=false;resolvePass(state,carrier,{throwIn:true,offsideExempt:true,passKind:"short",maxMetres:28});}
-   else if(state.kickoffPassPending){state.kickoffPassPending=false;resolvePass(state,carrier,{passKind:"short",kickoff:true});}
-   else{if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;resolvePass(state,carrier);}
+   const attemptPass=opts=>{const options=passOptions(state,carrier,opts);if(options.length){const option=options.sort((a,b)=>b.value-a.value)[0];resolvePass(state,carrier,{...opts,option});}else addEvent(state,{type:"universal-decree",description:"Universal Decree: no pass is available.",actors:[johnPaccini(state)]});};
+   if(state.throwInPending){state.throwInPending=false;attemptPass({throwIn:true,offsideExempt:true,passKind:"short",maxMetres:28});}
+   else if(state.kickoffPassPending){state.kickoffPassPending=false;attemptPass({passKind:"short",kickoff:true});}
+   else{if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;attemptPass({});}
   }
   ensureTickEvent(state,eventsBefore);
   return;
