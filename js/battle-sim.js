@@ -1976,7 +1976,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  if(tech?.feintId){const deceived=state.random()<tech.deception;tech={...tech,ignoreId:deceived?tech.feintId:null,feintId:null,deception:0};}
  const special=!penalty&&!ultimate&&!tech?activateBattleSimSpecial(state,shooter,"shot"):null;
  const {team,defteam,gk,metres,shoot,gkStat,goalChance:rawChance}=shotModel(state,shooter,penalty,ultimate,special,null,null,tech);
- const goalChance=johnPaccini(state)?0.5:rawChance,roll=state.random();team.stats.shots++;shooter.match.shots++;
+ const goalChance=johnPaccini(state)?0.5:rawChance,roll=state.random(),savedOnTarget=!!johnPaccini(state)&&roll<0.5&&state.random()<clamp(.42+(gkStat-70)*.005,.15,.72);team.stats.shots++;shooter.match.shots++;
  if(!penalty){opportunity(state,null,"shot:"+(metres<12?"<12m":metres<18?"12-18m":metres<25?"18-25m":"25m+"));const mates=active(team).filter(m=>m!==shooter&&m.role!=="GK"&&inOpponentBox(team.number,m)).length;opportunity(state,null,"shot:teammates-in-box-"+Math.min(3,mates));}
  const activeAbility=ultimate||special,runtime=tech&&tech.ability?abilityState(shooter):null;
  if(tech&&tech.ultimate&&tech.ability&&tech.ability.oncePerFlow){const used=battleSimRuntimeState(shooter).usedUltimates,id=idOf(tech.ability.id);if(!used.includes(id))used.push(id);}
@@ -1997,7 +1997,7 @@ function resolveShot(state,shooter,penalty,ultimate,technique,adapted,pride){
  const learnShot=()=>{if(roll>=goalChance)learn(state,shooter,"shot",tech&&tech.aimSide||"centre",gk);};
  const assister=state.lastPasser&&state.lastPasser!==shooter.id?playerIn(team,state.lastPasser):null;
  state.lastPasser=null;
- if(roll<goalChance){
+ if(roll<goalChance&&!savedOnTarget){
   team.stats.onTarget++;team.stats.goals++;shooter.match.onTarget++;shooter.match.goals++;addPoints(shooter,1.35);
   if(tech&&tech.ability)runtime.uses[String(tech.ability.id)].goals++;
   const goalLine=kitLine(state,shooter,"goal",true);
@@ -2314,14 +2314,14 @@ function resolveRestart(state,pending){
 }
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;if(!state.johnHistory)state.johnHistory=[];if(state.tick>0)state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();state.tick++;
+ const eventsBefore=state.events.length;if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
- if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
+ if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);state.teams[q.winner].stats.goals=(Number(state.teams[q.winner].stats.goals)||0)+1;if(j)moveToward(j,{x:state.random()*100,y:state.random()*100},1000);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
  if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
  if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
  if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
