@@ -439,13 +439,14 @@ function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.b
 
 
 function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
-function johnSay(state,j,text,type){addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:text,actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
+function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning"}[type]||"Special Ability");addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
- if(id==="universal-decree"){const rule=["freeze","center-only","blindness"].includes(choice)?choice:"freeze";johnCooldown(state,j,id,13);johnSay(state,j,"I have decided that this is how things will work...","universal-decree");const lines={freeze:"The world will stand still. Every player. Every step.","center-only":"All paths lead to the center. You will move where I decree.",blindness:"Then let the pitch disappear. Play without sight."};state.decree={rule:rule,untilTick:state.tick+3};johnSay(state,j,lines[rule],"decree-rule");return true;}
- if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Time is nothing to me...","reverse-fate");johnSay(state,j,"Five ticks erased. Even the score is rewritten.","reverse-fate");return true;}
- if(id==="reverse-fate"){const history=state.johnHistory||[];if(history.length<5)return false;const snap=history[history.length-5];johnCooldown(state,j,id,40);johnSay(state,j,"Time is nothing to me...","reverse-fate");johnRestore(state,snap);state.johnHistory=history.slice(0,-5);johnSay(state,j,"Five ticks erased. Even the score is rewritten.","reverse-fate");return true;}
- if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();state.tick++;johnCooldown(state,j,id,15);state.timeSeconds+=10;setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning");addEvent(state,{type:"dimensional-repositioning",teamNumber:j.teamNumber,notable:true,description:carrier.name+" is displaced to a random legal pitch location.",actors:[j,carrier]});return true;}return false;}
+ if(id==="universal-decree"){const rule=["freeze","center-only","blindness"].includes(choice)?choice:"freeze";johnCooldown(state,j,id,13);const lines={freeze:"The world will stand still. Every player. Every step.","center-only":"All paths lead to the center. You will move where I decree.",blindness:"Then let the pitch disappear. Play without sight."};state.decree={rule:rule,untilTick:state.tick+3};johnSay(state,j,lines[rule],"universal-decree","Universal Decree");return true;}
+ if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");return true;}
+ if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning","Dimensional Repositioning");return true;}return false;}
+function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(state.johnHistory||[]).length<5)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const choices=["freeze","center-only","blindness"];const choice=ability.id==="universal-decree"?choices[Math.floor(state.random()*choices.length)]:null;if(johnUse(state,ability.id,choice))return true;}return false;}
+
 
 function johnHistorySnapshot(state){const teams={};for(const n of [1,2])teams[n]=JSON.parse(JSON.stringify(state.teams[n]));return{tick:state.tick,timeSeconds:state.timeSeconds,phase:state.phase,score:{...state.score},teams:teams,possession:state.possession,carrierId:state.carrierId,ball:{...state.ball},ballZone:state.ballZone,lastPasser:state.lastPasser,eventsLength:state.events.length,randomState:state.random.getState()};}
 function johnRestore(state,snap){const old=johnPaccini(state),cooldowns=old?JSON.parse(JSON.stringify(battleSimRuntimeState(old).cooldowns||{})):{};state.tick=snap.tick;state.timeSeconds=snap.timeSeconds;state.phase=snap.phase;state.score={...snap.score};state.teams=JSON.parse(JSON.stringify(snap.teams));const restored=johnPaccini(state);if(restored)battleSimRuntimeState(restored).cooldowns=cooldowns;state.possession=snap.possession;state.carrierId=snap.carrierId;state.ball={...snap.ball};state.ballZone=snap.ballZone;state.lastPasser=snap.lastPasser;state.events=state.events.slice(0,snap.eventsLength);state.presentedEventId=Math.min(state.presentedEventId||0,state.events.length);state.random=seeded(state.seed,snap.randomState);state.pending=null;state.forced=null;state.requiredSub=null;state.status="playing";state.stoppage="";}
@@ -495,10 +496,7 @@ function activateBattleSimUltimate(state,p){
 // Central speaker policy: narration is unaffected; both synthetic keepers are silent.
 function canSpeak(p){return !!p&&!isBlueLockMan(p)&&!isBlueLockManId(p.id)&&p.name!=="Blue Lock Man";}
 function dialogueAllowed(state,line){if(!line)return false;const id=idOf(line.playerId);const p=[...(state?.teams?.[1]?.roster||[]),...(state?.teams?.[2]?.roster||[])].find(p=>idOf(p.id)===id);return canSpeak(p||{id,name:String(line.text||"").split(":")[0].trim()});}
-function battleSimAbilityDialogue(p,ability){
- if(!canSpeak(p))return [];
- return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];
-}
+function battleSimAbilityDialogue(p,ability){if(!canSpeak(p))return [];if(idOf(p.id)==="80")return [{playerId:idOf(p.id),text:p.name+": \"...\""}];return ability&&ability.dialogue?[{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+String(ability.dialogue)+String.fromCharCode(34)}]:[];}
 function addPoints(p,n){if(p&&p.match){p.match.points+=n;if(n>0&&!isBlueLockMan(p)){const before=clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100);if(before<100){p.flow=clamp(before+Math.max(2,n*38),0,100);if(p.flow>=100){p.flowFullTicks=0;p.flowActivationPending=true;const runtime=battleSimRuntimeState(p);runtime.usedUltimates=[];runtime.flowActivationCount=(Number(runtime.flowActivationCount)||0)+1;}}}}}
 function drain(p,success,action){if(isBlueLockMan(p)){p.stamina=100;return;}if(isFlowing(p))return;const durable=kitAbility(p,"durable"),scale=durable?kitParam(durable,"drain",.75):1,amount=scale*(action==="shot"?3:action==="dribble"?3.3:action==="pass"?2.2:2);p.stamina=clamp(p.stamina-(success?amount:amount*.48),0,100);}
 function playerWeaponsText(player){
@@ -516,7 +514,7 @@ function basicActionDialogue(type,actors,state,options={},roleIndex=0){
   "flow-activation":["I’m in the zone!"],corner:["So close!"],"goal-kick":["That one’s gone wide."],
   kickoff:["Let’s get started!"],play:["Keep moving!"],offside:["I was level!","Hold your run!"],"throw-in":["Too heavy!","Our throw!"]};
  const phrases=lines[type]||["Keep moving!"];
- return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{if(!canSpeak(p))return [];i+=roleIndex;if(type==="offside"&&i>0&&p.battleSim?.dialogue?.kickoff)return [];const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"interception":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:i?"fouled":"foul",corner:"miss","goal-kick":"miss",offside:"offside",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
+ return(actors||[]).filter(Boolean).slice(0,3).flatMap((p,i)=>{if(!canSpeak(p))return [];if(idOf(p.id)==="80")return [{playerId:idOf(p.id),text:p.name+": \"...\""}];i+=roleIndex;if(type==="offside"&&i>0&&p.battleSim?.dialogue?.kickoff)return [];const keys={pass:i?"receive":"pass","set-piece":i?"receive":"pass",interception:i?"interception":"passFail",turnover:i?"defend":"dribbleFail",save:i?"save":"miss",goal:i?"support":"goal",dribble:i?"dribbleFail":"dribble",carry:"dribble","shot-attempt":"shot-attempt",kickoff:"kickoff","flow-activation":"flow",foul:i?"fouled":"foul",corner:"miss","goal-kick":"miss",offside:"offside",rebound:"defend",play:"support","throw-in":"passFail","yellow-card":"foul","red-card":"foul",substitution:"support"},key=keys[type]||"support";
  const voiceKey=key==="interception"&&!p.battleSim?.dialogue?.interception?"defend":key==="fouled"&&!p.battleSim?.dialogue?.fouled&&idOf(p.id)==="18"?"foul":key==="offside"&&idOf(p.id)==="18"?"passFail":key;
  if(p.battleSim?.dialogue?.[voiceKey]){const line=kitLine(state,p,voiceKey,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+phrases[Math.min(i,phrases.length-1)]+String.fromCharCode(34)}];});
 }
@@ -2321,6 +2319,7 @@ function simulateTick(state){
  const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
+ if(johnAutomaticSpecial(state)){ensureTickEvent(state,eventsBefore);return;}
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
@@ -3139,13 +3138,6 @@ function renderStoppage(){
  if(wasHidden){root.classList.remove("bs-stoppage-pop");void root.offsetWidth;root.classList.add("bs-stoppage-pop");}
 }
 
-function renderJohnControls(state,center){
- const j=johnPaccini(state);let panel=byId("bs-john-controls");
- if(!j){if(panel)panel.remove();return;}
- if(!panel){panel=make("section","bs-stoppage-panel");panel.id="bs-john-controls";const head=make("div","bs-panel-topline");put(head,make("h2","","JOHN PACCINI // CONTROL"));put(panel,head);const row=make("div","bs-set-piece-controls");row.id="bs-john-buttons";put(panel,row);center.insertBefore(panel,center.querySelector(".bs-live-feed-panel"));}
- const row=byId("bs-john-buttons");row.replaceChildren();
- (j.battleSim?.specials||[]).forEach(a=>{const b=make("button","bs-button bs-button--secondary",a.name);b.type="button";b.setAttribute("data-john-ability",a.id);const cd=Number(j.battleSimState?.cooldowns?.[a.id]||0);b.disabled=cd>state.tick;if(cd>state.tick)b.textContent+=" · "+(cd-state.tick)+"T";put(row,b);});
-}
 
 function renderMatch(){
  if(!match)return;
@@ -3175,7 +3167,7 @@ function renderMatch(){
   const teams=root.querySelectorAll(":scope > .bs-match-team-panel");teams.forEach((panel,i)=>{const team=state.teams[i+1];if(panel.dataset.structure!==panelSignature(team)){const replacement=matchTeamPanel(i+1,state);for(const selector of [".bs-team-dossier",".bs-match-tactics"]){const old=panel.querySelector(selector),next=replacement.querySelector(selector);if(old&&next)next.open=old.open;}root.replaceChild(replacement,panel);}else updateTeamPanel(panel,team,state);});
  }
  const fp=root.querySelector(".bs-live-feed-panel");if(fp)fp.style.setProperty("--bs-possession-color",state.teams[state.possession].color);
- renderJohnControls(state,root.querySelector(".bs-center-stage"));renderPitch(state);renderFeed();renderStoppage();
+ const johnPanel=byId("bs-john-controls");if(johnPanel)johnPanel.remove();renderPitch(state);renderFeed();renderStoppage();
  updateMatchPlayerProfileStatuses(root);
  updateSequenceControls();
  window.SiteI18n?.apply(byId("bs-match-view"));
@@ -3299,8 +3291,7 @@ function handleDragEnd(){
 function handleClick(event){
  const b=event.target.closest("button");if(!b)return;
  if(b.hasAttribute("data-refresh-saved-teams")){savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=savedTeams.length?"Saved teams refreshed. Select a squad from CHOOSE SQUAD.":"No saved squads found yet. Save one in Team Builder first.";}else if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
- else if(b.hasAttribute("data-john-ability")){const id=b.getAttribute("data-john-ability");let choice=null;if(id==="universal-decree"){choice=window.prompt("Choose decree: freeze, center-only, or blindness","freeze");if(choice===null)return;choice=choice.trim().toLowerCase();}if(johnUse(match,id,choice)){storeActiveMatch();renderMatch();}}
- else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
+  else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
  else if(b.id==="bs-return-setup"||b.id==="bs-return-setup-results"){
   if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({teams:setupTeams.map(serializeTeam)}));}catch(e){}}
   if(typeof updateRoute==="function")updateRoute("battleSimInitializer");else{renderInit();window.scrollTo({top:0,behavior:"instant"});}
