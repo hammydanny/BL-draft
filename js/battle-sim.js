@@ -247,7 +247,8 @@ function hydrateMatch(snapshot){
   state.halfStartTick=Number.isInteger(state.halfStartTick)&&state.halfStartTick>=0&&state.halfStartTick<=state.tick?state.halfStartTick:(state.phase==="secondHalf"?state.tick:0);
   state.presentedEventId=Math.floor(clamp(Number(state.presentedEventId)||0,0,state.events.length));
   if(snapshot.presentationVersion==null&&state.events.some(e=>!e.presentation)){
-   state.presentedEventId=state.events.length;state.events.forEach(e=>delete e.presentation);
+   // The retained history is already presented; queue the fresh activation message.
+ state.presentedEventId=keptEvents.length;state.events.forEach(e=>delete e.presentation);
    if(state.events.length)state.events.at(-1).presentation=capturePresentation(state);
   }else if(!state.events.filter(e=>e.id>=Math.max(1,state.presentedEventId)).every(e=>validPresentation(e.presentation,state)))return null;
   return state;
