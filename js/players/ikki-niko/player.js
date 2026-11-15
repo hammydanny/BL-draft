@@ -1,4 +1,4 @@
-// Character player data: Ikki Niko (ID 16).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_16_DATA = {
   "id": 16,
   "name": "Ikki Niko",
@@ -171,71 +171,74 @@ const PLAYER_16_DATA = {
       }
     ],
     "dialogue": {
-    "read": [
+      "read": [
         "There is another runner."
-    ],
-    "trap": [
+      ],
+      "trap": [
         "Will you choose that lane?"
-    ],
-    "supply": [
+      ],
+      "supply": [
         "Okawa, there is room ahead."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "I will watch how you move."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "There is space on that side.",
         "Look beyond the first option."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "I see the next option."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "You left a way through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I missed that adjustment."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "You left me a shot."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "You forgot I could score too.",
         "You watched the wrong player."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I misread the opening."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I saw you coming. My ball."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "I need to read that earlier."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I see it now. Keep trying to hide."
-    ],
-    "support": [
+      ],
+      "support": [
         "There is space on that side."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "I didn't see him close that lane."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "I reached in too late."
-    ],
-    "save": [
+      ],
+      "save": [
         "That was the route you chose."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "You couldn't take the ball cleanly?"
-    ],
-    "interception": [
+      ],
+      "interception": [
         "Exactly where I wanted that pass."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I lost track of the last defender."
-    ]
-}
+      ],
+      "criticalGoal": [
+        "You watched the wrong player."
+      ]
+    }
   }
 };

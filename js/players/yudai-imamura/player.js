@@ -1,4 +1,4 @@
-// Character player data: Yudai Imamura (ID 13).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_13_DATA = {
   "id": 13,
   "name": "Yudai Imamura",
@@ -104,59 +104,62 @@ const PLAYER_13_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "kickoff": [
+      "kickoff": [
         "All right, let us go."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here you go, keep it flowing.",
         "Go on, have a go."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Nice, leave it to me."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "A little room is all I need."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Ah, lost it."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Hey, let's give it a shot!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Hey! Not bad, right?!",
         "Hey, that worked!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "Ah, just off."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Thanks! I'll take that off you."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Come on, plenty of time."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Now we're getting somewhere!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Here you go, keep it flowing."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Ah, that was a terrible pass."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Ah, sorry! Caught you there."
-    ],
-    "save": [
+      ],
+      "save": [
         "Got that one."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Hey, easy on the legs!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Ah, got a bit carried away!"
-    ]
-}
+      ],
+      "criticalGoal": [
+        "Hey, that worked!"
+      ]
+    }
   }
 };

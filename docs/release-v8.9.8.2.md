@@ -1,4 +1,4 @@
-# BL-Draft 8.9.8.2 — character kits and dialogue
+# BL-Draft 0.8.9.8.2 — character kits and dialogue
 
 Based on main `8722a37c154565d7c7183cdbaf72015aa2729187`. Supported chapter remains 368.
 
@@ -81,7 +81,7 @@ Reproduce paired comparisons with `node scripts/benchmark-character-batch.js <ba
 - `node scripts/battle-v8982-tests.js`: passed. Covers protected data, physical reach, counterplay, cooldowns, partners, saved airborne reception, Flow allowances and dialogue RNG isolation.
 - All existing character and presentation suites passed in resumed gate segments after the fixture corrections below.
 - Localization integrity: zero errors or warnings. Source coverage: zero uncovered strings.
-- Version references and cache fingerprint align with 8.9.8.2.
+- Version references and cache fingerprint align with 0.8.9.8.2.
 - Browser: local initializer, match startup/intro skip, live feed, Imamura dossier and a 390 px Arabic/light-mode smoke check. No horizontal overflow or captured console errors in that check. This is not an exhaustive audit of every dossier/device/language.
 - The full preflight was invoked and then resumed by suite after correcting stale fixtures. All gate suites passed; this is not a claim of one uninterrupted successful full-gate invocation.
 

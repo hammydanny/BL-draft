@@ -44,6 +44,8 @@ require('./bundle-characters.js').check()||assert.fail('Stale character bundle')
 require('./roster-content-tests.js').runRosterContentTests();
 require('./roster-expansion-tests.js').runRosterExpansionTests();
 require('./information-navigation-tests.js').runInformationNavigationTests();
+require('./release-history-tests.js').runReleaseHistoryTests();
+require('./collaborator-preservation-tests.js').runCollaboratorPreservationTests();
 require('./battle-sim-tests.js').runBattleSimTests();
 require('./battle-spatial-tests.js').runSpatialTests();
 require('./battle-v083-tests.js').runBattleV083Tests();
@@ -55,6 +57,7 @@ require('./battle-v0891-tests.js').runBattleV0891Tests();
 require('./battle-v0894-tests.js').runBattleV0894Tests();
 require('./battle-v8982-tests.js').runBattleV8982Tests();
 require('./battle-polish-tests.js').runPolishTests();
+require('./battle-evolution-tests.js').runEvolutionTests();
 require('./battle-presentation-tests.js').runPresentationTests();
 require('./battle-refinement-tests.js').runRefinementTests();
 require('./chapter-tracker-tests.js').runChapterTests().catch(error=>{console.error(error);process.exitCode=1;});

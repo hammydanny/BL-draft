@@ -1,0 +1,178 @@
+[
+  {
+    "id": 1,
+    "name": "Yoichi Isagi",
+    "buildUp": "That lane is open.",
+    "attempt": "This opening... I'll take it!",
+    "goal": "That's it! This goal is mine!",
+    "failure": "No... he read my pass!"
+  },
+  {
+    "id": 2,
+    "name": "Ryosuke Kira",
+    "buildUp": "Here, keep it moving.",
+    "attempt": "Watch me finish this!",
+    "goal": "That is what I came to do!",
+    "failure": "That should have reached you..."
+  },
+  {
+    "id": 3,
+    "name": "Noel Noa",
+    "buildUp": "Use this angle.",
+    "attempt": "I'll finish it here.",
+    "goal": "Good. Now do it again.",
+    "failure": "That pass was careless."
+  },
+  {
+    "id": 4,
+    "name": "Meguru Bachira",
+    "buildUp": "Try something fun with this!",
+    "attempt": "Let's see you catch this!",
+    "goal": "Did you see that dance?",
+    "failure": "Aw, you spoiled my pass!"
+  },
+  {
+    "id": 5,
+    "name": "Gurimu Igarashi",
+    "buildUp": "Take it, quick!",
+    "attempt": "Go in! Please, just go in!",
+    "goal": "Did everyone see?! I scored!",
+    "failure": "No, no! That wasn't for you!"
+  },
+  {
+    "id": 6,
+    "name": "Rensuke Kunigami",
+    "buildUp": "Take it forward.",
+    "attempt": "Try stopping this shot.",
+    "goal": "I came back for this.",
+    "failure": "Tch. I gave that away."
+  },
+  {
+    "id": 7,
+    "name": "Hyoma Chigiri",
+    "buildUp": "Do not slow this down.",
+    "attempt": "Just try reaching this corner.",
+    "goal": "A little too late.",
+    "failure": "Tch. That pass killed the pace."
+  },
+  {
+    "id": 8,
+    "name": "Gin Gagamaru",
+    "buildUp": "There.",
+    "attempt": "Can hit it from this angle.",
+    "goal": "I can score too.",
+    "failure": "Huh. That went the wrong way."
+  },
+  {
+    "id": 9,
+    "name": "Jingo Raichi",
+    "buildUp": "Move! Take it!",
+    "attempt": "Move! I'm shooting!",
+    "goal": "See that?! That's Raichi!",
+    "failure": "Oi! I gave that straight to them!"
+  },
+  {
+    "id": 10,
+    "name": "Asahi Naruhaya",
+    "buildUp": "Go, I will follow.",
+    "attempt": "Come on... I have to score this!",
+    "goal": "That one's for my family!",
+    "failure": "No, that was my chance to help!"
+  },
+  {
+    "id": 11,
+    "name": "Okuhito Iemon",
+    "buildUp": "Here, I am with you.",
+    "attempt": "There's a chance! I'll try it!",
+    "goal": "Well done, everyone.",
+    "failure": "My mistake! I'll help win it back."
+  },
+  {
+    "id": 12,
+    "name": "Wataru Kuon",
+    "buildUp": "Use the space ahead.",
+    "attempt": "This is the ball I wanted!",
+    "goal": "The timing... yes!",
+    "failure": "They were waiting for that pass."
+  },
+  {
+    "id": 13,
+    "name": "Yudai Imamura",
+    "buildUp": "Here you go, keep it flowing.",
+    "attempt": "Hey, let's give it a shot!",
+    "goal": "Hey, that worked!",
+    "failure": "Ah, that was a terrible pass."
+  },
+  {
+    "id": 16,
+    "name": "Ikki Niko",
+    "buildUp": "There is space on that side.",
+    "attempt": "You left me a shot.",
+    "goal": "You watched the wrong player.",
+    "failure": "I didn't see him close that lane."
+  },
+  {
+    "id": 17,
+    "name": "Hibiki Okawa",
+    "buildUp": "Here, build another chance.",
+    "attempt": "Watch this finish!",
+    "goal": "That is the finish I wanted!",
+    "failure": "That pass wasn't good enough."
+  },
+  {
+    "id": 18,
+    "name": "Junichi Wanima",
+    "buildUp": "Hnn.",
+    "attempt": "Hnn!",
+    "goal": "Hnn!",
+    "failure": "Ngh..."
+  },
+  {
+    "id": 19,
+    "name": "Keisuke Wanima",
+    "buildUp": "Brother, this way!",
+    "attempt": "I have the angle.",
+    "goal": "You saw that, brother!",
+    "failure": "They read the exchange."
+  },
+  {
+    "id": 20,
+    "name": "Reo Mikage",
+    "buildUp": "I can put it there.",
+    "attempt": "This is the opening.",
+    "goal": "I can make this team win.",
+    "failure": "That lane closed."
+  },
+  {
+    "id": 22,
+    "name": "Zantetsu Tsurugi",
+    "buildUp": "Go on, ahead of me.",
+    "attempt": "Across the goal.",
+    "goal": "Fast enough. That is the word.",
+    "failure": "That was not the trajectory."
+  },
+  {
+    "id": 24,
+    "name": "Jyubei Aryu",
+    "buildUp": "A clean line.",
+    "attempt": "Watch the finish.",
+    "goal": "A finish worthy of the stage.",
+    "failure": "An ugly interruption."
+  },
+  {
+    "id": 25,
+    "name": "Aoshi Tokimitsu",
+    "buildUp": "Here, you have space.",
+    "attempt": "I can take this one.",
+    "goal": "I kept going. I scored!",
+    "failure": "Sorry... I will win it back."
+  },
+  {
+    "id": 70,
+    "name": "Hajime Nishioka",
+    "buildUp": "Here is the opening.",
+    "attempt": "Now.",
+    "goal": "One opening was enough.",
+    "failure": "I needed a cleaner touch."
+  }
+]

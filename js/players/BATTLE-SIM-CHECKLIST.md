@@ -28,13 +28,13 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Junichi Wanima (18) | [x] | [x] | [x] |
 | Sae Itoshi (14) | [ ] | [ ] | [ ] |
 | Shoei Baro (15) | [ ] | [ ] | [ ] |
-| Keisuke Wanima (19) | [ ] | [ ] | [ ] |
-| Reo Mikage (20) | [ ] | [ ] | [ ] |
+| Keisuke Wanima (19) | [x] | [x] | [x] |
+| Reo Mikage (20) | [x] | [x] | [x] |
 | Seishiro Nagi (21) | [ ] | [ ] | [ ] |
-| Zantetsu Tsurugi (22) | [ ] | [ ] | [ ] |
+| Zantetsu Tsurugi (22) | [x] | [x] | [x] |
 | Rin Itoshi (23) | [ ] | [ ] | [ ] |
-| Jyubei Aryu (24) | [ ] | [ ] | [ ] |
-| Aoshi Tokimitsu (25) | [ ] | [ ] | [ ] |
+| Jyubei Aryu (24) | [x] | [x] | [x] |
+| Aoshi Tokimitsu (25) | [x] | [x] | [x] |
 | Ranze Kurona (26) | [ ] | [ ] | [ ] |
 | Yo Hiori (27) | [ ] | [ ] | [ ] |
 | Tabito Karasu (28) | [ ] | [ ] | [ ] |
@@ -79,7 +79,7 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Teddy Knight (67) | [ ] | [ ] | [ ] |
 | Childs (68) | [ ] | [ ] | [ ] |
 | Shigeo Mizuki (69) | [ ] | [ ] | [ ] |
-| Hajime Nishioka (70) | [ ] | [ ] | [ ] |
+| Hajime Nishioka (70) | [x] | [x] | [x] |
 | Shizuka Haiji (71) | [ ] | [ ] | [ ] |
 | Reiji Hiiragi (72) | [ ] | [ ] | [ ] |
 | Taiga Tsunzaki (73) | [ ] | [ ] | [ ] |
@@ -106,8 +106,10 @@ Battle Sim descriptions say plainly **when** the ability happens, **what** it do
 
 ## 8.9.8.2 character batch
 
-Kuon, Imamura, Niko, Okawa and Junichi use physical movement, passing, aerial contests and the shared shot model. Deterministic scenes cover triggers, failure paths and cooldowns. Normal seeded-match opportunities and observed usage are recorded in `docs/release-v8.9.8.2.md`; rare techniques are not forced to activate. All 16 completed characters have localized event dialogue. Keisuke remains unchecked: only Eye Contact interpreter dialogue and shared reaction participation are implemented. Fan-game ability names are marked as interpretations in the kit data.
+Kuon, Imamura, Niko, Okawa and Junichi use physical movement, passing, aerial contests and the shared shot model. Deterministic scenes cover triggers, failure paths and cooldowns. Normal seeded-match opportunities and observed usage are recorded in `docs/release-v8.9.8.2.md`; rare techniques are not forced to activate. All 16 completed characters have localized event dialogue. At 0.8.9.8.2 Keisuke was still unchecked; his full support kit is completed in 8.9.8.4 below. Fan-game ability names are marked as interpretations in the kit data.
 
 ## Standard for future batches
 
 Every new kit must pair canon-grounded, fallible football effects with contextual character dialogue, including success/failure and quiet or nonverbal personalities. Reuse physical movement and shared reactions, localize names/descriptions/lines in all 11 languages, and verify deterministic saves plus ordinary seeded matches. Limited-canon players stay simple. Do not mark a kit complete from declarations or string counts alone.
+
+0.8.9.8.8: Keisuke, Reo, Zantetsu, Aryu, Tokimitsu and Nishioka use engine effects and localized simulation dialogue. Keisuke shares Junichi’s existing Eye Contact. Nishioka remains an estimated profile with a conservative interpreted kit. Kurona and Hiori receive partner-reaction support only; their individual kits remain pending. Nagi, Baro and Sae are not part of this batch. Browser visual QA is unverified in this environment.

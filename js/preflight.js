@@ -209,7 +209,7 @@ check('Formation slots and chemistry edges',()=>{
 });
 check('Release, save schema constants and established storage keys',()=>{
     assert.equal(data.APP_VERSION_LABEL,`V${data.APP_VERSION} ALPHA`);
-    assert.match(data.APP_VERSION,/^\d+(?:\.\d+){1,3}$/);assert.equal(data.APP_VERSION,require('../scripts/set-version.js').currentVersion());
+    assert.match(data.APP_VERSION,require('../scripts/set-version.js').VERSION_PATTERN);assert.equal(data.APP_VERSION,require('../scripts/set-version.js').currentVersion());
     assert(/style\.css\?v=/.test(html),'Stylesheet cache version missing');
     assert(/css\/player-stats\.css\?v=/.test(html),'Radar stylesheet cache version missing');
     assert(/css\/site-header\.css\?v=/.test(html),'Header stylesheet cache version missing');

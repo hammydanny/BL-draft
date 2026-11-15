@@ -9,7 +9,7 @@ const ISAGI=1,HIORI=27,KURONA=26,BACHIRA=4,KAISER=49;
 
 function setup(stars=[ISAGI,HIORI,KURONA,BACHIRA,KAISER],formation='4-3-3'){
  const h=battleContext();h.bs.quiet();const b=h.bs;
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,20,22,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const home=stars.concat(pool.slice(0,14-stars.length)),away=pool.slice(20,34);
  const teams=[1,2].map(n=>{const ids=n===1?home:away;let a=positionalAssignment(h,formation,ids,n);
   // The characters under test start in their own positions; the rest of the XI fills around them.
@@ -177,12 +177,9 @@ function reactionTests(){
  t=sync(0);assert(!b.passOptions(t.s,t.carrier).some(o=>o.reaction),'other passers do not trigger it');
  // Kurona: wall pass when Isagi is pressed, then the return is played into his run.
  t=scene(b,(s,get,def)=>{const isg=get(1,ISAGI),k=get(1,KURONA);b.setPosition(isg,{x:70,y:50});b.setPosition(k,{x:74,y:38});b.setPosition(def(0),{x:72,y:51});return {carrier:isg,partner:k};});
- const wall=b.passOptions(t.s,t.carrier).find(o=>o.receiver===t.partner&&o.reaction);assert(wall&&wall.reaction.def.id==='planet-hotline','Planet Hotline when Isagi is pressed');
- b.playReaction(t.s,t.carrier,wall);assert(t.carrier.intent&&t.carrier.intent.reaction==='planet-hotline','Isagi sets off for the return');
- t.s.carrierId=t.partner.id;b.setPosition(t.carrier,t.carrier.intent.target);const ret=b.passOptions(t.s,t.partner).find(o=>o.receiver===t.carrier&&o.reaction);
- assert(ret&&ret.reaction.def.id==='planet-hotline','Kurona returns the wall pass');
+ assert(b.runPlanetHotline(t.s),'Syaafi coordinated sequence starts');assert(t.s.reactionCooldowns['1:planet-hotline']>t.s.tick,'shared main cooldown');
  const t2=scene(b,(s,get,def)=>{const isg=get(1,ISAGI),k=get(1,KURONA);b.setPosition(isg,{x:70,y:50});b.setPosition(k,{x:74,y:38});return {carrier:isg,partner:k};});
- assert(!b.passOptions(t2.s,t2.carrier).some(o=>o.reaction&&o.reaction.def.id==='planet-hotline'),'no wall pass without pressure');
+ assert(b.runPlanetHotline(t2.s),'nearby partners can start without pressure');
  // Bachira: a dribble that drags defenders opens space Isagi attacks.
  t=scene(b,(s,get,def)=>{const ba=get(1,BACHIRA),isg=get(1,ISAGI);b.setPosition(ba,{x:70,y:60});b.setPosition(isg,{x:72,y:38});b.setPosition(def(0),{x:72,y:62});b.setPosition(def(1),{x:69,y:56});b.setPosition(def(2),{x:85,y:20});return {carrier:ba,receiver:isg};});
  b.afterDribble(t.s,t.carrier,null);assert(t.receiver.intent&&t.receiver.intent.reaction==='creative-instinct','Isagi reads the space Bachira created');
@@ -245,3 +242,4 @@ function fullMatchTests(){
 function runBattleV089Tests(){throughBallTests();intelligenceTests();isagiTests();reactionTests();dialogueTests();fullMatchTests();}
 module.exports={runBattleV089Tests,setup,scene};
 if(require.main===module)runBattleV089Tests();
+

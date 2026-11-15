@@ -627,3 +627,40 @@ body.bs-game-route .bs-match-player-row.is-flowing .bs-rating-value{
  background-clip:text;-webkit-background-clip:text;
  color:transparent!important;-webkit-text-fill-color:transparent;
 }
+
+/* Matchday presentation: editorial typography, real lineup and cover portraits. */
+.bs-intro-frame{background:var(--bg-primary,#07101d);color:var(--text-primary,#eef5ff)}
+.bs-intro-topbar{background:var(--bg-surface,#102132);border-bottom:3px solid var(--bs-intro-team-color,#19a7ff)}
+.bs-intro-network span,.bs-intro-footer-label{color:var(--text-secondary,#afc7dc)}
+.bs-intro-team-heading h2{font-size:clamp(28px,4vw,64px);line-height:1;letter-spacing:-.035em;overflow-wrap:anywhere}
+.bs-intro-composition{grid-template-columns:minmax(150px,.7fr) minmax(230px,1fr) minmax(250px,1.1fr)}
+.bs-intro-pitch-panel,.bs-intro-lineup-panel,.bs-intro-feature-copy{background:var(--bg-surface,#102132);color:var(--text-primary,#eef5ff)}
+.bs-intro-feature-visual{overflow:hidden;background:var(--bg-surface,#102132);border-inline-start:5px solid var(--bs-intro-team-color)}
+.bs-intro-feature-image{width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.025)}
+.bs-intro-feature-name{font-size:clamp(23px,2.8vw,44px);line-height:1.03;overflow-wrap:anywhere}
+.bs-intro-feature-copy{position:relative;margin:0;z-index:1;border-top:3px solid var(--bs-intro-team-color)}
+.bs-intro-player-row{height:clamp(25px,4.2vh,40px);border-radius:0;border-inline-start:2px solid transparent}
+.bs-intro-player-row.is-featured{border-inline-start-color:var(--bs-intro-team-color);background:color-mix(in srgb,var(--bs-intro-team-color) 18%,var(--bg-surface,#102132))}
+.bs-intro-matchup{display:grid;align-content:center;gap:4vh;text-align:center}
+.bs-intro-versus-board{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:3vw}
+.bs-intro-versus-team{padding:5vh 2vw;border-block:3px solid var(--bs-intro-team-color)}
+.bs-intro-versus-team h2{font-size:clamp(26px,6vw,84px);line-height:1.02;overflow-wrap:anywhere}
+.bs-auto-controls{display:flex;flex-wrap:wrap;gap:6px;margin-block:8px}
+@media(max-width:1050px){.bs-intro-composition{grid-template-columns:minmax(160px,.7fr) minmax(230px,1fr);grid-template-rows:minmax(0,1fr) minmax(160px,.65fr)}.bs-intro-spotlight{grid-column:1/-1;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:1fr}.bs-intro-feature-copy{border-top:0;border-inline-start:3px solid var(--bs-intro-team-color)}}
+@media(max-width:650px){.bs-intro-composition{grid-template-columns:minmax(0,.7fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(120px,.65fr);height:calc(100% - 62px)}.bs-intro-player-row{grid-template-columns:15px 22px minmax(0,1fr) 20px;height:clamp(21px,3.4vh,30px);gap:2px;padding:2px}.bs-intro-lineup-list{display:grid;grid-template-columns:1fr}.bs-intro-player-name{font-size:10px}.bs-intro-spotlight{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bs-intro-feature-name{font-size:23px}.bs-intro-pitch-panel,.bs-intro-lineup-panel{padding:5px}.bs-intro-feature-copy{padding:10px}.bs-intro-team-heading h2{font-size:28px}.bs-intro-footer-label{display:none}.bs-intro-footer{justify-content:space-between}.bs-intro-panel-heading{font-size:9px;gap:3px}}
+@media(max-height:500px) and (orientation:landscape){.bs-intro-composition{grid-template-columns:minmax(110px,.7fr) minmax(210px,1fr) minmax(180px,1fr);grid-template-rows:1fr;height:calc(100% - 58px)}.bs-intro-spotlight{grid-column:auto;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.bs-intro-player-row{height:19px}.bs-intro-team-heading h2{font-size:24px}.bs-intro-feature-name{font-size:20px}.bs-intro-feature-copy{padding:6px}.bs-intro-topbar{min-height:34px}.bs-intro-frame{grid-template-rows:34px minmax(0,1fr) 40px}.bs-intro-footer{min-height:40px;padding:4px 10px}}
+@media(prefers-reduced-motion:reduce){.bs-intro-feature-image,.bs-intro-feature-image.is-changing,.is-team-changing .bs-intro-content{animation:none!important;transform:none!important;transition:none!important}}
+
+/* Semantic ink/surfaces cover both site palettes, including older intro rules. */
+.bs-intro-frame{background:var(--bg-page);color:var(--text-primary)}
+.bs-intro-team-heading h2,.bs-intro-finish-heading h2,.bs-intro-panel-heading strong,.bs-intro-player-name,.bs-intro-feature-name,.bs-intro-showdown-team strong{color:var(--text-primary)}
+.bs-intro-team-heading p,.bs-intro-finish-heading p,.bs-intro-panel-heading span,.bs-intro-player-role,.bs-intro-feature-meta span{color:var(--text-secondary)}
+.bs-intro-player-number,.bs-intro-showdown-vs{color:var(--text-muted)}
+.bs-intro-player-ovr,.bs-intro-team-heading .bs-kicker,.bs-intro-finish-heading .bs-kicker,.bs-intro-feature-kicker{color:var(--accent-text)}
+.bs-intro-player-role{background:var(--bg-surface-raised);border-color:var(--border-subtle)}
+.bs-intro-showdown-team,.bs-intro-footer{background:var(--bg-surface);color:var(--text-primary);border-color:var(--border-subtle)}
+.bs-intro-feature-meta b{color:var(--text-primary);background:var(--bg-surface-raised);border:1px solid var(--bs-intro-team-color)}
+.bs-intro-live{color:var(--danger);margin-inline-start:auto;margin-inline-end:0}
+.bs-intro-team-heading{flex-wrap:wrap}.bs-intro-formation-tag{max-width:100%;color:var(--text-primary);overflow-wrap:anywhere}
+.bs-auto-controls .bs-mini-button{min-height:36px}
+@media(pointer:coarse){.bs-auto-controls .bs-mini-button{min-height:44px}}

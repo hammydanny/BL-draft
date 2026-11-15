@@ -1,4 +1,4 @@
-// Character player data: Junichi Wanima (ID 18).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_18_DATA = {
   "id": 18,
   "name": "Junichi Wanima",
@@ -150,6 +150,9 @@ const PLAYER_18_DATA = {
       ],
       "save": [
         "Hnn."
+      ],
+      "criticalGoal": [
+        "Hnn!"
       ]
     }
   }

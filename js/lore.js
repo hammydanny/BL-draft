@@ -130,7 +130,7 @@ function battleSimUsageMarkup(player,entry,group){
  if(limits.cooldownTicks){lines.push(copy("Cooldown: {ticks} ticks",{ticks:limits.cooldownTicks}));
   if(limits.flowCooldownTicks!==limits.cooldownTicks)lines.push(copy("During Flow: {ticks} ticks",{ticks:limits.flowCooldownTicks}));
   if(limits.group){const peers=[...(player.battleSim?.weapons||[]),...(player.battleSim?.specials||[])].filter(a=>a!==entry&&battleSimAbilityLimits(a,false,player).group===limits.group);if(peers.length)lines.push(copy("Shared with: {ability}",{ability:""})+" "+peers.map(a=>copy(a.name)).join(" / "));}
-  if(group==="reactions")lines.push(copy("Shared by both partners"));
+  if(group==="reactions")lines.push(copy("Shared by both partners"));if(entry.effect==="planet-hotline")lines.push(copy("Cooldown starts after the sequence ends."));
  }
  if(limits.oncePerFlow)lines.push(copy("Once per Flow activation"));
  return lines.length?'<p class="character-profile-kit-limit">'+lines.join(" · ")+"</p>":"";

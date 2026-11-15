@@ -1,6 +1,6 @@
-# BL-Draft 8.9.8.3 — dialogue, movement and website polish
+# BL-Draft 0.8.9.8.3 — dialogue, movement and website polish
 
-Based on main 753177b47e0c38be1b54909be022f87d6e780f87 (8.9.8.2), supported chapter 368. No canon cutoff change.
+Based on main 753177b47e0c38be1b54909be022f87d6e780f87 (0.8.9.8.2), supported chapter 368. No canon cutoff change.
 
 ## Changes
 
@@ -75,9 +75,9 @@ Only the authorized speaking-character snapshot hashes were refreshed. Independe
 
 ## Limits and release
 
-This changes SPD's physical consequences and therefore seeded match outcomes relative to the older release. Within this version, deterministic simulation and save/load continuation remain regression requirements. It is not a general shooting or ability rebalance; rare-special usage from 8.9.8.2 is not guaranteed to increase.
+This changes SPD's physical consequences and therefore seeded match outcomes relative to the older release. Within this version, deterministic simulation and save/load continuation remain regression requirements. It is not a general shooting or ability rebalance; rare-special usage from 0.8.9.8.2 is not guaranteed to increase.
 
-Version/cache/page-shell references are 8.9.8.3. All public Base stats, OVR, weapons, positions, chemistry, secret data, formation geometry and save schemas are preserved. The original outer workspace's unrelated edits were left untouched; implementation is isolated against current main. Publication uses a normal non-force update only after validation.
+Version/cache/page-shell references are 0.8.9.8.3. All public Base stats, OVR, weapons, positions, chemistry, secret data, formation geometry and save schemas are preserved. The original outer workspace's unrelated edits were left untouched; implementation is isolated against current main. Publication uses a normal non-force update only after validation.
 
 ## Files changed
 

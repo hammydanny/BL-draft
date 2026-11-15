@@ -313,1742 +313,2302 @@ const ISAGI_PLAYER_DATA = {
 ;
 
 // js/players/ryosuke-kira/player.js
-// Character player data: Ryosuke Kira (ID 2).
-const PLAYER_2_DATA = { id: 2, name: "Ryosuke Kira", debutChapter: 1, appearanceOrder: 2, image: "images/ryosuke-kira.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:79, off:83, sho:84, spd:79, def:60, pas:77, dri:80, gk:43 },
-        battleSim: {
-            "awareness": {
-                "vision": 0.02
-            },
-            "tendencies": {
-                "pass": 0.04,
-                "shoot": -0.02
-            },
-            "rivals": [
-                1
-            ],
-            "passives": [
-                {
-                    "id": "composed-forward",
-                    "name": "Composed Forward",
-                    "label": "COMPOSED FORWARD",
-                    "effect": "support-movement",
-                    "interpretation": "gameplay",
-                    "description": "When the teammate on the ball has no one nearby, Kira moves close to give him an easy pass. He prefers simple passing moves to risky dribbles."
-                },
-                {
-                    "id": "strikers-pride",
-                    "name": "Striker's Pride",
-                    "label": "STRIKER'S PRIDE",
-                    "effect": "pride",
-                    "dialogue": "responsibility",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "shoot": 0.22,
-                        "quietAfter": 30
-                    },
-                    "description": "When his team is losing, or he hasn't had a shot after the first 30 ticks, Kira becomes more willing to shoot. His shots do not become more accurate."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "aces-finish",
-                    "name": "Ace's Finish",
-                    "label": "ACE'S FINISH",
-                    "effect": "controlled-finish",
-                    "dialogue": "aceFinish",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "maxMetres": 18,
-                        "technique": 0.12
-                    },
-                    "description": "When Kira gets the ball within 18 m of goal with no defender within 2 m, he places a calm shot into the far corner. It is a little more accurate than a normal shot."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "reclaimed-pride",
-                    "name": "Reclaimed Pride",
-                    "label": "RECLAIMED PRIDE",
-                    "effect": "flow-state",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "boost": {
-                            "controlled-finish": {
-                                "maxMetres": 21,
-                                "technique": 0.16
-                            },
-                            "pride": {
-                                "always": true,
-                                "shoot": 0.26
-                            }
-                        }
-                    },
-                    "description": "Kira's Flow. In Flow he is always willing to shoot, and he can use Ace's Finish from up to 21 m. His stats do not change."
-                }
-            ],
-            "dialogue": {
-    "support": [
-        "Here, keep it moving."
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_2_DATA = {
+  "id": 2,
+  "name": "Ryosuke Kira",
+  "debutChapter": 1,
+  "appearanceOrder": 2,
+  "image": "images/ryosuke-kira.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [],
+  "stats": {
+    "ovr": 79,
+    "off": 83,
+    "sho": 84,
+    "spd": 79,
+    "def": 60,
+    "pas": 77,
+    "dri": 80,
+    "gk": 43
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.02
+    },
+    "tendencies": {
+      "pass": 0.04,
+      "shoot": -0.02
+    },
+    "rivals": [
+      1
     ],
-    "responsibility": [
+    "passives": [
+      {
+        "id": "composed-forward",
+        "name": "Composed Forward",
+        "label": "COMPOSED FORWARD",
+        "effect": "support-movement",
+        "interpretation": "gameplay",
+        "description": "When the teammate on the ball has no one nearby, Kira moves close to give him an easy pass. He prefers simple passing moves to risky dribbles."
+      },
+      {
+        "id": "strikers-pride",
+        "name": "Striker's Pride",
+        "label": "STRIKER'S PRIDE",
+        "effect": "pride",
+        "dialogue": "responsibility",
+        "interpretation": "gameplay",
+        "params": {
+          "shoot": 0.22,
+          "quietAfter": 30
+        },
+        "description": "When his team is losing, or he hasn't had a shot after the first 30 ticks, Kira becomes more willing to shoot. His shots do not become more accurate."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "aces-finish",
+        "name": "Ace's Finish",
+        "label": "ACE'S FINISH",
+        "effect": "controlled-finish",
+        "dialogue": "aceFinish",
+        "interpretation": "gameplay",
+        "params": {
+          "maxMetres": 18,
+          "technique": 0.12
+        },
+        "description": "When Kira gets the ball within 18 m of goal with no defender within 2 m, he places a calm shot into the far corner. It is a little more accurate than a normal shot."
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "reclaimed-pride",
+        "name": "Reclaimed Pride",
+        "label": "RECLAIMED PRIDE",
+        "effect": "flow-state",
+        "interpretation": "gameplay",
+        "params": {
+          "boost": {
+            "controlled-finish": {
+              "maxMetres": 21,
+              "technique": 0.16
+            },
+            "pride": {
+              "always": true,
+              "shoot": 0.26
+            }
+          }
+        },
+        "description": "Kira's Flow. In Flow he is always willing to shoot, and he can use Ace's Finish from up to 21 m. His stats do not change."
+      }
+    ],
+    "dialogue": {
+      "support": [
+        "Here, keep it moving."
+      ],
+      "responsibility": [
         "This one is mine to finish.",
         "I won't hide from this chance."
-    ],
-    "aceFinish": [
+      ],
+      "aceFinish": [
         "Pick the corner. Stay calm."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "There! That's what I can do!",
         "That is what I came to do!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I should have placed that better.",
         "Not good enough. Again.",
         "I had that one..."
-    ],
-    "rival": [
+      ],
+      "rival": [
         "Isagi... I won't fall behind you again."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I'm not settling for just keeping up!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Let us play a good match."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here, keep it moving.",
         "I am backing you."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Thank you. My turn."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "I can get through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "You read that well."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Watch me finish this!"
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Sorry, I'm taking that ball!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "We can still recover."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "That should have reached you..."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "All right, that's my foul."
-    ],
-    "save": [
+      ],
+      "save": [
         "I am not giving this away."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Referee, he stopped me!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Offside? I went too soon."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "That is what I came to do!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/noel-noa/player.js
-// Character player data: Noel Noa (ID 3).
-const PLAYER_3_DATA = { id: 3, name: "Noel Noa", debutChapter: 1, appearanceOrder: 3, image: "images/noel-noa.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , nationality: {"code":"FR","name":"France","basis":"nationality","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"ambidexterity","name":"Ambidexterity","description":"Finishes with either foot, removing the need to set up a preferred side.","battleSimType":"Passive","battleSimDescription":"Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"ball-control","name":"Ball Control","description":"Keeps the ball secure while changing direction and selecting a shooting route.","battleSimType":"Special Move","battleSimDescription":"When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Noel_Noa","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:98, off:99, sho:98, spd:94, def:84, pas:91, dri:94, gk:66 },
-        battleSim: {
-            "awareness": {
-                "vision": 0.06,
-                "space": 0.08,
-                "anticipation": 0.4,
-                "defensiveRead": 0.04
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_3_DATA = {
+  "id": 3,
+  "name": "Noel Noa",
+  "debutChapter": 1,
+  "appearanceOrder": 3,
+  "image": "images/noel-noa.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "FW"
+  ],
+  "nationality": {
+    "code": "FR",
+    "name": "France",
+    "basis": "nationality",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Noel_Noa",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "ambidexterity",
+      "name": "Ambidexterity",
+      "description": "Finishes with either foot, removing the need to set up a preferred side.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Noel_Noa",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "ball-control",
+      "name": "Ball Control",
+      "description": "Keeps the ball secure while changing direction and selecting a shooting route.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Noel_Noa",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 98,
+    "off": 99,
+    "sho": 98,
+    "spd": 94,
+    "def": 84,
+    "pas": 91,
+    "dri": 94,
+    "gk": 66
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.06,
+      "space": 0.08,
+      "anticipation": 0.4,
+      "defensiveRead": 0.04
+    },
+    "tendencies": {
+      "shoot": 0.03
+    },
+    "passives": [
+      {
+        "id": "rational-football",
+        "name": "Rational Football",
+        "label": "RATIONAL FOOTBALL",
+        "effect": "rational-decisions",
+        "params": {
+          "sharpness": 0.45
+        },
+        "description": "Noa weighs up the same options as everyone else but picks the best one far more often. He still cannot know whether a shot or tackle will work."
+      },
+      {
+        "id": "perfect-ambidexterity",
+        "name": "Perfect Ambidexterity",
+        "label": "PERFECT AMBIDEXTERITY",
+        "effect": "ambidextrous",
+        "params": {
+          "technique": 0,
+          "firstTime": 0.08,
+          "maxMetres": 28
+        },
+        "description": "Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy."
+      },
+      {
+        "id": "elite-off-ball-movement",
+        "name": "Elite Off-Ball Movement",
+        "label": "ELITE OFF-BALL MOVEMENT",
+        "effects": [
+          "decoy-run",
+          "support-movement"
+        ],
+        "description": "Noa keeps making runs even when teammates are already running, which drags defenders with him and opens space. When the ball carrier has no one nearby, he moves close to help."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "machine-dribble",
+        "name": "Machine Dribble",
+        "label": "MACHINE DRIBBLE",
+        "effect": "power-dribble",
+        "dialogue": "dribble",
+        "params": {
+          "stride": 1.2,
+          "protection": 5
+        },
+        "description": "When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him."
+      },
+      {
+        "id": "two-footed-execution",
+        "name": "Two-Footed Execution",
+        "label": "TWO-FOOTED EXECUTION",
+        "effect": "switch-foot-finish",
+        "dialogue": "twoFooted",
+        "params": {
+          "technique": 0.06,
+          "commitRange": 4,
+          "maxMetres": 24
+        },
+        "description": "When a defender within 4 m tries to block one side, Noa shoots with his other foot to the other post. The goalkeeper can still save it."
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "optimal-execution",
+        "name": "Optimal Execution",
+        "label": "OPTIMAL EXECUTION",
+        "effect": "flow-state",
+        "interpretation": "gameplay",
+        "params": {
+          "boost": {
+            "switch-foot-finish": {
+              "technique": 0.12
             },
-            "tendencies": {
-                "shoot": 0.03
+            "rational-decisions": {
+              "sharpness": 0.65
             },
-            "passives": [
-                {
-                    "id": "rational-football",
-                    "name": "Rational Football",
-                    "label": "RATIONAL FOOTBALL",
-                    "effect": "rational-decisions",
-                    "params": {
-                        "sharpness": 0.45
-                    },
-                    "description": "Noa weighs up the same options as everyone else but picks the best one far more often. He still cannot know whether a shot or tackle will work."
-                },
-                {
-                    "id": "perfect-ambidexterity",
-                    "name": "Perfect Ambidexterity",
-                    "label": "PERFECT AMBIDEXTERITY",
-                    "effect": "ambidextrous",
-                    "params": {
-                        "technique": 0,
-                        "firstTime": 0.08,
-                        "maxMetres": 28
-                    },
-                    "description": "Noa has no weaker foot. He can shoot with either foot, including first time, without losing accuracy."
-                },
-                {
-                    "id": "elite-off-ball-movement",
-                    "name": "Elite Off-Ball Movement",
-                    "label": "ELITE OFF-BALL MOVEMENT",
-                    "effects": [
-                        "decoy-run",
-                        "support-movement"
-                    ],
-                    "description": "Noa keeps making runs even when teammates are already running, which drags defenders with him and opens space. When the ball carrier has no one nearby, he moves close to help."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "machine-dribble",
-                    "name": "Machine Dribble",
-                    "label": "MACHINE DRIBBLE",
-                    "effect": "power-dribble",
-                    "dialogue": "dribble",
-                    "params": {
-                        "stride": 1.2,
-                        "protection": 5
-                    },
-                    "description": "When Noa dribbles, he goes in straight lines and covers more ground with each carry. He is hard to knock off the ball, but he does not make sharp turns, and good defenders can still tackle him."
-                },
-                {
-                    "id": "two-footed-execution",
-                    "name": "Two-Footed Execution",
-                    "label": "TWO-FOOTED EXECUTION",
-                    "effect": "switch-foot-finish",
-                    "dialogue": "twoFooted",
-                    "params": {
-                        "technique": 0.06,
-                        "commitRange": 4,
-                        "maxMetres": 24
-                    },
-                    "description": "When a defender within 4 m tries to block one side, Noa shoots with his other foot to the other post. The goalkeeper can still save it."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "optimal-execution",
-                    "name": "Optimal Execution",
-                    "label": "OPTIMAL EXECUTION",
-                    "effect": "flow-state",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "boost": {
-                            "switch-foot-finish": {
-                                "technique": 0.12
-                            },
-                            "rational-decisions": {
-                                "sharpness": 0.65
-                            },
-                            "power-dribble": {
-                                "protection": 8
-                            }
-                        }
-                    },
-                    "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "imperial-route",
-                    "name": "Imperial Route",
-                    "label": "IMPERIAL ROUTE",
-                    "members": [
-                        3,
-                        49
-                    ],
-                    "effect": "rival-cooperation",
-                    "cooldownTicks": 14,
-                    "dialogue": "route",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "margin": 0.06,
-                        "value": 0.02,
-                        "rivalry": 0.008,
-                        "startsRun": true
-                    },
-                    "description": "With Michael Kaiser on the pitch: when Kaiser has the ball, Noa makes a run to open a route for him. They only pass to each other when the other clearly has the better chance."
-                }
-            ],
-            "dialogue": {
-    "dribble": [
+            "power-dribble": {
+              "protection": 8
+            }
+          }
+        },
+        "description": "Noa's Flow. In Flow his decisions are even sharper, his two-footed shots are more accurate and he is harder to tackle. No automatic goals."
+      }
+    ],
+    "reactions": [
+      {
+        "id": "imperial-route",
+        "name": "Imperial Route",
+        "label": "IMPERIAL ROUTE",
+        "members": [
+          3,
+          49
+        ],
+        "effect": "rival-cooperation",
+        "cooldownTicks": 14,
+        "dialogue": "route",
+        "interpretation": "gameplay",
+        "params": {
+          "margin": 0.06,
+          "value": 0.02,
+          "rivalry": 0.008,
+          "startsRun": true
+        },
+        "description": "With Michael Kaiser on the pitch: when Kaiser has the ball, Noa makes a run to open a route for him. They only pass to each other when the other clearly has the better chance."
+      }
+    ],
+    "dialogue": {
+      "dribble": [
         "Keep it efficient.",
         "The shortest route.",
         "No wasted touches."
-    ],
-    "twoFooted": [
+      ],
+      "twoFooted": [
         "Wrong side. You committed.",
         "Either foot. Your choice was the mistake."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "That's how it's done.",
         "Good. Now do it again."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I won't waste the next one."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "You took too long."
-    ],
-    "route": [
+      ],
+      "route": [
         "Kaiser, your route is better. Take it."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Keep up. I won't wait."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Begin."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Use this angle.",
         "Choose the next action."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Next action."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "A poor choice."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "I'll finish it here."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Correct the positioning."
-    ],
-    "support": [
+      ],
+      "support": [
         "Use this angle."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "That pass was careless."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "A late challenge. My fault."
-    ],
-    "save": [
+      ],
+      "save": [
         "Option removed."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "A foul. Your decision."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I mistimed the run."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "Good. Now do it again."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/meguru-bachira/player.js
-// Character player data: Meguru Bachira (ID 4).
-const PLAYER_4_DATA = { id: 4, name: "Meguru Bachira", debutChapter: 1, appearanceOrder: 4, image: "images/meguru-bachira.jpg", primaryPosition: "CF", positions: ["CF", "LWB", "LM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"creative-dribbling","name":"Creative Dribbling","description":"Uses close touches and unpredictable changes of direction to beat markers.","battleSimType":"Special Move","battleSimDescription":"Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/bachira/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"creative-passing","name":"Creative Passing","category":"technical","description":"Shapes lofted and disguised passes around the receiver’s movement instead of relying only on dribbling to advance an attack.","battleSimType":"Special Move","battleSimDescription":"Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","note":"Bachira creates the First Clear Team’s goal; Tokimitsu identifies his extraordinary passes at 20:24.","episode":13}}], stats: { ovr:93, off:95, sho:88, spd:84, def:68, pas:88, dri:95, gk:51 },
-        battleSim: {
-            "awareness": {
-                "space": 0.05
-            },
-            "tendencies": {
-                "dribble": 0.08,
-                "pass": -0.02
-            },
-            "passives": [
-                {
-                    "id": "monster-instinct",
-                    "name": "Monster Instinct",
-                    "label": "MONSTER INSTINCT",
-                    "effect": "isolation-hunter",
-                    "params": {
-                        "value": 0.012
-                    },
-                    "description": "Bachira looks for one-on-ones with space behind the defender and is more likely to take them on."
-                },
-                {
-                    "id": "free-spirit",
-                    "name": "Free Spirit",
-                    "label": "FREE SPIRIT",
-                    "effect": "free-spirit",
-                    "params": {
-                        "factor": 0.35
-                    },
-                    "description": "Losing the ball on a dribble makes players more careful for a while. Bachira becomes only about a third as careful, so he keeps trying."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "creative-dribbling",
-                    "name": "Creative Dribbling",
-                    "label": "CREATIVE DRIBBLING",
-                    "effect": "creative-dribble",
-                    "dialogue": "dribble",
-                    "params": {
-                        "feint": 0.12,
-                        "cuts": [
-                            -84,
-                            84
-                        ]
-                    },
-                    "description": "Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled."
-                },
-                {
-                    "id": "creative-passing",
-                    "name": "Creative Passing",
-                    "label": "CREATIVE PASSING",
-                    "effect": "disruption-pass",
-                    "dialogue": "create",
-                    "params": {
-                        "value": 0.012,
-                        "precision": 0.8
-                    },
-                    "description": "Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate."
-                },
-                {
-                    "id": "bee-shot",
-                    "name": "Bee Shot",
-                    "label": "BEE SHOT",
-                    "effect": "post-dribble-finish",
-                    "dialogue": "beeShot",
-                    "params": {
-                        "maxMetres": 22,
-                        "technique": 0.1,
-                        "cooldownTicks": 10
-                    },
-                    "description": "Right after beating a defender within 22 m of goal, Bachira can shoot before that defender recovers. Other defenders and the goalkeeper can still stop it. Short cooldown."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "ginga-monster",
-                    "name": "Ginga × Monster",
-                    "label": "GINGA × MONSTER",
-                    "effects": [
-                        "flow-state",
-                        "dribble-chain"
-                    ],
-                    "params": {
-                        "maxChain": 2,
-                        "boost": {
-                            "creative-dribble": {
-                                "feint": 0.2
-                            }
-                        }
-                    },
-                    "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "creative-instinct",
-                    "name": "Creative Instinct",
-                    "label": "CREATIVE INSTINCT",
-                    "members": [
-                        1,
-                        4
-                    ],
-                    "effect": "exploit-disruption",
-                    "cooldownTicks": 12,
-                    "dialogue": "creative",
-                    "params": {
-                        "defendersDrawn": 1,
-                        "returnValue": 0.02,
-                        "precision": 0.7
-                    },
-                    "description": "With Yoichi Isagi on the pitch: when Bachira beats a defender or pulls one towards him, Isagi runs into the space that opens and Bachira can pass to him there. Defenders can still get back."
-                }
-            ],
-            "dialogue": {
-    "dribble": [
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_4_DATA = {
+  "id": 4,
+  "name": "Meguru Bachira",
+  "debutChapter": 1,
+  "appearanceOrder": 4,
+  "image": "images/meguru-bachira.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "LWB",
+    "LM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "creative-dribbling",
+      "name": "Creative Dribbling",
+      "description": "Uses close touches and unpredictable changes of direction to beat markers.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/bachira/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "creative-passing",
+      "name": "Creative Passing",
+      "category": "technical",
+      "description": "Shapes lofted and disguised passes around the receiver’s movement instead of relying only on dribbling to advance an attack.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
+        "note": "Bachira creates the First Clear Team’s goal; Tokimitsu identifies his extraordinary passes at 20:24.",
+        "episode": 13
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 93,
+    "off": 95,
+    "sho": 88,
+    "spd": 84,
+    "def": 68,
+    "pas": 88,
+    "dri": 95,
+    "gk": 51
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.05
+    },
+    "tendencies": {
+      "dribble": 0.08,
+      "pass": -0.02
+    },
+    "passives": [
+      {
+        "id": "monster-instinct",
+        "name": "Monster Instinct",
+        "label": "MONSTER INSTINCT",
+        "effect": "isolation-hunter",
+        "params": {
+          "value": 0.012
+        },
+        "description": "Bachira looks for one-on-ones with space behind the defender and is more likely to take them on."
+      },
+      {
+        "id": "free-spirit",
+        "name": "Free Spirit",
+        "label": "FREE SPIRIT",
+        "effect": "free-spirit",
+        "params": {
+          "factor": 0.35
+        },
+        "description": "Losing the ball on a dribble makes players more careful for a while. Bachira becomes only about a third as careful, so he keeps trying."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "creative-dribbling",
+        "name": "Creative Dribbling",
+        "label": "CREATIVE DRIBBLING",
+        "effect": "creative-dribble",
+        "dialogue": "dribble",
+        "params": {
+          "feint": 0.12,
+          "cuts": [
+            -84,
+            84
+          ]
+        },
+        "description": "Bachira can suddenly change direction while dribbling, and his feints make defenders hesitate, so they are less likely to win the ball. Top defenders are rarely fooled."
+      },
+      {
+        "id": "creative-passing",
+        "name": "Creative Passing",
+        "label": "CREATIVE PASSING",
+        "effect": "disruption-pass",
+        "dialogue": "create",
+        "params": {
+          "value": 0.012,
+          "precision": 0.8
+        },
+        "description": "Right after a dribble, Bachira spots the space it opened and is more likely to pass into it. These passes are more accurate."
+      },
+      {
+        "id": "bee-shot",
+        "name": "Bee Shot",
+        "label": "BEE SHOT",
+        "effect": "post-dribble-finish",
+        "dialogue": "beeShot",
+        "params": {
+          "maxMetres": 22,
+          "technique": 0.1,
+          "cooldownTicks": 10
+        },
+        "description": "Right after beating a defender within 22 m of goal, Bachira can shoot before that defender recovers. Other defenders and the goalkeeper can still stop it. Short cooldown."
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "ginga-monster",
+        "name": "Ginga × Monster",
+        "label": "GINGA × MONSTER",
+        "effects": [
+          "flow-state",
+          "dribble-chain"
+        ],
+        "params": {
+          "maxChain": 2,
+          "boost": {
+            "creative-dribble": {
+              "feint": 0.2
+            }
+          }
+        },
+        "description": "Bachira's Flow. After beating a defender he can try up to two more dribbles in the same attack, and his feints work even better. He can still be tackled each time."
+      }
+    ],
+    "reactions": [
+      {
+        "id": "creative-instinct",
+        "name": "Creative Instinct",
+        "label": "CREATIVE INSTINCT",
+        "members": [
+          1,
+          4
+        ],
+        "effect": "exploit-disruption",
+        "cooldownTicks": 12,
+        "dialogue": "creative",
+        "params": {
+          "defendersDrawn": 1,
+          "returnValue": 0.02,
+          "precision": 0.7
+        },
+        "description": "With Yoichi Isagi on the pitch: when Bachira beats a defender or pulls one towards him, Isagi runs into the space that opens and Bachira can pass to him there. Defenders can still get back."
+      }
+    ],
+    "dialogue": {
+      "dribble": [
         "Come dance with me!",
         "Monster says go!",
         "Ehehe, this way!",
         "Bet you didn't see that!"
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "You caught me that time!"
-    ],
-    "create": [
+      ],
+      "create": [
         "Space! Somebody take it!",
         "There, the monster opened a door!"
-    ],
-    "beeShot": [
+      ],
+      "beeShot": [
         "Buzz! Bee Shot!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Hehe! That one's mine!",
         "That was fun!",
         "That was so much fun!",
         "Did you see that dance?"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "Oops, a little off!",
         "Ahh, so close!"
-    ],
-    "flowDribble": [
+      ],
+      "flowDribble": [
         "One more! The monster's hungry!"
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Come on, let's get wilder!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Shall we play?"
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Try something fun with this!",
         "Show me your next trick!"
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Ooh, my turn!"
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Let's see you catch this!"
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Hehe, I'll borrow that!",
         "Mine now!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "That makes it interesting!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Try something fun with this!"
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Aw, you spoiled my pass!"
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Oops, got your leg."
-    ],
-    "save": [
+      ],
+      "save": [
         "Mine now!"
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Hey, we're playing football!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Aw, I got ahead of myself!"
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "Did you see that dance?"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/gurimu-igarashi/player.js
-// Character player data: Gurimu Igarashi (ID 5).
-const PLAYER_5_DATA = { id: 5, name: "Gurimu Igarashi", debutChapter: 1, appearanceOrder: 5, image: "images/gurimu-igarashi.jpg", primaryPosition: "FW", positions: ["FW", "DF"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"malicia","name":"Malicia","description":"Positions his body to draw contact and earn fouls from opponents.","battleSimType":"Special Move","battleSimDescription":"When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Gurimu_Igarashi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:69, off:67, sho:65, spd:68, def:77, pas:66, dri:65, gk:54 },
-        battleSim: {
-            "awareness": {
-                "defensiveRead": 0.03
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_5_DATA = {
+  "id": 5,
+  "name": "Gurimu Igarashi",
+  "debutChapter": 1,
+  "appearanceOrder": 5,
+  "image": "images/gurimu-igarashi.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW",
+    "DF"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "malicia",
+      "name": "Malicia",
+      "description": "Positions his body to draw contact and earn fouls from opponents.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Gurimu_Igarashi",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 69,
+    "off": 67,
+    "sho": 65,
+    "spd": 68,
+    "def": 77,
+    "pas": 66,
+    "dri": 65,
+    "gk": 54
+  },
+  "battleSim": {
+    "awareness": {
+      "defensiveRead": 0.03
+    },
+    "passives": [
+      {
+        "id": "never-give-up",
+        "name": "Never Give Up",
+        "label": "NEVER GIVE UP",
+        "effect": "persistent-press",
+        "params": {
+          "press": 0.5,
+          "looseBall": 0.12
+        },
+        "description": "Igarashi joins the press sooner and reacts faster to loose balls. He does not get extra speed or stamina."
+      },
+      {
+        "id": "opportunist",
+        "name": "Opportunist",
+        "label": "OPPORTUNIST",
+        "effect": "contact-read",
+        "params": {
+          "range": 1
+        },
+        "description": "Igarashi notices defenders rushing in, or coming from a bad angle, a little earlier, which gives him more chances to use Malicia."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "malicia",
+        "name": "Malicia",
+        "label": "MALICIA",
+        "effect": "foul-drawing",
+        "dialogue": "malicia",
+        "params": {
+          "base": 0.1,
+          "range": 3.4,
+          "preference": 0.022
+        },
+        "description": "When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving."
+      },
+      {
+        "id": "right-side-trap",
+        "name": "Right-Side Trap",
+        "label": "RIGHT-SIDE TRAP",
+        "effect": "right-side-trap",
+        "params": {
+          "bonus": 0.1,
+          "cooldownTicks": 8
+        },
+        "description": "When a defender challenges Igarashi from his right side, Malicia is more likely to win a foul. Careful defenders can still avoid it. Short cooldown."
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "survival-instinct",
+        "name": "Survival Instinct",
+        "label": "SURVIVAL INSTINCT",
+        "effect": "flow-state",
+        "interpretation": "gameplay",
+        "params": {
+          "boost": {
+            "foul-drawing": {
+              "base": 0.16
             },
-            "passives": [
-                {
-                    "id": "never-give-up",
-                    "name": "Never Give Up",
-                    "label": "NEVER GIVE UP",
-                    "effect": "persistent-press",
-                    "params": {
-                        "press": 0.5,
-                        "looseBall": 0.12
-                    },
-                    "description": "Igarashi joins the press sooner and reacts faster to loose balls. He does not get extra speed or stamina."
-                },
-                {
-                    "id": "opportunist",
-                    "name": "Opportunist",
-                    "label": "OPPORTUNIST",
-                    "effect": "contact-read",
-                    "params": {
-                        "range": 1
-                    },
-                    "description": "Igarashi notices defenders rushing in, or coming from a bad angle, a little earlier, which gives him more chances to use Malicia."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "malicia",
-                    "name": "Malicia",
-                    "label": "MALICIA",
-                    "effect": "foul-drawing",
-                    "dialogue": "malicia",
-                    "params": {
-                        "base": 0.1,
-                        "range": 3.4,
-                        "preference": 0.022
-                    },
-                    "description": "When a defender comes close, Igarashi can try to draw a foul. It works more often if the defender comes from behind or the side, or arrives fast; careful defenders rarely fall for it. If it fails, he keeps the ball, loses it, or gets a yellow card for diving."
-                },
-                {
-                    "id": "right-side-trap",
-                    "name": "Right-Side Trap",
-                    "label": "RIGHT-SIDE TRAP",
-                    "effect": "right-side-trap",
-                    "params": {
-                        "bonus": 0.1,
-                        "cooldownTicks": 8
-                    },
-                    "description": "When a defender challenges Igarashi from his right side, Malicia is more likely to win a foul. Careful defenders can still avoid it. Short cooldown."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "survival-instinct",
-                    "name": "Survival Instinct",
-                    "label": "SURVIVAL INSTINCT",
-                    "effect": "flow-state",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "boost": {
-                            "foul-drawing": {
-                                "base": 0.16
-                            },
-                            "persistent-press": {
-                                "press": 0.8,
-                                "looseBall": 0.18
-                            }
-                        }
-                    },
-                    "description": "Igarashi's Flow. In Flow, Malicia works more often, and he presses and chases loose balls even harder. It does not help his shooting."
-                }
-            ],
-            "dialogue": {
-    "malicia": [
+            "persistent-press": {
+              "press": 0.8,
+              "looseBall": 0.18
+            }
+          }
+        },
+        "description": "Igarashi's Flow. In Flow, Malicia works more often, and he presses and chases loose balls even harder. It does not help his shooting."
+      }
+    ],
+    "dialogue": {
+      "malicia": [
         "Gotcha! That's a foul, ref!",
         "Heh, Malicia never fails!"
-    ],
-    "maliciaFail": [
+      ],
+      "maliciaFail": [
         "W-wait, he really hit me!",
         "Ugh, the ref saw that..."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Mine! I got it, I got it!",
         "I survived that one!",
         "I'm not giving up!",
         "Survived another one!"
-    ],
-    "secondBall": [
+      ],
+      "secondBall": [
         "Mine! Loose ball's mine!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "I SCORED?! Yes! I actually scored!",
         "I am still in this!",
         "Did everyone see?! I scored!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "No, come on!",
         "Nooo, why not!"
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I'm still standing! Come on!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Please let this go well!"
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Take it, quick!",
         "Do not lose it!"
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Okay, okay, I have it!"
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "Just let me through!"
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Wait, give it back!"
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Go in! Please, just go in!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "We can still do this, right?"
-    ],
-    "support": [
+      ],
+      "support": [
         "Take it, quick!"
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "No, no! That wasn't for you!"
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Ref! Come on, that wasn't that bad!"
-    ],
-    "save": [
+      ],
+      "save": [
         "I survived that one!"
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "REF! You saw that, right?!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Offside?! I finally got through!"
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "Did everyone see?! I scored!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/rensuke-kunigami/player.js
-// Character player data: Rensuke Kunigami (ID 6).
-const PLAYER_6_DATA = { id: 6, name: "Rensuke Kunigami", debutChapter: 1, appearanceOrder: 6, image: "images/rensuke-kunigami.jpg", primaryPosition: "CF", positions: ["CF", "DM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"physical-strength","name":"Physical Strength","description":"Uses his powerful frame to hold off opponents and contest possession.","battleSimType":"Passive","battleSimDescription":"Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"left-footed-long-range-shot","name":"Left-Footed Long-Range Shot","description":"Strikes powerful shots from distance with his preferred left foot.","battleSimType":"Special Move","battleSimDescription":"From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them.","source":{"type":"official-profile","url":"https://bluelock-kc.com/characters/kunigami/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"right-footed-finishing","name":"Right-Footed Finishing","category":"technical","description":"Uses his trained right foot to finish a loose or redirected ball without waiting to bring it onto his stronger left side.","battleSimType":"Special Move","battleSimDescription":"Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Chapter_185","chapter":185,"note":"Kunigami converts the diverted Isagi shot with his right foot against Manshine City."}}], stats: { ovr:90, off:91, sho:95, spd:87, def:86, pas:75, dri:79, gk:58 },
-        battleSim: {
-            "awareness": {
-                "space": -0.02,
-                "defensiveRead": 0.02
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_6_DATA = {
+  "id": 6,
+  "name": "Rensuke Kunigami",
+  "debutChapter": 1,
+  "appearanceOrder": 6,
+  "image": "images/rensuke-kunigami.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "DM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "physical-strength",
+      "name": "Physical Strength",
+      "description": "Uses his powerful frame to hold off opponents and contest possession.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/kunigami/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "left-footed-long-range-shot",
+      "name": "Left-Footed Long-Range Shot",
+      "description": "Strikes powerful shots from distance with his preferred left foot.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-kc.com/characters/kunigami/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "right-footed-finishing",
+      "name": "Right-Footed Finishing",
+      "category": "technical",
+      "description": "Uses his trained right foot to finish a loose or redirected ball without waiting to bring it onto his stronger left side.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Chapter_185",
+        "chapter": 185,
+        "note": "Kunigami converts the diverted Isagi shot with his right foot against Manshine City."
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 90,
+    "off": 91,
+    "sho": 95,
+    "spd": 87,
+    "def": 86,
+    "pas": 75,
+    "dri": 79,
+    "gk": 58
+  },
+  "battleSim": {
+    "awareness": {
+      "space": -0.02,
+      "defensiveRead": 0.02
+    },
+    "tendencies": {
+      "shoot": 0.06
+    },
+    "rivals": [
+      31
+    ],
+    "passives": [
+      {
+        "id": "physical-dominance",
+        "name": "Physical Dominance",
+        "label": "PHYSICAL DOMINANCE",
+        "effect": "physical-shield",
+        "dialogue": "dribble",
+        "params": {
+          "shield": 6,
+          "looseBall": 0.1
+        },
+        "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
+      },
+      {
+        "id": "wild-card-physique",
+        "name": "Wild Card Physique",
+        "label": "WILD CARD PHYSIQUE",
+        "effect": "durable",
+        "params": {
+          "drain": 0.75
+        },
+        "description": "Running and duels tire Kunigami 25% less than other players."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "power-shot",
+        "name": "Power Shot",
+        "label": "POWER SHOT",
+        "effect": "power-shot",
+        "dialogue": "powerShot",
+        "params": {
+          "minMetres": 16,
+          "maxMetres": 32,
+          "technique": 0.3,
+          "parry": 0.12
+        },
+        "description": "From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them."
+      },
+      {
+        "id": "ambidextrous-finishing",
+        "name": "Ambidextrous Finishing",
+        "label": "AMBIDEXTROUS FINISHING",
+        "effect": "weak-foot-finish",
+        "dialogue": "ambi",
+        "params": {
+          "anyShot": true,
+          "technique": -0.05,
+          "maxMetres": 26
+        },
+        "description": "Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate."
+      },
+      {
+        "id": "rush-volley",
+        "name": "Rush Volley",
+        "label": "RUSH VOLLEY",
+        "effect": "rebound-volley",
+        "dialogue": "rushVolley",
+        "params": {
+          "reach": 1.6,
+          "technique": 0.15,
+          "cooldownTicks": 6
+        },
+        "description": "When a goalkeeper parries a shot within 18 m of goal and Kunigami reaches the ball first, he volleys it straight away. He has to actually get there first."
+      },
+      {
+        "id": "physical-man-marking",
+        "name": "Physical Man-Marking",
+        "label": "PHYSICAL MAN-MARKING",
+        "effect": "man-marking",
+        "dialogue": "defend",
+        "params": {
+          "targets": [
+            31
+          ],
+          "range": 30,
+          "duel": 4
+        },
+        "description": "When defending, Kunigami marks Shidou if he is nearby, or otherwise the most dangerous attacker close to him. He stays tight to that player and is harder to beat in duels with him."
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "physical-breakthrough",
+        "name": "Physical Breakthrough",
+        "label": "PHYSICAL BREAKTHROUGH",
+        "effect": "flow-state",
+        "interpretation": "gameplay",
+        "params": {
+          "boost": {
+            "power-shot": {
+              "technique": 0.42,
+              "maxMetres": 35
             },
-            "tendencies": {
-                "shoot": 0.06
-            },
-            "rivals": [
-                31
-            ],
-            "passives": [
-                {
-                    "id": "physical-dominance",
-                    "name": "Physical Dominance",
-                    "label": "PHYSICAL DOMINANCE",
-                    "effect": "physical-shield",
-                    "dialogue": "dribble",
-                    "params": {
-                        "shield": 6,
-                        "looseBall": 0.1
-                    },
-                    "description": "Kunigami is hard to push off the ball and hard to get past when he tackles. He also reacts faster to loose balls. He can still be tackled."
-                },
-                {
-                    "id": "wild-card-physique",
-                    "name": "Wild Card Physique",
-                    "label": "WILD CARD PHYSIQUE",
-                    "effect": "durable",
-                    "params": {
-                        "drain": 0.75
-                    },
-                    "description": "Running and duels tire Kunigami 25% less than other players."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "power-shot",
-                    "name": "Power Shot",
-                    "label": "POWER SHOT",
-                    "effect": "power-shot",
-                    "dialogue": "powerShot",
-                    "params": {
-                        "minMetres": 16,
-                        "maxMetres": 32,
-                        "technique": 0.3,
-                        "parry": 0.12
-                    },
-                    "description": "From 16–32 m, Kunigami's powerful shots are harder for goalkeepers to stop, and saves more often bounce out for a rebound. Defenders can still block them."
-                },
-                {
-                    "id": "ambidextrous-finishing",
-                    "name": "Ambidextrous Finishing",
-                    "label": "AMBIDEXTROUS FINISHING",
-                    "effect": "weak-foot-finish",
-                    "dialogue": "ambi",
-                    "params": {
-                        "anyShot": true,
-                        "technique": -0.05,
-                        "maxMetres": 26
-                    },
-                    "description": "Kunigami can shoot with either foot, so he can switch to the near post when the far post is blocked. His weaker foot is slightly less accurate."
-                },
-                {
-                    "id": "rush-volley",
-                    "name": "Rush Volley",
-                    "label": "RUSH VOLLEY",
-                    "effect": "rebound-volley",
-                    "dialogue": "rushVolley",
-                    "params": {
-                        "reach": 1.6,
-                        "technique": 0.15,
-                        "cooldownTicks": 6
-                    },
-                    "description": "When a goalkeeper parries a shot within 18 m of goal and Kunigami reaches the ball first, he volleys it straight away. He has to actually get there first."
-                },
-                {
-                    "id": "physical-man-marking",
-                    "name": "Physical Man-Marking",
-                    "label": "PHYSICAL MAN-MARKING",
-                    "effect": "man-marking",
-                    "dialogue": "defend",
-                    "params": {
-                        "targets": [
-                            31
-                        ],
-                        "range": 30,
-                        "duel": 4
-                    },
-                    "description": "When defending, Kunigami marks Shidou if he is nearby, or otherwise the most dangerous attacker close to him. He stays tight to that player and is harder to beat in duels with him."
-                }
-            ],
-            "ultimates": [
-                {
-                    "id": "physical-breakthrough",
-                    "name": "Physical Breakthrough",
-                    "label": "PHYSICAL BREAKTHROUGH",
-                    "effect": "flow-state",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "boost": {
-                            "power-shot": {
-                                "technique": 0.42,
-                                "maxMetres": 35
-                            },
-                            "physical-shield": {
-                                "shield": 10
-                            }
-                        }
-                    },
-                    "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "second-ball-instinct",
-                    "name": "Second Ball Instinct",
-                    "label": "SECOND BALL INSTINCT",
-                    "members": [
-                        6,
-                        1
-                    ],
-                    "effect": "second-ball",
-                    "cooldownTicks": 10,
-                    "dialogue": "kuniSecond",
-                    "interpretation": "gameplay",
-                    "params": {
-                        "reaction": 0.2
-                    },
-                    "description": "With Yoichi Isagi on the pitch: when a goalkeeper parries one of Isagi's shots, Kunigami reacts to the rebound a little faster. Other players can still get there first."
-                }
-            ],
-            "dialogue": {
-    "powerShot": [
+            "physical-shield": {
+              "shield": 10
+            }
+          }
+        },
+        "description": "Kunigami's Flow. In Flow his Power Shot is even harder to stop and works from up to 35 m, and he is even harder to push off the ball."
+      }
+    ],
+    "reactions": [
+      {
+        "id": "second-ball-instinct",
+        "name": "Second Ball Instinct",
+        "label": "SECOND BALL INSTINCT",
+        "members": [
+          6,
+          1
+        ],
+        "effect": "second-ball",
+        "cooldownTicks": 10,
+        "dialogue": "kuniSecond",
+        "interpretation": "gameplay",
+        "params": {
+          "reaction": 0.2
+        },
+        "description": "With Yoichi Isagi on the pitch: when a goalkeeper parries one of Isagi's shots, Kunigami reacts to the rebound a little faster. Other players can still get there first."
+      }
+    ],
+    "dialogue": {
+      "powerShot": [
         "Feel the power of this one.",
         "Full force."
-    ],
-    "ambi": [
+      ],
+      "ambi": [
         "Right foot works too."
-    ],
-    "rushVolley": [
+      ],
+      "rushVolley": [
         "Hit it before it drops!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "I'm taking the next one too.",
         "I came back for this."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I have to finish those.",
         "Not enough. Hit it harder."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "You're not shaking me off."
-    ],
-    "secondBall": [
+      ],
+      "secondBall": [
         "Second ball's mine!"
-    ],
-    "kuniSecond": [
+      ],
+      "kuniSecond": [
         "Isagi, I'll finish what you start!"
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "I am going through.",
         "Bounce off."
-    ],
-    "rival": [
+      ],
+      "rival": [
         "Shidou. I'm marking you."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I'm breaking through. Move."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Let us get on with it."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Take it forward.",
         "Keep pushing forward."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "I have it."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I lost that duel."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Try stopping this shot."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Next play."
-    ],
-    "support": [
+      ],
+      "support": [
         "Take it forward."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Tch. I gave that away."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Fine. Call the foul."
-    ],
-    "save": [
+      ],
+      "save": [
         "You are not getting through."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Get off me."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Tch. Too far ahead."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "I came back for this."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/hyoma-chigiri/player.js
-// Character player data: Hyoma Chigiri (ID 7).
-const PLAYER_7_DATA = { id: 7, name: "Hyoma Chigiri", debutChapter: 1, appearanceOrder: 7, image: "images/hyoma-chigiri.jpg", primaryPosition: "LW", positions: ["LW", "RW", "RWB", "RB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"top-speed","name":"Top Speed","description":"Carries attacks into open space with sustained sprinting speed.","battleSimType":"Passive","battleSimDescription":"When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Hyoma_Chigiri","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"golden-zone-shot","name":"Golden Zone Shot","description":"Cuts in from the left to shoot from his practiced diagonal scoring zone.","battleSimType":"Special Move","battleSimDescription":"From his favourite diagonal spot, about 15–23 m from goal at an angle of roughly 30–58°, Chigiri's shot to the far post is more accurate, and he looks for dribbles that take him there. Defenders can block it and the goalkeeper can save it.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Hyoma_Chigiri","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"high-speed-dribbling","name":"High-Speed Dribbling","category":"technical","description":"Controls the ball at sprinting pace, using changes of direction to beat pressure before choosing a shot or a delivery into the space his run has opened.","battleSimType":"Special Move","battleSimDescription":"With at least 5 m of open grass ahead, Chigiri knocks the ball forward and chases it, covering about 50% more ground than a normal dribble. Speed decides it more than skill, and a defender in the way can still take the ball.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e9-awakening","note":"Chigiri runs with the ball beyond Zantetsu to score during Team Z versus Team V.","episode":9}}], stats: { ovr:93, off:88, sho:88, spd:98, def:68, pas:80, dri:93, gk:49 },
-        battleSim: {
-            "awareness": {
-                "space": 0.03
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_7_DATA = {
+  "id": 7,
+  "name": "Hyoma Chigiri",
+  "debutChapter": 1,
+  "appearanceOrder": 7,
+  "image": "images/hyoma-chigiri.jpg",
+  "primaryPosition": "LW",
+  "positions": [
+    "LW",
+    "RW",
+    "RWB",
+    "RB"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "top-speed",
+      "name": "Top Speed",
+      "description": "Carries attacks into open space with sustained sprinting speed.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Hyoma_Chigiri",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "golden-zone-shot",
+      "name": "Golden Zone Shot",
+      "description": "Cuts in from the left to shoot from his practiced diagonal scoring zone.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "From his favourite diagonal spot, about 15–23 m from goal at an angle of roughly 30–58°, Chigiri's shot to the far post is more accurate, and he looks for dribbles that take him there. Defenders can block it and the goalkeeper can save it.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Hyoma_Chigiri",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "high-speed-dribbling",
+      "name": "High-Speed Dribbling",
+      "category": "technical",
+      "description": "Controls the ball at sprinting pace, using changes of direction to beat pressure before choosing a shot or a delivery into the space his run has opened.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "With at least 5 m of open grass ahead, Chigiri knocks the ball forward and chases it, covering about 50% more ground than a normal dribble. Speed decides it more than skill, and a defender in the way can still take the ball.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e9-awakening",
+        "note": "Chigiri runs with the ball beyond Zantetsu to score during Team Z versus Team V.",
+        "episode": 9
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 93,
+    "off": 88,
+    "sho": 88,
+    "spd": 98,
+    "def": 68,
+    "pas": 80,
+    "dri": 93,
+    "gk": 49
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.03
+    },
+    "tendencies": {
+      "direct": 0.08,
+      "dribble": 0.03
+    },
+    "passives": [
+      {
+        "id": "top-speed-specialist",
+        "name": "Top-Speed Specialist",
+        "label": "TOP-SPEED SPECIALIST",
+        "effect": "sprint-momentum",
+        "params": {
+          "carry": 0.35,
+          "race": 5
+        },
+        "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
+      },
+      {
+        "id": "high-speed-awareness",
+        "name": "High-Speed Awareness",
+        "label": "HIGH-SPEED AWARENESS",
+        "effect": "wide-runner",
+        "params": {
+          "wide": 4
+        },
+        "description": "Chigiri makes his runs behind the defence through the wide channels instead of crowding the middle. Defenders who read the run can still follow it."
+      },
+      {
+        "id": "red-panther-sniper",
+        "name": "Red Panther Sniper",
+        "label": "RED PANTHER SNIPER",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "sprint-momentum": {
+              "carry": 0.42,
+              "race": 7
             },
-            "tendencies": {
-                "direct": 0.08,
-                "dribble": 0.03
+            "speed-cut": {
+              "value": 0.012
             },
-            "passives": [
-                {
-                    "id": "top-speed-specialist",
-                    "name": "Top-Speed Specialist",
-                    "label": "TOP-SPEED SPECIALIST",
-                    "effect": "sprint-momentum",
-                    "params": {
-                        "carry": 0.35,
-                        "race": 5
-                    },
-                    "description": "When Chigiri is already sprinting, he starts races for through balls at close to full speed and wins more footraces when he knocks the ball ahead. Sharp turns at speed cost him control, and he is never faster than his top speed."
-                },
-                {
-                    "id": "high-speed-awareness",
-                    "name": "High-Speed Awareness",
-                    "label": "HIGH-SPEED AWARENESS",
-                    "effect": "wide-runner",
-                    "params": {
-                        "wide": 4
-                    },
-                    "description": "Chigiri makes his runs behind the defence through the wide channels instead of crowding the middle. Defenders who read the run can still follow it."
-                },
-                {
-                    "id": "red-panther-sniper",
-                    "name": "Red Panther Sniper",
-                    "label": "RED PANTHER SNIPER",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "boost": {
-                            "sprint-momentum": {
-                                "carry": 0.42,
-                                "race": 7
-                            },
-                            "speed-cut": {
-                                "value": 0.012
-                            },
-                            "zone-finish": {
-                                "technique": 0.4,
-                                "approach": 0.02
-                            }
-                        }
-                    },
-                    "description": "Chigiri's Flow. In Flow he carries more speed into races, cuts inside more readily and his Golden Zone Shot is more accurate. The shot can still be blocked or saved."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "no-break-dribble",
-                    "name": "No-Break Dribble",
-                    "label": "NO-BREAK DRIBBLE",
-                    "effect": "push-dribble",
-                    "dialogue": "sprint",
-                    "params": {
-                        "stride": 1.5,
-                        "space": 5
-                    },
-                    "description": "With at least 5 m of open grass ahead, Chigiri knocks the ball forward and chases it, covering about 50% more ground than a normal dribble. Speed decides it more than skill, and a defender in the way can still take the ball."
-                },
-                {
-                    "id": "high-speed-cut-in",
-                    "name": "High-Speed Cut-In",
-                    "label": "HIGH-SPEED CUT-IN",
-                    "effect": "speed-cut",
-                    "dialogue": "cut",
-                    "params": {
-                        "angle": 48,
-                        "minSpeed": 0.35,
-                        "value": 0.006
-                    },
-                    "description": "When Chigiri is sprinting down the wing in the attacking half, he can cut inside at speed without the usual loss of control. A defender covering the inside can still stop him."
-                },
-                {
-                    "id": "golden-zone-shot",
-                    "name": "Golden Zone Shot",
-                    "label": "GOLDEN ZONE SHOT",
-                    "effect": "zone-finish",
-                    "dialogue": "zone",
-                    "params": {
-                        "metres": [
-                            15,
-                            23
-                        ],
-                        "angle": [
-                            30,
-                            58
-                        ],
-                        "technique": 0.3,
-                        "approach": 0.012
-                    },
-                    "description": "From his favourite diagonal spot, about 15–23 m from goal at an angle of roughly 30–58°, Chigiri's shot to the far post is more accurate, and he looks for dribbles that take him there. Defenders can block it and the goalkeeper can save it."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "speed-and-vision",
-                    "name": "Speed and Vision",
-                    "label": "SPEED AND VISION",
-                    "members": [
-                        7,
-                        1
-                    ],
-                    "effect": "synchronized-through",
-                    "cooldownTicks": 14,
-                    "dialogue": "sync",
-                    "params": {
-                        "precision": 0.65,
-                        "value": 0.01
-                    },
-                    "description": "When Isagi has the ball, Chigiri sets off on a run at the same moment and Isagi spots it even from far away, playing a more accurate through ball. Offside still counts and defenders can still catch the pass."
-                }
-            ],
-            "dialogue": {
-    "sprint": [
+            "zone-finish": {
+              "technique": 0.4,
+              "approach": 0.02
+            }
+          }
+        },
+        "description": "Chigiri's Flow. In Flow he carries more speed into races, cuts inside more readily and his Golden Zone Shot is more accurate. The shot can still be blocked or saved."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "no-break-dribble",
+        "name": "No-Break Dribble",
+        "label": "NO-BREAK DRIBBLE",
+        "effect": "push-dribble",
+        "dialogue": "sprint",
+        "params": {
+          "stride": 1.5,
+          "space": 5
+        },
+        "description": "With at least 5 m of open grass ahead, Chigiri knocks the ball forward and chases it, covering about 50% more ground than a normal dribble. Speed decides it more than skill, and a defender in the way can still take the ball."
+      },
+      {
+        "id": "high-speed-cut-in",
+        "name": "High-Speed Cut-In",
+        "label": "HIGH-SPEED CUT-IN",
+        "effect": "speed-cut",
+        "dialogue": "cut",
+        "params": {
+          "angle": 48,
+          "minSpeed": 0.35,
+          "value": 0.006
+        },
+        "description": "When Chigiri is sprinting down the wing in the attacking half, he can cut inside at speed without the usual loss of control. A defender covering the inside can still stop him."
+      },
+      {
+        "id": "golden-zone-shot",
+        "name": "Golden Zone Shot",
+        "label": "GOLDEN ZONE SHOT",
+        "effect": "zone-finish",
+        "dialogue": "zone",
+        "params": {
+          "metres": [
+            15,
+            23
+          ],
+          "angle": [
+            30,
+            58
+          ],
+          "technique": 0.3,
+          "approach": 0.012
+        },
+        "description": "From his favourite diagonal spot, about 15–23 m from goal at an angle of roughly 30–58°, Chigiri's shot to the far post is more accurate, and he looks for dribbles that take him there. Defenders can block it and the goalkeeper can save it."
+      }
+    ],
+    "reactions": [
+      {
+        "id": "speed-and-vision",
+        "name": "Speed and Vision",
+        "label": "SPEED AND VISION",
+        "members": [
+          7,
+          1
+        ],
+        "effect": "synchronized-through",
+        "cooldownTicks": 14,
+        "dialogue": "sync",
+        "params": {
+          "precision": 0.65,
+          "value": 0.01
+        },
+        "description": "When Isagi has the ball, Chigiri sets off on a run at the same moment and Isagi spots it even from far away, playing a more accurate through ball. Offside still counts and defenders can still catch the pass."
+      }
+    ],
+    "dialogue": {
+      "sprint": [
         "Try to keep up.",
         "Nobody catches me in open grass."
-    ],
-    "cut": [
+      ],
+      "cut": [
         "Inside. Too fast for you.",
         "You can't turn with me."
-    ],
-    "zone": [
+      ],
+      "zone": [
         "This is my zone.",
         "From here, I don't miss the angle."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Still chasing? The ball's already in.",
         "A little too late."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I rushed that.",
         "Too hasty. Again.",
         "My legs were ready. My shot wasn't."
-    ],
-    "sync": [
+      ],
+      "sync": [
         "Isagi, put it in front of me!",
         "You see it. I'll run it."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Blink, and you'll lose me."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Try keeping up."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Do not slow this down.",
         "Try matching my pace."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Good. Now watch."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "Still chasing me?"
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "You caught up that time."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Just try reaching this corner."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Too slow with that ball."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "We are not finished."
-    ],
-    "support": [
+      ],
+      "support": [
         "Do not slow this down."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Tch. That pass killed the pace."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Yeah, I caught his leg."
-    ],
-    "save": [
+      ],
+      "save": [
         "Too slow with that touch."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "You needed a foul to catch me?"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Too quick off the mark, then."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "A little too late."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/gin-gagamaru/player.js
-// Character player data: Gin Gagamaru (ID 8).
-const PLAYER_8_DATA = { id: 8, name: "Gin Gagamaru", debutChapter: 1, appearanceOrder: 8, image: "images/gin-gagamaru.jpg", primaryPosition: "GK", positions: ["GK", "FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"acrobatic-body-control","name":"Acrobatic Body Control","description":"Uses springy, flexible movements to reach balls from unusual body positions.","battleSimType":"Passive","battleSimDescription":"In goal, his flexibility lets him reach shots from wide angles and shots aimed at a post more often than other keepers. He still has to be in position to get there.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Gin_Gagamaru","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"goalkeeping-reflexes","name":"Goalkeeping Reflexes","description":"Reacts quickly to close shots and adjusts his body for instinctive saves.","battleSimType":"Special Move","battleSimDescription":"In goal, against a well-placed shot from 8–22 m, Gagamaru reacts in time to dive across and make a much harder shot saveable. After he makes a save with it, it needs 10 ticks to come back.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Gin_Gagamaru","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:89, off:79, sho:80, spd:87, def:93, pas:88, dri:84, gk:96 },
-        battleSim: {
-            "passives": [
-                {
-                    "id": "wild-reflexes",
-                    "name": "Wild Reflexes",
-                    "label": "WILD REFLEXES",
-                    "effect": "reflex-save",
-                    "dialogue": "save",
-                    "params": {
-                        "reflex": 0.28
-                    },
-                    "description": "In goal, Gagamaru reacts faster to close-range shots: the nearer the shooter (inside about 17 m), the harder he is to beat. Well-placed shots still go in."
-                },
-                {
-                    "id": "springlike-body",
-                    "name": "Springlike Body",
-                    "label": "SPRINGLIKE BODY",
-                    "effect": "acrobatic-reach",
-                    "dialogue": "save",
-                    "params": {
-                        "reach": 0.2
-                    },
-                    "description": "In goal, his flexibility lets him reach shots from wide angles and shots aimed at a post more often than other keepers. He still has to be in position to get there."
-                },
-                {
-                    "id": "wild-instinct",
-                    "name": "Wild Instinct",
-                    "label": "WILD INSTINCT",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "boost": {
-                            "reflex-save": {
-                                "reflex": 0.38
-                            },
-                            "acrobatic-reach": {
-                                "reach": 0.28
-                            },
-                            "smother-block": {
-                                "block": 0.45
-                            },
-                            "super-reflex": {
-                                "reflex": 0.4
-                            }
-                        }
-                    },
-                    "description": "Gagamaru's Flow. In Flow his reflexes, reach, Super Reflex Save and point-blank blocks all improve. He can still be beaten."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "super-reflex-save",
-                    "name": "Super Reflex Save",
-                    "label": "SUPER REFLEX SAVE",
-                    "effect": "super-reflex",
-                    "dialogue": "save",
-                    "params": {
-                        "minMetres": 8,
-                        "maxMetres": 22,
-                        "reflex": 0.3,
-                        "cooldownTicks": 10
-                    },
-                    "description": "In goal, against a well-placed shot from 8–22 m, Gagamaru reacts in time to dive across and make a much harder shot saveable. After he makes a save with it, it needs 10 ticks to come back."
-                },
-                {
-                    "id": "shachihoko-defense",
-                    "name": "Shachihoko Defense",
-                    "label": "SHACHIHOKO DEFENSE",
-                    "effect": "smother-block",
-                    "dialogue": "block",
-                    "params": {
-                        "maxMetres": 9,
-                        "maxGap": 7,
-                        "block": 0.35,
-                        "cooldownTicks": 12
-                    },
-                    "description": "In goal, when a shooter is within 9 m and Gagamaru is within 7 m of him, he throws his whole body, even upside down, in front of the ball, making the shot much harder to score. After he makes a save with it, it needs 12 ticks to come back."
-                },
-                {
-                    "id": "bear-claw-deflection",
-                    "name": "Bear Claw Deflection",
-                    "label": "BEAR CLAW DEFLECTION",
-                    "effect": "extended-parry",
-                    "params": {
-                        "parry": 0.05
-                    },
-                    "description": "In goal, Gagamaru gets a hand on shots he cannot hold and pushes them away, so more of his saves are parries. A parry leaves a loose ball that either team can win."
-                },
-                {
-                    "id": "scorpion-kick",
-                    "name": "Scorpion Kick",
-                    "label": "SCORPION KICK",
-                    "effect": "acrobatic-finish",
-                    "dialogue": "scorpion",
-                    "params": {
-                        "maxMetres": 12,
-                        "technique": 0.15
-                    },
-                    "description": "Only when he plays outfield: when a cross reaches him within 12 m of goal, he can finish it acrobatically in the air. Defenders and the goalkeeper can still stop it."
-                }
-            ],
-            "dialogue": {
-    "save": [
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_8_DATA = {
+  "id": 8,
+  "name": "Gin Gagamaru",
+  "debutChapter": 1,
+  "appearanceOrder": 8,
+  "image": "images/gin-gagamaru.jpg",
+  "primaryPosition": "GK",
+  "positions": [
+    "GK",
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "acrobatic-body-control",
+      "name": "Acrobatic Body Control",
+      "description": "Uses springy, flexible movements to reach balls from unusual body positions.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "In goal, his flexibility lets him reach shots from wide angles and shots aimed at a post more often than other keepers. He still has to be in position to get there.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Gin_Gagamaru",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "goalkeeping-reflexes",
+      "name": "Goalkeeping Reflexes",
+      "description": "Reacts quickly to close shots and adjusts his body for instinctive saves.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "In goal, against a well-placed shot from 8–22 m, Gagamaru reacts in time to dive across and make a much harder shot saveable. After he makes a save with it, it needs 10 ticks to come back.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Gin_Gagamaru",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 89,
+    "off": 79,
+    "sho": 80,
+    "spd": 87,
+    "def": 93,
+    "pas": 88,
+    "dri": 84,
+    "gk": 96
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "wild-reflexes",
+        "name": "Wild Reflexes",
+        "label": "WILD REFLEXES",
+        "effect": "reflex-save",
+        "dialogue": "save",
+        "params": {
+          "reflex": 0.28
+        },
+        "description": "In goal, Gagamaru reacts faster to close-range shots: the nearer the shooter (inside about 17 m), the harder he is to beat. Well-placed shots still go in."
+      },
+      {
+        "id": "springlike-body",
+        "name": "Springlike Body",
+        "label": "SPRINGLIKE BODY",
+        "effect": "acrobatic-reach",
+        "dialogue": "save",
+        "params": {
+          "reach": 0.2
+        },
+        "description": "In goal, his flexibility lets him reach shots from wide angles and shots aimed at a post more often than other keepers. He still has to be in position to get there."
+      },
+      {
+        "id": "wild-instinct",
+        "name": "Wild Instinct",
+        "label": "WILD INSTINCT",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "reflex-save": {
+              "reflex": 0.38
+            },
+            "acrobatic-reach": {
+              "reach": 0.28
+            },
+            "smother-block": {
+              "block": 0.45
+            },
+            "super-reflex": {
+              "reflex": 0.4
+            }
+          }
+        },
+        "description": "Gagamaru's Flow. In Flow his reflexes, reach, Super Reflex Save and point-blank blocks all improve. He can still be beaten."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "super-reflex-save",
+        "name": "Super Reflex Save",
+        "label": "SUPER REFLEX SAVE",
+        "effect": "super-reflex",
+        "dialogue": "save",
+        "params": {
+          "minMetres": 8,
+          "maxMetres": 22,
+          "reflex": 0.3,
+          "cooldownTicks": 10
+        },
+        "description": "In goal, against a well-placed shot from 8–22 m, Gagamaru reacts in time to dive across and make a much harder shot saveable. After he makes a save with it, it needs 10 ticks to come back."
+      },
+      {
+        "id": "shachihoko-defense",
+        "name": "Shachihoko Defense",
+        "label": "SHACHIHOKO DEFENSE",
+        "effect": "smother-block",
+        "dialogue": "block",
+        "params": {
+          "maxMetres": 9,
+          "maxGap": 7,
+          "block": 0.35,
+          "cooldownTicks": 12
+        },
+        "description": "In goal, when a shooter is within 9 m and Gagamaru is within 7 m of him, he throws his whole body, even upside down, in front of the ball, making the shot much harder to score. After he makes a save with it, it needs 12 ticks to come back."
+      },
+      {
+        "id": "bear-claw-deflection",
+        "name": "Bear Claw Deflection",
+        "label": "BEAR CLAW DEFLECTION",
+        "effect": "extended-parry",
+        "params": {
+          "parry": 0.05
+        },
+        "description": "In goal, Gagamaru gets a hand on shots he cannot hold and pushes them away, so more of his saves are parries. A parry leaves a loose ball that either team can win."
+      },
+      {
+        "id": "scorpion-kick",
+        "name": "Scorpion Kick",
+        "label": "SCORPION KICK",
+        "effect": "acrobatic-finish",
+        "dialogue": "scorpion",
+        "params": {
+          "maxMetres": 12,
+          "technique": 0.15
+        },
+        "description": "Only when he plays outfield: when a cross reaches him within 12 m of goal, he can finish it acrobatically in the air. Defenders and the goalkeeper can still stop it."
+      }
+    ],
+    "dialogue": {
+      "save": [
         "Not getting in.",
         "Stopped that."
-    ],
-    "block": [
+      ],
+      "block": [
         "Not past me.",
         "I'll stop it with everything."
-    ],
-    "scorpion": [
+      ],
+      "scorpion": [
         "Any part of me can score.",
         "Like this!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Oh. I scored. Nice.",
         "I can score too."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I can feel the ball coming."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Ready."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "There.",
         "Your ball."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Got it."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "I fit through here."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Slipped away."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Can hit it from this angle."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "Wrong angle."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Got you. That felt good."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Get the next one."
-    ],
-    "support": [
+      ],
+      "support": [
         "There."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Huh. That went the wrong way."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Ah. Hit him, not the ball."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Ow. That was my leg."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Oh. Past the line."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "I can score too."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/jingo-raichi/player.js
-// Character player data: Jingo Raichi (ID 9).
-const PLAYER_9_DATA = { id: 9, name: "Jingo Raichi", debutChapter: 1, appearanceOrder: 9, image: "images/jingo-raichi.jpg", primaryPosition: "DM", positions: ["DM", "CB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"stamina","name":"Stamina","description":"Maintains physical pressure and repeated defensive efforts throughout a match.","battleSimType":"Passive","battleSimDescription":"Pressing, marking and duels tire Raichi 35% less than other players. His stamina still runs down.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Jingo_Raichi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"man-marking","name":"Man-Marking","description":"Stays close to an assigned opponent and contests their space and possession.","battleSimType":"Special Move","battleSimDescription":"When defending, Raichi picks the most dangerous attacker near his position, stays tight to him and is harder to beat in duels with him. If that player dribbles past him, Raichi recovers faster than other defenders. Cutting out a pass meant for his man earns extra match rating.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Jingo_Raichi","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:87, off:79, sho:82, spd:77, def:90, pas:81, dri:82, gk:62 },
-        battleSim: {
-            "awareness": {
-                "defensiveRead": 0.04
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_9_DATA = {
+  "id": 9,
+  "name": "Jingo Raichi",
+  "debutChapter": 1,
+  "appearanceOrder": 9,
+  "image": "images/jingo-raichi.jpg",
+  "primaryPosition": "DM",
+  "positions": [
+    "DM",
+    "CB"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "stamina",
+      "name": "Stamina",
+      "description": "Maintains physical pressure and repeated defensive efforts throughout a match.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Pressing, marking and duels tire Raichi 35% less than other players. His stamina still runs down.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Jingo_Raichi",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "man-marking",
+      "name": "Man-Marking",
+      "description": "Stays close to an assigned opponent and contests their space and possession.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "When defending, Raichi picks the most dangerous attacker near his position, stays tight to him and is harder to beat in duels with him. If that player dribbles past him, Raichi recovers faster than other defenders. Cutting out a pass meant for his man earns extra match rating.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Jingo_Raichi",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 87,
+    "off": 79,
+    "sho": 82,
+    "spd": 77,
+    "def": 90,
+    "pas": 81,
+    "dri": 82,
+    "gk": 62
+  },
+  "battleSim": {
+    "awareness": {
+      "defensiveRead": 0.04
+    },
+    "tendencies": {
+      "shoot": -0.05
+    },
+    "passives": [
+      {
+        "id": "immense-stamina",
+        "name": "Immense Stamina",
+        "label": "IMMENSE STAMINA",
+        "effect": "durable",
+        "params": {
+          "drain": 0.65
+        },
+        "description": "Pressing, marking and duels tire Raichi 35% less than other players. His stamina still runs down."
+      },
+      {
+        "id": "physical-aggression",
+        "name": "Physical Aggression",
+        "label": "PHYSICAL AGGRESSION",
+        "effects": [
+          "aggression",
+          "persistent-press"
+        ],
+        "dialogue": "press",
+        "params": {
+          "duel": 3,
+          "foulRisk": 0.012,
+          "press": 0.5
+        },
+        "description": "Raichi joins the press sooner and is harder to dribble past, but he gives away more fouls than other defenders."
+      },
+      {
+        "id": "unbreakable-marking",
+        "name": "Unbreakable Marking",
+        "label": "UNBREAKABLE MARKING",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "man-marking": {
+              "duel": 7
             },
-            "tendencies": {
-                "shoot": -0.05
+            "quick-recovery": {
+              "recovery": 0.45
             },
-            "passives": [
-                {
-                    "id": "immense-stamina",
-                    "name": "Immense Stamina",
-                    "label": "IMMENSE STAMINA",
-                    "effect": "durable",
-                    "params": {
-                        "drain": 0.65
-                    },
-                    "description": "Pressing, marking and duels tire Raichi 35% less than other players. His stamina still runs down."
-                },
-                {
-                    "id": "physical-aggression",
-                    "name": "Physical Aggression",
-                    "label": "PHYSICAL AGGRESSION",
-                    "effects": [
-                        "aggression",
-                        "persistent-press"
-                    ],
-                    "dialogue": "press",
-                    "params": {
-                        "duel": 3,
-                        "foulRisk": 0.012,
-                        "press": 0.5
-                    },
-                    "description": "Raichi joins the press sooner and is harder to dribble past, but he gives away more fouls than other defenders."
-                },
-                {
-                    "id": "unbreakable-marking",
-                    "name": "Unbreakable Marking",
-                    "label": "UNBREAKABLE MARKING",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "boost": {
-                            "man-marking": {
-                                "duel": 7
-                            },
-                            "quick-recovery": {
-                                "recovery": 0.45
-                            },
-                            "aggression": {
-                                "duel": 5
-                            },
-                            "stalking-horse": {
-                                "read": 0.14
-                            }
-                        }
-                    },
-                    "description": "Raichi's Flow. In Flow he is harder for his marked opponent to beat, reads passes into that opponent better and recovers faster after being dribbled past. Opponents can still escape him."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "man-marking",
-                    "name": "Man-Marking",
-                    "label": "MAN-MARKING",
-                    "effects": [
-                        "man-marking",
-                        "quick-recovery"
-                    ],
-                    "dialogue": "mark",
-                    "params": {
-                        "range": 30,
-                        "duel": 4,
-                        "recovery": 0.3
-                    },
-                    "description": "When defending, Raichi picks the most dangerous attacker near his position, stays tight to him and is harder to beat in duels with him. If that player dribbles past him, Raichi recovers faster than other defenders. Cutting out a pass meant for his man earns extra match rating."
-                },
-                {
-                    "id": "stalking-horse-defense",
-                    "name": "Stalking Horse Defense",
-                    "label": "STALKING HORSE DEFENSE",
-                    "effect": "stalking-horse",
-                    "params": {
-                        "radius": 6,
-                        "read": 0.1
-                    },
-                    "description": "When Raichi is within 6 m of the player he is marking, he waits a step ahead of him and is more likely to cut out passes played to that player. Quick passing around him and runs he cannot follow still beat it."
-                },
-                {
-                    "id": "relentless-duel",
-                    "name": "Relentless Duel",
-                    "label": "RELENTLESS DUEL",
-                    "effect": "physical-shield",
-                    "dialogue": "duel",
-                    "params": {
-                        "shield": 5,
-                        "looseBall": 0.08
-                    },
-                    "description": "In physical contests Raichi is hard to push off the ball and hard to get past, and he reacts faster to loose balls. He can still lose the duel."
-                }
-            ],
-            "reactions": [
-                {
-                    "id": "cornered-prey",
-                    "name": "Cornered Prey",
-                    "label": "CORNERED PREY",
-                    "members": [
-                        9,
-                        1
-                    ],
-                    "effect": "mark-and-read",
-                    "cooldownTicks": 16,
-                    "dialogue": "trap",
-                    "params": {
-                        "range": 14,
-                        "read": 0.12
-                    },
-                    "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
-                }
-            ],
-            "dialogue": {
-    "mark": [
+            "aggression": {
+              "duel": 5
+            },
+            "stalking-horse": {
+              "read": 0.14
+            }
+          }
+        },
+        "description": "Raichi's Flow. In Flow he is harder for his marked opponent to beat, reads passes into that opponent better and recovers faster after being dribbled past. Opponents can still escape him."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "man-marking",
+        "name": "Man-Marking",
+        "label": "MAN-MARKING",
+        "effects": [
+          "man-marking",
+          "quick-recovery"
+        ],
+        "dialogue": "mark",
+        "params": {
+          "range": 30,
+          "duel": 4,
+          "recovery": 0.3
+        },
+        "description": "When defending, Raichi picks the most dangerous attacker near his position, stays tight to him and is harder to beat in duels with him. If that player dribbles past him, Raichi recovers faster than other defenders. Cutting out a pass meant for his man earns extra match rating."
+      },
+      {
+        "id": "stalking-horse-defense",
+        "name": "Stalking Horse Defense",
+        "label": "STALKING HORSE DEFENSE",
+        "effect": "stalking-horse",
+        "params": {
+          "radius": 6,
+          "read": 0.1
+        },
+        "description": "When Raichi is within 6 m of the player he is marking, he waits a step ahead of him and is more likely to cut out passes played to that player. Quick passing around him and runs he cannot follow still beat it."
+      },
+      {
+        "id": "relentless-duel",
+        "name": "Relentless Duel",
+        "label": "RELENTLESS DUEL",
+        "effect": "physical-shield",
+        "dialogue": "duel",
+        "params": {
+          "shield": 5,
+          "looseBall": 0.08
+        },
+        "description": "In physical contests Raichi is hard to push off the ball and hard to get past, and he reacts faster to loose balls. He can still lose the duel."
+      }
+    ],
+    "reactions": [
+      {
+        "id": "cornered-prey",
+        "name": "Cornered Prey",
+        "label": "CORNERED PREY",
+        "members": [
+          9,
+          1
+        ],
+        "effect": "mark-and-read",
+        "cooldownTicks": 16,
+        "dialogue": "trap",
+        "params": {
+          "range": 14,
+          "read": 0.12
+        },
+        "description": "When Raichi is marking an opponent tightly and Isagi is within 14 m, Isagi reads passes played to that opponent earlier and is more likely to intercept them. Nothing is guaranteed."
+      }
+    ],
+    "dialogue": {
+      "mark": [
         "You're mine all game!",
         "Go on, try to lose me!"
-    ],
-    "press": [
+      ],
+      "press": [
         "Get back here!",
         "I'm not tired. Are you?"
-    ],
-    "duel": [
+      ],
+      "duel": [
         "Out of my way!",
         "Too soft!"
-    ],
-    "trap": [
+      ],
+      "trap": [
         "Isagi! He's got nowhere to go!",
         "I pinned him. Finish it!"
-    ],
-    "fail": [
+      ],
+      "fail": [
         "Tch. Lucky.",
         "Next time I flatten you."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "HAH! Now who's just a defender?!",
         "Did you see that?!",
         "See that?! That's Raichi!"
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Come on! I'll chase you all game!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Do not get in my way!"
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Move! Take it!",
         "Do not waste my pass!"
-    ],
-    "receive": [
+      ],
+      "receive": [
         "About time!"
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "Try stopping me!"
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Give that back!"
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Move! I'm shooting!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "Damn it! Again!"
-    ],
-    "defend": [
+      ],
+      "defend": [
         "HAH! You thought you'd get past me?!",
         "You are going nowhere!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Get back in position!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Move! Take it!"
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Oi! I gave that straight to them!"
-    ],
-    "foul": [
+      ],
+      "foul": [
         "What?! I was going for the ball!"
-    ],
-    "save": [
+      ],
+      "save": [
         "You are going nowhere!"
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Oi! Play the ball, then!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Tch! Next time, get the timing right!"
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "See that?! That's Raichi!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/asahi-naruhaya/player.js
-// Character player data: Asahi Naruhaya (ID 10).
-const PLAYER_10_DATA = { id: 10, name: "Asahi Naruhaya", debutChapter: 1, appearanceOrder: 10, image: "images/asahi-naruhaya.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"off-the-ball-movement","name":"Off-the-Ball Movement","description":"Times runs into defenders’ blind spots to become available behind them.","battleSimType":"Special Move","battleSimDescription":"Naruhaya starts runs behind the defence from up to 24 m behind the defensive line, and he still makes his run when two teammates are already running. He only gets into position: he still has to receive the pass and finish.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Asahi_Naruhaya","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"}], stats: { ovr:70, off:77, sho:68, spd:81, def:54, pas:67, dri:75, gk:42 },
-        battleSim: {
-            "tendencies": {
-                "shoot": 0.02
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_10_DATA = {
+  "id": 10,
+  "name": "Asahi Naruhaya",
+  "debutChapter": 1,
+  "appearanceOrder": 10,
+  "image": "images/asahi-naruhaya.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "off-the-ball-movement",
+      "name": "Off-the-Ball Movement",
+      "description": "Times runs into defenders’ blind spots to become available behind them.",
+      "battleSimType": "Special Move",
+      "battleSimDescription": "Naruhaya starts runs behind the defence from up to 24 m behind the defensive line, and he still makes his run when two teammates are already running. He only gets into position: he still has to receive the pass and finish.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Asahi_Naruhaya",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    }
+  ],
+  "stats": {
+    "ovr": 70,
+    "off": 77,
+    "sho": 68,
+    "spd": 81,
+    "def": 54,
+    "pas": 67,
+    "dri": 75,
+    "gk": 42
+  },
+  "battleSim": {
+    "tendencies": {
+      "shoot": 0.02
+    },
+    "passives": [
+      {
+        "id": "blind-spot-specialist",
+        "name": "Blind-Spot Specialist",
+        "label": "BLIND-SPOT SPECIALIST",
+        "effect": "blind-spot-run",
+        "dialogue": "blindRun",
+        "params": {
+          "trackRead": 0.84
+        },
+        "description": "Naruhaya runs behind his marker while that defender is watching the ball. Good defenders follow these runs more easily than they follow Isagi's, but average ones react late."
+      },
+      {
+        "id": "underdogs-determination",
+        "name": "Underdog's Determination",
+        "label": "UNDERDOG'S DETERMINATION",
+        "effect": "run-hunger",
+        "params": {
+          "rest": 2
+        },
+        "description": "After a run that is not used, Naruhaya is ready to go again sooner than other players. It does not make his shooting any better."
+      },
+      {
+        "id": "desperate-breakthrough",
+        "name": "Desperate Breakthrough",
+        "label": "DESPERATE BREAKTHROUGH",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "run-hunger": {
+              "rest": 1
             },
-            "passives": [
-                {
-                    "id": "blind-spot-specialist",
-                    "name": "Blind-Spot Specialist",
-                    "label": "BLIND-SPOT SPECIALIST",
-                    "effect": "blind-spot-run",
-                    "dialogue": "blindRun",
-                    "params": {
-                        "trackRead": 0.84
-                    },
-                    "description": "Naruhaya runs behind his marker while that defender is watching the ball. Good defenders follow these runs more easily than they follow Isagi's, but average ones react late."
-                },
-                {
-                    "id": "underdogs-determination",
-                    "name": "Underdog's Determination",
-                    "label": "UNDERDOG'S DETERMINATION",
-                    "effect": "run-hunger",
-                    "params": {
-                        "rest": 2
-                    },
-                    "description": "After a run that is not used, Naruhaya is ready to go again sooner than other players. It does not make his shooting any better."
-                },
-                {
-                    "id": "desperate-breakthrough",
-                    "name": "Desperate Breakthrough",
-                    "label": "DESPERATE BREAKTHROUGH",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "boost": {
-                            "run-hunger": {
-                                "rest": 1
-                            },
-                            "ghost-run": {
-                                "cooldownTicks": 8
-                            },
-                            "blind-spot-run": {
-                                "trackRead": 0.88
-                            }
-                        }
-                    },
-                    "description": "Naruhaya's Flow. In Flow he makes runs almost without rest, Ghost Run comes back sooner and his runs are harder to follow. His finishing stays the same."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "off-the-ball-movement",
-                    "name": "Off-the-Ball Movement",
-                    "label": "OFF-THE-BALL MOVEMENT",
-                    "effect": "run-timing",
-                    "params": {
-                        "reach": 24
-                    },
-                    "description": "Naruhaya starts runs behind the defence from up to 24 m behind the defensive line, and he still makes his run when two teammates are already running. He only gets into position: he still has to receive the pass and finish."
-                },
-                {
-                    "id": "ghost-run",
-                    "name": "Ghost Run",
-                    "label": "GHOST RUN",
-                    "effect": "ghost-run",
-                    "dialogue": "ghost",
-                    "params": {
-                        "cooldownTicks": 14
-                    },
-                    "description": "Once every 14 ticks, a blind-side run by Naruhaya starts at full speed and is even harder for defenders to follow. It only gets him into position: he still has to receive the pass and finish."
-                }
-            ],
-            "dialogue": {
-    "blindRun": [
+            "ghost-run": {
+              "cooldownTicks": 8
+            },
+            "blind-spot-run": {
+              "trackRead": 0.88
+            }
+          }
+        },
+        "description": "Naruhaya's Flow. In Flow he makes runs almost without rest, Ghost Run comes back sooner and his runs are harder to follow. His finishing stays the same."
+      }
+    ],
+    "weapons": [
+      {
+        "id": "off-the-ball-movement",
+        "name": "Off-the-Ball Movement",
+        "label": "OFF-THE-BALL MOVEMENT",
+        "effect": "run-timing",
+        "params": {
+          "reach": 24
+        },
+        "description": "Naruhaya starts runs behind the defence from up to 24 m behind the defensive line, and he still makes his run when two teammates are already running. He only gets into position: he still has to receive the pass and finish."
+      },
+      {
+        "id": "ghost-run",
+        "name": "Ghost Run",
+        "label": "GHOST RUN",
+        "effect": "ghost-run",
+        "dialogue": "ghost",
+        "params": {
+          "cooldownTicks": 14
+        },
+        "description": "Once every 14 ticks, a blind-side run by Naruhaya starts at full speed and is even harder for defenders to follow. It only gets him into position: he still has to receive the pass and finish."
+      }
+    ],
+    "dialogue": {
+      "blindRun": [
         "He never saw me go.",
         "Behind you."
-    ],
-    "ghost": [
+      ],
+      "ghost": [
         "Now. While nobody's looking.",
         "This is the only way I win."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Yes! I can score here too!",
         "I made it count!",
         "I did it! I really scored!",
         "That one's for my family!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I have to do better.",
         "Why can't I finish it?!",
         "I got there... and wasted it."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Look at me! I'm still in this!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "I have to make this count."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Go, I will follow.",
         "I will keep up with you."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "I can work with this."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "Just one opening."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I have to try again."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Come on... I have to score this!"
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I'm not letting you have it!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Keep going. We still have a chance."
-    ],
-    "support": [
+      ],
+      "support": [
         "Go, I will follow."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "No, that was my chance to help!"
-    ],
-    "foul": [
+      ],
+      "foul": [
         "I couldn't stop in time..."
-    ],
-    "save": [
+      ],
+      "save": [
         "I will fight for this ball."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Hey, I was still going!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I found the gap... just too early."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "That one's for my family!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/okuhito-iemon/player.js
-// Character player data: Okuhito Iemon (ID 11).
-const PLAYER_11_DATA = { id: 11, name: "Okuhito Iemon", debutChapter: 1, appearanceOrder: 11, image: "images/okuhito-iemon.jpg", primaryPosition: "GK", positions: ["GK", "FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:68, off:67, sho:65, spd:70, def:70, pas:68, dri:67, gk:72 },
-        battleSim: {
-            "passives": [
-                {
-                    "id": "all-rounder",
-                    "name": "All-Rounder",
-                    "label": "ALL-ROUNDER",
-                    "effect": "support-movement",
-                    "dialogue": "support",
-                    "params": {
-                        "range": 14
-                    },
-                    "description": "Only when he plays outfield: when the teammate on the ball has no one nearby, Iemon moves close to give him an easy pass. It does not change his ratings in any position."
-                },
-                {
-                    "id": "team-organizer",
-                    "name": "Team Organizer",
-                    "label": "TEAM ORGANIZER",
-                    "effect": "steady-keeper",
-                    "dialogue": "save",
-                    "params": {
-                        "positioning": 0.08,
-                        "hold": 0.07
-                    },
-                    "description": "In goal, when Iemon is well positioned he is slightly harder to beat from 12 m or further, and he catches more shots instead of parrying them, so there are fewer rebounds."
-                },
-                {
-                    "id": "last-line-of-defence",
-                    "name": "Last Line of Defence",
-                    "label": "LAST LINE OF DEFENCE",
-                    "effect": "flow-state",
-                    "dialogue": "flow",
-                    "params": {
-                        "boost": {
-                            "steady-keeper": {
-                                "positioning": 0.14,
-                                "hold": 0.11
-                            },
-                            "set-piece-ready": {
-                                "ready": 0.3
-                            }
-                        }
-                    },
-                    "description": "Iemon's Flow. In Flow his positioning and handling improve a little more and he is better prepared for set pieces. He gains no acrobatic saves."
-                }
-            ],
-            "weapons": [
-                {
-                    "id": "set-piece-readiness",
-                    "name": "Set-Piece Readiness",
-                    "label": "SET-PIECE READINESS",
-                    "effect": "set-piece-ready",
-                    "dialogue": "setPiece",
-                    "params": {
-                        "window": 2,
-                        "ready": 0.22
-                    },
-                    "description": "In goal, for the two ticks after an opposing free kick or corner is taken, Iemon is set for the shot and harder to beat. A well-struck shot can still go in."
-                }
-            ],
-            "dialogue": {
-    "save": [
-        "Stopped it! Stay with the rebound!"
+// Public simulation dialogue; canonical profile and ratings preserved.
+const PLAYER_11_DATA = {
+  "id": 11,
+  "name": "Okuhito Iemon",
+  "debutChapter": 1,
+  "appearanceOrder": 11,
+  "image": "images/okuhito-iemon.jpg",
+  "primaryPosition": "GK",
+  "positions": [
+    "GK",
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [],
+  "stats": {
+    "ovr": 68,
+    "off": 67,
+    "sho": 65,
+    "spd": 70,
+    "def": 70,
+    "pas": 68,
+    "dri": 67,
+    "gk": 72
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "all-rounder",
+        "name": "All-Rounder",
+        "label": "ALL-ROUNDER",
+        "effect": "support-movement",
+        "dialogue": "support",
+        "params": {
+          "range": 14
+        },
+        "description": "Only when he plays outfield: when the teammate on the ball has no one nearby, Iemon moves close to give him an easy pass. It does not change his ratings in any position."
+      },
+      {
+        "id": "team-organizer",
+        "name": "Team Organizer",
+        "label": "TEAM ORGANIZER",
+        "effect": "steady-keeper",
+        "dialogue": "save",
+        "params": {
+          "positioning": 0.08,
+          "hold": 0.07
+        },
+        "description": "In goal, when Iemon is well positioned he is slightly harder to beat from 12 m or further, and he catches more shots instead of parrying them, so there are fewer rebounds."
+      },
+      {
+        "id": "last-line-of-defence",
+        "name": "Last Line of Defence",
+        "label": "LAST LINE OF DEFENCE",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "steady-keeper": {
+              "positioning": 0.14,
+              "hold": 0.11
+            },
+            "set-piece-ready": {
+              "ready": 0.3
+            }
+          }
+        },
+        "description": "Iemon's Flow. In Flow his positioning and handling improve a little more and he is better prepared for set pieces. He gains no acrobatic saves."
+      }
     ],
-    "setPiece": [
+    "weapons": [
+      {
+        "id": "set-piece-readiness",
+        "name": "Set-Piece Readiness",
+        "label": "SET-PIECE READINESS",
+        "effect": "set-piece-ready",
+        "dialogue": "setPiece",
+        "params": {
+          "window": 2,
+          "ready": 0.22
+        },
+        "description": "In goal, for the two ticks after an opposing free kick or corner is taken, Iemon is set for the shot and harder to beat. A well-struck shot can still go in."
+      }
+    ],
+    "dialogue": {
+      "save": [
+        "Stopped it! Stay with the rebound!"
+      ],
+      "setPiece": [
         "Everyone, mark up! I'm ready.",
         "I know where this is going."
-    ],
-    "support": [
+      ],
+      "support": [
         "Here, I am with you."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Yes! We needed that one!",
         "Well done, everyone."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I've got your backs. Keep going!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Stay organized, everyone."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here, I am with you.",
         "Keep the team moving."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "I have it covered."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "There is room to move."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Let us win it back."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "There's a chance! I'll try it!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "We will get another chance."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Got it! Everybody, move up!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Reset and help each other."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "My mistake! I'll help win it back."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Sorry. I got there late."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Ref, that caught my foot."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Hold the run a moment longer."
-    ]
-}
-        }
-    };
+      ],
+      "criticalGoal": [
+        "Well done, everyone."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/wataru-kuon/player.js
-// Character player data: Wataru Kuon (ID 12).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_12_DATA = {
   "id": 12,
   "name": "Wataru Kuon",
@@ -2147,75 +2707,78 @@ const PLAYER_12_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "aerial": [
+      "aerial": [
         "I can reach that height."
-    ],
-    "header": [
+      ],
+      "header": [
         "At the highest point!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Let us keep our shape."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Use the space ahead.",
         "Keep the shape around it."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "That delivery works."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "I have a route through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I misjudged the challenge."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "This is the ball I wanted!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Perfect timing! That goal is mine!",
         "The timing... yes!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I need better timing."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I won that duel. Stay alert!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Let us organize again."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Send it high. I'll fight for it!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Use the space ahead."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "They were waiting for that pass."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Tch. Too much contact."
-    ],
-    "save": [
+      ],
+      "save": [
         "I was watching that lane."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "That's a foul in the challenge."
-    ],
-    "interception": [
+      ],
+      "interception": [
         "You left that pass too obvious."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I misjudged their defensive line."
-    ]
-}
+      ],
+      "criticalGoal": [
+        "The timing... yes!"
+      ]
+    }
   }
 };
 ;
 
 // js/players/yudai-imamura/player.js
-// Character player data: Yudai Imamura (ID 13).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_13_DATA = {
   "id": 13,
   "name": "Yudai Imamura",
@@ -2321,60 +2884,63 @@ const PLAYER_13_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "kickoff": [
+      "kickoff": [
         "All right, let us go."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here you go, keep it flowing.",
         "Go on, have a go."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Nice, leave it to me."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "A little room is all I need."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Ah, lost it."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Hey, let's give it a shot!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Hey! Not bad, right?!",
         "Hey, that worked!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "Ah, just off."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "Thanks! I'll take that off you."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Come on, plenty of time."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Now we're getting somewhere!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Here you go, keep it flowing."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "Ah, that was a terrible pass."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Ah, sorry! Caught you there."
-    ],
-    "save": [
+      ],
+      "save": [
         "Got that one."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "Hey, easy on the legs!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Ah, got a bit carried away!"
-    ]
-}
+      ],
+      "criticalGoal": [
+        "Hey, that worked!"
+      ]
+    }
   }
 };
 ;
@@ -2390,7 +2956,7 @@ const PLAYER_15_DATA = { id: 15, name: "Shoei Baro", debutChapter: 5, appearance
 ;
 
 // js/players/ikki-niko/player.js
-// Character player data: Ikki Niko (ID 16).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_16_DATA = {
   "id": 16,
   "name": "Ikki Niko",
@@ -2563,78 +3129,81 @@ const PLAYER_16_DATA = {
       }
     ],
     "dialogue": {
-    "read": [
+      "read": [
         "There is another runner."
-    ],
-    "trap": [
+      ],
+      "trap": [
         "Will you choose that lane?"
-    ],
-    "supply": [
+      ],
+      "supply": [
         "Okawa, there is room ahead."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "I will watch how you move."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "There is space on that side.",
         "Look beyond the first option."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "I see the next option."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "You left a way through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I missed that adjustment."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "You left me a shot."
-    ],
-    "goal": [
+      ],
+      "goal": [
         "You forgot I could score too.",
         "You watched the wrong player."
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I misread the opening."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I saw you coming. My ball."
-    ],
-    "concede": [
+      ],
+      "concede": [
         "I need to read that earlier."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "I see it now. Keep trying to hide."
-    ],
-    "support": [
+      ],
+      "support": [
         "There is space on that side."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "I didn't see him close that lane."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "I reached in too late."
-    ],
-    "save": [
+      ],
+      "save": [
         "That was the route you chose."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "You couldn't take the ball cleanly?"
-    ],
-    "interception": [
+      ],
+      "interception": [
         "Exactly where I wanted that pass."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I lost track of the last defender."
-    ]
-}
+      ],
+      "criticalGoal": [
+        "You watched the wrong player."
+      ]
+    }
   }
 };
 ;
 
 // js/players/hibiki-okawa/player.js
-// Character player data: Hibiki Okawa (ID 17).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_17_DATA = {
   "id": 17,
   "name": "Hibiki Okawa",
@@ -2758,72 +3327,75 @@ const PLAYER_17_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "superShot": [
+      "superShot": [
         "Wait... now!"
-    ],
-    "chip": [
+      ],
+      "chip": [
         "Over the keeper."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Get the ball forward."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here, build another chance.",
         "Let us build the next attack."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Good, I can use this."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "There is a way through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Lost that one."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Watch this finish!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "That's your ace! Remember it!",
         "That is the finish I wanted!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I should score from there."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I'll win it myself, then!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Get me another chance."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Give me the chance. I'll take it on!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Here, build another chance."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "That pass wasn't good enough."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Tch. Fine, it was a foul."
-    ],
-    "save": [
+      ],
+      "save": [
         "I will take that ball."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "You stopped a scoring chance there!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Wait, I was offside there?"
-    ]
-}
+      ],
+      "criticalGoal": [
+        "That is the finish I wanted!"
+      ]
+    }
   }
 };
 ;
 
 // js/players/junichi-wanima/player.js
-// Character player data: Junichi Wanima (ID 18).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_18_DATA = {
   "id": 18,
   "name": "Junichi Wanima",
@@ -2975,6 +3547,9 @@ const PLAYER_18_DATA = {
       ],
       "save": [
         "Hnn."
+      ],
+      "criticalGoal": [
+        "Hnn!"
       ]
     }
   }
@@ -2982,13 +3557,338 @@ const PLAYER_18_DATA = {
 ;
 
 // js/players/keisuke-wanima/player.js
-// Character player data: Keisuke Wanima (ID 19).
-const PLAYER_19_DATA = { id: 19, name: "Keisuke Wanima", debutChapter: 1, appearanceOrder: 19, image: "images/keisuke-wanima.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"twin-combination-play","name":"Twin Combination Play","description":"Coordinates runs and exchanges with Junichi through their practiced understanding.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Keisuke_Wanima","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:72, off:76, sho:72, spd:76, def:65, pas:72, dri:73, gk:45 } , battleSim: {"dialogue":{"twin":["My brother wants the return pass.","He says: keep the exchange short."]}}};
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_19_DATA = {
+  "id": 19,
+  "name": "Keisuke Wanima",
+  "debutChapter": 1,
+  "appearanceOrder": 19,
+  "image": "images/keisuke-wanima.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "twin-combination-play",
+      "name": "Twin Combination Play",
+      "description": "Coordinates runs and exchanges with Junichi through their practiced understanding.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Keisuke_Wanima",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 72,
+    "off": 76,
+    "sho": 72,
+    "spd": 76,
+    "def": 65,
+    "pas": 72,
+    "dri": 73,
+    "gk": 45
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "twin-support",
+        "name": "Twin Support",
+        "label": "TWIN SUPPORT",
+        "effect": "support-movement",
+        "description": "Finds a nearby onside passing angle. Eye Contact still requires Junichi on the pitch.",
+        "params": {},
+        "interpretation": true
+      },
+      {
+        "id": "twin-anticipation",
+        "name": "Twin Anticipation",
+        "label": "TWIN ANTICIPATION",
+        "effect": "flow-state",
+        "description": "In Flow, reads short support angles earlier. Alone, gains only a modest anticipation improvement.",
+        "params": {
+          "awareness": {
+            "anticipation": 0.08,
+            "space": 0.05
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Brother, keep it short."
+      ],
+      "pass": [
+        "Brother, this way!",
+        "Use the inside lane."
+      ],
+      "receive": [
+        "He says: give it back."
+      ],
+      "support": [
+        "My brother is asking for the return."
+      ],
+      "twin": [
+        "He says: now!",
+        "My brother wants the return pass."
+      ],
+      "dribble": [
+        "Give us room."
+      ],
+      "dribbleFail": [
+        "We need another angle."
+      ],
+      "goal": [
+        "That is how we combine!",
+        "You saw that, brother!"
+      ],
+      "miss": [
+        "Next time, closer."
+      ],
+      "defend": [
+        "Brother, cover behind me."
+      ],
+      "passFail": [
+        "They read the exchange."
+      ],
+      "flow": [
+        "I know where he will move."
+      ],
+      "shot-attempt": [
+        "I have the angle."
+      ],
+      "criticalGoal": [
+        "You saw that, brother!"
+      ],
+      "foul": [
+        "I had to break up that move."
+      ],
+      "fouled": [
+        "You broke our rhythm!"
+      ],
+      "offside": [
+        "Brother, we started too early."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/reo-mikage/player.js
-// Character player data: Reo Mikage (ID 20).
-const PLAYER_20_DATA = { id: 20, name: "Reo Mikage", debutChapter: 1, appearanceOrder: 20, image: "images/reo-mikage.jpg", primaryPosition: "CM", positions: ["CM", "AM", "CB", "RM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"copy","name":"Copy","description":"Reproduces observed techniques within the limits of his own physical abilities.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Reo_Mikage","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"passing","name":"Passing","description":"Connects teammates through varied, accurately weighted attacking passes.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Reo_Mikage","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"metavision","name":"Metavision","description":"Scans the field to read developing plays and choose supporting positions.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Reo_Mikage","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"}], stats: { ovr:90, off:89, sho:85, spd:86, def:86, pas:91, dri:89, gk:68 } };
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_20_DATA = {
+  "id": 20,
+  "name": "Reo Mikage",
+  "debutChapter": 1,
+  "appearanceOrder": 20,
+  "image": "images/reo-mikage.jpg",
+  "primaryPosition": "CM",
+  "positions": [
+    "CM",
+    "AM",
+    "CB",
+    "RM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "copy",
+      "name": "Copy",
+      "description": "Reproduces observed techniques within the limits of his own physical abilities.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Reo_Mikage",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "passing",
+      "name": "Passing",
+      "description": "Connects teammates through varied, accurately weighted attacking passes.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Reo_Mikage",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "metavision",
+      "name": "Metavision",
+      "description": "Scans the field to read developing plays and choose supporting positions.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Reo_Mikage",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "mental"
+    }
+  ],
+  "stats": {
+    "ovr": 90,
+    "off": 89,
+    "sho": 85,
+    "spd": 86,
+    "def": 86,
+    "pas": 91,
+    "dri": 89,
+    "gk": 68
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "reo-metavision",
+        "name": "Metavision",
+        "label": "METAVISION",
+        "effect": "space-reading",
+        "description": "Reads visible passing lanes and runs up to 50 m away.",
+        "params": {
+          "rangeMeters": 50
+        },
+        "interpretation": true
+      },
+      {
+        "id": "all-round-judgement",
+        "name": "All-Round Judgement",
+        "label": "ALL-ROUND JUDGEMENT",
+        "effect": "rational-decisions",
+        "description": "Compares shooting, carrying and distribution using his own current ability.",
+        "params": {
+          "sharpness": 0.3
+        },
+        "interpretation": true
+      },
+      {
+        "id": "chameleon",
+        "name": "Chameleon",
+        "label": "CHAMELEON",
+        "effect": "observed-technique",
+        "description": "Remembers up to three observed public technical moves. Uses a weaker imitation only when its normal physical conditions are met; never copies stats, physiques, keepers, reactions, Flow or ultimates.",
+        "params": {
+          "capacity": 3,
+          "cooldownTicks": 8
+        },
+        "interpretation": true
+      },
+      {
+        "id": "chameleon-flow",
+        "name": "Chameleon Flow",
+        "label": "CHAMELEON FLOW",
+        "effect": "flow-state",
+        "description": "In Flow, reads teammates earlier and makes more precise technical imitations. Own physical limits still apply.",
+        "params": {
+          "awareness": {
+            "vision": 0.1,
+            "space": 0.08,
+            "anticipation": 0.08
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "precision-distribution",
+        "name": "Precision Distribution",
+        "label": "PRECISION DISTRIBUTION",
+        "effect": "precision-distribution",
+        "description": "Reduces execution error on real forward passes. The ball can still be intercepted.",
+        "params": {
+          "precision": 0.85
+        },
+        "interpretation": true
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "I will find what this team needs."
+      ],
+      "pass": [
+        "I can put it there.",
+        "Use that space."
+      ],
+      "receive": [
+        "I have options."
+      ],
+      "dribble": [
+        "I can reproduce that touch."
+      ],
+      "dribbleFail": [
+        "The timing was different."
+      ],
+      "goal": [
+        "That is one way to win.",
+        "I can make this team win."
+      ],
+      "miss": [
+        "I need a better angle."
+      ],
+      "defend": [
+        "I see the route."
+      ],
+      "passFail": [
+        "That lane closed."
+      ],
+      "flow": [
+        "I can connect all of this."
+      ],
+      "copy": [
+        "I have seen that move."
+      ],
+      "shot-attempt": [
+        "This is the opening."
+      ],
+      "criticalGoal": [
+        "I can make this team win."
+      ],
+      "foul": [
+        "I mistimed the challenge."
+      ],
+      "fouled": [
+        "That stopped the whole play."
+      ],
+      "offside": [
+        "I read the line a step late."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/seishiro-nagi/player.js
@@ -2997,8 +3897,183 @@ const PLAYER_21_DATA = { id: 21, name: "Seishiro Nagi", debutChapter: 22, appear
 ;
 
 // js/players/zantetsu-tsurugi/player.js
-// Character player data: Zantetsu Tsurugi (ID 22).
-const PLAYER_22_DATA = { id: 22, name: "Zantetsu Tsurugi", debutChapter: 1, appearanceOrder: 22, image: "images/zantetsu-tsurugi.jpg", primaryPosition: "RW", positions: ["RW", "RM", "WB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"explosive-acceleration","name":"Explosive Acceleration","description":"Reaches speed quickly over short distances to gain an early running advantage.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/news/211/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"left-footed-shooting","name":"Left-Footed Shooting","description":"Uses his left foot to finish from his preferred diagonal attacking area.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/news/211/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:84, off:84, sho:81, spd:95, def:70, pas:73, dri:82, gk:48 } };
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_22_DATA = {
+  "id": 22,
+  "name": "Zantetsu Tsurugi",
+  "debutChapter": 1,
+  "appearanceOrder": 22,
+  "image": "images/zantetsu-tsurugi.jpg",
+  "primaryPosition": "RW",
+  "positions": [
+    "RW",
+    "RM",
+    "WB"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "explosive-acceleration",
+      "name": "Explosive Acceleration",
+      "description": "Reaches speed quickly over short distances to gain an early running advantage.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/news/211/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "left-footed-shooting",
+      "name": "Left-Footed Shooting",
+      "description": "Uses his left foot to finish from his preferred diagonal attacking area.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/news/211/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 84,
+    "off": 84,
+    "sho": 81,
+    "spd": 95,
+    "def": 70,
+    "pas": 73,
+    "dri": 82,
+    "gk": 48
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "explosive-acceleration",
+        "name": "Explosive Acceleration",
+        "label": "EXPLOSIVE ACCELERATION",
+        "effect": "explosive-acceleration",
+        "description": "Accelerates faster over the first few metres. Top speed still comes from his unchanged SPD.",
+        "params": {
+          "acceleration": 1.5
+        },
+        "interpretation": true
+      },
+      {
+        "id": "explosive-flow",
+        "name": "Explosive Flow",
+        "label": "EXPLOSIVE FLOW",
+        "effect": "flow-state",
+        "description": "In Flow, reads the start earlier and uses his burst more efficiently. Top speed remains unchanged.",
+        "params": {
+          "awareness": {
+            "anticipation": 0.08
+          },
+          "boost": {
+            "push-dribble": {
+              "stride": 1.3
+            }
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "explosive-burst",
+        "name": "Explosive Burst",
+        "label": "EXPLOSIVE BURST",
+        "effect": "push-dribble",
+        "description": "Knocks the ball into real forward space and accelerates after it. Turning or a blocked route prevents the burst; the chase can fail.",
+        "params": {
+          "stride": 1.25,
+          "space": 6,
+          "cooldownTicks": 7
+        },
+        "interpretation": true
+      },
+      {
+        "id": "left-foot-angle",
+        "name": "Left-Footed Diagonal",
+        "label": "LEFT-FOOTED DIAGONAL",
+        "effect": "zone-finish",
+        "description": "Improves a left-footed diagonal finish only from the right channel within a realistic shooting angle.",
+        "params": {
+          "minDistance": 10,
+          "maxDistance": 25,
+          "minAngle": 16,
+          "maxAngle": 53,
+          "side": "right",
+          "logit": 0.22,
+          "approach": 0.008
+        },
+        "interpretation": true
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "I will get there first."
+      ],
+      "pass": [
+        "Go on, ahead of me."
+      ],
+      "receive": [
+        "Now accelerate."
+      ],
+      "dribble": [
+        "You lost the first step."
+      ],
+      "dribbleFail": [
+        "I turned too soon."
+      ],
+      "goal": [
+        "My left foot has the answer.",
+        "Fast enough. That is the word."
+      ],
+      "miss": [
+        "That angle was too acute... or obtuse."
+      ],
+      "defend": [
+        "I can catch him."
+      ],
+      "passFail": [
+        "That was not the trajectory."
+      ],
+      "flow": [
+        "The first step is mine."
+      ],
+      "shot-attempt": [
+        "Across the goal."
+      ],
+      "criticalGoal": [
+        "Fast enough. That is the word."
+      ],
+      "foul": [
+        "I arrived too quickly."
+      ],
+      "fouled": [
+        "You cannot just trip me!"
+      ],
+      "offside": [
+        "Too much acceleration. Bad timing."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/rin-itoshi/player.js
@@ -3007,18 +4082,428 @@ const PLAYER_23_DATA = { id: 23, name: "Rin Itoshi", debutChapter: 40, appearanc
 ;
 
 // js/players/jyubei-aryu/player.js
-// Character player data: Jyubei Aryu (ID 24).
-const PLAYER_24_DATA = { id: 24, name: "Jyubei Aryu", debutChapter: 1, appearanceOrder: 24, image: "images/jyubei-aryu.jpg", primaryPosition: "CB", positions: ["CB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"aerial-reach","name":"Aerial Reach","description":"Combines long limbs and jumping ability to reach balls above opponents.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:86, off:68, sho:69, spd:74, def:90, pas:76, dri:79, gk:67 } };
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_24_DATA = {
+  "id": 24,
+  "name": "Jyubei Aryu",
+  "debutChapter": 1,
+  "appearanceOrder": 24,
+  "image": "images/jyubei-aryu.jpg",
+  "primaryPosition": "CB",
+  "positions": [
+    "CB"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "aerial-reach",
+      "name": "Aerial Reach",
+      "description": "Combines long limbs and jumping ability to reach balls above opponents.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-anime-en.com/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 86,
+    "off": 68,
+    "sho": 69,
+    "spd": 74,
+    "def": 90,
+    "pas": 76,
+    "dri": 79,
+    "gk": 67
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "long-reach",
+        "name": "Long Reach",
+        "label": "LONG REACH",
+        "effect": "aerial-reach",
+        "description": "Uses his reach on physically reachable airborne balls. Delivery height, running time and the opponent still decide the contest.",
+        "params": {
+          "reaction": 0.13,
+          "aerial": 4
+        },
+        "interpretation": true
+      },
+      {
+        "id": "stylish-coverage",
+        "name": "Stylish Coverage",
+        "label": "STYLISH COVERAGE",
+        "effect": "anticipatory-interception",
+        "description": "Uses observed runs to cover a passing lane. Cannot reach a ball outside his physical range.",
+        "params": {
+          "reaction": 0.05
+        },
+        "interpretation": true
+      },
+      {
+        "id": "stylish-flow",
+        "name": "Stylish Flow",
+        "label": "STYLISH FLOW",
+        "effect": "flow-state",
+        "description": "In Flow, judges reachable aerial lanes earlier and positions his long frame more efficiently.",
+        "params": {
+          "awareness": {
+            "anticipation": 0.1,
+            "space": 0.07
+          },
+          "boost": {
+            "aerial-reach": {
+              "reaction": 0.2,
+              "reach": 0.4
+            }
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "high-point-clearance",
+        "name": "High Point Clearance",
+        "label": "HIGH POINT CLEARANCE",
+        "effect": "high-point-clearance",
+        "description": "After winning a reachable aerial delivery, controls the ball at its high point. May then clear or distribute through an ordinary action. A lost contest gives no control.",
+        "params": {
+          "cooldownTicks": 8
+        },
+        "interpretation": true
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Let us make this stylish."
+      ],
+      "pass": [
+        "A clean line."
+      ],
+      "receive": [
+        "Perfect height."
+      ],
+      "dribble": [
+        "Keep it elegant."
+      ],
+      "dribbleFail": [
+        "That was not stylish."
+      ],
+      "goal": [
+        "An elegant finish.",
+        "A finish worthy of the stage."
+      ],
+      "miss": [
+        "The shape was wrong."
+      ],
+      "defend": [
+        "I can reach that."
+      ],
+      "aerial": [
+        "At my highest point."
+      ],
+      "passFail": [
+        "An ugly interruption."
+      ],
+      "flow": [
+        "Every line is clear."
+      ],
+      "shot-attempt": [
+        "Watch the finish."
+      ],
+      "criticalGoal": [
+        "A finish worthy of the stage."
+      ],
+      "foul": [
+        "An inelegant challenge."
+      ],
+      "fouled": [
+        "How unstylish of you."
+      ],
+      "offside": [
+        "I spoiled the line."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/aoshi-tokimitsu/player.js
-// Character player data: Aoshi Tokimitsu (ID 25).
-const PLAYER_25_DATA = { id: 25, name: "Aoshi Tokimitsu", debutChapter: 1, appearanceOrder: 25, image: "images/aoshi-tokimitsu.jpg", primaryPosition: "DM", positions: ["DM", "CM"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"physical-strength","name":"Physical Strength","description":"Uses his powerful build to resist contact and win physical contests.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"stamina","name":"Stamina","description":"Sustains repeated running and physical efforts without quickly tiring.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"},{"id":"agility","name":"Agility","category":"physical","description":"Changes his body’s direction quickly enough to stay with a dribbler even while engaging in a strength contest.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"anime-subtitles","url":"https://subs.yakuaru.com/books/blue-lock/page/e13-top3","note":"Tokimitsu catches Bachira’s changing dribble route and retains a physical advantage.","episode":13}}], stats: { ovr:85, off:82, sho:82, spd:83, def:87, pas:75, dri:76, gk:64 } };
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_25_DATA = {
+  "id": 25,
+  "name": "Aoshi Tokimitsu",
+  "debutChapter": 1,
+  "appearanceOrder": 25,
+  "image": "images/aoshi-tokimitsu.jpg",
+  "primaryPosition": "DM",
+  "positions": [
+    "DM",
+    "CM"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "physical-strength",
+      "name": "Physical Strength",
+      "description": "Uses his powerful build to resist contact and win physical contests.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-anime-en.com/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "stamina",
+      "name": "Stamina",
+      "description": "Sustains repeated running and physical efforts without quickly tiring.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://bluelock-anime-en.com/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    },
+    {
+      "id": "agility",
+      "name": "Agility",
+      "category": "physical",
+      "description": "Changes his body’s direction quickly enough to stay with a dribbler even while engaging in a strength contest.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "anime-subtitles",
+        "url": "https://subs.yakuaru.com/books/blue-lock/page/e13-top3",
+        "note": "Tokimitsu catches Bachira’s changing dribble route and retains a physical advantage.",
+        "episode": 13
+      }
+    }
+  ],
+  "stats": {
+    "ovr": 85,
+    "off": 82,
+    "sho": 82,
+    "spd": 83,
+    "def": 87,
+    "pas": 75,
+    "dri": 76,
+    "gk": 64
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "relentless-engine",
+        "name": "Relentless Engine",
+        "label": "RELENTLESS ENGINE",
+        "effect": "durable",
+        "description": "Uses less stamina for actual running and actions. Stamina remains finite outside Flow.",
+        "params": {
+          "drain": 0.72
+        },
+        "interpretation": true
+      },
+      {
+        "id": "power-shield",
+        "name": "Power Shield",
+        "label": "POWER SHIELD",
+        "effect": "physical-shield",
+        "description": "Protects possession with his strength. Multiple defenders, poor control or a well-timed tackle can beat him.",
+        "params": {
+          "shield": 5
+        },
+        "interpretation": true
+      },
+      {
+        "id": "assertive-flow",
+        "name": "Assertive Flow",
+        "label": "ASSERTIVE FLOW",
+        "effect": "flow-state",
+        "description": "In Flow, commits to his decisions and shields more efficiently. Carries still require space.",
+        "params": {
+          "awareness": {
+            "anticipation": 0.06
+          },
+          "boost": {
+            "physical-shield": {
+              "shield": 7
+            },
+            "power-dribble": {
+              "protection": 7,
+              "stride": 1.13
+            }
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "power-drive",
+        "name": "Power Drive",
+        "label": "POWER DRIVE",
+        "effect": "power-dribble",
+        "description": "Carries through a contested lane using strength and control. A closed route or stronger challenge can stop him.",
+        "params": {
+          "protection": 5,
+          "stride": 1.1,
+          "cooldownTicks": 8
+        },
+        "interpretation": true
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "I can keep up... I have to."
+      ],
+      "pass": [
+        "Here, you have space."
+      ],
+      "receive": [
+        "Okay, hold it steady."
+      ],
+      "dribble": [
+        "I can push through here."
+      ],
+      "dribbleFail": [
+        "I should have protected it."
+      ],
+      "goal": [
+        "I actually did it!",
+        "I kept going. I scored!"
+      ],
+      "miss": [
+        "Breathe. Next chance."
+      ],
+      "defend": [
+        "I will stay with him."
+      ],
+      "passFail": [
+        "Sorry... I will win it back."
+      ],
+      "flow": [
+        "I am not backing away."
+      ],
+      "shot-attempt": [
+        "I can take this one."
+      ],
+      "criticalGoal": [
+        "I kept going. I scored!"
+      ],
+      "foul": [
+        "Sorry, I could not stop in time."
+      ],
+      "fouled": [
+        "I was keeping the ball there!"
+      ],
+      "offside": [
+        "Too early. I can fix that."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/ranze-kurona/player.js
-// Character player data: Ranze Kurona (ID 26).
-const PLAYER_26_DATA = { id: 26, name: "Ranze Kurona", debutChapter: 93, appearanceOrder: 26, image: "images/ranze-kurona.jpg", primaryPosition: "RB", positions: ["RB", "RWB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"short-pass-combination","name":"Short-Pass Combination","description":"Exchanges quick one-twos while moving around the ball carrier as a support option.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Ranze_Kurona","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"quick-turning","name":"Quick Turning","description":"Changes direction rapidly to stay available through tight exchanges.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Ranze_Kurona","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:87, off:84, sho:77, spd:91, def:84, pas:89, dri:88, gk:55 } };
+// Character kit; public ratings and canonical football profile preserved.
+const PLAYER_26_DATA = {
+  "id": 26,
+  "name": "Ranze Kurona",
+  "debutChapter": 93,
+  "appearanceOrder": 26,
+  "image": "images/ranze-kurona.jpg",
+  "primaryPosition": "RB",
+  "positions": [
+    "RB",
+    "RWB"
+  ],
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "short-pass-combination",
+      "name": "Short-Pass Combination",
+      "description": "Exchanges quick one-twos while moving around the ball carrier as a support option.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Ranze_Kurona",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    },
+    {
+      "id": "quick-turning",
+      "name": "Quick Turning",
+      "description": "Changes direction rapidly to stay available through tight exchanges.",
+      "battleSimType": "TBD",
+      "battleSimDescription": "Placeholder: Battle Sim effect to be defined.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Ranze_Kurona",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 87,
+    "off": 84,
+    "sho": 77,
+    "spd": 91,
+    "def": 84,
+    "pas": 89,
+    "dri": 88,
+    "gk": 55
+  },
+  "battleSim": {
+    "dialogue": {
+      "hotline": [
+        "Go, Go!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/yo-hiori/player.js
@@ -3237,8 +4722,138 @@ const PLAYER_69_DATA = { id: 69, name: "Shigeo Mizuki", debutChapter: 311, appea
 ;
 
 // js/players/hajime-nishioka/player.js
-// Character player data: Hajime Nishioka (ID 70).
-const PLAYER_70_DATA = { id: 70, name: "Hajime Nishioka", debutChapter: 1, appearanceOrder: 70, image: "images/hajime-nishioka.webp", primaryPosition: "FW", positions: ["FW"], statEstimate: true, nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [], stats: { ovr:76, off:78, sho:74, spd:78, def:49, pas:74, dri:80, gk:35 } };
+// Public simulation voice; canonical profile and ratings preserved.
+const PLAYER_70_DATA = {
+  "id": 70,
+  "name": "Hajime Nishioka",
+  "debutChapter": 1,
+  "appearanceOrder": 70,
+  "image": "images/hajime-nishioka.webp",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "statEstimate": true,
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "official-profile",
+      "url": "https://kodansha.us/series/blue-lock/volume-1/",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [],
+  "stats": {
+    "ovr": 76,
+    "off": 78,
+    "sho": 74,
+    "spd": 78,
+    "def": 49,
+    "pas": 74,
+    "dri": 80,
+    "gk": 35
+  },
+  "battleSim": {
+    "passives": [
+      {
+        "id": "balanced-first-touch",
+        "name": "Balanced First Touch",
+        "label": "BALANCED FIRST TOUCH",
+        "effect": "controlled-touch",
+        "description": "A modest control improvement on a physically reachable pass. Pressure and execution errors can still cause a turnover.",
+        "params": {
+          "control": 2
+        },
+        "interpretation": true
+      },
+      {
+        "id": "composed-flow",
+        "name": "Composed Flow",
+        "label": "COMPOSED FLOW",
+        "effect": "flow-state",
+        "description": "In Flow, finds a little more supporting space and steadies his touch. A conservative simulation interpretation, not a confirmed signature technique.",
+        "params": {
+          "awareness": {
+            "space": 0.06,
+            "anticipation": 0.04
+          },
+          "boost": {
+            "controlled-touch": {
+              "control": 3
+            }
+          }
+        },
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "recovery-touch",
+        "name": "Recovery Touch",
+        "label": "RECOVERY TOUCH",
+        "effect": "recovery-touch",
+        "description": "Under nearby pressure, attempts a quick stabilizing touch after a reachable delivery. Does not recover an intercepted or unreachable ball.",
+        "params": {
+          "control": 2,
+          "cooldownTicks": 8
+        },
+        "interpretation": true
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "I will find my place."
+      ],
+      "pass": [
+        "Here is the opening."
+      ],
+      "receive": [
+        "Keep it close."
+      ],
+      "dribble": [
+        "One touch at a time."
+      ],
+      "dribbleFail": [
+        "Too far from my feet."
+      ],
+      "goal": [
+        "That was the chance.",
+        "One opening was enough."
+      ],
+      "miss": [
+        "Reset, then go again."
+      ],
+      "defend": [
+        "Close that angle."
+      ],
+      "passFail": [
+        "I needed a cleaner touch."
+      ],
+      "flow": [
+        "Stay balanced."
+      ],
+      "shot-attempt": [
+        "Now."
+      ],
+      "criticalGoal": [
+        "One opening was enough."
+      ],
+      "foul": [
+        "I caught him instead of the ball."
+      ],
+      "fouled": [
+        "That was a push."
+      ],
+      "offside": [
+        "Wait for the pass next time."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/shizuka-haiji/player.js

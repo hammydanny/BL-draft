@@ -35,6 +35,8 @@ function expected(version){
 }
 function stale(version=currentVersion()){return Object.entries(expected(version)).filter(([file,content])=>read(file)!==content).map(([file])=>file);}
 const MANIFEST='scripts/release-manifest.json';
+const VERSION_PATTERN=/^\d+(?:\.\d+){1,4}$/;
+function requestedVersion(args){const values=args.filter(arg=>!arg.startsWith('--'));if(values.length>1||values.some(value=>!VERSION_PATTERN.test(value)))throw new Error('Expected one numeric release version with 2–5 components.');return values[0]||null;}
 // Every file a returning browser may hold from an earlier visit under this version.
 function cachedAssets(){
     const files=new Set(['js/characters.generated.js']);
@@ -63,7 +65,7 @@ function unreleased(version=currentVersion()){
     const now=fingerprint(),names=new Set([...Object.keys(now),...Object.keys(manifest.files||{})]);
     return [...names].filter(file=>now[file]!==manifest.files?.[file]).sort();
 }
-module.exports={stale,currentVersion,cachedAssets,fingerprint,unreleased,MANIFEST};
+module.exports={stale,currentVersion,cachedAssets,fingerprint,unreleased,MANIFEST,VERSION_PATTERN,requestedVersion};
 
 if(require.main===module){
     const args=process.argv.slice(2);
@@ -77,7 +79,7 @@ if(require.main===module){
         process.exitCode=files.length||changed.length?1:0;return;
     }
     if(args.includes('--stamp')){const files=stale();if(files.length){console.error('Align version references first: node scripts/set-version.js');process.exitCode=1;return;}writeManifest();console.log(`Release fingerprint recorded for ${currentVersion()}.`);return;}
-    const requested=args.find(arg=>/^\d+(?:\.\d+){1,3}$/.test(arg));
+    const requested=requestedVersion(args);
     if(requested){const file=path.join(root,'js/version.js');fs.writeFileSync(file,read('js/version.js').replace(/const APP_VERSION="[^"]+";/,`const APP_VERSION="${requested}";`));}
     const version=currentVersion();let written=0;
     const previous=readManifest()?.version;

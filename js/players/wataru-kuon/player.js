@@ -1,4 +1,4 @@
-// Character player data: Wataru Kuon (ID 12).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_12_DATA = {
   "id": 12,
   "name": "Wataru Kuon",
@@ -97,68 +97,71 @@ const PLAYER_12_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "aerial": [
+      "aerial": [
         "I can reach that height."
-    ],
-    "header": [
+      ],
+      "header": [
         "At the highest point!"
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Let us keep our shape."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Use the space ahead.",
         "Keep the shape around it."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "That delivery works."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "I have a route through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "I misjudged the challenge."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "This is the ball I wanted!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "Perfect timing! That goal is mine!",
         "The timing... yes!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I need better timing."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I won that duel. Stay alert!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Let us organize again."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Send it high. I'll fight for it!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Use the space ahead."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "They were waiting for that pass."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Tch. Too much contact."
-    ],
-    "save": [
+      ],
+      "save": [
         "I was watching that lane."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "That's a foul in the challenge."
-    ],
-    "interception": [
+      ],
+      "interception": [
         "You left that pass too obvious."
-    ],
-    "offside": [
+      ],
+      "offside": [
         "I misjudged their defensive line."
-    ]
-}
+      ],
+      "criticalGoal": [
+        "The timing... yes!"
+      ]
+    }
   }
 };

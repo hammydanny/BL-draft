@@ -1,4 +1,4 @@
-// Character player data: Hibiki Okawa (ID 17).
+// Public simulation dialogue; canonical profile and ratings preserved.
 const PLAYER_17_DATA = {
   "id": 17,
   "name": "Hibiki Okawa",
@@ -122,65 +122,68 @@ const PLAYER_17_DATA = {
     "ultimates": [],
     "reactions": [],
     "dialogue": {
-    "superShot": [
+      "superShot": [
         "Wait... now!"
-    ],
-    "chip": [
+      ],
+      "chip": [
         "Over the keeper."
-    ],
-    "kickoff": [
+      ],
+      "kickoff": [
         "Get the ball forward."
-    ],
-    "pass": [
+      ],
+      "pass": [
         "Here, build another chance.",
         "Let us build the next attack."
-    ],
-    "receive": [
+      ],
+      "receive": [
         "Good, I can use this."
-    ],
-    "dribble": [
+      ],
+      "dribble": [
         "There is a way through."
-    ],
-    "dribbleFail": [
+      ],
+      "dribbleFail": [
         "Lost that one."
-    ],
-    "shot-attempt": [
+      ],
+      "shot-attempt": [
         "Watch this finish!"
-    ],
-    "goal": [
+      ],
+      "goal": [
         "That's your ace! Remember it!",
         "That is the finish I wanted!"
-    ],
-    "miss": [
+      ],
+      "miss": [
         "I should score from there."
-    ],
-    "defend": [
+      ],
+      "defend": [
         "I'll win it myself, then!"
-    ],
-    "concede": [
+      ],
+      "concede": [
         "Get me another chance."
-    ],
-    "flow": [
+      ],
+      "flow": [
         "Give me the chance. I'll take it on!"
-    ],
-    "support": [
+      ],
+      "support": [
         "Here, build another chance."
-    ],
-    "passFail": [
+      ],
+      "passFail": [
         "That pass wasn't good enough."
-    ],
-    "foul": [
+      ],
+      "foul": [
         "Tch. Fine, it was a foul."
-    ],
-    "save": [
+      ],
+      "save": [
         "I will take that ball."
-    ],
-    "fouled": [
+      ],
+      "fouled": [
         "You stopped a scoring chance there!"
-    ],
-    "offside": [
+      ],
+      "offside": [
         "Wait, I was offside there?"
-    ]
-}
+      ],
+      "criticalGoal": [
+        "That is the finish I wanted!"
+      ]
+    }
   }
 };

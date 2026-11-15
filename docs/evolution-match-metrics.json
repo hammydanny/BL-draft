@@ -1,0 +1,861 @@
+{
+  "baseline": [
+    {
+      "label": "11v11",
+      "seed": 13,
+      "goals": 4,
+      "shots": 12,
+      "passes": 211,
+      "attemptedPasses": 241,
+      "interceptions": 7,
+      "ticks": 360,
+      "costMsPerTick": 7.907,
+      "abilities": {
+        "physical-dominance": 4,
+        "power-shot": 2,
+        "creative-dribbling": 9,
+        "direct-shot": 2,
+        "creative-passing": 2,
+        "ambidextrous-finishing": 2,
+        "physical-breakthrough": 1,
+        "no-break-dribble": 2,
+        "high-speed-cut-in": 1,
+        "combination-awareness": 2,
+        "puzzle-completion": 1,
+        "ginga-monster": 2,
+        "machine-dribble": 1
+      },
+      "reactions": {
+        "eye-contact": 7,
+        "reflexive-synchronization": 1
+      },
+      "opportunities": {
+        "hotline:eligible": 11,
+        "shot:25m+": 5,
+        "shot:teammates-in-box-0": 6,
+        "hotline:risky": 2,
+        "hotline:too-far": 5,
+        "tgv:first-time-no-flow": 3,
+        "shot:teammates-in-box-2": 1,
+        "shot:12-18m": 4,
+        "shot:teammates-in-box-3": 4,
+        "shot:<12m": 2,
+        "tgv:no-first-time": 3,
+        "rebound:nearest-attacker-14m+": 2,
+        "rebound:nearest-defender-8m+": 2,
+        "rebound:defence-won": 2,
+        "tgv:flow-too-far": 1,
+        "shot:18-25m": 1,
+        "shot:teammates-in-box-1": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 54.6,
+          "min": 21.089805965806597
+        },
+        {
+          "players": 11,
+          "mean": 55.4,
+          "min": 0
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "11v11",
+      "seed": 29,
+      "goals": 2,
+      "shots": 12,
+      "passes": 237,
+      "attemptedPasses": 271,
+      "interceptions": 15,
+      "ticks": 359,
+      "costMsPerTick": 8.453,
+      "abilities": {
+        "all-rounder": 2,
+        "power-shot": 2,
+        "composed-forward": 2,
+        "relentless-duel": 1,
+        "physical-dominance": 1,
+        "creative-dribbling": 5,
+        "creative-passing": 2,
+        "no-break-dribble": 2,
+        "elite-off-ball-movement": 1,
+        "machine-dribble": 1,
+        "combination-awareness": 2,
+        "planet-hotline": 1
+      },
+      "reactions": {
+        "eye-contact": 5,
+        "reflexive-synchronization": 1,
+        "planet-hotline": 1
+      },
+      "opportunities": {
+        "hotline:eligible": 11,
+        "shot:25m+": 3,
+        "shot:teammates-in-box-0": 7,
+        "shot:18-25m": 6,
+        "shot:teammates-in-box-1": 2,
+        "rebound:nearest-attacker-8-14m": 3,
+        "rebound:nearest-defender-4-8m": 3,
+        "rebound:defence-won": 2,
+        "hotline:too-far": 6,
+        "tgv:first-time-no-flow": 4,
+        "hotline:risky": 3,
+        "tgv:no-first-time": 1,
+        "shot:12-18m": 1,
+        "shot:<12m": 2,
+        "shot:teammates-in-box-3": 1,
+        "shot:teammates-in-box-2": 2,
+        "rebound:attack-won": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 49.8,
+          "min": 29.661993752323973
+        },
+        {
+          "players": 11,
+          "mean": 57.8,
+          "min": 23.756285443327005
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "11v11",
+      "seed": 41,
+      "goals": 3,
+      "shots": 13,
+      "passes": 222,
+      "attemptedPasses": 256,
+      "interceptions": 12,
+      "ticks": 361,
+      "costMsPerTick": 8.09,
+      "abilities": {
+        "combination-awareness": 4,
+        "creative-dribbling": 3,
+        "physical-dominance": 3,
+        "elite-off-ball-movement": 2,
+        "relentless-duel": 1,
+        "no-break-dribble": 7,
+        "machine-dribble": 3,
+        "metavision": 1,
+        "creative-passing": 1,
+        "ghost-run": 1,
+        "malicia": 1,
+        "ambidextrous-finishing": 2,
+        "left-footed-direct-shot": 2,
+        "high-speed-cut-in": 1,
+        "red-panther-sniper": 1,
+        "puzzle-completion": 1,
+        "golden-zone-shot": 1,
+        "composed-forward": 1
+      },
+      "reactions": {
+        "eye-contact": 6
+      },
+      "opportunities": {
+        "hotline:eligible": 10,
+        "shot:12-18m": 5,
+        "shot:teammates-in-box-1": 1,
+        "rebound:nearest-attacker-14m+": 2,
+        "rebound:nearest-defender-<4m": 3,
+        "rebound:defence-won": 2,
+        "shot:teammates-in-box-0": 7,
+        "shot:25m+": 3,
+        "hotline:too-far": 6,
+        "shot:18-25m": 4,
+        "shot:teammates-in-box-3": 4,
+        "tgv:first-time-no-flow": 2,
+        "rebound:nearest-attacker-<4m": 1,
+        "rebound:attack-won": 1,
+        "tgv:no-first-time": 1,
+        "shot:<12m": 1,
+        "shot:teammates-in-box-2": 1,
+        "hotline:risky": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 56.6,
+          "min": 0
+        },
+        {
+          "players": 11,
+          "mean": 54.6,
+          "min": 0
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    }
+  ],
+  "updated": [
+    {
+      "label": "11v11",
+      "seed": 13,
+      "goals": 1,
+      "shots": 6,
+      "passes": 244,
+      "attemptedPasses": 272,
+      "interceptions": 9,
+      "ticks": 359,
+      "costMsPerTick": 8.083,
+      "abilities": {
+        "precision-distribution": 11,
+        "combination-awareness": 5,
+        "creative-dribbling": 4,
+        "creative-passing": 3,
+        "machine-dribble": 1,
+        "recovery-touch": 3,
+        "right-side-trap": 1,
+        "ghost-run": 2,
+        "all-rounder": 1,
+        "composed-forward": 3,
+        "physical-dominance": 3,
+        "explosive-burst": 1,
+        "no-break-dribble": 4,
+        "power-shot": 1,
+        "twin-support": 2,
+        "malicia": 2,
+        "high-speed-cut-in": 1,
+        "ambidextrous-finishing": 1,
+        "direct-shot": 1
+      },
+      "reactions": {
+        "eye-contact": 10,
+        "reflexive-synchronization": 1
+      },
+      "opportunities": {
+        "hotline:eligible": 9,
+        "hotline:risky": 2,
+        "hotline:too-far": 8,
+        "shot:25m+": 4,
+        "shot:teammates-in-box-0": 5,
+        "rebound:nearest-attacker-14m+": 2,
+        "rebound:nearest-defender-8m+": 2,
+        "rebound:defence-won": 2,
+        "tgv:first-time-no-flow": 2,
+        "kuon:no-airborne-reception": 1,
+        "shot:<12m": 1,
+        "shot:12-18m": 1,
+        "shot:teammates-in-box-1": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 73.4,
+          "min": 46.164752121199854
+        },
+        {
+          "players": 11,
+          "mean": 73.5,
+          "min": 50.43069286193586
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "11v11",
+      "seed": 29,
+      "goals": 4,
+      "shots": 7,
+      "passes": 213,
+      "attemptedPasses": 250,
+      "interceptions": 14,
+      "ticks": 360,
+      "costMsPerTick": 8.646,
+      "abilities": {
+        "precision-distribution": 7,
+        "direct-shot": 1,
+        "physical-dominance": 2,
+        "no-break-dribble": 5,
+        "combination-awareness": 3,
+        "composed-forward": 5,
+        "creative-dribbling": 8,
+        "elite-off-ball-movement": 4,
+        "twin-support": 1,
+        "power-drive": 1,
+        "explosive-burst": 3,
+        "recovery-touch": 1,
+        "creative-passing": 1,
+        "machine-dribble": 2,
+        "two-footed-execution": 1,
+        "planet-hotline": 1,
+        "puzzle-completion": 1,
+        "left-footed-direct-shot": 1,
+        "optimal-execution": 1,
+        "all-rounder": 1,
+        "high-point-clearance": 1,
+        "ginga-monster": 1
+      },
+      "reactions": {
+        "eye-contact": 6,
+        "planet-hotline": 1
+      },
+      "opportunities": {
+        "hotline:eligible": 7,
+        "hotline:too-far": 6,
+        "tgv:first-time-no-flow": 3,
+        "shot:25m+": 2,
+        "shot:teammates-in-box-1": 2,
+        "hotline:risky": 4,
+        "shot:<12m": 2,
+        "shot:teammates-in-box-0": 3,
+        "rebound:nearest-attacker-14m+": 1,
+        "rebound:nearest-defender-<4m": 1,
+        "rebound:defence-won": 1,
+        "shot:18-25m": 2,
+        "kuon:no-airborne-reception": 1,
+        "shot:teammates-in-box-2": 1,
+        "shot:12-18m": 1,
+        "tgv:no-first-time": 1,
+        "tgv:flow-in-range": 1,
+        "tgv:offered": 1,
+        "shot:teammates-in-box-3": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 73.5,
+          "min": 44.631992018748406
+        },
+        {
+          "players": 11,
+          "mean": 71.3,
+          "min": 32.14768413983427
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "11v11",
+      "seed": 41,
+      "goals": 0,
+      "shots": 11,
+      "passes": 224,
+      "attemptedPasses": 255,
+      "interceptions": 8,
+      "ticks": 359,
+      "costMsPerTick": 8.826,
+      "abilities": {
+        "precision-distribution": 12,
+        "combination-awareness": 2,
+        "ghost-run": 1,
+        "power-shield": 2,
+        "physical-dominance": 3,
+        "power-shot": 2,
+        "twin-support": 3,
+        "creative-dribbling": 4,
+        "explosive-burst": 2,
+        "no-break-dribble": 2,
+        "high-point-clearance": 1,
+        "right-side-trap": 1,
+        "machine-dribble": 1,
+        "recovery-touch": 2,
+        "relentless-duel": 1,
+        "ambidextrous-finishing": 1,
+        "power-drive": 2
+      },
+      "reactions": {
+        "eye-contact": 5,
+        "reflexive-synchronization": 1
+      },
+      "opportunities": {
+        "hotline:eligible": 14,
+        "hotline:too-far": 5,
+        "tgv:first-time-no-flow": 3,
+        "kuon:no-airborne-reception": 1,
+        "shot:25m+": 5,
+        "shot:teammates-in-box-0": 8,
+        "rebound:nearest-attacker-8-14m": 1,
+        "rebound:nearest-defender-8m+": 3,
+        "rebound:defence-won": 3,
+        "shot:12-18m": 4,
+        "rebound:nearest-attacker-14m+": 2,
+        "shot:18-25m": 1,
+        "shot:teammates-in-box-2": 2,
+        "shot:<12m": 1,
+        "shot:teammates-in-box-3": 1
+      },
+      "stamina": [
+        {
+          "players": 11,
+          "mean": 73.1,
+          "min": 52.928792727276175
+        },
+        {
+          "players": 11,
+          "mean": 75.5,
+          "min": 53.57040752438432
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "1v1 open goals",
+      "seed": 17,
+      "goals": 36,
+      "shots": 46,
+      "passes": 0,
+      "attemptedPasses": 0,
+      "interceptions": 0,
+      "ticks": 363,
+      "costMsPerTick": 0.925,
+      "abilities": {
+        "machine-dribble": 26,
+        "two-footed-execution": 7,
+        "optimal-execution": 6,
+        "puzzle-completion": 2
+      },
+      "reactions": {},
+      "opportunities": {
+        "shot:25m+": 37,
+        "shot:teammates-in-box-0": 46,
+        "shot:12-18m": 4,
+        "tgv:no-first-time": 7,
+        "shot:<12m": 3,
+        "shot:18-25m": 2
+      },
+      "stamina": [
+        {
+          "players": 1,
+          "mean": 0,
+          "min": 0
+        },
+        {
+          "players": 1,
+          "mean": 0,
+          "min": 0
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "2v2 open goals",
+      "seed": 17,
+      "goals": 33,
+      "shots": 48,
+      "passes": 120,
+      "attemptedPasses": 145,
+      "interceptions": 17,
+      "ticks": 356,
+      "costMsPerTick": 1.472,
+      "abilities": {
+        "precision-distribution": 20,
+        "direct-shot": 5,
+        "machine-dribble": 19,
+        "two-footed-execution": 1,
+        "optimal-execution": 5,
+        "man-marking": 17,
+        "elite-off-ball-movement": 3,
+        "puzzle-completion": 3,
+        "chameleon-flow": 2,
+        "unbreakable-marking": 2,
+        "relentless-duel": 5,
+        "left-footed-direct-shot": 1,
+        "perfect-ambidexterity": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "tgv:first-time-no-flow": 6,
+        "shot:18-25m": 6,
+        "shot:teammates-in-box-0": 48,
+        "shot:25m+": 41,
+        "tgv:no-first-time": 19,
+        "shot:12-18m": 1,
+        "tgv:flow-too-far": 2
+      },
+      "stamina": [
+        {
+          "players": 2,
+          "mean": 27,
+          "min": 16.836118379258814
+        },
+        {
+          "players": 2,
+          "mean": 37.8,
+          "min": 7.5085422425171995
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "3v3 open goals",
+      "seed": 17,
+      "goals": 36,
+      "shots": 52,
+      "passes": 154,
+      "attemptedPasses": 164,
+      "interceptions": 5,
+      "ticks": 359,
+      "costMsPerTick": 2.086,
+      "abilities": {
+        "precision-distribution": 11,
+        "left-footed-direct-shot": 7,
+        "man-marking": 2,
+        "machine-dribble": 9,
+        "puzzle-completion": 4,
+        "creative-dribbling": 16,
+        "optimal-execution": 4,
+        "direct-shot": 7,
+        "ginga-monster": 9,
+        "explosive-burst": 4,
+        "metavision": 1,
+        "explosive-flow": 3,
+        "relentless-duel": 1,
+        "perfect-ambidexterity": 3,
+        "creative-passing": 1,
+        "unbreakable-marking": 1,
+        "chameleon-flow": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "tgv:first-time-no-flow": 14,
+        "shot:25m+": 41,
+        "shot:teammates-in-box-0": 51,
+        "tgv:no-first-time": 6,
+        "tgv:flow-too-far": 8,
+        "shot:12-18m": 3,
+        "shot:18-25m": 8,
+        "shot:teammates-in-box-1": 1
+      },
+      "stamina": [
+        {
+          "players": 3,
+          "mean": 43.7,
+          "min": 18.24495866368651
+        },
+        {
+          "players": 3,
+          "mean": 39,
+          "min": 0
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "5v5 open goals",
+      "seed": 17,
+      "goals": 32,
+      "shots": 54,
+      "passes": 173,
+      "attemptedPasses": 194,
+      "interceptions": 8,
+      "ticks": 362,
+      "costMsPerTick": 3.001,
+      "abilities": {
+        "no-break-dribble": 26,
+        "red-panther-sniper": 5,
+        "explosive-flow": 4,
+        "precision-distribution": 7,
+        "explosive-burst": 5,
+        "man-marking": 6,
+        "high-point-clearance": 2,
+        "unbreakable-marking": 1,
+        "puzzle-completion": 1,
+        "stylish-flow": 1,
+        "physical-man-marking": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "shot:25m+": 43,
+        "shot:teammates-in-box-0": 54,
+        "shot:18-25m": 9,
+        "tgv:first-time-no-flow": 3,
+        "tgv:no-first-time": 3,
+        "shot:<12m": 1,
+        "shot:12-18m": 1
+      },
+      "stamina": [
+        {
+          "players": 5,
+          "mean": 56.8,
+          "min": 7.647345954784893
+        },
+        {
+          "players": 5,
+          "mean": 62.1,
+          "min": 5.776316424263485
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "7v7 open goals",
+      "seed": 17,
+      "goals": 19,
+      "shots": 41,
+      "passes": 194,
+      "attemptedPasses": 231,
+      "interceptions": 11,
+      "ticks": 357,
+      "costMsPerTick": 4.659,
+      "abilities": {
+        "explosive-burst": 3,
+        "explosive-flow": 4,
+        "precision-distribution": 14,
+        "man-marking": 4,
+        "composed-flow": 1,
+        "composed-forward": 1,
+        "recovery-touch": 1,
+        "stylish-coverage": 1,
+        "physical-dominance": 1,
+        "reclaimed-pride": 1,
+        "unbreakable-marking": 1,
+        "no-break-dribble": 1,
+        "creative-dribbling": 1,
+        "creative-passing": 1,
+        "left-footed-direct-shot": 1,
+        "power-shield": 1,
+        "chameleon-flow": 1,
+        "copy-creative-passing": 1,
+        "relentless-duel": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "shot:25m+": 25,
+        "shot:teammates-in-box-0": 33,
+        "okawa:range-20m+": 9,
+        "okawa:keeper-set": 9,
+        "okawa:no-delayed-window": 9,
+        "okawa:no-chip-window": 9,
+        "tgv:no-first-time": 2,
+        "shot:18-25m": 14,
+        "tgv:first-time-no-flow": 2,
+        "shot:teammates-in-box-1": 5,
+        "shot:<12m": 2,
+        "shot:teammates-in-box-2": 3
+      },
+      "stamina": [
+        {
+          "players": 7,
+          "mean": 66.2,
+          "min": 28.06021178756284
+        },
+        {
+          "players": 7,
+          "mean": 66.8,
+          "min": 36.604595515458875
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "9v9 open goals",
+      "seed": 17,
+      "goals": 8,
+      "shots": 15,
+      "passes": 212,
+      "attemptedPasses": 241,
+      "interceptions": 15,
+      "ticks": 353,
+      "costMsPerTick": 6.127,
+      "abilities": {
+        "recovery-touch": 6,
+        "precision-distribution": 4,
+        "explosive-burst": 5,
+        "left-footed-direct-shot": 1,
+        "combination-awareness": 4,
+        "man-marking": 1,
+        "no-break-dribble": 4,
+        "creative-dribbling": 3,
+        "machine-dribble": 1,
+        "elite-off-ball-movement": 1,
+        "perfect-ambidexterity": 1,
+        "red-panther-sniper": 1,
+        "power-drive": 2,
+        "composed-forward": 3,
+        "creative-passing": 1,
+        "aerial-dominance": 1,
+        "physical-dominance": 1,
+        "power-shield": 1,
+        "composed-flow": 1
+      },
+      "reactions": {
+        "reflexive-synchronization": 1
+      },
+      "opportunities": {
+        "shot:25m+": 14,
+        "shot:teammates-in-box-0": 15,
+        "kuon:no-airborne-reception": 9,
+        "tgv:first-time-no-flow": 1,
+        "shot:18-25m": 1
+      },
+      "stamina": [
+        {
+          "players": 9,
+          "mean": 67.6,
+          "min": 46.57101560058115
+        },
+        {
+          "players": 9,
+          "mean": 69.1,
+          "min": 51.049021812686895
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    },
+    {
+      "label": "3v5 open goals",
+      "seed": 17,
+      "goals": 38,
+      "shots": 60,
+      "passes": 162,
+      "attemptedPasses": 189,
+      "interceptions": 12,
+      "ticks": 361,
+      "costMsPerTick": 2.501,
+      "abilities": {
+        "explosive-burst": 8,
+        "left-footed-direct-shot": 5,
+        "no-break-dribble": 21,
+        "physical-man-marking": 6,
+        "direct-shot": 6,
+        "puzzle-completion": 3,
+        "explosive-flow": 4,
+        "physical-breakthrough": 2,
+        "red-panther-sniper": 3,
+        "two-gun-volley": 1,
+        "man-marking": 2,
+        "precision-distribution": 10,
+        "ambidextrous-finishing": 1,
+        "copy-direct-shot": 1,
+        "chameleon-flow": 1,
+        "ginga-monster": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "tgv:first-time-no-flow": 14,
+        "shot:18-25m": 12,
+        "shot:teammates-in-box-0": 58,
+        "shot:25m+": 45,
+        "tgv:flow-in-range": 1,
+        "tgv:offered": 1,
+        "shot:12-18m": 3,
+        "tgv:flow-too-far": 7,
+        "tgv:no-first-time": 7,
+        "shot:teammates-in-box-1": 2
+      },
+      "stamina": [
+        {
+          "players": 3,
+          "mean": 37.8,
+          "min": 14.662468753683395
+        },
+        {
+          "players": 5,
+          "mean": 60.8,
+          "min": 0
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    }
+  ],
+  "autoPlay": [
+    {
+      "label": "5v5 Auto Play",
+      "seed": 17,
+      "goals": 20,
+      "shots": 40,
+      "passes": 180,
+      "attemptedPasses": 222,
+      "interceptions": 21,
+      "ticks": 362,
+      "costMsPerTick": 6.839,
+      "abilities": {
+        "no-break-dribble": 18,
+        "red-panther-sniper": 3,
+        "precision-distribution": 11,
+        "man-marking": 10,
+        "direct-shot": 1,
+        "explosive-burst": 2,
+        "left-footed-direct-shot": 1,
+        "physical-man-marking": 3,
+        "high-point-clearance": 3,
+        "explosive-flow": 2,
+        "relentless-duel": 3,
+        "unbreakable-marking": 2,
+        "creative-dribbling": 3,
+        "creative-passing": 1,
+        "puzzle-completion": 1,
+        "physical-dominance": 2,
+        "stylish-flow": 1,
+        "ginga-monster": 2,
+        "physical-breakthrough": 1
+      },
+      "reactions": {},
+      "opportunities": {
+        "shot:25m+": 26,
+        "shot:teammates-in-box-0": 37,
+        "shot:18-25m": 10,
+        "shot:12-18m": 3,
+        "tgv:first-time-no-flow": 2,
+        "shot:teammates-in-box-1": 3,
+        "shot:<12m": 1,
+        "tgv:no-first-time": 1
+      },
+      "stamina": [
+        {
+          "players": 5,
+          "mean": 57.1,
+          "min": 2.719589312872394
+        },
+        {
+          "players": 5,
+          "mean": 56.5,
+          "min": 0.38541370556738636
+        }
+      ],
+      "substitutions": [
+        0,
+        0
+      ]
+    }
+  ],
+  "notes": [
+    "No forced Flow, ability activation or goal outcomes.",
+    "All costs include decision evaluation and presentation snapshots in the headless engine; browser rendering not measured."
+  ]
+}

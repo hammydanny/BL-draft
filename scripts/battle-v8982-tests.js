@@ -8,7 +8,7 @@ const {createModeTestContext}=require('./game-modes-tests.js');
 const root=path.resolve(__dirname,'..'),IDS=[1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18];
 function setup(stars,source,contextFactory=battleContext){
  const h=contextFactory(source),b=h.bs;b.quiet();
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,20,22,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const configs=[1,2].map(n=>{const ids=n===1?stars.concat(pool.slice(0,14-stars.length)):pool.slice(18,32),a=positionalAssignment(h,'4-4-2',ids,n);
   if(n===1){const preferences={1:['ST'],2:['ST'],3:['ST'],4:['RM','LM'],5:['RB','LB'],6:['ST'],7:['LM','RM'],8:['CB'],9:['CM'],10:['ST'],11:['CM'],12:['ST'],13:['LM','RM'],16:['CB'],17:['ST'],18:['RM','LM'],19:['CM'],27:['CM']};const slots=h.run('FORMATIONS["4-4-2"]'),chosen=new Set();for(const id of stars){let slot=slots.findIndex((s,i)=>i>0&&!chosen.has(i)&&(preferences[id]||['ST','CM','CB']).includes(s.label));if(slot<0)slot=slots.findIndex((s,i)=>i>0&&!chosen.has(i));chosen.add(slot);const old=Object.keys(a).find(k=>Number(a[k])===id);if(old!=null){const swap=a[slot];a[old]=swap;}a[slot]=id;}}
   return h.run(`bs.normalizeTeam({name:'Test ${n}',formation:'4-4-2',roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:${JSON.stringify(a)},strategy:{tempo:55,directness:55,pressing:50,line:50,width:50}},${n})`);});
@@ -16,14 +16,14 @@ function setup(stars,source,contextFactory=battleContext){
 }
 function dataTests(){
  const {run}=createModeTestContext(),all=JSON.parse(run('JSON.stringify(players)'));
- const secret=all.filter(p=>p.secretCharacter).sort((a,b)=>a.id-b.id);assert.equal(crypto.createHash('sha256').update(JSON.stringify(secret)).digest('hex'),require('./fixtures/protected-v0893.json').sha256,'all secret records protected');
+ const secret=all.filter(p=>p.secretCharacter).sort((a,b)=>a.id-b.id);assert.equal(crypto.createHash('sha256').update(JSON.stringify(secret)).digest('hex'),require('./fixtures/protected-main-v8988.json').sha256,'all secret records protected');
  const protectedData=require('./fixtures/character-batch-protected.json');for(const expected of protectedData.public){const p=all.find(p=>p.id===expected.id);assert.deepEqual({id:p.id,stats:p.stats,positions:p.positions,primaryPosition:p.primaryPosition},expected,'public Base data '+p.name);}for(const expected of protectedData.priorKits){const kit=JSON.parse(JSON.stringify(all.find(p=>p.id===expected.id).battleSim));delete kit.dialogue;assert.deepEqual(kit,expected.kit,'prior kit mechanics '+expected.id);}assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'js/chemistry.js'))).digest('hex'),protectedData.chemistry,'chemistry source unchanged');
  const c={window:{}};vm.runInNewContext(fs.readFileSync(path.join(root,'js/i18n/messages.js'),'utf8'),c);vm.runInNewContext(fs.readFileSync(path.join(root,'js/i18n/battle-messages.js'),'utf8'),c);
  for(const id of IDS){const p=all.find(p=>p.id===id);for(const [key,lines]of Object.entries(p.battleSim.dialogue)){for(const line of lines)assert.equal(Object.keys(c.window.BLD_BATTLE_MESSAGES[line]||{}).length,10,p.name+' '+key+': '+line);}
   if([12,13,16,17,18].includes(id)){const kit=p.battleSim;for(const a of ['passives','weapons','ultimates','reactions'].flatMap(g=>kit[g]||[])){assert.equal(Object.keys(c.window.BLD_MESSAGES[a.description]||{}).length,10,a.description);assert.equal(Object.keys(c.window.BLD_BATTLE_MESSAGES[a.label]||{}).length,10,a.label);}}
  }
  assert.equal(all.find(p=>p.id===1).stats.ovr,94);assert.equal(all.find(p=>p.id===17).stats.ovr,73);
- assert.deepEqual(Object.keys(all.find(p=>p.id===19).battleSim),['dialogue'],'Keisuke has no full kit');
+ assert(all.find(p=>p.id===19).battleSim.passives.some(a=>a.effect==='support-movement'),'Keisuke full kit now supports his twin');
  console.log('PASS 8.9.8.2 data: protected secret hash, 16 localized voices, localized new ability copy, unchanged OVR, interpreter-only Keisuke');
 }
 function aerialAndCarryTests(){

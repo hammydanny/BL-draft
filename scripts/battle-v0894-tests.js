@@ -9,7 +9,7 @@ const {advance}=require('./battle-presentation-tests.js');
 const {createModeTestContext}=require('./game-modes-tests.js');
 const ISAGI=1,KUNIGAMI=6,CHIGIRI=7,GAGAMARU=8,RAICHI=9,NARUHAYA=10,IEMON=11,HIORI=27;
 const root=path.resolve(__dirname,'..');
-const HANDLED=new Set(['space-reading','blind-spot-run','tactical-memory','first-time-finish','weak-foot-finish','disguised-finish','feint-volley','support-movement','pride','controlled-finish','flow-state','rational-decisions','ambidextrous','decoy-run','power-dribble','switch-foot-finish','isolation-hunter','free-spirit','creative-dribble','disruption-pass','post-dribble-finish','dribble-chain','persistent-press','contact-read','foul-drawing','right-side-trap','physical-shield','durable','power-shot','rebound-volley','man-marking',
+const HANDLED=new Set(['move-it','observed-technique','precision-distribution','explosive-acceleration','high-point-clearance','controlled-touch','recovery-touch','teammate-takeover','planet-hotline','space-reading','blind-spot-run','tactical-memory','first-time-finish','weak-foot-finish','disguised-finish','feint-volley','support-movement','pride','controlled-finish','flow-state','rational-decisions','ambidextrous','decoy-run','power-dribble','switch-foot-finish','isolation-hunter','free-spirit','creative-dribble','disruption-pass','post-dribble-finish','dribble-chain','persistent-press','contact-read','foul-drawing','right-side-trap','physical-shield','durable','power-shot','rebound-volley','man-marking',
  'sprint-momentum','wide-runner','push-dribble','speed-cut','zone-finish','reflex-save','acrobatic-reach','smother-block','extended-parry','acrobatic-finish','super-reflex','aggression','quick-recovery','stalking-horse','run-hunger','ghost-run','run-timing','steady-keeper','set-piece-ready',
  'synchronized-through','wall-pass','exploit-disruption','rival-cooperation','second-ball','mark-and-read']);
 
@@ -52,7 +52,7 @@ function publicCapAndSecretTests(){
  assert.equal(digest,SECRET_DIGEST,'protected records unchanged');
  console.log('PASS v0.8.9.4 data: every public Base stat ≤ 99 (Luna DRI, Blake OFF/SHO capped) and the protected records are unchanged');
 }
-const SECRET_DIGEST=require('./fixtures/protected-v0893.json').sha256;
+const SECRET_DIGEST=require('./fixtures/protected-main-v8988.json').sha256;
 
 function chigiriTests(){
  const {b}=setup([CHIGIRI,ISAGI]);const s=b.createMatch();b.setMatch(s);s.status='playing';
