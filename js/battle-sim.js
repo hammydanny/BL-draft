@@ -200,7 +200,7 @@ function displayState(state=match){
 function snapshotMatch(state){
  if(!state)return null;const copy={...state,randomState:state.random&&state.random.getState?state.random.getState():state.randomState,runnerActive:false};
  delete copy.random;copy.presentationVersion=2;
- copy.events=state.events.map(e=>{if(e.id>=(state.presentedEventId||1))return e;const previous={...e};delete previous.presentation;return previous;});
+ copy.events=state.events.map(e=>{const previous={...e};if(Array.isArray(previous.reversePresentations)){previous.presentation=previous.reversePresentations.at(-1)||previous.presentation;delete previous.reversePresentations;}if(e.id>=(state.presentedEventId||1))return previous;delete previous.presentation;return previous;});
  copy.teams=Object.fromEntries([1,2].map(n=>{const team={...state.teams[n]};delete team._bsChemistryCache;delete team._bsChemistrySignature;return[n,team];}));
  return copy;
 }
@@ -244,6 +244,7 @@ function hydrateMatch(snapshot){
   }
   const state={...snapshot};sanitizeIntelligence(state);[1,2].forEach(n=>state.teams[n].roster.forEach(enforceBlueLockMan));state.random=seeded(state.seed,state.randomState);delete state.randomState;state.runnerActive=false;state.introPending=snapshot.introPending===true;
   state.ball=state.ball&&Number.isFinite(state.ball.x)&&Number.isFinite(state.ball.y)?state.ball:legacyPoint(state.ballZone);
+  state.halfStartTick=Number.isInteger(state.halfStartTick)&&state.halfStartTick>=0&&state.halfStartTick<=state.tick?state.halfStartTick:(state.phase==="secondHalf"?state.tick:0);
   state.presentedEventId=Math.floor(clamp(Number(state.presentedEventId)||0,0,state.events.length));
   if(snapshot.presentationVersion==null&&state.events.some(e=>!e.presentation)){
    state.presentedEventId=state.events.length;state.events.forEach(e=>delete e.presentation);
@@ -452,19 +453,47 @@ function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.b
 
 
 function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
-function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning"}[type]||"Special Ability");addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
+function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning","absolute-authority":"Absolute Authority"}[type]||"Special Ability");return addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
+function johnReverseFateReady(state){if(!state)return false;if(state.phase==="firstHalf")return Number(state.tick||0)>=10;if(state.phase==="secondHalf"){const start=Number.isInteger(state.halfStartTick)?state.halfStartTick:Number(state.tick||0);return Number(state.tick||0)-start>=10;}return false;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
- if(id==="universal-decree"){johnCooldown(state,j,id,24);state.decree={rule:"pass-only",untilTick:state.tick+3};johnSay(state,j,"No one may do anything but pass. The field obeys.","universal-decree","Universal Decree");return true;}
- if(id==="reverse-fate"){const h=state.johnHistory||[];if(h.length<5)return false;const snap=h[h.length-5];johnCooldown(state,j,id,40);johnRestore(state,snap);state.johnHistory=h.slice(0,-5);johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");return true;}
+ if(id==="universal-decree"){const rules=["pass-only","center-only","blindness"],rule=rules.includes(choice)?choice:randomPick(rules,state.random),dialogueKey={"pass-only":"decreeFreeze","center-only":"decreeCenter",blindness:"decreeBlind"}[rule],lines=j.battleSim?.dialogue?.[dialogueKey],text=Array.isArray(lines)&&lines.length?lines[0]:"",ability=(j.battleSim?.specials||[]).find(a=>a&&a.id===id),duration=Number(ability?.params?.durationTicks);johnCooldown(state,j,id,24);state.decree={rule,untilTick:state.tick+(Number.isInteger(duration)&&duration>0?duration:3)};johnSay(state,j,text,"universal-decree","Universal Decree");return true;}
+ if(id==="reverse-fate"){const h=state.johnHistory||[];if(!johnReverseFateReady(state)||h.length<5)return false;const snap=h[h.length-5],steps=h.slice(-5).reverse();johnCooldown(state,j,id,40);const message=johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");johnRestore(state,snap,h.slice(0,-5),message,steps);return true;}
  if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning","Dimensional Repositioning");return true;}return false;}
-function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(state.johnHistory||[]).length<5)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const choices=["freeze","center-only","blindness"];const choice=ability.id==="universal-decree"?choices[Math.floor(state.random()*choices.length)]:null;if(johnUse(state,ability.id,choice))return true;}return false;}
+function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(!johnReverseFateReady(state)||(state.johnHistory||[]).length<5))continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const allowed=["pass-only","center-only","blindness"],configured=Array.isArray(ability.params?.rules)?ability.params.rules.filter(rule=>allowed.includes(rule)):allowed,choices=configured.length?configured:allowed,choice=ability.id==="universal-decree"?randomPick(choices,state.random):null;if(johnUse(state,ability.id,choice))return true;}return false;}
 
 
 function johnHistorySnapshot(state){const data=JSON.parse(JSON.stringify(state,(key,value)=>key==="events"||key==="johnHistory"||key==="random"?undefined:value));return{data:data,eventsLength:state.events.length,randomState:state.random.getState()};}
-function johnRestore(state,snap){const old=johnPaccini(state),cooldowns=old?JSON.parse(JSON.stringify(battleSimRuntimeState(old).cooldowns||{})):{};const preserved=(state.events||[]).filter(e=>e&&Array.isArray(e.actors)&&e.actors.some(a=>idOf(a.id)==="80")&&["universal-decree","reverse-fate","dimensional-repositioning","absolute-authority"].includes(e.type));const restored=JSON.parse(JSON.stringify(snap.data));Object.keys(state).forEach(k=>{if(k!=="events"&&k!=="johnHistory"&&k!=="random")delete state[k];});Object.assign(state,restored);state.events=(state.events||[]).slice(0,snap.eventsLength).concat(preserved);state.events.forEach((event,index)=>{event.id=index+1;});state.presentedEventId=Math.min(state.presentedEventId||0,state.events.length);state.random=seeded(state.seed,snap.randomState);const john=johnPaccini(state);if(john)battleSimRuntimeState(john).cooldowns=cooldowns;state.status="playing";state.stoppage="";}
-
-function battleSimRuntimeState(p){
+function johnRestore(state,snap,history,reverseEvent,reverseSteps){
+ const cooldowns=new Map();
+ [1,2].forEach(n=>(state.teams[n].roster||[]).forEach(p=>{const current=p.battleSimState?.cooldowns;if(current&&typeof current==="object")cooldowns.set(n+":"+idOf(p.id),JSON.parse(JSON.stringify(current)));}));
+ const hadReactionCooldowns=Object.prototype.hasOwnProperty.call(state,"reactionCooldowns"),reactionCooldowns=hadReactionCooldowns?JSON.parse(JSON.stringify(state.reactionCooldowns)):undefined;
+ const currentEvents=Array.isArray(state.events)?state.events:[];
+ const keptEvents=currentEvents.slice(0,Math.max(0,Math.min(currentEvents.length,Number(snap.eventsLength)||0)));
+ const restored=JSON.parse(JSON.stringify(snap.data));
+ Object.keys(state).forEach(k=>{if(k!=="events"&&k!=="johnHistory"&&k!=="random")delete state[k];});
+ Object.assign(state,restored);
+ state.events=keptEvents;
+ if(reverseEvent)state.events.push(reverseEvent);
+ state.events.forEach((event,index)=>{event.id=index+1;});
+ state.presentedEventId=state.events.length;
+ state.random=seeded(state.seed,snap.randomState);
+ [1,2].forEach(n=>(state.teams[n].roster||[]).forEach(p=>{
+  const key=n+":"+idOf(p.id);if(cooldowns.has(key))battleSimRuntimeState(p).cooldowns=JSON.parse(JSON.stringify(cooldowns.get(key)));
+ }));
+ if(hadReactionCooldowns)state.reactionCooldowns=reactionCooldowns;else delete state.reactionCooldowns;
+ state.johnHistory=Array.isArray(history)?history:[];
+ state.status="playing";state.stoppage="";state.manualPaused=false;
+ const root=state===match&&!fastForwarding&&reverseEvent?byId("bs-live-feed"):null;
+ if(root&&typeof root.querySelectorAll==="function"&&Array.isArray(reverseSteps)&&reverseSteps.length){
+  clearFeedQueue();
+  root.querySelectorAll("[data-event-id]").forEach(node=>{const eventId=Number(node.dataset?.eventId);if(Number.isFinite(eventId)&&eventId>keptEvents.length)node.remove();});
+  root._queuedThrough=keptEvents.length;
+  reverseEvent.reversePresentations=reverseSteps.map(step=>capturePresentation(step.data));
+ }else if(reverseEvent){
+  reverseEvent.presentation=capturePresentation(state);
+ }
+}function battleSimRuntimeState(p){
  if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
  if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
  if(!Array.isArray(p.battleSimState.usedUltimates))p.battleSimState.usedUltimates=[];
@@ -2339,15 +2368,45 @@ function simulateTick(state){
  const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
+ // Absolute Authority owns six uninterrupted ticks; each tick performs a fresh fair coin flip and awards one goal.
+ if(state.authoritySequence){
+  const q=state.authoritySequence,winner=state.random()<.5?1:2;
+  q.remaining--;state.score[winner]++;
+  const j=johnPaccini(state),goalNumber=6-q.remaining;
+  state.teams[winner].stats.goals=(Number(state.teams[winner].stats.goals)||0)+1;
+  if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);
+  addEvent(state,{type:"absolute-authority-goal",teamNumber:winner,notable:true,description:"ABSOLUTE AUTHORITY coin flip "+goalNumber+" of 6 awards goal to "+state.teams[winner].name+".",actors:j?[j]:[]});
+  if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}
+  ensureTickEvent(state,eventsBefore);return;
+ }
  if(johnAutomaticSpecial(state)){ensureTickEvent(state,eventsBefore);return;}
  for(const n of [1,2])for(const p of state.teams[n].roster){if(isBlueLockMan(p)){enforceBlueLockMan(p);continue;}if(p.flow>=100){p.flowFullTicks=(p.flowFullTicks||0)+1;if(p.flowFullTicks>40){p.flow=0;p.flowFullTicks=0;}}else p.flowFullTicks=0;}
  if(state.possession===1||state.possession===2)state.teams[state.possession].stats.poss++;
+ // Expire the previous decree before applying any rule to this tick.
+ if(state.decree&&state.tick>state.decree.untilTick)state.decree=null;
+ const decreeActive=!!(state.decree&&state.tick<=state.decree.untilTick);
+ if(decreeActive&&state.decree.rule==="pass-only"){
+  const team=state.teams[state.possession],carrier=team&&playerIn(team,state.carrierId);
+  if(!state.forced&&carrier&&!carrier.sentOff){
+   setBall(state,carrier);
+   const attemptPass=opts=>{const options=passOptions(state,carrier,opts);if(options.length){const option=options.sort((a,b)=>b.value-a.value)[0];resolvePass(state,carrier,{...opts,option});}else addEvent(state,{type:"universal-decree",description:"Universal Decree: no pass is available.",actors:[johnPaccini(state)]});};
+   if(state.throwInPending){state.throwInPending=false;attemptPass({throwIn:true,offsideExempt:true,passKind:"short",maxMetres:28});}
+   else if(state.kickoffPassPending){state.kickoffPassPending=false;attemptPass({passKind:"short",kickoff:true});}
+   else{if(state.chainTeam!==state.possession){state.chainTeam=state.possession;state.chain=0;}state.chain=(Number(state.chain)||0)+1;attemptPass({});}
+  }
+  ensureTickEvent(state,eventsBefore);
+  return;
+ }
+ if(decreeActive&&state.decree.rule==="center-only"){
+  [1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));
+  const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);
+  addEvent(state,{type:"universal-decree",description:"Universal Decree: every player may only move towards the center.",actors:[johnPaccini(state)]});
+  ensureTickEvent(state,eventsBefore);return;
+ }
+ if(decreeActive&&state.decree.rule==="blindness")state.blindnessUntil=state.decree.untilTick;
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
- if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);state.teams[q.winner].stats.goals=(Number(state.teams[q.winner].stats.goals)||0)+1;if(j)moveToward(j,{x:3+state.random()*94,y:4+state.random()*92},1000);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(6-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- if(state.decree&&state.tick>state.decree.untilTick)state.decree=null;
- if(state.authoritySequence){const q=state.authoritySequence;q.remaining--;state.score[q.winner]++;const j=johnPaccini(state);addEvent(state,{type:"absolute-authority-goal",teamNumber:q.winner,notable:true,description:"ABSOLUTE AUTHORITY awards goal "+(7-q.remaining)+" of 6 to "+state.teams[q.winner].name+".",actors:j?[j]:[]});if(q.remaining<=0){state.authoritySequence=null;state.pending={type:"kickoff",teamNumber:q.winner===1?2:1,zone:7,point:{x:50,y:50}};pause(state,"ABSOLUTE AUTHORITY COMPLETE");}ensureTickEvent(state,eventsBefore);return;}
- if(state.decree&&state.tick<=state.decree.untilTick){if(state.decree.rule==="freeze"){addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is frozen.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}if(state.decree.rule==="center-only"){[1,2].forEach(n=>active(state.teams[n]).forEach(p=>moveToward(p,{x:50,y:50},movementMeters(p))));const c=playerIn(state.teams[state.possession],state.carrierId);if(c)setBall(state,c);addEvent(state,{type:"universal-decree",description:"Universal Decree: every player is forced towards the center.",actors:[johnPaccini(state)]});ensureTickEvent(state,eventsBefore);return;}state.blindnessUntil=state.decree.untilTick;}else if(state.decree)state.decree=null;
+  moveOffBall(state);
  moveOffBall(state);
  // Planet Hotline owns each of its three ticks; normal decisions are suspended.
  if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
@@ -2399,7 +2458,7 @@ function simulateTick(state){
 function playerTick(state){
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.battleSimState&&Array.isArray(p.battleSimState.usedUltimates)&&!isFlowing(p))p.battleSimState.usedUltimates=[];}));
  simulateTick(state);
- [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;const winner=state.random()<.5?1:2;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,winner:winner,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority");}}}));
+ [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority","Absolute Authority");}}}));
 
 }
 function finish(state){
@@ -2420,7 +2479,7 @@ function runSequence(state){
  else playerTick(state);
  state.runnerActive=false;storeActiveMatch();renderMatch();
 }
-function createMatch(){const seed=randSeed(),s={autoPlay:{...autoPreferences},seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
+function createMatch(){const seed=randSeed(),s={autoPlay:{...autoPreferences},seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",halfStartTick:0,status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
 
 
 const COPY_EFFECTS=new Set(["first-time-finish","creative-dribble","disruption-pass","controlled-finish"]);
@@ -3126,6 +3185,18 @@ function scheduleFeedEvent(){
    trimLiveFeed(root);
    match.presentedEventId=event.id;storeActiveMatch();renderMatch();
   }
+  if(event?.type==="reverse-fate"&&Array.isArray(event.reversePresentations)&&event.reversePresentations.length){
+   const frames=event.reversePresentations.slice();delete event.reversePresentations;let index=0;
+   const advance=()=>{
+    stoppageTimer=null;
+    if(!match||!match.events.includes(event)){presentationSettled();return;}
+    event.presentation=frames[index++];renderMatch();
+    if(index<frames.length)stoppageTimer=setTimeout(advance,200);
+    else stoppageTimer=setTimeout(()=>{stoppageTimer=null;storeActiveMatch();presentationSettled();},200);
+   };
+   stoppageTimer=setTimeout(advance,220);
+   return;
+  }
   if(feedQueue.length)scheduleFeedEvent();
   presentationSettled();
  },delay);
@@ -3340,7 +3411,7 @@ function fastForwardMatch(){
  while(match.status!=="finished"&&guard<2000){guard++;if(match.timeSeconds>=FULL){finish(match);break;}
   if(match.status==="paused"){
    if(match.requiredSub){const req=match.requiredSub,team=match.teams[req.teamNumber],reserve=bench(team)[0];if(reserve)substitute(team,req.slot,reserve.id);else match.requiredSub=null;}
-   if(match.phase==="halfTime"){match.phase="secondHalf";kickoff(match,2);const p=playerIn(match.teams[2],match.carrierId);addEvent(match,{type:"kickoff",teamNumber:2,notable:true,description:"Second-half kick-off. "+match.teams[2].name+" restart play.",actors:[p],dialogue:[]});}
+   if(match.phase==="halfTime"){match.phase="secondHalf";match.halfStartTick=match.tick;kickoff(match,2);const p=playerIn(match.teams[2],match.carrierId);addEvent(match,{type:"kickoff",teamNumber:2,notable:true,description:"Second-half kick-off. "+match.teams[2].name+" restart play.",actors:[p],dialogue:[]});}
    else if(match.pending&&match.pending.type==="kickoff")kickoff(match,match.pending.teamNumber);
    else if(match.pending&&["penalty","free-kick","corner","goal-kick"].includes(match.pending.type))match.forced=Object.assign({},match.pending);
    match.stoppage="";match.status="playing";
@@ -3353,7 +3424,7 @@ function fastForwardMatch(){
 function continueMatch(automatic=false){
  if(!sequenceReady(match))return;
  match.status="resolving";
- if(match.phase==="halfTime"){match.phase="secondHalf";kickoff(match,2);const p=playerIn(match.teams[2],match.carrierId);addEvent(match,{type:"kickoff",teamNumber:2,notable:true,description:"Second-half kick-off. "+match.teams[2].name+" restart play.",actors:[p],dialogue:[]});}
+ if(match.phase==="halfTime"){match.phase="secondHalf";match.halfStartTick=match.tick;kickoff(match,2);const p=playerIn(match.teams[2],match.carrierId);addEvent(match,{type:"kickoff",teamNumber:2,notable:true,description:"Second-half kick-off. "+match.teams[2].name+" restart play.",actors:[p],dialogue:[]});}
  else if(match.pending&&match.pending.type==="kickoff"){
   const n=match.pending.teamNumber;kickoff(match,n);
   // Record a real restart for presentation without consuming simulation RNG.
