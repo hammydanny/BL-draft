@@ -200,7 +200,7 @@ function displayState(state=match){
 function snapshotMatch(state){
  if(!state)return null;const copy={...state,randomState:state.random&&state.random.getState?state.random.getState():state.randomState,runnerActive:false};
  delete copy.random;copy.presentationVersion=2;
- copy.events=state.events.map(e=>{const previous={...e};if(Array.isArray(previous.reversePresentations)){previous.presentation=previous.reversePresentations.at(-1)||previous.presentation;delete previous.reversePresentations;}if(e.id>=(state.presentedEventId||1))return previous;delete previous.presentation;return previous;});
+ copy.events=state.events.map(e=>{const previous={...e};if(e.id>=(state.presentedEventId||1))return previous;delete previous.presentation;return previous;});
  copy.teams=Object.fromEntries([1,2].map(n=>{const team={...state.teams[n]};delete team._bsChemistryCache;delete team._bsChemistrySignature;return[n,team];}));
  return copy;
 }
@@ -454,51 +454,15 @@ function isagi(p){return !!p&&(idOf(p.id)==="1"||p.name==="Yoichi Isagi")&&!!p.b
 
 
 function johnPaccini(state){if(!state||!state.teams)return null;for(const n of [1,2]){const t=state.teams[n],p=(t.roster||[]).find(x=>String(x.id)==="80"||x.name==="John Paccini");if(p&&Object.values(t.assignment||{}).some(id=>idOf(id)===idOf(p.id)))return p;}return null;}
-function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","reverse-fate":"Reverse Fate","dimensional-repositioning":"Dimensional Repositioning","absolute-authority":"Absolute Authority"}[type]||"Special Ability");return addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
+function johnSay(state,j,text,type,abilityName){const name=abilityName||({"universal-decree":"Universal Decree","decree-rule":"Universal Decree","dimensional-repositioning":"Dimensional Repositioning","absolute-authority":"Absolute Authority"}[type]||"Special Ability");return addEvent(state,{type:type||"john-ability",teamNumber:j.teamNumber,notable:true,description:j.name+" uses "+name+".",ability:{id:String(type||"john-special"),label:name.toUpperCase()},actors:[j],dialogue:[{playerId:idOf(j.id),text:j.name+": "+JSON.stringify(text)}]});}
 function johnCooldown(state,j,id,ticks){battleSimRuntimeState(j).cooldowns[id]=Number(state.tick||0)+ticks;}
-function johnReverseFateReady(state){if(!state)return false;if(state.phase==="firstHalf")return Number(state.tick||0)>=10;if(state.phase==="secondHalf"){const start=Number.isInteger(state.halfStartTick)?state.halfStartTick:Number(state.tick||0);return Number(state.tick||0)-start>=10;}return false;}
 function johnUse(state,id,choice){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off"||state.status==="finished"||Number(j.battleSimState?.cooldowns?.[id]||0)>state.tick)return false;
  if(id==="universal-decree"){const rules=["pass-only","center-only","blindness"],rule=rules.includes(choice)?choice:randomPick(rules,state.random),dialogueKey={"pass-only":"decreeFreeze","center-only":"decreeCenter",blindness:"decreeBlind"}[rule],lines=j.battleSim?.dialogue?.[dialogueKey],text=Array.isArray(lines)&&lines.length?lines[0]:"",ability=(j.battleSim?.specials||[]).find(a=>a&&a.id===id),duration=Number(ability?.params?.durationTicks);johnCooldown(state,j,id,24);state.decree={rule,untilTick:state.tick+(Number.isInteger(duration)&&duration>0?duration:3)};johnSay(state,j,text,"universal-decree","Universal Decree");return true;}
- if(id==="reverse-fate"){const h=state.johnHistory||[];if(!johnReverseFateReady(state)||h.length<5)return false;const snap=h[h.length-5],steps=h.slice(-5).reverse();johnCooldown(state,j,id,40);const message=johnSay(state,j,"Time is nothing to me...","reverse-fate","Reverse Fate");johnRestore(state,snap,h.slice(0,-5),message,steps);return true;}
  if(id==="dimensional-repositioning"){const carrier=playerIn(state.teams[state.possession],state.carrierId);if(!carrier)return false;johnCooldown(state,j,id,15);setPosition(carrier,{x:3+state.random()*94,y:4+state.random()*92});setBall(state,carrier);johnSay(state,j,"You were standing somewhere else a moment ago...","dimensional-repositioning","Dimensional Repositioning");return true;}return false;}
-function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="reverse-fate"&&(!johnReverseFateReady(state)||(state.johnHistory||[]).length<5))continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const allowed=["pass-only","center-only","blindness"],configured=Array.isArray(ability.params?.rules)?ability.params.rules.filter(rule=>allowed.includes(rule)):allowed,choices=configured.length?configured:allowed,choice=ability.id==="universal-decree"?randomPick(choices,state.random):null;if(johnUse(state,ability.id,choice))return true;}return false;}
+function johnAutomaticSpecial(state){const j=johnPaccini(state);if(!j||j.sentOff||j.matchStatus==="subbed-off")return false;for(const ability of j.battleSim?.specials||[]){if(!ability||Number(j.battleSimState?.cooldowns?.[ability.id]||0)>state.tick)continue;if(ability.id==="dimensional-repositioning"&&!playerIn(state.teams[state.possession],state.carrierId))continue;const allowed=["pass-only","center-only","blindness"],configured=Array.isArray(ability.params?.rules)?ability.params.rules.filter(rule=>allowed.includes(rule)):allowed,choices=configured.length?configured:allowed,choice=ability.id==="universal-decree"?randomPick(choices,state.random):null;if(johnUse(state,ability.id,choice))return true;}return false;}
 
 
-function johnHistorySnapshot(state){const data=JSON.parse(JSON.stringify(state,(key,value)=>key==="events"||key==="johnHistory"||key==="random"?undefined:value));return{data:data,eventsLength:state.events.length,randomState:state.random.getState()};}
-function johnRestore(state,snap,history,reverseEvent,reverseSteps){
- // Only John keeps his current cooldowns. Every other cooldown is part of the
- // rewindable match state and must come from the selected snapshot.
- const currentJohn=johnPaccini(state),johnId=currentJohn?idOf(currentJohn.id):null;
- const johnCooldowns=currentJohn&&currentJohn.battleSimState?.cooldowns&&typeof currentJohn.battleSimState.cooldowns==="object"
-  ?JSON.parse(JSON.stringify(currentJohn.battleSimState.cooldowns)):null;
- const currentEvents=Array.isArray(state.events)?state.events:[];
- const keptEvents=currentEvents.slice(0,Math.max(0,Math.min(currentEvents.length,Number(snap.eventsLength)||0)));
- const restored=JSON.parse(JSON.stringify(snap.data));
- Object.keys(state).forEach(k=>{if(k!=="events"&&k!=="johnHistory"&&k!=="random")delete state[k];});
- Object.assign(state,restored);
- state.events=keptEvents;
- if(reverseEvent)state.events.push(reverseEvent);
- state.events.forEach((event,index)=>{event.id=index+1;});
- state.presentedEventId=keptEvents.length;
- state.random=seeded(state.seed,snap.randomState);
- if(johnId!==null&&johnCooldowns){
-  for(const n of [1,2]){
-   const restoredJohn=(state.teams[n].roster||[]).find(p=>idOf(p.id)===johnId);
-   if(restoredJohn){battleSimRuntimeState(restoredJohn).cooldowns=johnCooldowns;break;}
-  }
- }
- state.johnHistory=Array.isArray(history)?history:[];
- state.status="playing";state.stoppage="";state.manualPaused=false;state.rewoundThisTick=true;
- const root=state===match&&!fastForwarding&&reverseEvent?byId("bs-live-feed"):null;
- if(root&&typeof root.querySelectorAll==="function"){
-  clearFeedQueue();
-  root.querySelectorAll("[data-event-id]").forEach(node=>{const eventId=Number(node.dataset?.eventId);if(Number.isFinite(eventId)&&eventId>keptEvents.length)node.remove();});
-  root._queuedThrough=keptEvents.length;
- }
- // Reverse Fate is a state rewind, not a replay of the discarded ticks. Present
- // the restored snapshot directly so the live-feed animation cannot hold the sim.
- if(reverseEvent)reverseEvent.presentation=capturePresentation(state);
-}function battleSimRuntimeState(p){
+function battleSimRuntimeState(p){
  if(!p.battleSimState||typeof p.battleSimState!=="object")p.battleSimState={cooldowns:{},usedUltimates:[]};
  if(!p.battleSimState.cooldowns||typeof p.battleSimState.cooldowns!=="object")p.battleSimState.cooldowns={};
  if(!Array.isArray(p.battleSimState.usedUltimates))p.battleSimState.usedUltimates=[];
@@ -2370,7 +2334,7 @@ function resolveRestart(state,pending){
 }
 function ensureTickEvent(state,eventsBefore,description){if(state.events.length!==eventsBefore)return;const team=state.teams[state.possession],p=team&&playerIn(team,state.carrierId);addEvent(state,{type:"play",teamNumber:team?team.number:null,zone:state.ballZone,notable:true,description:description||(p?p.name+" keeps play moving.":"Both teams reset their shape."),actors:p?[p]:[]});}
 function simulateTick(state){
- const eventsBefore=state.events.length;if(johnPaccini(state)){if(!state.johnHistory)state.johnHistory=[];state.johnHistory.push(johnHistorySnapshot(state));if(state.johnHistory.length>8)state.johnHistory.shift();}state.tick++;
+ const eventsBefore=state.events.length;state.tick++;
  const limit=state.phase==="firstHalf"?HALF:FULL;
  state.timeSeconds=Math.min(limit,state.timeSeconds+10+Math.floor(state.random()*11));
  // Absolute Authority owns six uninterrupted ticks; each tick performs a fresh fair coin flip and awards one goal.
@@ -2463,7 +2427,6 @@ function simulateTick(state){
 function playerTick(state){
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.battleSimState&&Array.isArray(p.battleSimState.usedUltimates)&&!isFlowing(p))p.battleSimState.usedUltimates=[];}));
  simulateTick(state);
- if(state.rewoundThisTick){delete state.rewoundThisTick;return;}
  [1,2].forEach(n=>state.teams[n].roster.forEach(p=>{if(p.flowActivationPending){p.flowActivationPending=false;addEvent(state,{type:"flow-activation",notable:true,teamNumber:n,description:p.name+" activates FLOW. Their flow is fully charged.",actors:[p],ability:abilityBadge(kitAbility(p,"flow-state"),"ultimate")||undefined,dialogue:[dialogue(state,p,"flow",true)]});if(idOf(p.id)==="80"&&!state.authorityUsed){state.authorityUsed=true;[1,2].forEach(tn=>state.teams[tn].roster.forEach(other=>{if(other!==p){other.flow=0;other.flowFullTicks=0;other.flowActivationPending=false;other.battleSimDisabledUntil=state.tick+6;}}));const cds=battleSimRuntimeState(p).cooldowns;Object.keys(cds).forEach(k=>{cds[k]=state.tick+Math.ceil(Math.max(0,cds[k]-state.tick)/2);});state.authoritySequence={remaining:6,johnId:idOf(p.id)};state.status="playing";state.manualPaused=false;state.pending=null;state.forced=null;state.stoppage="";johnSay(state,p,"There is no opponent. There is no competition. There is only my permission.","absolute-authority","Absolute Authority");}}}));
 
 }
@@ -2485,7 +2448,7 @@ function runSequence(state){
  else playerTick(state);
  state.runnerActive=false;storeActiveMatch();renderMatch();
 }
-function createMatch(){const seed=randSeed(),s={autoPlay:{...autoPreferences},seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",halfStartTick:0,status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null,johnHistory:[]};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
+function createMatch(){const seed=randSeed(),s={autoPlay:{...autoPreferences},seed:seed,random:seeded(seed),tick:0,timeSeconds:0,phase:"firstHalf",halfStartTick:0,status:"playing",stoppage:"",introPending:false,score:{1:0,2:0},teams:{1:runtimeTeam(setupTeams[0],1),2:runtimeTeam(setupTeams[1],2)},events:[],presentedEventId:0,possession:1,carrierId:null,ballZone:7,lastPasser:null,pending:null,forced:null,requiredSub:null};kickoff(s,1);const p=playerIn(s.teams[1],s.carrierId);addEvent(s,{type:"kickoff",teamNumber:1,zone:7,notable:true,description:"Kick-off. "+s.teams[1].name+" get the match underway.",actors:[p],dialogue:p?[{playerId:p.id,text:p.name+": \"Let's get started!\""}]:[]});const john=johnPaccini(s);if(john){s.scalesOfJustice=true;s.omniscientSpectator=true;addEvent(s,{type:"scales-of-justice",teamNumber:john.teamNumber,notable:true,description:"Scales of Justice activates: every shot, dribble and pass has a fixed 50% success chance.",actors:[john],dialogue:[{playerId:idOf(john.id),text:john.name+": "+JSON.stringify("Perfectly balanced... Just how I intended it to be...")} ]});}return s;}
 
 
 const COPY_EFFECTS=new Set(["first-time-finish","creative-dribble","disruption-pass","controlled-finish"]);
@@ -3143,7 +3106,7 @@ function renderEvent(event,archive){
   });
   put(panel,list);put(item,panel);
  }
-if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.filter(line=>event.type==="reverse-fate"||dialogueAllowed(match,line)).forEach(line=>{
+if(Array.isArray(event.dialogue)&&event.dialogue.length){const lines=make("div","bs-event-dialogue");event.dialogue.filter(line=>dialogueAllowed(match,line)).forEach(line=>{
   // Character lines carry their source key and are shown in the reader's language.
   if(line.key&&line.text.endsWith(String.fromCharCode(34)+line.key+String.fromCharCode(34))){const p=make("p","bs-event-line"),speaker=line.text.slice(0,line.text.length-line.key.length-2),quote=make("span","bs-event-line-text",line.key);quote.dataset.battleMessage=line.key;quote.dataset.battleEnglish=line.key;p.append(speaker+String.fromCharCode(8220),quote,String.fromCharCode(8221));put(lines,p);}
   else put(lines,make("p","",line.text));});put(item,lines);}
@@ -3190,18 +3153,6 @@ function scheduleFeedEvent(){
    if(!root.querySelector('[data-event-id="'+String(event.id)+'"]'))root.prepend(renderEvent(event,false));
    trimLiveFeed(root);
    match.presentedEventId=event.id;storeActiveMatch();renderMatch();
-  }
-  if(event?.type==="reverse-fate"&&Array.isArray(event.reversePresentations)&&event.reversePresentations.length){
-   const frames=event.reversePresentations.slice();delete event.reversePresentations;let index=0;
-   const advance=()=>{
-    stoppageTimer=null;
-    if(!match||!match.events.includes(event)){presentationSettled();return;}
-    event.presentation=frames[index++];renderMatch();
-    if(index<frames.length)stoppageTimer=setTimeout(advance,200);
-    else stoppageTimer=setTimeout(()=>{stoppageTimer=null;storeActiveMatch();presentationSettled();},200);
-   };
-   stoppageTimer=setTimeout(advance,220);
-   return;
   }
   if(feedQueue.length)scheduleFeedEvent();
   presentationSettled();
