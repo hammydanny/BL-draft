@@ -274,6 +274,9 @@ function sanitizeIntelligence(state){
  }));
  if(state.chain!=null){state.chain=Math.floor(clamp(fin(state.chain),0,999));state.chainTeam=[1,2].includes(state.chainTeam)?state.chainTeam:null;}
  if(state.reactionCooldowns!=null)state.reactionCooldowns=Object.fromEntries(Object.entries(state.reactionCooldowns&&typeof state.reactionCooldowns==="object"?state.reactionCooldowns:{}).slice(0,24).map(([k,v])=>[String(k).slice(0,40),fin(v)]));
+  if(state.planetHotline!=null){const h=state.planetHotline,team=Number(h.teamNumber),valid=state.teams[team],a=valid&&playerIn(valid,1),b=valid&&playerIn(valid,26);
+   state.planetHotline=h&&[1,2].includes(team)&&a&&b&&Number.isInteger(h.remaining)&&h.remaining>=1&&h.remaining<=3?{teamNumber:team,isagiId:"1",kuronaId:"26",remaining:h.remaining}:null;
+  }
  const r=state.lastReception;if(r!=null)state.lastReception=r&&pt(r.from)&&pt(r.to)&&[1,2].includes(r.teamNumber)?{playerId:idOf(r.playerId),teamNumber:r.teamNumber,passerId:idOf(r.passerId),tick:fin(r.tick),kind:r.kind==="long"?"long":"short",through:!!r.through,...(typeof r.aerial==="boolean"?{aerial:r.aerial}:{}),...(r.style==="cross"||r.style==="cutback"?{style:r.style}:{}),from:pt(r.from),to:pt(r.to)}:null;
 }
 // v0.8.8.3 participation state. Older saves have no matchStatus, so it is
@@ -880,6 +883,38 @@ function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[t
 function reactionKey(def,teamNumber){return (Number(teamNumber)===2?2:1)+":"+def.id;}
 function reactionReady(state,def,teamNumber){const cd=state.reactionCooldowns&&state.reactionCooldowns[reactionKey(def,teamNumber)];return !(Number(cd)>Number(state.tick));}
 function useReaction(state,def,teamNumber){if(!state.reactionCooldowns||typeof state.reactionCooldowns!=="object")state.reactionCooldowns={};state.reactionCooldowns[reactionKey(def,teamNumber)]=Number(state.tick)+battleSimAbilityLimits(def,true).cooldownTicks;}
+function runPlanetHotline(state){
+ let seq=state.planetHotline||null,team=null,isagi=null,kurona=null,carrier=null,def=null;
+ if(!seq){
+  team=state.teams[state.possession];carrier=team&&playerIn(team,state.carrierId);
+  if(!team||!carrier||(idOf(carrier.id)!=="1"&&idOf(carrier.id)!=="26"))return false;
+  isagi=playerIn(team,1);kurona=playerIn(team,26);
+  if(!isagi||!kurona||isagi.sentOff||kurona.sentOff)return false;
+  def=(isagi.battleSim?.reactions||[]).find(a=>a&&a.id==="planet-hotline");
+  if(!def||distance(isagi,kurona)>kitParam(def,"rangeMeters",12))return false;
+  const pair=reactionBetween(state,isagi,kurona,"planet-hotline");if(!pair)return false;
+  def=pair.def;useReaction(state,def,team.number);
+  seq=state.planetHotline={teamNumber:team.number,isagiId:"1",kuronaId:"26",remaining:Math.max(1,Math.min(3,Math.floor(kitParam(def,"sequenceTicks",3))))};
+  addEvent(state,{type:"planet-hotline",teamNumber:team.number,notable:true,ability:abilityBadge(def,"reaction"),
+   description:"Isagi and Kurona activate Planet Hotline, linking up for a three-tick forward passing combination.",
+   dialogue:[{playerId:isagi.id,text:isagi.name+": \"Let's make out Kurona!\""},
+    {playerId:kurona.id,text:kurona.name+": \"Yes Isagi!\""}],actors:[isagi,kurona]});
+ }else{
+  team=state.teams[seq.teamNumber];isagi=team&&playerIn(team,1);kurona=team&&playerIn(team,26);carrier=team&&playerIn(team,state.carrierId);
+  if(!team||state.possession!==seq.teamNumber||!isagi||!kurona||isagi.sentOff||kurona.sentOff||(carrier!==isagi&&carrier!==kurona)){state.planetHotline=null;return false;}
+  def=(isagi.battleSim?.reactions||[]).find(a=>a&&a.id==="planet-hotline");
+ }
+ carrier=team&&playerIn(team,state.carrierId);
+ if(!team||!carrier||(carrier!==isagi&&carrier!==kurona)){state.planetHotline=null;return false;}
+ const forward=kitParam(def,"forwardMeters",3.2),width=kitParam(def,"formationWidthMeters",2.2),mid=lerpPoint(isagi,kurona,.5);
+ moveToward(isagi,shiftM(mid,forward,-width,team.number),Math.min(4.8,movementMeters(isagi)*1.15));
+ moveToward(kurona,shiftM(mid,forward,width,team.number),Math.min(4.8,movementMeters(kurona)*1.15));
+ const receiver=carrier===isagi?kurona:isagi;
+ setBall(state,carrier);seq.remaining--;
+ resolvePass(state,carrier,{receiverId:receiver.id,passKind:"short",accuracyBonus:kitParam(def,"accuracyBonus",.1)});
+ if(state.possession!==team.number||idOf(state.carrierId)!==idOf(receiver.id)||state.pending||seq.remaining<=0)state.planetHotline=null;
+ return true;
+}
 
 /* ---------- Character dialogue ---------- */
 // Situational lines from the kit; no line repeats within the last six, minor lines are throttled.
@@ -1245,7 +1280,7 @@ function passModel(state,carrier,receiver,to,kind,opts={}){
  }
  const passerPressure=opponents.filter(o=>o.role!=="GK"&&distance(o,from)<=4).length;
  const difficulty=Math.max(0,len-(lofted?22:12))*(lofted?.012:.014)+passerPressure*.07+(opts.through?.11:0);
- model.error=clamp(difficulty*(1.1-(pas-40)/70)-(chem-65)*.0012,0,.6);
+ model.error=clamp(difficulty*(1.1-(pas-40)/70)-(chem-65)*.0012-Math.max(0,Number(opts.accuracyBonus)||0),0,.6);
  const speed=ballSpeed(kind,opts.through),receiverSkill=effective(receiver,"off",state)*.45+effective(receiver,"dri",state)*.35+effective(receiver,"spd",state)*.2;
  opponents.forEach(o=>{
   const keeperOpp=o.role==="GK",attr=opponentAttributes(state,o,opts.attributes),def=keeperOpp?attr.gk:attr.def,spd=attr.run,g=laneGeometry(from,dest,o);
@@ -2272,6 +2307,8 @@ function simulateTick(state){
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
  moveOffBall(state);
+ // Planet Hotline owns each of its three ticks; normal decisions are suspended.
+ if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
  // Move It: in Flow, Isagi takes the ball from a nearby teammate in the attacking area.
  const attackingTeam=state.teams[state.possession],currentCarrier=attackingTeam&&playerIn(attackingTeam,state.carrierId);
  if(currentCarrier){

@@ -172,15 +172,17 @@ const ISAGI_PLAYER_DATA = {
             "id": "planet-hotline",
             "name": "Planet Hotline",
             "label": "PLANET HOTLINE",
-            "effect": "wall-pass",
-            "cooldownTicks": 14,
+            "effect": "planet-hotline",
+            "cooldownTicks": 10,
             "dialogue": "hotline",
             "params": {
-                "value": 0.012,
-                "returnValue": 0.02,
-                "precision": 0.6
+                "rangeMeters": 12,
+                "accuracyBonus": 0.1,
+                "forwardMeters": 3.2,
+                "formationWidthMeters": 2.2,
+                "sequenceTicks": 3
             },
-            "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
+            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown.",
             "members": [
                 1,
                 26
@@ -251,6 +253,9 @@ const ISAGI_PLAYER_DATA = {
     ],
     "moveIt": [
         "MOVE IT!"
+    ],
+    "hotline": [
+        "Let's make out Kurona!"
     ],
     "kickoff": [
         "I can build a route from here."
