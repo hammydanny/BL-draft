@@ -7,7 +7,7 @@ function battleContext(source=fs.readFileSync(path.join(root,'js/battle-sim.js')
  const {context,run}=createModeTestContext(),timers=new Map();let timerId=0;
  context.setTimeout=(fn,delay)=>{timers.set(++timerId,{fn,delay});return timerId;};context.clearTimeout=id=>timers.delete(id);
  context.updateRoute=()=>{};context.getRouteFromLocation=()=> 'battleSimGame';
- const hook=`globalThis.bs={runPlanetHotline,normalizeTeam,resolveSharedPlayer,resolveSharedRoster,serializeTeam,runtimeTeam,keeper,seeded,createMatch,snapshotMatch,hydrateMatch,playerTick,kickoff,resolvePass,resolveShot,resolveDribble,resolveRestart,teamChemistrySnapshot,formationPoint,formationSlots,sequenceReady,continueMatch,runSequence,substitute,replaceSetupStarter,fastForwardMatch,toggleManualPause,finish,saveTeamToSharedStandalone,
+ const hook=`globalThis.bs={runPlanetHotline,normalizeTeam,resolveSharedPlayer,resolveSharedRoster,serializeTeam,runtimeTeam,keeper,seeded,createMatch,snapshotMatch,hydrateMatch,playerTick,johnUse,johnAutomaticSpecial,johnPaccini,kickoff,resolvePass,resolveShot,resolveDribble,resolveRestart,teamChemistrySnapshot,formationPoint,formationSlots,sequenceReady,continueMatch,runSequence,substitute,replaceSetupStarter,fastForwardMatch,toggleManualPause,finish,saveTeamToSharedStandalone,
  matchTeamPanel,updateTeamPanel,eventMessage,playerOVR,positionRatings,liveFormationPoint,showResults,capturePresentation,validPresentation,displayState,projectPitch,setPosition,setBall,moveOffBall,offBallOrder,movementMeters,dribbleMeters,distance,point,receiverPressure,inOpponentBox,formationStart,zoneAt,setPieceSkill,setPieceUsesPass,setPieceTaker,arrangeSetPiece,checkFoul,playerWeaponsText,trimLiveFeed,setPieceReceiver,virtualPoint,renderPoint,passingChemistry,chemistryPassColor,choosePassKind,pickPassReceiver,stagePendingSetPiece,bench,substitutionEligible,restoreMatchParticipation,maliciaRead,resolveMalicia,reboundRace,supportSpot,prideActive,kitParamP,dribbleSlump,manMarkTarget,reactionMembers,battleAwareness,updateIntents,findRunGap,tracksRun,onBlindSide,shotTechniques,kitAbility,kitReactions,reactionBetween,passIntelligence,playReaction,afterDribble,learn,memoryCount,kitLine,throughRace,throughBallEstimate,ballFlight,resolveThroughBall,recordReception,sanitizeIntelligence,battleSimProfileWeapons,battleSimProfileStatus,keeperFactors,markBeaten,beatenSeverity,reactionKey,reactionReady,useReaction,enforceBlueLockMan,isFlowing,raceProfile,sprintMomentum,inFinishZone,reactionDefsFor,teamHasReactionEffect,renderMiniFormation,chooseAction,passModel,passOptions,dribbleModel,dribbleOptions,shotModel,positionValue,threatAt,aheadM,planTeamShape,roleGroup,arrangeGoalKick,inGoalArea,lastLineM,loadSavedTeams,renderMatch,renderMatchIntro,finishMatchIntro,renderPitch,renderFeed,renderStoppage,scheduleFeedEvent,presentationSettled,progressionState,handleInput,addPoints,addEvent,active,effective,clearFeedQueue,setMatch:s=>match=s,setTeams:t=>setupTeams=t,setFeed:(q,t=null,p=null)=>{feedQueue=q;feedTimer=t;stoppageTimer=p;},get:()=>match,quiet:()=>{renderMatch=()=>{};renderEvent=e=>({id:e.id});showResults=()=>{};},getTimers:()=>[runnerTimer,feedTimer,stoppageTimer]};`;
  const compatibleHook=hook.replace(/\b(capturePresentation|validPresentation|displayState|projectPitch|progressionState|playerOVR|positionRatings|liveFormationPoint|maliciaRead|resolveMalicia|reboundRace|supportSpot|prideActive|kitParamP|dribbleSlump|manMarkTarget|reactionMembers|battleAwareness|updateIntents|findRunGap|tracksRun|onBlindSide|shotTechniques|kitAbility|kitReactions|reactionBetween|passIntelligence|playReaction|afterDribble|learn|memoryCount|kitLine|throughRace|throughBallEstimate|ballFlight|resolveThroughBall|recordReception|sanitizeIntelligence|battleSimProfileWeapons|battleSimProfileStatus|keeperFactors|markBeaten|beatenSeverity|reactionKey|reactionReady|useReaction|enforceBlueLockMan|isFlowing|raceProfile|sprintMomentum|inFinishZone|reactionDefsFor|teamHasReactionEffect|renderMiniFormation)(?=,)/g,name=>name+':typeof '+name+'===\"function\"?'+name+':null');
  vm.runInContext(source.replace('document.addEventListener("DOMContentLoaded",function()',compatibleHook+'\ndocument.addEventListener("DOMContentLoaded",function()'),context);
@@ -21,6 +21,34 @@ function runBattleSimTests(){
  assert(context.handoff.team1.players.some(p=>p.id===9101));assert(context.handoff.team2.players.some(p=>p.id===9102));assert.equal(context.handoff.assignments[1][0],9101);assert.equal(context.handoff.assignments[2][0],9102);
  context.sessionStorage.setItem=()=>{};
  const configs=teams.map((t,i)=>bs.normalizeTeam(t,i+1));bs.setTeams(configs);
+ function attachJohn(state){
+  const raw=JSON.parse(JSON.stringify(run('playerById(80)')));
+  const slot=Object.keys(state.teams[1].assignment).sort((a,b)=>Number(a)-Number(b)).at(-1);
+  const source=state.teams[1].roster.find(p=>String(p.id)===String(state.teams[1].assignment[slot]));
+  const john=JSON.parse(JSON.stringify(source));
+  Object.assign(john,{id:"80",name:"John Paccini",teamNumber:1,battleSim:raw.battleSim,battleSimState:{cooldowns:{},usedUltimates:[]}});
+  state.teams[1].roster.push(john);state.teams[1].assignment[slot]=john.id;
+  return john;
+ }
+ const decreeCases=[
+  {rule:"pass-only",line:"The world will stand still. Every player. Every step."},
+  {rule:"center-only",line:"All paths lead to the center. You will move where I decree."},
+  {rule:"blindness",line:"Then let the pitch disappear. Play without sight."}
+ ];
+ decreeCases.forEach((test,index)=>{
+  const state=bs.createMatch();attachJohn(state);state.random=()=>((index+.25)/3);
+  assert(bs.johnAutomaticSpecial(state),"Universal Decree activates automatically");
+  assert.equal(state.decree.rule,test.rule,"Universal Decree randomly selects the expected rule");
+  assert.equal(state.decree.untilTick,state.tick+3,"Universal Decree lasts for exactly three following ticks");
+  assert(state.events.at(-1).dialogue[0].text.includes(test.line),"the selected rule uses its matching John dialogue");
+ });
+ const passOnlyState=bs.createMatch();attachJohn(passOnlyState);bs.johnUse(passOnlyState,"universal-decree","pass-only");
+ const defendersBefore=bs.active(passOnlyState.teams[2]).map(p=>({id:p.id,...bs.point(p)}));
+ for(let i=0;i<3;i++){bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree.rule,"pass-only","pass-only rule remains active for three ticks");}
+ const defendersAfter=bs.active(passOnlyState.teams[2]).map(p=>({id:p.id,...bs.point(p)}));
+ assert.deepEqual(defendersAfter,defendersBefore,"pass-only rule prevents all off-ball movement");
+ bs.playerTick(passOnlyState);assert.equal(passOnlyState.decree,null,"Universal Decree expires after its third affected tick");
+ console.log('PASS Battle Sim: John Paccini Universal Decree randomly selects one of three rules, matching dialogue and three-tick effects');
  const introMatch=bs.createMatch();introMatch.introPending=true;const restoredIntro=bs.hydrateMatch(JSON.parse(JSON.stringify(bs.snapshotMatch(introMatch))));assert(restoredIntro&&restoredIntro.introPending,'pre-match intro survives route handoff and reload');assert.equal(restoredIntro.tick,0,'no simulation ticks are consumed during the intro');restoredIntro.introPending=false;assert.equal(restoredIntro.introPending,false,'skipping clears the intro state');
  for(let i=0;i<2;i++){
   const team=configs[i],id=String(9101+i);assert.equal(team.assignment[0],id);
