@@ -274,6 +274,9 @@ function sanitizeIntelligence(state){
  }));
  if(state.chain!=null){state.chain=Math.floor(clamp(fin(state.chain),0,999));state.chainTeam=[1,2].includes(state.chainTeam)?state.chainTeam:null;}
  if(state.reactionCooldowns!=null)state.reactionCooldowns=Object.fromEntries(Object.entries(state.reactionCooldowns&&typeof state.reactionCooldowns==="object"?state.reactionCooldowns:{}).slice(0,24).map(([k,v])=>[String(k).slice(0,40),fin(v)]));
+  if(state.planetHotline!=null){const h=state.planetHotline,team=Number(h.teamNumber),valid=state.teams[team],a=valid&&playerIn(valid,1),b=valid&&playerIn(valid,26);
+   state.planetHotline=h&&[1,2].includes(team)&&a&&b&&Number.isInteger(h.remaining)&&h.remaining>=1&&h.remaining<=3?{teamNumber:team,isagiId:"1",kuronaId:"26",remaining:h.remaining}:null;
+  }
  const r=state.lastReception;if(r!=null)state.lastReception=r&&pt(r.from)&&pt(r.to)&&[1,2].includes(r.teamNumber)?{playerId:idOf(r.playerId),teamNumber:r.teamNumber,passerId:idOf(r.passerId),tick:fin(r.tick),kind:r.kind==="long"?"long":"short",through:!!r.through,...(typeof r.aerial==="boolean"?{aerial:r.aerial}:{}),...(r.style==="cross"||r.style==="cutback"?{style:r.style}:{}),from:pt(r.from),to:pt(r.to)}:null;
 }
 // v0.8.8.3 participation state. Older saves have no matchStatus, so it is
@@ -639,6 +642,7 @@ function flowAware(p,base){
  return {...base,vision:clamp(base.vision+add("vision"),0,1.25),
   space:clamp(base.space+add("space"),0,1.25),
   anticipation:clamp(base.anticipation+add("anticipation"),0,1),
+  defensiveRead:clamp(base.defensiveRead+add("defensiveRead"),0,1.25),
   scan:clamp(base.scan+add("scan"),18,60)};
 }
 function kitAbility(p,effect){const kit=p&&p.battleSim;if(!kit)return null;for(const group of ["passives","weapons","ultimates"]){const list=kit[group];if(Array.isArray(list))for(const a of list)if(a&&(a.effect===effect||Array.isArray(a.effects)&&a.effects.includes(effect)))return a;}return null;}
@@ -729,7 +733,7 @@ function updateIntents(state){
   for(const r of kitReactions(state,carrier)){
    if(!(r.def.effect==="synchronized-through"||kitParam(r.def,"startsRun",false))||r.partner!==carrier||r.owner.intent&&r.owner.intent.type==="run"||!reactionReady(state,r.def,r.owner.teamNumber))continue;
    const c=candidates.find(x=>x.p===r.owner)||(aheadM(n,r.owner)>=line-22?{p:r.owner,gap:findRunGap(state,team,r.owner,line)}:null);if(!c||!c.gap)continue;
-   const target=pitchAt(n,line-.6,c.gap.y);c.p.intent={type:"run",target,buffer:.6,band:c.gap.band,tick:state.tick,until:state.tick+3,primed:true,blindSpot:!!kitAbility(c.p,"blind-spot-run")&&onBlindSide(state,c.p,target),dir:{x:n===1?1:-1,y:0}};runners++;
+   const target=pitchAt(n,line-.6,c.gap.y);c.p.intent={type:"run",target,buffer:.6,band:c.gap.band,tick:state.tick,until:state.tick+1,primed:true,blindSpot:!!kitAbility(c.p,"blind-spot-run")&&onBlindSide(state,c.p,target),dir:{x:n===1?1:-1,y:0}};runners++;
   }
   for(const c of candidates){
    if(c.p.intent)continue;
@@ -879,6 +883,38 @@ function teamHasReactionEffect(state,teamNumber,effect){const team=state.teams[t
 function reactionKey(def,teamNumber){return (Number(teamNumber)===2?2:1)+":"+def.id;}
 function reactionReady(state,def,teamNumber){const cd=state.reactionCooldowns&&state.reactionCooldowns[reactionKey(def,teamNumber)];return !(Number(cd)>Number(state.tick));}
 function useReaction(state,def,teamNumber){if(!state.reactionCooldowns||typeof state.reactionCooldowns!=="object")state.reactionCooldowns={};state.reactionCooldowns[reactionKey(def,teamNumber)]=Number(state.tick)+battleSimAbilityLimits(def,true).cooldownTicks;}
+function runPlanetHotline(state){
+ let seq=state.planetHotline||null,team=null,isagi=null,kurona=null,carrier=null,def=null;
+ if(!seq){
+  team=state.teams[state.possession];carrier=team&&playerIn(team,state.carrierId);
+  if(!team||!carrier||(idOf(carrier.id)!=="1"&&idOf(carrier.id)!=="26"))return false;
+  isagi=playerIn(team,1);kurona=playerIn(team,26);
+  if(!isagi||!kurona||isagi.sentOff||kurona.sentOff)return false;
+  def=(isagi.battleSim?.reactions||[]).find(a=>a&&a.id==="planet-hotline");
+  if(!def||distance(isagi,kurona)>kitParam(def,"rangeMeters",12))return false;
+  const pair=reactionBetween(state,isagi,kurona,"planet-hotline");if(!pair)return false;
+  def=pair.def;useReaction(state,def,team.number);
+  seq=state.planetHotline={teamNumber:team.number,isagiId:"1",kuronaId:"26",remaining:Math.max(1,Math.min(3,Math.floor(kitParam(def,"sequenceTicks",3))))};
+  addEvent(state,{type:"planet-hotline",teamNumber:team.number,notable:true,ability:abilityBadge(def,"reaction"),
+   description:"Isagi and Kurona activate Planet Hotline, linking up for a three-tick forward passing combination.",
+   dialogue:[{playerId:isagi.id,text:isagi.name+": \"Let's make out Kurona!\""},
+    {playerId:kurona.id,text:kurona.name+": \"Yes Isagi!\""}],actors:[isagi,kurona]});
+ }else{
+  team=state.teams[seq.teamNumber];isagi=team&&playerIn(team,1);kurona=team&&playerIn(team,26);carrier=team&&playerIn(team,state.carrierId);
+  if(!team||state.possession!==seq.teamNumber||!isagi||!kurona||isagi.sentOff||kurona.sentOff||(carrier!==isagi&&carrier!==kurona)){state.planetHotline=null;return false;}
+  def=(isagi.battleSim?.reactions||[]).find(a=>a&&a.id==="planet-hotline");
+ }
+ carrier=team&&playerIn(team,state.carrierId);
+ if(!team||!carrier||(carrier!==isagi&&carrier!==kurona)){state.planetHotline=null;return false;}
+ const forward=kitParam(def,"forwardMeters",3.2),width=kitParam(def,"formationWidthMeters",2.2),mid=lerpPoint(isagi,kurona,.5);
+ moveToward(isagi,shiftM(mid,forward,-width,team.number),Math.min(4.8,movementMeters(isagi)*1.15));
+ moveToward(kurona,shiftM(mid,forward,width,team.number),Math.min(4.8,movementMeters(kurona)*1.15));
+ const receiver=carrier===isagi?kurona:isagi;
+ setBall(state,carrier);seq.remaining--;
+ resolvePass(state,carrier,{receiverId:receiver.id,passKind:"short",accuracyBonus:kitParam(def,"accuracyBonus",.1)});
+ if(state.possession!==team.number||idOf(state.carrierId)!==idOf(receiver.id)||state.pending||seq.remaining<=0)state.planetHotline=null;
+ return true;
+}
 
 /* ---------- Character dialogue ---------- */
 // Situational lines from the kit; no line repeats within the last six, minor lines are throttled.
@@ -937,6 +973,7 @@ function playReaction(state,carrier,option){
  const chained=option.receiver.intent&&option.receiver.intent.reaction===r.def.id;
  if(!chained)useReaction(state,r.def,r.owner.teamNumber);
  const speaker=r.def.id==="eye-contact"?r.partner:r.owner,line=kitLine(state,speaker,r.def.dialogue||r.def.id,true);
+ const syncLine=r.def.effect==="synchronized-through"&&idOf(carrier.id)==="27"&&idOf(option.receiver.id)==="1"?kitLine(state,r.partner,r.def.dialogue||"sync",true):null;
  // Wall pass: the passer sets off for the return into the space behind his marker.
  if(r.def.effect==="wall-pass"&&!chained&&r.owner===carrier){
   const n=carrier.teamNumber,goal=targetGoal(n),dir=Math.atan2((goal.y-carrier.y)*YM,(goal.x-carrier.x)*XM),target=shiftM(carrier,Math.abs(Math.cos(dir))*12,(goal.y-carrier.y)*YM*.15,n);
@@ -944,7 +981,7 @@ function playReaction(state,carrier,option){
  }
  if(chained)option.receiver.intent=null;
  state.reactionCount=(Number(state.reactionCount)||0)+1;
- return{reaction:{id:String(r.def.id),label:String(r.def.label||r.def.name).toUpperCase(),partners:[idOf(r.owner.id),idOf(r.partner.id)]},dialogue:line?[line]:undefined};
+ return{reaction:{id:String(r.def.id),label:String(r.def.label||r.def.name).toUpperCase(),partners:[idOf(r.owner.id),idOf(r.partner.id)]},dialogue:[line,syncLine].filter(Boolean).length?[line,syncLine].filter(Boolean):undefined};
 }
 // Creative Instinct: a dribble that drags two or more defenders leaves space; the partner reads it.
 function afterDribble(state,carrier,beaten){
@@ -1244,7 +1281,7 @@ function passModel(state,carrier,receiver,to,kind,opts={}){
  }
  const passerPressure=opponents.filter(o=>o.role!=="GK"&&distance(o,from)<=4).length;
  const difficulty=Math.max(0,len-(lofted?22:12))*(lofted?.012:.014)+passerPressure*.07+(opts.through?.11:0);
- model.error=clamp(difficulty*(1.1-(pas-40)/70)-(chem-65)*.0012,0,.6);
+ model.error=clamp(difficulty*(1.1-(pas-40)/70)-(chem-65)*.0012-Math.max(0,Number(opts.accuracyBonus)||0),0,.6);
  const speed=ballSpeed(kind,opts.through),receiverSkill=effective(receiver,"off",state)*.45+effective(receiver,"dri",state)*.35+effective(receiver,"spd",state)*.2;
  opponents.forEach(o=>{
   const keeperOpp=o.role==="GK",attr=opponentAttributes(state,o,opts.attributes),def=keeperOpp?attr.gk:attr.def,spd=attr.run,g=laneGeometry(from,dest,o);
@@ -2271,6 +2308,30 @@ function simulateTick(state){
  // A restart is taken from the staged, law-compliant shape: the ball is kicked before players move.
  if(state.forced){const forced=state.forced;state.forced=null;state.pending=null;resolveRestart(state,forced);ensureTickEvent(state,eventsBefore);return;}
  moveOffBall(state);
+ // Planet Hotline owns each of its three ticks; normal decisions are suspended.
+ if(runPlanetHotline(state)){ensureTickEvent(state,eventsBefore);return;}
+ // Move It: in Flow, Isagi takes the ball from a nearby teammate in the attacking area.
+ const attackingTeam=state.teams[state.possession],currentCarrier=attackingTeam&&playerIn(attackingTeam,state.carrierId);
+ if(currentCarrier){
+  const thief=active(attackingTeam).find(p=>{
+   if(p===currentCarrier||!isFlowing(p))return false;
+   const moveIt=kitAbility(p,"move-it"),runtime=battleSimRuntimeState(p),used=runtime.usedUltimates||[];
+   return !!moveIt&&!used.includes(idOf(moveIt.id))
+    &&distance(p,currentCarrier)<=kitParam(moveIt,"teammateRangeMeters",8)
+    &&distance(currentCarrier,targetGoal(attackingTeam.number))<=kitParam(moveIt,"goalRangeMeters",24);
+  });
+  if(thief){
+   const moveIt=kitAbility(thief,"move-it"),runtime=battleSimRuntimeState(thief);
+   if(!Array.isArray(runtime.usedUltimates))runtime.usedUltimates=[];
+   runtime.usedUltimates.push(idOf(moveIt.id));
+   state.carrierId=thief.id;state.lastPasser=null;setBall(state,thief);
+   addEvent(state,{type:"move-it",teamNumber:attackingTeam.number,notable:true,
+    ability:abilityBadge(moveIt,"ultimate"),
+    dialogue:[{playerId:idOf(thief.id),text:thief.name+": \"MOVE IT!\""}],
+    description:thief.name+" takes the ball from "+currentCarrier.name+" and claims the attack for himself.",
+    actors:[thief,currentCarrier]});
+  }
+ }
  const t=state.teams[state.possession],carrier=t&&playerIn(t,state.carrierId);
  if(!t||!carrier||carrier.sentOff){const n=state.possession===1?2:1,p=active(state.teams[n]).find(p=>p.role!=="GK")||keeper(state.teams[n]);state.possession=n;state.carrierId=p?.id;if(p)setBall(state,p);ensureTickEvent(state,eventsBefore);return;}
  setBall(state,carrier);

@@ -64,13 +64,14 @@ const ISAGI_PLAYER_DATA = {
             "dialogue": "flow",
             "params": {
                 "awareness": {
-                    "vision": 0.06,
-                    "space": 0.07,
-                    "anticipation": 0.12,
-                    "scan": 5
+                    "vision": 0.12,
+                    "space": 0.12,
+                    "anticipation": 0.4,
+                    "defensiveRead": 0.35,
+                    "scan": 10
                 }
             },
-            "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
+            "description": "In Flow, Isagi anticipates opponents' next actions, positions himself for better interceptions and tackles, and reads the entire pitch."
         }
     ],
     "weapons": [
@@ -120,6 +121,17 @@ const ISAGI_PLAYER_DATA = {
             "description": "In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow."
         },
         {
+            "id": "move-it",
+            "name": "Move It",
+            "label": "MOVE IT",
+            "effect": "move-it",
+            "dialogue": "moveIt",
+            "condition": { "duringFlow": true },
+            "oncePerFlow": true,
+            "params": { "teammateRangeMeters": 8, "goalRangeMeters": 24 },
+            "description": "When Isagi is near a teammate with the ball who is near the goal, he steals it for himself. Once per Flow."
+        },
+        {
             "id": "two-gun-volley",
             "name": "Two-Gun Volley",
             "label": "TWO-GUN VOLLEY",
@@ -144,13 +156,14 @@ const ISAGI_PLAYER_DATA = {
             "name": "Reflexive Synchronization",
             "label": "REFLEXIVE SYNCHRONIZATION",
             "effect": "synchronized-through",
-            "cooldownTicks": 12,
+            "cooldownTicks": 10,
             "dialogue": "sync",
             "params": {
-                "precision": 0.55,
-                "value": 0.012
+                "precision": 0.95,
+                "value": 0.02,
+                "passKind": "long"
             },
-            "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
+            "description": "When Yo Hiori has possession and Isagi is on the pitch, Isagi makes a timed forward run and Hiori plays a highly accurate lofted cross to him. The one-tick combination can still be intercepted. Shared 10-tick cooldown.",
             "members": [
                 1,
                 27
@@ -160,15 +173,17 @@ const ISAGI_PLAYER_DATA = {
             "id": "planet-hotline",
             "name": "Planet Hotline",
             "label": "PLANET HOTLINE",
-            "effect": "wall-pass",
-            "cooldownTicks": 14,
+            "effect": "planet-hotline",
+            "cooldownTicks": 10,
             "dialogue": "hotline",
             "params": {
-                "value": 0.012,
-                "returnValue": 0.02,
-                "precision": 0.6
+                "rangeMeters": 12,
+                "accuracyBonus": 0.1,
+                "forwardMeters": 3.2,
+                "formationWidthMeters": 2.2,
+                "sequenceTicks": 3
             },
-            "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
+            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown.",
             "members": [
                 1,
                 26
@@ -235,7 +250,13 @@ const ISAGI_PLAYER_DATA = {
         "Use it, Kaiser. I'll take the next one."
     ],
     "flow": [
-        "There it is... I can break through!"
+        "I see it now... All the pieces have been complete."
+    ],
+    "moveIt": [
+        "MOVE IT!"
+    ],
+    "hotline": [
+        "Let's make out Kurona!"
     ],
     "kickoff": [
         "I can build a route from here."

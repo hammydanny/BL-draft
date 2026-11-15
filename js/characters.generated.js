@@ -67,13 +67,14 @@ const ISAGI_PLAYER_DATA = {
             "dialogue": "flow",
             "params": {
                 "awareness": {
-                    "vision": 0.06,
-                    "space": 0.07,
-                    "anticipation": 0.12,
-                    "scan": 5
+                    "vision": 0.12,
+                    "space": 0.12,
+                    "anticipation": 0.4,
+                    "defensiveRead": 0.35,
+                    "scan": 10
                 }
             },
-            "description": "In Flow, Isagi notices developing gaps and passing runs earlier, anticipates opponents more effectively and finds better shooting routes. Defenders can still track him, intercept passes and block his shots."
+            "description": "In Flow, Isagi anticipates opponents' next actions, positions himself for better interceptions and tackles, and reads the entire pitch."
         }
     ],
     "weapons": [
@@ -123,6 +124,17 @@ const ISAGI_PLAYER_DATA = {
             "description": "In Flow within 20 m, tries to deceive a tackling defender before a backheel shot. A failed feint loses possession. Once per Flow."
         },
         {
+            "id": "move-it",
+            "name": "Move It",
+            "label": "MOVE IT",
+            "effect": "move-it",
+            "dialogue": "moveIt",
+            "condition": { "duringFlow": true },
+            "oncePerFlow": true,
+            "params": { "teammateRangeMeters": 8, "goalRangeMeters": 24 },
+            "description": "When Isagi is near a teammate with the ball who is near the goal, he steals it for himself. Once per Flow."
+        },
+        {
             "id": "two-gun-volley",
             "name": "Two-Gun Volley",
             "label": "TWO-GUN VOLLEY",
@@ -147,13 +159,14 @@ const ISAGI_PLAYER_DATA = {
             "name": "Reflexive Synchronization",
             "label": "REFLEXIVE SYNCHRONIZATION",
             "effect": "synchronized-through",
-            "cooldownTicks": 12,
+            "cooldownTicks": 10,
             "dialogue": "sync",
             "params": {
-                "precision": 0.55,
-                "value": 0.012
+                "precision": 0.95,
+                "value": 0.02,
+                "passKind": "long"
             },
-            "description": "With Yo Hiori on the pitch: when Isagi makes a run, Hiori spots it even from far away and plays him a more accurate through ball.",
+            "description": "When Yo Hiori has possession and Isagi is on the pitch, Isagi makes a timed forward run and Hiori plays a highly accurate lofted cross to him. The one-tick combination can still be intercepted. Shared 10-tick cooldown.",
             "members": [
                 1,
                 27
@@ -163,15 +176,17 @@ const ISAGI_PLAYER_DATA = {
             "id": "planet-hotline",
             "name": "Planet Hotline",
             "label": "PLANET HOTLINE",
-            "effect": "wall-pass",
-            "cooldownTicks": 14,
+            "effect": "planet-hotline",
+            "cooldownTicks": 10,
             "dialogue": "hotline",
             "params": {
-                "value": 0.012,
-                "returnValue": 0.02,
-                "precision": 0.6
+                "rangeMeters": 12,
+                "accuracyBonus": 0.1,
+                "forwardMeters": 3.2,
+                "formationWidthMeters": 2.2,
+                "sequenceTicks": 3
             },
-            "description": "With Ranze Kurona on the pitch: when a defender closes Isagi down, he passes to Kurona and sprints past the defender, and Kurona passes it straight back to him more accurately than usual.",
+            "description": "When Isagi and Kurona are within 12 m and either has the ball, they begin a three-tick coordinated passing sequence. They only pass to each other, advance together toward goal and gain increased pass accuracy. Opponents can still intercept them. Shared 10-tick cooldown.",
             "members": [
                 1,
                 26
@@ -238,7 +253,13 @@ const ISAGI_PLAYER_DATA = {
         "Use it, Kaiser. I'll take the next one."
     ],
     "flow": [
-        "There it is... I can break through!"
+        "I see it now... All the pieces have been complete."
+    ],
+    "moveIt": [
+        "MOVE IT!"
+    ],
+    "hotline": [
+        "Let's make out Kurona!"
     ],
     "kickoff": [
         "I can build a route from here."
@@ -3002,7 +3023,7 @@ const PLAYER_26_DATA = { id: 26, name: "Ranze Kurona", debutChapter: 93, appeara
 
 // js/players/yo-hiori/player.js
 // Character player data: Yo Hiori (ID 27).
-const PLAYER_27_DATA = { id: 27, name: "Yo Hiori", debutChapter: 93, appearanceOrder: 27, image: "images/yo-hiori.jpg", primaryPosition: "CM", positions: ["CM", "AM", "RWB", "LWB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"precision-passing","name":"Precision Passing","description":"Reads the receiver and the defensive line, then weights a pass toward the demanding attacking movement he judges capable of producing a goal.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"metavision","name":"Metavision","description":"Scans the field to anticipate routes and select decisive passing opportunities.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"ball-retention","name":"Ball Retention","category":"technical","description":"Uses controlled touches and body positioning to keep possession long enough to release a precise pass.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock-pr.com/en/characters/","note":"Official English character profile identifies Hiori’s ball retention alongside his accurate passing."}}], stats: { ovr:89, off:87, sho:82, spd:81, def:82, pas:95, dri:91, gk:58 } };
+const PLAYER_27_DATA = { id: 27, name: "Yo Hiori", debutChapter: 93, appearanceOrder: 27, image: "images/yo-hiori.jpg", primaryPosition: "CM", positions: ["CM", "AM", "RWB", "LWB"] , nationality: {"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"official-profile","url":"https://kodansha.us/series/blue-lock/volume-1/","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"precision-passing","name":"Precision Passing","description":"Reads the receiver and the defensive line, then weights a pass toward the demanding attacking movement he judges capable of producing a goal.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"},{"id":"metavision","name":"Metavision","description":"Scans the field to anticipate routes and select decisive passing opportunities.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://bluelock-anime-en.com/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"mental"},{"id":"ball-retention","name":"Ball Retention","category":"technical","description":"Uses controlled touches and body positioning to keep possession long enough to release a precise pass.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock-pr.com/en/characters/","note":"Official English character profile identifies Hiori’s ball retention alongside his accurate passing."}}], stats: { ovr:89, off:87, sho:82, spd:81, def:82, pas:95, dri:91, gk:58 }, battleSim: { dialogue: { sync: ["There you are, Isagi. I saw that run.", "Right on time. Take the cross, Isagi."] } } };
 ;
 
 // js/players/tabito-karasu/player.js
