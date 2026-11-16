@@ -141,13 +141,13 @@ const PLAYER_26_DATA = {
         "Here, here!"
       ],
       "receive": [
-        "Here, here!"
+        "Got it, got it!"
       ],
       "dribble": [
         "Turn, turn!"
       ],
       "shot-attempt": [
-        "Turn, turn!"
+        "Now, now!"
       ],
       "goal": [
         "We did it, did it!"
@@ -174,13 +174,13 @@ const PLAYER_26_DATA = {
         "Closer, closer!"
       ],
       "foul": [
-        "Again, again!"
+        "Sorry, sorry!"
       ],
       "fouled": [
-        "Turn, turn!"
+        "Hey, hey!"
       ],
       "offside": [
-        "Again, again!"
+        "Too early, too early!"
       ],
       "hotline": [
         "Go, Go!"

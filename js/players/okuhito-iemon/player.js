@@ -99,7 +99,7 @@ const PLAYER_11_DATA = {
         "I know where this is going."
       ],
       "support": [
-        "Here, I am with you."
+        "Here, I'm with you!"
       ],
       "goal": [
         "Yes! We needed that one!",
@@ -112,11 +112,11 @@ const PLAYER_11_DATA = {
         "Stay organized, everyone."
       ],
       "pass": [
-        "Here, I am with you.",
+        "Here, I'm with you!",
         "Keep the team moving."
       ],
       "receive": [
-        "I have it covered."
+        "I've got it covered."
       ],
       "dribble": [
         "There is room to move."
@@ -128,7 +128,7 @@ const PLAYER_11_DATA = {
         "There's a chance! I'll try it!"
       ],
       "miss": [
-        "We will get another chance."
+        "We'll get another chance."
       ],
       "defend": [
         "Got it! Everybody, move up!"

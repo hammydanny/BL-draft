@@ -154,7 +154,7 @@ const PLAYER_25_DATA = {
         "I can push through here."
       ],
       "dribbleFail": [
-        "I should have protected it."
+        "Ah... I should've shielded that."
       ],
       "goal": [
         "I actually did it!",
@@ -164,13 +164,13 @@ const PLAYER_25_DATA = {
         "Breathe. Next chance."
       ],
       "defend": [
-        "I will stay with him."
+        "I'll stay on him."
       ],
       "passFail": [
-        "Sorry... I will win it back."
+        "Sorry... I'll win it back!"
       ],
       "flow": [
-        "I am not backing away."
+        "I'm not backing away... not this time!"
       ],
       "shot-attempt": [
         "I can take this one."

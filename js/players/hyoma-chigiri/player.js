@@ -228,7 +228,7 @@ const PLAYER_7_DATA = {
         "Try keeping up."
       ],
       "pass": [
-        "Do not slow this down.",
+        "Don't slow this down.",
         "Try matching my pace."
       ],
       "receive": [
@@ -247,10 +247,10 @@ const PLAYER_7_DATA = {
         "Too slow with that ball."
       ],
       "concede": [
-        "We are not finished."
+        "We're not finished."
       ],
       "support": [
-        "Do not slow this down."
+        "Don't slow this down."
       ],
       "passFail": [
         "Tch. That pass killed the pace."

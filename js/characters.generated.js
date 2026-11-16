@@ -429,10 +429,10 @@ const PLAYER_2_DATA = {
       ],
       "goal": [
         "There! That's what I can do!",
-        "That is what I came to do!"
+        "That's what I came here to do!"
       ],
       "miss": [
-        "I should have placed that better.",
+        "Ugh, should've placed it better.",
         "Not good enough. Again.",
         "I had that one..."
       ],
@@ -447,7 +447,7 @@ const PLAYER_2_DATA = {
       ],
       "pass": [
         "Here, keep it moving.",
-        "I am backing you."
+        "I've got your back!"
       ],
       "receive": [
         "Thank you. My turn."
@@ -468,13 +468,13 @@ const PLAYER_2_DATA = {
         "We can still recover."
       ],
       "passFail": [
-        "That should have reached you..."
+        "That should've reached you..."
       ],
       "foul": [
         "All right, that's my foul."
       ],
       "save": [
-        "I am not giving this away."
+        "Not giving this away!"
       ],
       "fouled": [
         "Referee, he stopped me!"
@@ -483,7 +483,7 @@ const PLAYER_2_DATA = {
         "Offside? I went too soon."
       ],
       "criticalGoal": [
-        "That is what I came to do!"
+        "That's what I came here to do!"
       ]
     }
   }
@@ -1187,7 +1187,7 @@ const PLAYER_5_DATA = {
       ],
       "goal": [
         "I SCORED?! Yes! I actually scored!",
-        "I am still in this!",
+        "I'm still in this! YES!!",
         "Did everyone see?! I scored!"
       ],
       "miss": [
@@ -1202,10 +1202,10 @@ const PLAYER_5_DATA = {
       ],
       "pass": [
         "Take it, quick!",
-        "Do not lose it!"
+        "Don't lose it!"
       ],
       "receive": [
-        "Okay, okay, I have it!"
+        "Okay, okay, I've got it!"
       ],
       "dribble": [
         "Just let me through!"
@@ -1493,7 +1493,7 @@ const PLAYER_6_DATA = {
         "I came back for this."
       ],
       "miss": [
-        "I have to finish those.",
+        "Damn! I have to finish those.",
         "Not enough. Hit it harder."
       ],
       "defend": [
@@ -1506,7 +1506,7 @@ const PLAYER_6_DATA = {
         "Isagi, I'll finish what you start!"
       ],
       "dribble": [
-        "I am going through.",
+        "I'm going straight through!",
         "Bounce off."
       ],
       "rival": [
@@ -1523,7 +1523,7 @@ const PLAYER_6_DATA = {
         "Keep pushing forward."
       ],
       "receive": [
-        "I have it."
+        "Got it."
       ],
       "dribbleFail": [
         "I lost that duel."
@@ -1544,7 +1544,7 @@ const PLAYER_6_DATA = {
         "Fine. Call the foul."
       ],
       "save": [
-        "You are not getting through."
+        "You're not getting through."
       ],
       "fouled": [
         "Get off me."
@@ -1795,7 +1795,7 @@ const PLAYER_7_DATA = {
         "Try keeping up."
       ],
       "pass": [
-        "Do not slow this down.",
+        "Don't slow this down.",
         "Try matching my pace."
       ],
       "receive": [
@@ -1814,10 +1814,10 @@ const PLAYER_7_DATA = {
         "Too slow with that ball."
       ],
       "concede": [
-        "We are not finished."
+        "We're not finished."
       ],
       "support": [
-        "Do not slow this down."
+        "Don't slow this down."
       ],
       "passFail": [
         "Tch. That pass killed the pace."
@@ -2371,11 +2371,11 @@ const PLAYER_9_DATA = {
         "Come on! I'll chase you all game!"
       ],
       "kickoff": [
-        "Do not get in my way!"
+        "Don't get in my way!"
       ],
       "pass": [
         "Move! Take it!",
-        "Do not waste my pass!"
+        "Don't waste my pass!"
       ],
       "receive": [
         "About time!"
@@ -2394,7 +2394,7 @@ const PLAYER_9_DATA = {
       ],
       "defend": [
         "HAH! You thought you'd get past me?!",
-        "You are going nowhere!"
+        "You're going nowhere!"
       ],
       "concede": [
         "Get back in position!"
@@ -2409,7 +2409,7 @@ const PLAYER_9_DATA = {
         "What?! I was going for the ball!"
       ],
       "save": [
-        "You are going nowhere!"
+        "You're going nowhere!"
       ],
       "fouled": [
         "Oi! Play the ball, then!"
@@ -2597,7 +2597,7 @@ const PLAYER_10_DATA = {
         "That one's for my family!"
       ],
       "miss": [
-        "I have to do better.",
+        "Damn, so close!",
         "Why can't I finish it?!",
         "I got there... and wasted it."
       ],
@@ -2605,11 +2605,11 @@ const PLAYER_10_DATA = {
         "Look at me! I'm still in this!"
       ],
       "kickoff": [
-        "I have to make this count."
+        "Gotta make this count."
       ],
       "pass": [
-        "Go, I will follow.",
-        "I will keep up with you."
+        "Go! I'm right behind you.",
+        "I'll keep up!"
       ],
       "receive": [
         "I can work with this."
@@ -2618,10 +2618,10 @@ const PLAYER_10_DATA = {
         "Just one opening."
       ],
       "dribbleFail": [
-        "I have to try again."
+        "Again. One more time."
       ],
       "shot-attempt": [
-        "Come on... I have to score this!"
+        "Come on... come on!"
       ],
       "defend": [
         "I'm not letting you have it!"
@@ -2630,7 +2630,7 @@ const PLAYER_10_DATA = {
         "Keep going. We still have a chance."
       ],
       "support": [
-        "Go, I will follow."
+        "Go! I'm right behind you."
       ],
       "passFail": [
         "No, that was my chance to help!"
@@ -2639,7 +2639,7 @@ const PLAYER_10_DATA = {
         "I couldn't stop in time..."
       ],
       "save": [
-        "I will fight for this ball."
+        "This ball's mine!"
       ],
       "fouled": [
         "Hey, I was still going!"
@@ -2757,7 +2757,7 @@ const PLAYER_11_DATA = {
         "I know where this is going."
       ],
       "support": [
-        "Here, I am with you."
+        "Here, I'm with you!"
       ],
       "goal": [
         "Yes! We needed that one!",
@@ -2770,11 +2770,11 @@ const PLAYER_11_DATA = {
         "Stay organized, everyone."
       ],
       "pass": [
-        "Here, I am with you.",
+        "Here, I'm with you!",
         "Keep the team moving."
       ],
       "receive": [
-        "I have it covered."
+        "I've got it covered."
       ],
       "dribble": [
         "There is room to move."
@@ -2786,7 +2786,7 @@ const PLAYER_11_DATA = {
         "There's a chance! I'll try it!"
       ],
       "miss": [
-        "We will get another chance."
+        "We'll get another chance."
       ],
       "defend": [
         "Got it! Everybody, move up!"
@@ -2931,7 +2931,7 @@ const PLAYER_12_DATA = {
         "That delivery works."
       ],
       "dribble": [
-        "I have a route through."
+        "There's a way through."
       ],
       "dribbleFail": [
         "I misjudged the challenge."
@@ -3368,22 +3368,49 @@ const PLAYER_14_DATA = {
         "description": "In Flow, when a defender steps in to tackle him, Sae cuts away and, only if that works, instantly passes or shoots through the opening. The defender can win the ball first, and the release can be blocked or intercepted. Once per Flow."
       }
     ],
-    "reactions": [],
+    "reactions": [
+      {
+        "id": "reflex-x-reflex",
+        "name": "Reflex × Reflex",
+        "label": "REFLEX × REFLEX",
+        "members": [
+          14,
+          31
+        ],
+        "effect": "reflex-cross",
+        "cooldownTicks": 12,
+        "dialogue": "reflex",
+        "interpretation": true,
+        "params": {
+          "passerMetres": 48,
+          "strikerMetres": 32,
+          "openMetres": 2.5,
+          "spotMetres": 7,
+          "precision": 0.45,
+          "accuracy": 0.06,
+          "minSuccess": 0.3,
+          "value": 0.012,
+          "technique": -0.02,
+          "relief": 1.4
+        },
+        "description": "With Shidou on the pitch: while Sae has the ball within 48 m of goal, Shidou sprints for an open spot near goal he can reach, and Sae can answer the run with an exactly weighted ball. Shidou then tries an acrobatic first-time finish. Offside, interceptions, blocks and saves all still apply. Shared cooldown: 12 ticks."
+      }
+    ],
     "dialogue": {
       "pass": [
         "Use it."
       ],
       "receive": [
-        "Use it."
+        "Fine."
       ],
       "dribble": [
         "Too slow."
       ],
       "shot-attempt": [
-        "Too slow."
+        "There."
       ],
       "goal": [
-        "That is the difference."
+        "That's the difference."
       ],
       "miss": [
         "A careless touch."
@@ -3401,19 +3428,19 @@ const PLAYER_14_DATA = {
         "Show me something worthwhile."
       ],
       "support": [
-        "Use it."
+        "Here."
       ],
       "kickoff": [
         "Show me something worthwhile."
       ],
       "foul": [
-        "A careless touch."
+        "Careless of me."
       ],
       "fouled": [
-        "Too slow."
+        "Cheap."
       ],
       "offside": [
-        "A careless touch."
+        "Hm."
       ],
       "thread": [
         "Run. The ball is already there.",
@@ -3424,6 +3451,10 @@ const PLAYER_14_DATA = {
       ],
       "releaseFail": [
         "...Sloppy."
+      ],
+      "reflex": [
+        "Shidou. There.",
+        "Fine. Go."
       ]
     }
   }
@@ -3559,11 +3590,17 @@ const PLAYER_15_DATA = {
         "name": "Villainous King",
         "label": "VILLAINOUS KING",
         "effect": "flow-state",
-        "description": "In Flow, attacks openings directly and sharpens his reading of the goalkeeper. Defenders can recover.",
+        "description": "Barou's Flow. In Flow he reads space and the keeper sooner, shoots from chances of about 7.5% or better and attacks defenders more directly. He can still be blocked or tackled.",
         "params": {
           "awareness": {
             "space": 0.08,
             "anticipation": 0.12
+          },
+          "boost": {
+            "goal-hunger": {
+              "realistic": 0.075,
+              "duel": 0.005
+            }
           }
         },
         "interpretation": true
@@ -3644,10 +3681,12 @@ const PLAYER_15_DATA = {
     "reactions": [],
     "dialogue": {
       "pass": [
-        "Give me the ball!"
+        "Fine. Take it.",
+        "Don't waste that."
       ],
       "receive": [
-        "Give me the ball!"
+        "Finally.",
+        "About time."
       ],
       "dribble": [
         "Get out of my way!"
@@ -3665,10 +3704,10 @@ const PLAYER_15_DATA = {
         "Tch. Next one is mine."
       ],
       "passFail": [
-        "Tch. Next one is mine."
+        "Tch."
       ],
       "defend": [
-        "You are not getting through!"
+        "You're not getting through!"
       ],
       "flow": [
         "This field belongs to me!"
@@ -3680,13 +3719,13 @@ const PLAYER_15_DATA = {
         "This field belongs to me!"
       ],
       "foul": [
-        "Tch. Next one is mine."
+        "Out of my way."
       ],
       "fouled": [
-        "Get out of my way!"
+        "Is that all you've got?!"
       ],
       "offside": [
-        "Tch. Next one is mine."
+        "Tch. Blind linesman."
       ],
       "devour": [
         "Draw them in. The goal is mine.",
@@ -3915,7 +3954,7 @@ const PLAYER_16_DATA = {
         "Okawa, there is room ahead."
       ],
       "kickoff": [
-        "I will watch how you move."
+        "Show me how you move."
       ],
       "pass": [
         "There is space on that side.",
@@ -4139,10 +4178,10 @@ const PLAYER_17_DATA = {
       ],
       "goal": [
         "That's your ace! Remember it!",
-        "That is the finish I wanted!"
+        "That's the finish I wanted!"
       ],
       "miss": [
-        "I should score from there."
+        "Damn, I should've buried that."
       ],
       "defend": [
         "I'll win it myself, then!"
@@ -4163,7 +4202,7 @@ const PLAYER_17_DATA = {
         "Tch. Fine, it was a foul."
       ],
       "save": [
-        "I will take that ball."
+        "That ball's mine."
       ],
       "fouled": [
         "You stopped a scoring chance there!"
@@ -4172,7 +4211,7 @@ const PLAYER_17_DATA = {
         "Wait, I was offside there?"
       ],
       "criticalGoal": [
-        "That is the finish I wanted!"
+        "That's the finish I wanted!"
       ]
     }
   }
@@ -4442,7 +4481,7 @@ const PLAYER_19_DATA = {
         "We need another angle."
       ],
       "goal": [
-        "That is how we combine!",
+        "That's how we combine!",
         "You saw that, brother!"
       ],
       "miss": [
@@ -4458,7 +4497,7 @@ const PLAYER_19_DATA = {
         "I know where he will move."
       ],
       "shot-attempt": [
-        "I have the angle."
+        "I've got the angle."
       ],
       "criticalGoal": [
         "You saw that, brother!"
@@ -4582,10 +4621,11 @@ const PLAYER_20_DATA = {
         "name": "Chameleon",
         "label": "CHAMELEON",
         "effect": "observed-technique",
-        "description": "Remembers up to three observed public technical moves. Uses a weaker imitation only when its normal physical conditions are met; never copies stats, physiques, keepers, reactions, Flow or ultimates.",
+        "description": "Reo remembers up to three technical moves he has seen other players perform within his scanning range (never physical gifts such as speed, power or height, nor goalkeeping, Flow states or ultimates) and can use a slightly weaker version of them with his own ratings. Each copy needs an 8-tick reset, and making someone else's move work feeds his Flow.",
         "params": {
           "capacity": 3,
-          "cooldownTicks": 8
+          "cooldownTicks": 8,
+          "flowPoints": 0.08
         },
         "interpretation": true
       },
@@ -4644,14 +4684,14 @@ const PLAYER_20_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will find what this team needs."
+        "Let's see what this team needs."
       ],
       "pass": [
         "I can put it there.",
         "Use that space."
       ],
       "receive": [
-        "I have options."
+        "Plenty of options."
       ],
       "dribble": [
         "I can reproduce that touch."
@@ -4660,7 +4700,7 @@ const PLAYER_20_DATA = {
         "The timing was different."
       ],
       "goal": [
-        "That is one way to win.",
+        "That's one way to win.",
         "I can make this team win."
       ],
       "miss": [
@@ -4676,7 +4716,7 @@ const PLAYER_20_DATA = {
         "I can connect all of this."
       ],
       "copy": [
-        "I have seen that move."
+        "Seen it. Now it's mine."
       ],
       "shot-attempt": [
         "This is the opening."
@@ -4796,10 +4836,12 @@ const PLAYER_21_DATA = {
         "name": "Perfect Trapping",
         "label": "PERFECT TRAPPING",
         "effect": "perfect-trap",
-        "description": "Improves control of reachable ground and aerial deliveries. After controlling a high or long ball he is readier to shoot straight away. Defenders can intercept before he receives.",
+        "description": "When a lofted, long or threaded pass reaches Nagi, or a marker is within 3.5 m, his first touch kills the ball and steers it about 2 m into the open side, toward goal. Teammates trust him with high balls, and after the touch he is readier to shoot. With no open side the ball just stops at his feet, and defenders can still intercept before it arrives.",
         "params": {
           "control": 7,
-          "improvise": 0.004
+          "improvise": 0.004,
+          "touchMetres": 2,
+          "supplyValue": 0.004
         },
         "interpretation": true
       },
@@ -4808,11 +4850,17 @@ const PLAYER_21_DATA = {
         "name": "Genius Awakening",
         "label": "GENIUS AWAKENING",
         "effect": "flow-state",
-        "description": "In Flow, improvises better touches and finishing opportunities. Unreachable balls stay unreachable.",
+        "description": "Nagi's Flow. In Flow his first touch carries the ball a little further into space and he improvises more finishing chances. Unreachable balls stay unreachable.",
         "params": {
           "awareness": {
             "space": 0.05,
             "anticipation": 0.08
+          },
+          "boost": {
+            "perfect-trap": {
+              "control": 8,
+              "touchMetres": 2.4
+            }
           }
         },
         "interpretation": true
@@ -4850,10 +4898,10 @@ const PLAYER_21_DATA = {
         "name": "Five-Shot Revolver Fake Volley",
         "label": "FIVE-SHOT REVOLVER FAKE VOLLEY",
         "effect": "revolver-finish",
-        "description": "In Flow, after an airborne pass within 14 m of goal with two defenders within 5 m, Nagi attempts a chain of fake volleys before shooting. Any feint can be stopped and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
+        "description": "In Flow, when Nagi meets an airborne pass within 16 m of goal with two defenders within 6 m, he chains fake volleys to send a closing defender the wrong way before shooting. Any feint can be read, and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
         "params": {
-          "maxMetres": 14,
-          "pressureMetres": 5,
+          "maxMetres": 16,
+          "pressureMetres": 6,
           "defenders": 2
         },
         "interpretation": true,
@@ -4885,13 +4933,13 @@ const PLAYER_21_DATA = {
         "There. Take it."
       ],
       "receive": [
-        "There. Take it."
+        "Got it... I guess."
       ],
       "dribble": [
         "What a pain."
       ],
       "shot-attempt": [
-        "What a pain."
+        "Eh, let's just shoot."
       ],
       "goal": [
         "That was kind of fun."
@@ -4912,19 +4960,19 @@ const PLAYER_21_DATA = {
         "Okay. Now I want to win."
       ],
       "support": [
-        "There. Take it."
+        "Over here... I guess."
       ],
       "kickoff": [
         "Okay. Now I want to win."
       ],
       "foul": [
-        "Ah... messed that up."
+        "Oops."
       ],
       "fouled": [
-        "What a pain."
+        "Ow... what a pain."
       ],
       "offside": [
-        "Ah... messed that up."
+        "Huh? Offside? Annoying."
       ],
       "partnership": [
         "Reo. Right there."
@@ -4932,6 +4980,10 @@ const PLAYER_21_DATA = {
       "revolver": [
         "Huh... this is actually fun.",
         "Five shots. Guess which one's real."
+      ],
+      "trap": [
+        "Easy.",
+        "Stopped it. Now what..."
       ]
     }
   }
@@ -5088,7 +5140,7 @@ const PLAYER_22_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will get there first."
+        "I'll get there first."
       ],
       "pass": [
         "Go on, ahead of me."
@@ -5104,7 +5156,7 @@ const PLAYER_22_DATA = {
       ],
       "goal": [
         "My left foot has the answer.",
-        "Fast enough. That is the word."
+        "Fast enough. That's the word."
       ],
       "miss": [
         "That angle was too acute... or obtuse."
@@ -5122,13 +5174,13 @@ const PLAYER_22_DATA = {
         "Across the goal."
       ],
       "criticalGoal": [
-        "Fast enough. That is the word."
+        "Fast enough. That's the word."
       ],
       "foul": [
         "I arrived too quickly."
       ],
       "fouled": [
-        "You cannot just trip me!"
+        "You can't just trip me!"
       ],
       "offside": [
         "Too much acceleration. Bad timing."
@@ -5366,46 +5418,46 @@ const PLAYER_23_DATA = {
         "Keep up."
       ],
       "receive": [
-        "Keep up."
+        "...Fine."
       ],
       "dribble": [
-        "Move. I am breaking through."
+        "Move. I'm breaking through."
       ],
       "shot-attempt": [
-        "Move. I am breaking through."
+        "Move. I'm breaking through."
       ],
       "goal": [
-        "That is all you have?"
+        "That's all you've got?"
       ],
       "miss": [
-        "I will crush you next time."
+        "Next time, I crush you."
       ],
       "dribbleFail": [
-        "I will crush you next time."
+        "Next time, I crush you."
       ],
       "passFail": [
-        "I will crush you next time."
+        "Tch. Sloppy."
       ],
       "defend": [
         "I read that."
       ],
       "flow": [
-        "I will destroy you myself."
+        "I'll destroy you myself."
       ],
       "support": [
-        "Keep up."
+        "Here."
       ],
       "kickoff": [
-        "I will destroy you myself."
+        "I'll destroy you myself."
       ],
       "foul": [
-        "I will crush you next time."
+        "You were in my way."
       ],
       "fouled": [
-        "Move. I am breaking through."
+        "Pathetic."
       ],
       "offside": [
-        "I will crush you next time."
+        "Tch."
       ],
       "rival": [
         "Sae. Watch me break through."
@@ -5778,7 +5830,7 @@ const PLAYER_25_DATA = {
         "I can push through here."
       ],
       "dribbleFail": [
-        "I should have protected it."
+        "Ah... I should've shielded that."
       ],
       "goal": [
         "I actually did it!",
@@ -5788,13 +5840,13 @@ const PLAYER_25_DATA = {
         "Breathe. Next chance."
       ],
       "defend": [
-        "I will stay with him."
+        "I'll stay on him."
       ],
       "passFail": [
-        "Sorry... I will win it back."
+        "Sorry... I'll win it back!"
       ],
       "flow": [
-        "I am not backing away."
+        "I'm not backing away... not this time!"
       ],
       "shot-attempt": [
         "I can take this one."
@@ -5960,13 +6012,13 @@ const PLAYER_26_DATA = {
         "Here, here!"
       ],
       "receive": [
-        "Here, here!"
+        "Got it, got it!"
       ],
       "dribble": [
         "Turn, turn!"
       ],
       "shot-attempt": [
-        "Turn, turn!"
+        "Now, now!"
       ],
       "goal": [
         "We did it, did it!"
@@ -5993,13 +6045,13 @@ const PLAYER_26_DATA = {
         "Closer, closer!"
       ],
       "foul": [
-        "Again, again!"
+        "Sorry, sorry!"
       ],
       "fouled": [
-        "Turn, turn!"
+        "Hey, hey!"
       ],
       "offside": [
-        "Again, again!"
+        "Too early, too early!"
       ],
       "hotline": [
         "Go, Go!"
@@ -6055,27 +6107,1060 @@ const PLAYER_33_DATA = { id: 33, name: "Jin Kiyora", debutChapter: 93, appearanc
 
 // js/players/leonardo-luna/player.js
 // Character player data: Leonardo Luna (ID 34).
-const PLAYER_34_DATA = { id: 34, name: "Leonardo Luna", debutChapter: 87, appearanceOrder: 34, image: "images/leonardo-luna.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"ES","name":"Spain","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Leonardo_Luna","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"dribbling","name":"Dribbling","description":"Uses close control and deft touches to move through defensive pressure.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Leonardo_Luna","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:96, off:99, sho:97, spd:96, def:73, pas:94, dri:99, gk:58 } };
+const PLAYER_34_DATA = {
+  "id": 34,
+  "name": "Leonardo Luna",
+  "debutChapter": 87,
+  "appearanceOrder": 34,
+  "image": "images/leonardo-luna.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "ES",
+    "name": "Spain",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Leonardo_Luna",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "dribbling",
+      "name": "Dribbling",
+      "description": "Uses close control and deft touches to move through defensive pressure.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "With a defender within 3.5 m, Luna keeps the ball so close that pressure costs him far less than it costs other dribblers, even with two or three defenders around him. A clean tackle can still win it.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Leonardo_Luna",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 96,
+    "off": 99,
+    "sho": 97,
+    "spd": 96,
+    "def": 73,
+    "pas": 94,
+    "dri": 99,
+    "gk": 58
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.04
+    },
+    "tendencies": {
+      "dribble": 0.08
+    },
+    "passives": [
+      {
+        "id": "elite-close-control",
+        "name": "Elite Close Control",
+        "label": "ELITE CLOSE CONTROL",
+        "effect": "close-control",
+        "params": {
+          "tight": 3,
+          "crowd": 4
+        },
+        "description": "With a defender within 3.5 m, Luna keeps the ball so close that pressure costs him far less than it costs other dribblers, even with two or three defenders around him. A clean tackle can still win it.",
+        "interpretation": true
+      },
+      {
+        "id": "untouchable-rhythm",
+        "name": "Untouchable Rhythm",
+        "label": "UNTOUCHABLE RHYTHM",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "close-control": {
+              "tight": 4,
+              "crowd": 5
+            }
+          }
+        },
+        "description": "Luna's Flow. In Flow his close control holds up under even heavier pressure. Defenders can still win a clean tackle.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "deceptive-touch",
+        "name": "Deceptive Touch",
+        "label": "DECEPTIVE TOUCH",
+        "effect": "counter-dribble",
+        "params": {
+          "cooldownTicks": 6,
+          "pointless": 0.004
+        },
+        "description": "When a nearby defender steps in toward him, Luna shows the ball one way and touches it the other. If nobody is committing, he does not force it. The defender can still read it. Cooldown: 6 ticks.",
+        "interpretation": true
+      },
+      {
+        "id": "elegant-breakthrough",
+        "name": "Elegant Breakthrough",
+        "label": "ELEGANT BREAKTHROUGH",
+        "effect": "creative-dribble",
+        "params": {
+          "cooldownTicks": 8,
+          "feint": 0.14,
+          "cuts": [
+            -70,
+            70
+          ]
+        },
+        "description": "Luna glides past a defender with a sharp, balanced change of direction that makes a poor reader hesitate. A defender who reads it can still tackle him. Cooldown: 8 ticks.",
+        "interpretation": true
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "masterful-escape",
+        "name": "Masterful Escape",
+        "label": "MASTERFUL ESCAPE",
+        "effect": "monster-dance",
+        "params": {
+          "maxMetres": 36,
+          "rangeMeters": 7,
+          "maxDuels": 3,
+          "risk": 4
+        },
+        "description": "In Flow within 36 m of goal, with defenders closing within 7 m, Luna slips past up to three of them one after another. Each one is a real dribble that can fail, and he stops as soon as the way is clear. Once per Flow.",
+        "interpretation": true,
+        "dialogue": "dance",
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        }
+      }
+    ],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Let's make this pretty."
+      ],
+      "pass": [
+        "Go on."
+      ],
+      "receive": [
+        "Mm. Nice."
+      ],
+      "support": [
+        "Over here."
+      ],
+      "dribble": [
+        "Too slow, too slow~",
+        "Follow me, if you can."
+      ],
+      "dribbleFail": [
+        "Oh? Not bad."
+      ],
+      "shot-attempt": [
+        "Watch this."
+      ],
+      "goal": [
+        "Was that too easy?",
+        "Ahaha! Lovely."
+      ],
+      "criticalGoal": [
+        "Game over~"
+      ],
+      "miss": [
+        "Tch, sloppy of me."
+      ],
+      "defend": [
+        "Mine, thank you."
+      ],
+      "passFail": [
+        "Hm. Careless."
+      ],
+      "flow": [
+        "Now you can't even touch me."
+      ],
+      "dance": [
+        "Dance with me, if you can keep up."
+      ],
+      "danceFail": [
+        "Ah... you caught me."
+      ],
+      "danceEnd": [
+        "See? Untouchable."
+      ],
+      "concede": [
+        "Hmm, annoying."
+      ],
+      "fouled": [
+        "Rough, aren't you?"
+      ],
+      "foul": [
+        "Oops."
+      ],
+      "offside": [
+        "Hm, too eager."
+      ],
+      "save": [
+        "Ah, close."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/pablo-cavasoz/player.js
 // Character player data: Pablo Cavasoz (ID 35).
-const PLAYER_35_DATA = { id: 35, name: "Pablo Cavasoz", debutChapter: 87, appearanceOrder: 35, image: "images/pablo-cavasoz.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"AR","name":"Argentina","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Pablo_Cavasoz","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"kicking-accuracy","name":"Kicking Accuracy","description":"Places passes and kicks precisely to connect teammates over difficult distances.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Pablo_Cavasoz","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"technical"}], stats: { ovr:95, off:96, sho:96, spd:94, def:69, pas:99, dri:98, gk:55 } };
+const PLAYER_35_DATA = {
+  "id": 35,
+  "name": "Pablo Cavasoz",
+  "debutChapter": 87,
+  "appearanceOrder": 35,
+  "image": "images/pablo-cavasoz.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "AR",
+    "name": "Argentina",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Pablo_Cavasoz",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "kicking-accuracy",
+      "name": "Kicking Accuracy",
+      "description": "Places passes and kicks precisely to connect teammates over difficult distances.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Pablo's passes and long balls stray less than most players', especially over long distances, and he looks for the pass that puts a teammate into a real shooting position, including runners in behind. Defenders in the lane can still cut them out.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Pablo_Cavasoz",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "technical"
+    }
+  ],
+  "stats": {
+    "ovr": 95,
+    "off": 96,
+    "sho": 96,
+    "spd": 94,
+    "def": 69,
+    "pas": 99,
+    "dri": 98,
+    "gk": 55
+  },
+  "battleSim": {
+    "awareness": {
+      "vision": 0.1,
+      "space": 0.06
+    },
+    "tendencies": {
+      "pass": 0.08
+    },
+    "passives": [
+      {
+        "id": "pinpoint-accuracy",
+        "name": "Pinpoint Accuracy",
+        "label": "PINPOINT ACCURACY",
+        "effect": "weighted-kick",
+        "effects": [
+          "chance-creation"
+        ],
+        "params": {
+          "precision": 0.85,
+          "rangeMeters": 50,
+          "weight": 0.04
+        },
+        "description": "Pablo's passes and long balls stray less than most players', especially over long distances, and he looks for the pass that puts a teammate into a real shooting position, including runners in behind. Defenders in the lane can still cut them out.",
+        "interpretation": true
+      },
+      {
+        "id": "exacting-rhythm",
+        "name": "Exacting Rhythm",
+        "label": "EXACTING RHYTHM",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "weighted-kick": {
+              "precision": 0.78
+            },
+            "bending-pass": {
+              "curve": 2.8
+            }
+          }
+        },
+        "description": "Pablo's Flow. In Flow his kicking is even more exact and his curled passes bend further. The receiver must still control the ball.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "precision-delivery",
+        "name": "Precision Delivery",
+        "label": "PRECISION DELIVERY",
+        "effect": "decisive-delivery",
+        "params": {
+          "cooldownTicks": 7,
+          "precision": 0.7
+        },
+        "description": "For a forward pass of 18 m or more that gains at least 5 m, Pablo strikes the ball with extra accuracy. Defenders can still intercept and the receiver must still control it. Cooldown: 7 ticks.",
+        "interpretation": true
+      },
+      {
+        "id": "bending-distribution",
+        "name": "Bending Distribution",
+        "label": "BENDING DISTRIBUTION",
+        "effect": "bending-pass",
+        "params": {
+          "cooldownTicks": 9,
+          "minLength": 14,
+          "curve": 2.4,
+          "minGain": 0.04,
+          "value": 0.004
+        },
+        "description": "When one or two defenders stand in the line of a ground pass of 14 m or more, Pablo curls the ball around the outside of the main blocker. The curve brings it closer to anyone on the other side and makes it slightly less accurate, so it can still be cut out. Cooldown: 9 ticks.",
+        "interpretation": true,
+        "dialogue": "bend"
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "precision-masterclass",
+        "name": "Precision Masterclass",
+        "label": "PRECISION MASTERCLASS",
+        "effect": "precision-masterclass",
+        "params": {
+          "minLength": 28,
+          "minForward": 12,
+          "precision": 0.4,
+          "accuracy": 0.08,
+          "minSuccess": 0.4,
+          "value": 0.01
+        },
+        "description": "In Flow, when a teammate is running in behind, Pablo plays a long ball of 28 m or more that gains at least 12 m and drops right into the runner's stride. The runner must still win the race and control it, and offside still counts. Once per Flow.",
+        "interpretation": true,
+        "dialogue": "masterclass",
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        }
+      }
+    ],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Keep it simple. Keep it exact."
+      ],
+      "pass": [
+        "There.",
+        "On your foot."
+      ],
+      "receive": [
+        "Good."
+      ],
+      "support": [
+        "Here."
+      ],
+      "masterclass": [
+        "Run. It will be there."
+      ],
+      "bend": [
+        "Around him."
+      ],
+      "goal": [
+        "Clean."
+      ],
+      "criticalGoal": [
+        "Exact."
+      ],
+      "miss": [
+        "Off by a little."
+      ],
+      "passFail": [
+        "...Hm. Off target."
+      ],
+      "flow": [
+        "Every ball, exactly."
+      ],
+      "dribble": [
+        "Space."
+      ],
+      "dribbleFail": [
+        "My mistake."
+      ],
+      "shot-attempt": [
+        "Placed."
+      ],
+      "defend": [
+        "Got it."
+      ],
+      "concede": [
+        "Reset."
+      ],
+      "fouled": [
+        "Careful."
+      ],
+      "foul": [
+        "Sorry."
+      ],
+      "offside": [
+        "Timing."
+      ],
+      "save": [
+        "Hm."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/adam-blake/player.js
 // Character player data: Adam Blake (ID 36).
-const PLAYER_36_DATA = { id: 36, name: "Adam Blake", debutChapter: 87, appearanceOrder: 36, image: "images/adam-blake.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"GB","name":"United Kingdom","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Adam_Blake","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."},"representation":"England"}, weapons: [{"id":"physical-strength","name":"Physical Strength","description":"Uses his powerful frame to hold off defenders while advancing towards goal.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Adam_Blake","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:96, off:99, sho:99, spd:96, def:70, pas:92, dri:95, gk:59 } };
+const PLAYER_36_DATA = {
+  "id": 36,
+  "name": "Adam Blake",
+  "debutChapter": 87,
+  "appearanceOrder": 36,
+  "image": "images/adam-blake.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "GB",
+    "name": "United Kingdom",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Adam_Blake",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    },
+    "representation": "England"
+  },
+  "weapons": [
+    {
+      "id": "physical-strength",
+      "name": "Physical Strength",
+      "description": "Uses his powerful frame to hold off defenders while advancing towards goal.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Adam holds off challenges with his strength: defenders find it harder to take the ball from him, he is harder to beat in a dribbling duel, and he is stronger in aerial contests. A well-timed tackle still works.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Adam_Blake",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 96,
+    "off": 99,
+    "sho": 99,
+    "spd": 96,
+    "def": 70,
+    "pas": 92,
+    "dri": 95,
+    "gk": 59
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.03
+    },
+    "tendencies": {
+      "direct": 0.06,
+      "shoot": 0.04
+    },
+    "passives": [
+      {
+        "id": "physical-superiority",
+        "name": "Physical Superiority",
+        "label": "PHYSICAL SUPERIORITY",
+        "effect": "physical-shield",
+        "params": {
+          "shield": 7,
+          "aerial": 3
+        },
+        "description": "Adam holds off challenges with his strength: defenders find it harder to take the ball from him, he is harder to beat in a dribbling duel, and he is stronger in aerial contests. A well-timed tackle still works.",
+        "interpretation": true
+      },
+      {
+        "id": "unstoppable-engine",
+        "name": "Unstoppable Engine",
+        "label": "UNSTOPPABLE ENGINE",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "physical-shield": {
+              "shield": 9
+            },
+            "power-shot": {
+              "technique": 0.38
+            }
+          }
+        },
+        "description": "Adam's Flow. In Flow he is even harder to knock off the ball and his long shots are harder to hold. He can still be tackled or saved.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "power-shield",
+        "name": "Power Shield",
+        "label": "POWER SHIELD",
+        "effect": "power-dribble",
+        "params": {
+          "cooldownTicks": 7,
+          "stride": 1.15,
+          "protection": 7
+        },
+        "description": "Adam carries the ball with his body between it and the defender, about 15% further than a normal carry and much harder to dispossess. A defender can still win it. Cooldown: 7 ticks.",
+        "interpretation": true
+      },
+      {
+        "id": "adam-power-finish",
+        "name": "Power Finish",
+        "label": "POWER FINISH",
+        "effect": "power-shot",
+        "params": {
+          "cooldownTicks": 8,
+          "minMetres": 14,
+          "maxMetres": 30,
+          "technique": 0.32,
+          "parry": 0.15
+        },
+        "description": "From 14–30 m Adam hits the ball with full power: it is harder for the keeper to hold, not more accurate. Defenders can block it and the keeper can still save. Cooldown: 8 ticks.",
+        "interpretation": true,
+        "dialogue": "power"
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "unyielding-charge",
+        "name": "Unyielding Charge",
+        "label": "UNYIELDING CHARGE",
+        "effect": "collision-course",
+        "params": {
+          "maxMetres": 34,
+          "rangeMeters": 5,
+          "force": 8,
+          "weight": 1.15,
+          "value": 0.02
+        },
+        "description": "In Flow within 34 m of goal, Adam drives straight at the defender in his path within 5 m and tries to go through him with strength. It is a real duel he can lose; if he wins it he carries on toward goal and chooses his shot or pass normally. Once per Flow.",
+        "interpretation": true,
+        "dialogue": "collision",
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        }
+      }
+    ],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Let's go! Hit them hard!"
+      ],
+      "pass": [
+        "Take it!"
+      ],
+      "receive": [
+        "Got it!"
+      ],
+      "support": [
+        "Over here!"
+      ],
+      "dribble": [
+        "Out of my way!"
+      ],
+      "dribbleFail": [
+        "Damn it!"
+      ],
+      "shot-attempt": [
+        "Here it comes!"
+      ],
+      "goal": [
+        "YEAH!!",
+        "That's power!"
+      ],
+      "criticalGoal": [
+        "YEAH!! That's it!"
+      ],
+      "miss": [
+        "Argh! Again!"
+      ],
+      "defend": [
+        "Mine!"
+      ],
+      "passFail": [
+        "Damn!"
+      ],
+      "flow": [
+        "Nothing's stopping me now!"
+      ],
+      "collision": [
+        "Straight through you!"
+      ],
+      "collisionWin": [
+        "Move!!"
+      ],
+      "collisionFail": [
+        "Tch—strong..."
+      ],
+      "power": [
+        "Full power!"
+      ],
+      "concede": [
+        "Come on, wake up!"
+      ],
+      "fouled": [
+        "That all you've got?"
+      ],
+      "foul": [
+        "My bad!"
+      ],
+      "offside": [
+        "Ugh, too early!"
+      ],
+      "save": [
+        "Damn, he saved it!"
+      ]
+    }
+  }
+};
 ;
 
 // js/players/dada-silva/player.js
 // Character player data: Dada Silva (ID 37).
-const PLAYER_37_DATA = { id: 37, name: "Dada Silva", debutChapter: 87, appearanceOrder: 37, image: "images/dada-silva.jpg", primaryPosition: "FW", positions: ["FW"] , nationality: {"code":"BR","name":"Brazil","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Dada_Silva","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"aerial-power","name":"Aerial Power","description":"Combines physical strength and jumping ability to dominate aerial challenges.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Dada_Silva","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:95, off:99, sho:99, spd:96, def:74, pas:88, dri:93, gk:63 } };
+const PLAYER_37_DATA = {
+  "id": 37,
+  "name": "Dada Silva",
+  "debutChapter": 87,
+  "appearanceOrder": 37,
+  "image": "images/dada-silva.jpg",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "nationality": {
+    "code": "BR",
+    "name": "Brazil",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Dada_Silva",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "aerial-power",
+      "name": "Aerial Power",
+      "description": "Combines physical strength and jumping ability to dominate aerial challenges.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Dada wins headers with explosive jumping power and strength in the contact, not with extra reach. Teammates look for him with high balls. A defender who times his jump well can still beat him.",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Dada_Silva",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 95,
+    "off": 99,
+    "sho": 99,
+    "spd": 96,
+    "def": 74,
+    "pas": 88,
+    "dri": 93,
+    "gk": 63
+  },
+  "battleSim": {
+    "awareness": {
+      "anticipation": 0.06
+    },
+    "tendencies": {
+      "shoot": 0.03
+    },
+    "passives": [
+      {
+        "id": "aerial-power",
+        "name": "Aerial Power",
+        "label": "AERIAL POWER",
+        "effect": "aerial-power",
+        "params": {
+          "power": 5,
+          "supplyValue": 0.004
+        },
+        "description": "Dada wins headers with explosive jumping power and strength in the contact, not with extra reach. Teammates look for him with high balls. A defender who times his jump well can still beat him.",
+        "interpretation": true
+      },
+      {
+        "id": "aerial-dominance",
+        "name": "Aerial Dominance",
+        "label": "AERIAL DOMINANCE",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "aerial-power": {
+              "power": 7
+            },
+            "aerial-header": {
+              "technique": 0.16
+            }
+          }
+        },
+        "description": "Dada's Flow. In Flow he is even stronger in the air and his headers are more accurate. He can still lose the header or miss.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "dominant-header",
+        "name": "Dominant Header",
+        "label": "DOMINANT HEADER",
+        "effect": "aerial-header",
+        "params": {
+          "cooldownTicks": 7,
+          "maxMetres": 16,
+          "technique": 0.14
+        },
+        "description": "When Dada meets a cross in the air within 16 m of goal, he powers a header at goal. Blocks, saves and misses are still possible. Cooldown: 7 ticks.",
+        "interpretation": true,
+        "dialogue": "header"
+      },
+      {
+        "id": "physical-aerial-challenge",
+        "name": "Physical Aerial Challenge",
+        "label": "PHYSICAL AERIAL CHALLENGE",
+        "effect": "aerial-challenge",
+        "params": {
+          "cooldownTicks": 8,
+          "challenge": 0.45
+        },
+        "description": "When a defender challenges him for a high ball played to him, Dada attacks it through the contact and is more likely to win it. He can still lose the header. Cooldown: 8 ticks.",
+        "interpretation": true,
+        "dialogue": "aerial"
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "towering-finish",
+        "name": "Towering Finish",
+        "label": "TOWERING FINISH",
+        "effect": "towering-finish",
+        "params": {
+          "maxMetres": 14,
+          "contestMetres": 3.5,
+          "technique": 0.06,
+          "relief": 1.8,
+          "parry": 0.12
+        },
+        "description": "In Flow, when Dada meets an airborne pass within 14 m of goal with a defender within 3.5 m, he rises through the challenge for a powerful header. It can still be blocked, saved or missed. Once per Flow.",
+        "interpretation": true,
+        "dialogue": "towering",
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        }
+      }
+    ],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Send it high. I'll do the rest."
+      ],
+      "pass": [
+        "Go!"
+      ],
+      "receive": [
+        "Nice."
+      ],
+      "support": [
+        "Cross it!"
+      ],
+      "aerial": [
+        "Mine in the air!"
+      ],
+      "header": [
+        "Up I go!"
+      ],
+      "towering": [
+        "Nobody beats me up there!"
+      ],
+      "goal": [
+        "YES!! Header!",
+        "Too high for you!"
+      ],
+      "criticalGoal": [
+        "YES!! That's the one!"
+      ],
+      "miss": [
+        "Ah, so close!"
+      ],
+      "dribble": [
+        "Coming through!"
+      ],
+      "dribbleFail": [
+        "Hm."
+      ],
+      "shot-attempt": [
+        "Come on!"
+      ],
+      "defend": [
+        "Got it!"
+      ],
+      "passFail": [
+        "Ah, my bad."
+      ],
+      "flow": [
+        "Feels light today!"
+      ],
+      "concede": [
+        "Next one."
+      ],
+      "fouled": [
+        "Hey!"
+      ],
+      "foul": [
+        "Sorry!"
+      ],
+      "offside": [
+        "Too early, huh."
+      ],
+      "save": [
+        "What a save..."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/julien-loki/player.js
 // Character player data: Julien Loki (ID 38).
-const PLAYER_38_DATA = { id: 38, name: "Julien Loki", debutChapter: 87, appearanceOrder: 38, image: "images/julien-loki.jpg", primaryPosition: "CF", positions: ["CF", "FW"] , nationality: {"code":"FR","name":"France","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Julien_Loki","note":"National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."}}, weapons: [{"id":"godspeed","name":"Godspeed","description":"Uses exceptional acceleration and speed to exploit gaps before defenders can respond.","battleSimType":"TBD","battleSimDescription":"Placeholder: Battle Sim effect to be defined.","source":{"type":"official-profile","url":"https://tv.bluelock-pr.com/tv1st/news/1844/","note":"Demonstrated football strength; exact chapter omitted where not independently confirmed."},"category":"physical"}], stats: { ovr:97, off:96, sho:94, spd:99, def:74, pas:91, dri:97, gk:61 } };
+const PLAYER_38_DATA = {
+  "id": 38,
+  "name": "Julien Loki",
+  "debutChapter": 87,
+  "appearanceOrder": 38,
+  "image": "images/julien-loki.jpg",
+  "primaryPosition": "CF",
+  "positions": [
+    "CF",
+    "FW"
+  ],
+  "nationality": {
+    "code": "FR",
+    "name": "France",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Julien_Loki",
+      "note": "National selection eligibility or explicitly recorded country; never inferred from club, name or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "godspeed",
+      "name": "Godspeed",
+      "description": "Uses exceptional acceleration and speed to exploit gaps before defenders can respond.",
+      "battleSimType": "Passive",
+      "battleSimDescription": "Loki has elite acceleration and the highest top speed at the same time: he reaches full pace almost at once and keeps it. On a knock-and-run, a slower defender is left behind. A defender already standing in his path can still stop him.",
+      "source": {
+        "type": "official-profile",
+        "url": "https://tv.bluelock-pr.com/tv1st/news/1844/",
+        "note": "Demonstrated football strength; exact chapter omitted where not independently confirmed."
+      },
+      "category": "physical"
+    }
+  ],
+  "stats": {
+    "ovr": 97,
+    "off": 96,
+    "sho": 94,
+    "spd": 99,
+    "def": 74,
+    "pas": 91,
+    "dri": 97,
+    "gk": 61
+  },
+  "battleSim": {
+    "awareness": {
+      "space": 0.05,
+      "anticipation": 0.12
+    },
+    "tendencies": {
+      "direct": 0.06
+    },
+    "passives": [
+      {
+        "id": "godspeed",
+        "name": "Godspeed",
+        "label": "GODSPEED",
+        "effect": "godspeed",
+        "params": {
+          "acceleration": 1.3,
+          "raceTopSpeed": 1.05,
+          "start": 0.15,
+          "race": 0.4
+        },
+        "description": "Loki has elite acceleration and the highest top speed at the same time: he reaches full pace almost at once and keeps it. On a knock-and-run, a slower defender is left behind. A defender already standing in his path can still stop him.",
+        "interpretation": true
+      },
+      {
+        "id": "speed-recognition",
+        "name": "Speed Recognition",
+        "label": "SPEED RECOGNITION",
+        "effect": "speed-recognition",
+        "params": {
+          "turn": 0.5,
+          "read": 0.04
+        },
+        "description": "Loki judges an opponent's pace at a glance. When a ball is played in behind him, he turns and starts his recovery run sooner than other defenders. He still has to win the race.",
+        "interpretation": true
+      },
+      {
+        "id": "divine-tempo",
+        "name": "Divine Tempo",
+        "label": "DIVINE TEMPO",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "godspeed": {
+              "acceleration": 1.36,
+              "race": 0.5
+            }
+          }
+        },
+        "description": "Loki's Flow. In Flow he accelerates even harder and pulls further away from slower defenders on a knock-and-run. A defender in his path can still stop him.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "godspeed-burst",
+        "name": "Godspeed Burst",
+        "label": "GODSPEED BURST",
+        "effect": "push-dribble",
+        "params": {
+          "cooldownTicks": 7,
+          "stride": 1.7,
+          "space": 5
+        },
+        "description": "With at least 5 m of open grass ahead, Loki knocks the ball past his marker and accelerates onto it, covering about 70% more ground than a normal dribble. Pace decides it; a defender in the way can still take the ball. Cooldown: 7 ticks.",
+        "interpretation": true
+      }
+    ],
+    "ultimates": [
+      {
+        "id": "godspeed-breakthrough",
+        "name": "Godspeed Breakthrough",
+        "label": "GODSPEED BREAKTHROUGH",
+        "effect": "godspeed-breakthrough",
+        "params": {
+          "minAhead": 40,
+          "maxMetres": 52,
+          "runMetres": 16,
+          "runSeconds": 1.7,
+          "maxDefenders": 1,
+          "space": 4,
+          "weight": 1.05,
+          "value": 0.006
+        },
+        "description": "In Flow within 52 m of goal, Loki finds a gap with at most one defender in the way and 4 m of space beyond it, and bursts up to 16 m through it with the ball. A defender in the path can still win it; after the burst he shoots or passes as normal. Once per Flow.",
+        "interpretation": true,
+        "dialogue": "godspeed",
+        "oncePerFlow": true,
+        "condition": {
+          "duringFlow": true
+        }
+      }
+    ],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Let us begin. Keep up, if you can."
+      ],
+      "pass": [
+        "Take it."
+      ],
+      "receive": [
+        "Good."
+      ],
+      "support": [
+        "Here."
+      ],
+      "dribble": [
+        "Too slow."
+      ],
+      "dribbleFail": [
+        "Hm. Well read."
+      ],
+      "shot-attempt": [
+        "Now."
+      ],
+      "goal": [
+        "Did you even see it?",
+        "Too late. Always too late."
+      ],
+      "criticalGoal": [
+        "Too late. Always too late."
+      ],
+      "miss": [
+        "Hm. Imprecise."
+      ],
+      "defend": [
+        "You thought you'd outrun me?"
+      ],
+      "passFail": [
+        "My error."
+      ],
+      "flow": [
+        "Now I'll show you real speed."
+      ],
+      "godspeed": [
+        "Watch closely. You won't see it twice."
+      ],
+      "godspeedWin": [
+        "Already gone."
+      ],
+      "godspeedFail": [
+        "...Impressive."
+      ],
+      "concede": [
+        "Calm. We answer."
+      ],
+      "fouled": [
+        "Only a foul can stop me?"
+      ],
+      "foul": [
+        "Forgive me."
+      ],
+      "offside": [
+        "A step too eager."
+      ],
+      "save": [
+        "Hm."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/gen-fukaku/player.js
@@ -6318,7 +7403,7 @@ const PLAYER_70_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will find my place."
+        "I'll find my spot."
       ],
       "pass": [
         "Here is the opening."
@@ -6333,7 +7418,7 @@ const PLAYER_70_DATA = {
         "Too far from my feet."
       ],
       "goal": [
-        "That was the chance.",
+        "There it is!",
         "One opening was enough."
       ],
       "miss": [
@@ -6729,7 +7814,253 @@ const PLAYER_91_DATA = {"id":91,"name":"Akira Endoji","debutChapter":93,"appeara
 
 // js/players/yukio-ishikari/player.js
 // Yukio Ishikari: append-only ID; individual attributes are project estimates.
-const PLAYER_92_DATA = {"id":92,"name":"Yukio Ishikari","debutChapter":1,"appearanceOrder":92,"image":"images/yukio-ishikari.webp","primaryPosition":"FW","positions":["FW"],"statEstimate":true,"nationality":{"code":"JP","name":"Japan","basis":"national-team-representation","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yukio_Ishikari","note":"Explicit Japanese selection eligibility or France U-20 representation; not inferred from club or appearance."}},"weapons":[{"id":"aerial-reach","name":"Aerial Reach","description":"Uses his height and vertical leap to meet high passes, intercept aerial balls and connect with teammates through headers.","category":"physical","source":{"type":"canon-reference","url":"https://bluelock.fandom.com/wiki/Yukio_Ishikari","note":"Aerial interception and headed combination with Aryu in the Third Selection.","chapter":105}}],"stats":{"ovr":72,"off":79,"sho":78,"pas":69,"dri":64,"spd":64,"def":62,"gk":35},"teamHistory":[{"name":"Nobiiru High School","members":["Yukio Ishikari"],"description":"Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."},{"name":"Blue Lock — 5th Clear Team","members":["Yukio Ishikari","Ikki Niko","Yo Hiori","Jyubei Aryu"],"description":"Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."},{"name":"Team A","members":["Yukio Ishikari","Rin Itoshi","Ryusei Shido","Jyubei Aryu","Reiji Hiiragi"],"description":"Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."},{"name":"Blue Lock Eleven","members":["Yukio Ishikari"],"description":"Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."},{"name":"Ubers","members":["Yukio Ishikari","Shoei Baro","Oliver Aiku","Jyubei Aryu","Ikki Niko","Shuto Sendo","Gen Fukaku","Don Lorenzo","Marc Snuffy"],"description":"Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."}],"jerseyNumber":13};
+const PLAYER_92_DATA = {
+  "id": 92,
+  "name": "Yukio Ishikari",
+  "debutChapter": 1,
+  "appearanceOrder": 92,
+  "image": "images/yukio-ishikari.webp",
+  "primaryPosition": "FW",
+  "positions": [
+    "FW"
+  ],
+  "statEstimate": true,
+  "nationality": {
+    "code": "JP",
+    "name": "Japan",
+    "basis": "national-team-representation",
+    "source": {
+      "type": "canon-reference",
+      "url": "https://bluelock.fandom.com/wiki/Yukio_Ishikari",
+      "note": "Explicit Japanese selection eligibility or France U-20 representation; not inferred from club or appearance."
+    }
+  },
+  "weapons": [
+    {
+      "id": "aerial-reach",
+      "name": "Aerial Reach",
+      "description": "Uses his height and vertical leap to meet high passes, intercept aerial balls and connect with teammates through headers.",
+      "category": "physical",
+      "source": {
+        "type": "canon-reference",
+        "url": "https://bluelock.fandom.com/wiki/Yukio_Ishikari",
+        "note": "Aerial interception and headed combination with Aryu in the Third Selection.",
+        "chapter": 105
+      },
+      "battleSimType": "Passive",
+      "battleSimDescription": "Ishikari's height and leap let him reach high balls about half a metre further than most players and react to them sooner, so teammates look for him with high balls. A defender can still get there first."
+    }
+  ],
+  "stats": {
+    "ovr": 72,
+    "off": 79,
+    "sho": 78,
+    "pas": 69,
+    "dri": 64,
+    "spd": 64,
+    "def": 62,
+    "gk": 35
+  },
+  "teamHistory": [
+    {
+      "name": "Nobiiru High School",
+      "members": [
+        "Yukio Ishikari"
+      ],
+      "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
+    },
+    {
+      "name": "Blue Lock — 5th Clear Team",
+      "members": [
+        "Yukio Ishikari",
+        "Ikki Niko",
+        "Yo Hiori",
+        "Jyubei Aryu"
+      ],
+      "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
+    },
+    {
+      "name": "Team A",
+      "members": [
+        "Yukio Ishikari",
+        "Rin Itoshi",
+        "Ryusei Shido",
+        "Jyubei Aryu",
+        "Reiji Hiiragi"
+      ],
+      "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
+    },
+    {
+      "name": "Blue Lock Eleven",
+      "members": [
+        "Yukio Ishikari"
+      ],
+      "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
+    },
+    {
+      "name": "Ubers",
+      "members": [
+        "Yukio Ishikari",
+        "Shoei Baro",
+        "Oliver Aiku",
+        "Jyubei Aryu",
+        "Ikki Niko",
+        "Shuto Sendo",
+        "Gen Fukaku",
+        "Don Lorenzo",
+        "Marc Snuffy"
+      ],
+      "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
+    }
+  ],
+  "jerseyNumber": 13,
+  "battleSim": {
+    "awareness": {
+      "anticipation": 0.04
+    },
+    "tendencies": {},
+    "passives": [
+      {
+        "id": "towering-reach",
+        "name": "Towering Reach",
+        "label": "TOWERING REACH",
+        "effect": "aerial-reach",
+        "params": {
+          "reach": 0.45,
+          "reaction": 0.15,
+          "supplyValue": 0.003
+        },
+        "description": "Ishikari's height and leap let him reach high balls about half a metre further than most players and react to them sooner, so teammates look for him with high balls. A defender can still get there first.",
+        "interpretation": false
+      },
+      {
+        "id": "aerial-positioning",
+        "name": "Aerial Positioning",
+        "label": "AERIAL POSITIONING",
+        "effect": "aerial-positioning",
+        "params": {
+          "reaction": 0.1
+        },
+        "description": "He reads where a high ball will drop and moves under it early, so he starts aerial races sooner. A badly judged flight still beats him.",
+        "interpretation": true
+      },
+      {
+        "id": "aerial-determination",
+        "name": "Aerial Determination",
+        "label": "AERIAL DETERMINATION",
+        "effect": "flow-state",
+        "dialogue": "flow",
+        "params": {
+          "boost": {
+            "aerial-reach": {
+              "reach": 0.6
+            },
+            "high-point-interception": {
+              "challenge": 0.55
+            }
+          }
+        },
+        "description": "Ishikari's Flow. In Flow he reaches even higher balls and fights harder for headers. He can still lose them.",
+        "interpretation": true
+      }
+    ],
+    "weapons": [
+      {
+        "id": "high-point-interception",
+        "name": "High-Point Interception",
+        "label": "HIGH-POINT INTERCEPTION",
+        "effect": "high-point-interception",
+        "params": {
+          "cooldownTicks": 8,
+          "reach": 0.3,
+          "challenge": 0.4
+        },
+        "description": "When an opponent's high ball comes near him, Ishikari jumps to meet it at its highest point, with extra reach and a stronger challenge. If he wins it, his team has the ball. He can still be beaten to it. Cooldown: 8 ticks.",
+        "interpretation": false,
+        "dialogue": "aerial"
+      },
+      {
+        "id": "headed-link-up",
+        "name": "Headed Link-Up",
+        "label": "HEADED LINK-UP",
+        "effect": "headed-link-up",
+        "params": {
+          "cooldownTicks": 9,
+          "maxMetres": 15,
+          "minSuccess": 0.4,
+          "value": 0.016
+        },
+        "description": "Right after winning a high ball, Ishikari can head it straight on to a teammate 4–15 m away instead of controlling it. It is a normal pass: it can be misdirected or intercepted. Cooldown: 9 ticks.",
+        "interpretation": false,
+        "dialogue": "header"
+      }
+    ],
+    "ultimates": [],
+    "reactions": [],
+    "dialogue": {
+      "kickoff": [
+        "Let's go."
+      ],
+      "pass": [
+        "Here."
+      ],
+      "receive": [
+        "Got it."
+      ],
+      "support": [
+        "Up here!"
+      ],
+      "aerial": [
+        "Mine!"
+      ],
+      "header": [
+        "Go!"
+      ],
+      "goal": [
+        "Yes!"
+      ],
+      "criticalGoal": [
+        "Yes!"
+      ],
+      "miss": [
+        "Damn."
+      ],
+      "dribble": [
+        "Move!"
+      ],
+      "dribbleFail": [
+        "Tch."
+      ],
+      "shot-attempt": [
+        "Come on!"
+      ],
+      "defend": [
+        "Got it!"
+      ],
+      "passFail": [
+        "Sorry."
+      ],
+      "flow": [
+        "Not losing in the air."
+      ],
+      "concede": [
+        "Focus."
+      ],
+      "fouled": [
+        "Hey!"
+      ],
+      "foul": [
+        "Sorry."
+      ],
+      "offside": [
+        "Ah."
+      ],
+      "save": [
+        "Close."
+      ]
+    }
+  }
+};
 ;
 
 // js/players/birkenstock/player.js

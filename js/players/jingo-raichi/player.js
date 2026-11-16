@@ -231,11 +231,11 @@ const PLAYER_9_DATA = {
         "Come on! I'll chase you all game!"
       ],
       "kickoff": [
-        "Do not get in my way!"
+        "Don't get in my way!"
       ],
       "pass": [
         "Move! Take it!",
-        "Do not waste my pass!"
+        "Don't waste my pass!"
       ],
       "receive": [
         "About time!"
@@ -254,7 +254,7 @@ const PLAYER_9_DATA = {
       ],
       "defend": [
         "HAH! You thought you'd get past me?!",
-        "You are going nowhere!"
+        "You're going nowhere!"
       ],
       "concede": [
         "Get back in position!"
@@ -269,7 +269,7 @@ const PLAYER_9_DATA = {
         "What?! I was going for the ball!"
       ],
       "save": [
-        "You are going nowhere!"
+        "You're going nowhere!"
       ],
       "fouled": [
         "Oi! Play the ball, then!"

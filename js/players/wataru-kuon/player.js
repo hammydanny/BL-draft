@@ -114,7 +114,7 @@ const PLAYER_12_DATA = {
         "That delivery works."
       ],
       "dribble": [
-        "I have a route through."
+        "There's a way through."
       ],
       "dribbleFail": [
         "I misjudged the challenge."

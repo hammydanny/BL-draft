@@ -2,104 +2,113 @@
   {
     "seed": 7,
     "score": {
-      "1": 2,
+      "1": 4,
       "2": 5
     },
     "shots": [
-      8,
-      15
+      12,
+      13
     ],
-    "completedLoftedPassesToNagi": 5,
+    "completedLoftedPassesToNagi": 22,
     "flowActivations": {
-      "14": 1,
+      "1": 1,
       "15": 2,
       "23": 1
     },
     "abilities": {
-      "planet-hotline": 14,
-      "orbital-recovery": 2,
-      "sae-precision-distribution": 7,
-      "precision-distribution": 17,
-      "middle-range-shot": 13,
-      "short-pass-awareness": 11,
-      "rapid-one-two": 1,
+      "planet-hotline": 12,
+      "perfect-trapping": 13,
+      "precision-distribution": 10,
       "precision-curve-shot": 1,
-      "field-control": 2,
-      "metavision": 1,
-      "high-point-clearance": 2,
-      "beautiful-destruction": 1,
+      "short-pass-awareness": 7,
+      "middle-range-shot": 11,
+      "field-control": 8,
+      "predator-eye": 3,
+      "sae-precision-distribution": 9,
       "villainous-king": 2,
+      "rapid-one-two": 2,
+      "predator-eye-blindside-execution": 1,
+      "orbital-recovery": 1,
+      "power-shield": 1,
+      "metavision": 1,
       "destructive-impulse": 1,
-      "predator-eye-blindside-execution": 1
+      "left-footed-direct-shot": 1,
+      "puzzle-completion": 1
     },
     "reactions": {}
   },
   {
     "seed": 29,
     "score": {
-      "1": 3,
+      "1": 1,
       "2": 1
     },
     "shots": [
-      16,
-      6
+      8,
+      8
     ],
-    "completedLoftedPassesToNagi": 11,
+    "completedLoftedPassesToNagi": 7,
     "flowActivations": {
-      "15": 1,
-      "21": 1
+      "15": 2
     },
     "abilities": {
       "precision-curve-shot": 1,
       "orbital-recovery": 3,
-      "middle-range-shot": 10,
-      "precision-distribution": 14,
-      "planet-hotline": 13,
-      "sae-precision-distribution": 11,
-      "predator-eye": 2,
-      "villainous-king": 1,
-      "short-pass-awareness": 7,
+      "middle-range-shot": 7,
+      "precision-distribution": 16,
+      "perfect-trapping": 9,
+      "sae-precision-distribution": 14,
+      "field-control": 2,
       "rapid-one-two": 3,
-      "sae-spatial-awareness": 1,
-      "genius-awakening": 1,
-      "direct-shot": 1,
-      "metavision": 1,
-      "reo-metavision": 1
+      "planet-hotline": 7,
+      "short-pass-awareness": 8,
+      "left-footed-direct-shot": 2,
+      "reo-metavision": 1,
+      "predator-eye": 1,
+      "villainous-king": 2,
+      "stylish-coverage": 1,
+      "predator-eye-blindside-execution": 1
     },
-    "reactions": {}
+    "reactions": {
+      "reflexive-synchronization": 1
+    }
   },
   {
     "seed": 71,
     "score": {
-      "1": 0,
+      "1": 2,
       "2": 2
     },
     "shots": [
-      8,
-      10
+      10,
+      12
     ],
-    "completedLoftedPassesToNagi": 12,
+    "completedLoftedPassesToNagi": 9,
     "flowActivations": {
+      "15": 2,
       "23": 1
     },
     "abilities": {
-      "planet-hotline": 18,
-      "precision-distribution": 17,
-      "sae-precision-distribution": 8,
+      "perfect-trapping": 14,
+      "rapid-one-two": 8,
+      "planet-hotline": 12,
       "short-pass-awareness": 10,
-      "rapid-one-two": 5,
-      "metavision": 1,
-      "middle-range-shot": 5,
-      "high-point-clearance": 2,
-      "precision-curve-shot": 2,
-      "field-control": 4,
-      "power-shield": 1,
-      "predator-eye": 1,
-      "sae-spatial-awareness": 1,
-      "destructive-impulse": 1,
+      "precision-distribution": 12,
+      "sae-precision-distribution": 8,
+      "middle-range-shot": 10,
+      "predator-eye": 4,
+      "orbital-recovery": 2,
       "left-footed-direct-shot": 1,
-      "puppeteers-endgame": 1
+      "power-shield": 1,
+      "direct-shot": 1,
+      "high-point-clearance": 2,
+      "precision-curve-shot": 1,
+      "field-control": 1,
+      "villainous-king": 2,
+      "destructive-impulse": 1
     },
-    "reactions": {}
+    "reactions": {
+      "reflexive-synchronization": 1
+    }
   }
 ]

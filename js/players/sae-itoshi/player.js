@@ -213,22 +213,49 @@ const PLAYER_14_DATA = {
         "description": "In Flow, when a defender steps in to tackle him, Sae cuts away and, only if that works, instantly passes or shoots through the opening. The defender can win the ball first, and the release can be blocked or intercepted. Once per Flow."
       }
     ],
-    "reactions": [],
+    "reactions": [
+      {
+        "id": "reflex-x-reflex",
+        "name": "Reflex × Reflex",
+        "label": "REFLEX × REFLEX",
+        "members": [
+          14,
+          31
+        ],
+        "effect": "reflex-cross",
+        "cooldownTicks": 12,
+        "dialogue": "reflex",
+        "interpretation": true,
+        "params": {
+          "passerMetres": 48,
+          "strikerMetres": 32,
+          "openMetres": 2.5,
+          "spotMetres": 7,
+          "precision": 0.45,
+          "accuracy": 0.06,
+          "minSuccess": 0.3,
+          "value": 0.012,
+          "technique": -0.02,
+          "relief": 1.4
+        },
+        "description": "With Shidou on the pitch: while Sae has the ball within 48 m of goal, Shidou sprints for an open spot near goal he can reach, and Sae can answer the run with an exactly weighted ball. Shidou then tries an acrobatic first-time finish. Offside, interceptions, blocks and saves all still apply. Shared cooldown: 12 ticks."
+      }
+    ],
     "dialogue": {
       "pass": [
         "Use it."
       ],
       "receive": [
-        "Use it."
+        "Fine."
       ],
       "dribble": [
         "Too slow."
       ],
       "shot-attempt": [
-        "Too slow."
+        "There."
       ],
       "goal": [
-        "That is the difference."
+        "That's the difference."
       ],
       "miss": [
         "A careless touch."
@@ -246,19 +273,19 @@ const PLAYER_14_DATA = {
         "Show me something worthwhile."
       ],
       "support": [
-        "Use it."
+        "Here."
       ],
       "kickoff": [
         "Show me something worthwhile."
       ],
       "foul": [
-        "A careless touch."
+        "Careless of me."
       ],
       "fouled": [
-        "Too slow."
+        "Cheap."
       ],
       "offside": [
-        "A careless touch."
+        "Hm."
       ],
       "thread": [
         "Run. The ball is already there.",
@@ -269,6 +296,10 @@ const PLAYER_14_DATA = {
       ],
       "releaseFail": [
         "...Sloppy."
+      ],
+      "reflex": [
+        "Shidou. There.",
+        "Fine. Go."
       ]
     }
   }

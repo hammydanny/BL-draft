@@ -8,7 +8,7 @@ const {createModeTestContext}=require('./game-modes-tests.js');
 const root=path.resolve(__dirname,'..'),IDS=[1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18];
 function setup(stars,source,contextFactory=battleContext){
  const h=contextFactory(source),b=h.bs;b.quiet();
- const pool=h.run('players.filter(p=>!p.secretCharacter&&![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
+ const pool=h.run('players.filter(p=>!p.secretCharacter&&!p.battleSim&&![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,70,26,27,31,49].includes(Number(p.id))).map(p=>p.id)');
  const configs=[1,2].map(n=>{const ids=n===1?stars.concat(pool.slice(0,14-stars.length)):pool.slice(18,32),a=positionalAssignment(h,'4-4-2',ids,n);
   if(n===1){const preferences={1:['ST'],2:['ST'],3:['ST'],4:['RM','LM'],5:['RB','LB'],6:['ST'],7:['LM','RM'],8:['CB'],9:['CM'],10:['ST'],11:['CM'],12:['ST'],13:['LM','RM'],16:['CB'],17:['ST'],18:['RM','LM'],19:['CM'],27:['CM']};const slots=h.run('FORMATIONS["4-4-2"]'),chosen=new Set();for(const id of stars){let slot=slots.findIndex((s,i)=>i>0&&!chosen.has(i)&&(preferences[id]||['ST','CM','CB']).includes(s.label));if(slot<0)slot=slots.findIndex((s,i)=>i>0&&!chosen.has(i));chosen.add(slot);const old=Object.keys(a).find(k=>Number(a[k])===id);if(old!=null){const swap=a[slot];a[old]=swap;}a[slot]=id;}}
   return h.run(`bs.normalizeTeam({name:'Test ${n}',formation:'4-4-2',roster:[blueLockManFor(${n}),...${JSON.stringify(ids)}.map(playerById)],assignment:${JSON.stringify(a)},strategy:{tempo:55,directness:55,pressing:50,line:50,width:50}},${n})`);});

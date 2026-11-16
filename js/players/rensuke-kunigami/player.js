@@ -245,7 +245,7 @@ const PLAYER_6_DATA = {
         "I came back for this."
       ],
       "miss": [
-        "I have to finish those.",
+        "Damn! I have to finish those.",
         "Not enough. Hit it harder."
       ],
       "defend": [
@@ -258,7 +258,7 @@ const PLAYER_6_DATA = {
         "Isagi, I'll finish what you start!"
       ],
       "dribble": [
-        "I am going through.",
+        "I'm going straight through!",
         "Bounce off."
       ],
       "rival": [
@@ -275,7 +275,7 @@ const PLAYER_6_DATA = {
         "Keep pushing forward."
       ],
       "receive": [
-        "I have it."
+        "Got it."
       ],
       "dribbleFail": [
         "I lost that duel."
@@ -296,7 +296,7 @@ const PLAYER_6_DATA = {
         "Fine. Call the foul."
       ],
       "save": [
-        "You are not getting through."
+        "You're not getting through."
       ],
       "fouled": [
         "Get off me."

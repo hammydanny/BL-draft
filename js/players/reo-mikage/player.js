@@ -102,10 +102,11 @@ const PLAYER_20_DATA = {
         "name": "Chameleon",
         "label": "CHAMELEON",
         "effect": "observed-technique",
-        "description": "Remembers up to three observed public technical moves. Uses a weaker imitation only when its normal physical conditions are met; never copies stats, physiques, keepers, reactions, Flow or ultimates.",
+        "description": "Reo remembers up to three technical moves he has seen other players perform within his scanning range (never physical gifts such as speed, power or height, nor goalkeeping, Flow states or ultimates) and can use a slightly weaker version of them with his own ratings. Each copy needs an 8-tick reset, and making someone else's move work feeds his Flow.",
         "params": {
           "capacity": 3,
-          "cooldownTicks": 8
+          "cooldownTicks": 8,
+          "flowPoints": 0.08
         },
         "interpretation": true
       },
@@ -164,14 +165,14 @@ const PLAYER_20_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will find what this team needs."
+        "Let's see what this team needs."
       ],
       "pass": [
         "I can put it there.",
         "Use that space."
       ],
       "receive": [
-        "I have options."
+        "Plenty of options."
       ],
       "dribble": [
         "I can reproduce that touch."
@@ -180,7 +181,7 @@ const PLAYER_20_DATA = {
         "The timing was different."
       ],
       "goal": [
-        "That is one way to win.",
+        "That's one way to win.",
         "I can make this team win."
       ],
       "miss": [
@@ -196,7 +197,7 @@ const PLAYER_20_DATA = {
         "I can connect all of this."
       ],
       "copy": [
-        "I have seen that move."
+        "Seen it. Now it's mine."
       ],
       "shot-attempt": [
         "This is the opening."

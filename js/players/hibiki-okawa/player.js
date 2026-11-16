@@ -149,10 +149,10 @@ const PLAYER_17_DATA = {
       ],
       "goal": [
         "That's your ace! Remember it!",
-        "That is the finish I wanted!"
+        "That's the finish I wanted!"
       ],
       "miss": [
-        "I should score from there."
+        "Damn, I should've buried that."
       ],
       "defend": [
         "I'll win it myself, then!"
@@ -173,7 +173,7 @@ const PLAYER_17_DATA = {
         "Tch. Fine, it was a foul."
       ],
       "save": [
-        "I will take that ball."
+        "That ball's mine."
       ],
       "fouled": [
         "You stopped a scoring chance there!"
@@ -182,7 +182,7 @@ const PLAYER_17_DATA = {
         "Wait, I was offside there?"
       ],
       "criticalGoal": [
-        "That is the finish I wanted!"
+        "That's the finish I wanted!"
       ]
     }
   }

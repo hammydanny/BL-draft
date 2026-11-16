@@ -131,7 +131,7 @@ const PLAYER_10_DATA = {
         "That one's for my family!"
       ],
       "miss": [
-        "I have to do better.",
+        "Damn, so close!",
         "Why can't I finish it?!",
         "I got there... and wasted it."
       ],
@@ -139,11 +139,11 @@ const PLAYER_10_DATA = {
         "Look at me! I'm still in this!"
       ],
       "kickoff": [
-        "I have to make this count."
+        "Gotta make this count."
       ],
       "pass": [
-        "Go, I will follow.",
-        "I will keep up with you."
+        "Go! I'm right behind you.",
+        "I'll keep up!"
       ],
       "receive": [
         "I can work with this."
@@ -152,10 +152,10 @@ const PLAYER_10_DATA = {
         "Just one opening."
       ],
       "dribbleFail": [
-        "I have to try again."
+        "Again. One more time."
       ],
       "shot-attempt": [
-        "Come on... I have to score this!"
+        "Come on... come on!"
       ],
       "defend": [
         "I'm not letting you have it!"
@@ -164,7 +164,7 @@ const PLAYER_10_DATA = {
         "Keep going. We still have a chance."
       ],
       "support": [
-        "Go, I will follow."
+        "Go! I'm right behind you."
       ],
       "passFail": [
         "No, that was my chance to help!"
@@ -173,7 +173,7 @@ const PLAYER_10_DATA = {
         "I couldn't stop in time..."
       ],
       "save": [
-        "I will fight for this ball."
+        "This ball's mine!"
       ],
       "fouled": [
         "Hey, I was still going!"

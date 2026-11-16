@@ -126,11 +126,17 @@ const PLAYER_15_DATA = {
         "name": "Villainous King",
         "label": "VILLAINOUS KING",
         "effect": "flow-state",
-        "description": "In Flow, attacks openings directly and sharpens his reading of the goalkeeper. Defenders can recover.",
+        "description": "Barou's Flow. In Flow he reads space and the keeper sooner, shoots from chances of about 7.5% or better and attacks defenders more directly. He can still be blocked or tackled.",
         "params": {
           "awareness": {
             "space": 0.08,
             "anticipation": 0.12
+          },
+          "boost": {
+            "goal-hunger": {
+              "realistic": 0.075,
+              "duel": 0.005
+            }
           }
         },
         "interpretation": true
@@ -211,10 +217,12 @@ const PLAYER_15_DATA = {
     "reactions": [],
     "dialogue": {
       "pass": [
-        "Give me the ball!"
+        "Fine. Take it.",
+        "Don't waste that."
       ],
       "receive": [
-        "Give me the ball!"
+        "Finally.",
+        "About time."
       ],
       "dribble": [
         "Get out of my way!"
@@ -232,10 +240,10 @@ const PLAYER_15_DATA = {
         "Tch. Next one is mine."
       ],
       "passFail": [
-        "Tch. Next one is mine."
+        "Tch."
       ],
       "defend": [
-        "You are not getting through!"
+        "You're not getting through!"
       ],
       "flow": [
         "This field belongs to me!"
@@ -247,13 +255,13 @@ const PLAYER_15_DATA = {
         "This field belongs to me!"
       ],
       "foul": [
-        "Tch. Next one is mine."
+        "Out of my way."
       ],
       "fouled": [
-        "Get out of my way!"
+        "Is that all you've got?!"
       ],
       "offside": [
-        "Tch. Next one is mine."
+        "Tch. Blind linesman."
       ],
       "devour": [
         "Draw them in. The goal is mine.",

@@ -139,7 +139,7 @@ const PLAYER_5_DATA = {
       ],
       "goal": [
         "I SCORED?! Yes! I actually scored!",
-        "I am still in this!",
+        "I'm still in this! YES!!",
         "Did everyone see?! I scored!"
       ],
       "miss": [
@@ -154,10 +154,10 @@ const PLAYER_5_DATA = {
       ],
       "pass": [
         "Take it, quick!",
-        "Do not lose it!"
+        "Don't lose it!"
       ],
       "receive": [
-        "Okay, okay, I have it!"
+        "Okay, okay, I've got it!"
       ],
       "dribble": [
         "Just let me through!"

@@ -88,10 +88,12 @@ const PLAYER_21_DATA = {
         "name": "Perfect Trapping",
         "label": "PERFECT TRAPPING",
         "effect": "perfect-trap",
-        "description": "Improves control of reachable ground and aerial deliveries. After controlling a high or long ball he is readier to shoot straight away. Defenders can intercept before he receives.",
+        "description": "When a lofted, long or threaded pass reaches Nagi, or a marker is within 3.5 m, his first touch kills the ball and steers it about 2 m into the open side, toward goal. Teammates trust him with high balls, and after the touch he is readier to shoot. With no open side the ball just stops at his feet, and defenders can still intercept before it arrives.",
         "params": {
           "control": 7,
-          "improvise": 0.004
+          "improvise": 0.004,
+          "touchMetres": 2,
+          "supplyValue": 0.004
         },
         "interpretation": true
       },
@@ -100,11 +102,17 @@ const PLAYER_21_DATA = {
         "name": "Genius Awakening",
         "label": "GENIUS AWAKENING",
         "effect": "flow-state",
-        "description": "In Flow, improvises better touches and finishing opportunities. Unreachable balls stay unreachable.",
+        "description": "Nagi's Flow. In Flow his first touch carries the ball a little further into space and he improvises more finishing chances. Unreachable balls stay unreachable.",
         "params": {
           "awareness": {
             "space": 0.05,
             "anticipation": 0.08
+          },
+          "boost": {
+            "perfect-trap": {
+              "control": 8,
+              "touchMetres": 2.4
+            }
           }
         },
         "interpretation": true
@@ -142,10 +150,10 @@ const PLAYER_21_DATA = {
         "name": "Five-Shot Revolver Fake Volley",
         "label": "FIVE-SHOT REVOLVER FAKE VOLLEY",
         "effect": "revolver-finish",
-        "description": "In Flow, after an airborne pass within 14 m of goal with two defenders within 5 m, Nagi attempts a chain of fake volleys before shooting. Any feint can be stopped and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
+        "description": "In Flow, when Nagi meets an airborne pass within 16 m of goal with two defenders within 6 m, he chains fake volleys to send a closing defender the wrong way before shooting. Any feint can be read, and the keeper can still save. Passes from Reo make the disguise slightly better. Once per Flow.",
         "params": {
-          "maxMetres": 14,
-          "pressureMetres": 5,
+          "maxMetres": 16,
+          "pressureMetres": 6,
           "defenders": 2
         },
         "interpretation": true,
@@ -177,13 +185,13 @@ const PLAYER_21_DATA = {
         "There. Take it."
       ],
       "receive": [
-        "There. Take it."
+        "Got it... I guess."
       ],
       "dribble": [
         "What a pain."
       ],
       "shot-attempt": [
-        "What a pain."
+        "Eh, let's just shoot."
       ],
       "goal": [
         "That was kind of fun."
@@ -204,19 +212,19 @@ const PLAYER_21_DATA = {
         "Okay. Now I want to win."
       ],
       "support": [
-        "There. Take it."
+        "Over here... I guess."
       ],
       "kickoff": [
         "Okay. Now I want to win."
       ],
       "foul": [
-        "Ah... messed that up."
+        "Oops."
       ],
       "fouled": [
-        "What a pain."
+        "Ow... what a pain."
       ],
       "offside": [
-        "Ah... messed that up."
+        "Huh? Offside? Annoying."
       ],
       "partnership": [
         "Reo. Right there."
@@ -224,6 +232,10 @@ const PLAYER_21_DATA = {
       "revolver": [
         "Huh... this is actually fun.",
         "Five shots. Guess which one's real."
+      ],
+      "trap": [
+        "Easy.",
+        "Stopped it. Now what..."
       ]
     }
   }

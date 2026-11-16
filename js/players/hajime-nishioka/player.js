@@ -82,7 +82,7 @@ const PLAYER_70_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will find my place."
+        "I'll find my spot."
       ],
       "pass": [
         "Here is the opening."
@@ -97,7 +97,7 @@ const PLAYER_70_DATA = {
         "Too far from my feet."
       ],
       "goal": [
-        "That was the chance.",
+        "There it is!",
         "One opening was enough."
       ],
       "miss": [

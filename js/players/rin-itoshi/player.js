@@ -219,46 +219,46 @@ const PLAYER_23_DATA = {
         "Keep up."
       ],
       "receive": [
-        "Keep up."
+        "...Fine."
       ],
       "dribble": [
-        "Move. I am breaking through."
+        "Move. I'm breaking through."
       ],
       "shot-attempt": [
-        "Move. I am breaking through."
+        "Move. I'm breaking through."
       ],
       "goal": [
-        "That is all you have?"
+        "That's all you've got?"
       ],
       "miss": [
-        "I will crush you next time."
+        "Next time, I crush you."
       ],
       "dribbleFail": [
-        "I will crush you next time."
+        "Next time, I crush you."
       ],
       "passFail": [
-        "I will crush you next time."
+        "Tch. Sloppy."
       ],
       "defend": [
         "I read that."
       ],
       "flow": [
-        "I will destroy you myself."
+        "I'll destroy you myself."
       ],
       "support": [
-        "Keep up."
+        "Here."
       ],
       "kickoff": [
-        "I will destroy you myself."
+        "I'll destroy you myself."
       ],
       "foul": [
-        "I will crush you next time."
+        "You were in my way."
       ],
       "fouled": [
-        "Move. I am breaking through."
+        "Pathetic."
       ],
       "offside": [
-        "I will crush you next time."
+        "Tch."
       ],
       "rival": [
         "Sae. Watch me break through."

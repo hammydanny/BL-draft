@@ -98,7 +98,7 @@ const PLAYER_19_DATA = {
         "We need another angle."
       ],
       "goal": [
-        "That is how we combine!",
+        "That's how we combine!",
         "You saw that, brother!"
       ],
       "miss": [
@@ -114,7 +114,7 @@ const PLAYER_19_DATA = {
         "I know where he will move."
       ],
       "shot-attempt": [
-        "I have the angle."
+        "I've got the angle."
       ],
       "criticalGoal": [
         "You saw that, brother!"

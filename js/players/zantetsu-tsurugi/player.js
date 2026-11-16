@@ -147,7 +147,7 @@ const PLAYER_22_DATA = {
     "reactions": [],
     "dialogue": {
       "kickoff": [
-        "I will get there first."
+        "I'll get there first."
       ],
       "pass": [
         "Go on, ahead of me."
@@ -163,7 +163,7 @@ const PLAYER_22_DATA = {
       ],
       "goal": [
         "My left foot has the answer.",
-        "Fast enough. That is the word."
+        "Fast enough. That's the word."
       ],
       "miss": [
         "That angle was too acute... or obtuse."
@@ -181,13 +181,13 @@ const PLAYER_22_DATA = {
         "Across the goal."
       ],
       "criticalGoal": [
-        "Fast enough. That is the word."
+        "Fast enough. That's the word."
       ],
       "foul": [
         "I arrived too quickly."
       ],
       "fouled": [
-        "You cannot just trip me!"
+        "You can't just trip me!"
       ],
       "offside": [
         "Too much acceleration. Bad timing."

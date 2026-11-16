@@ -114,10 +114,10 @@ const PLAYER_2_DATA = {
       ],
       "goal": [
         "There! That's what I can do!",
-        "That is what I came to do!"
+        "That's what I came here to do!"
       ],
       "miss": [
-        "I should have placed that better.",
+        "Ugh, should've placed it better.",
         "Not good enough. Again.",
         "I had that one..."
       ],
@@ -132,7 +132,7 @@ const PLAYER_2_DATA = {
       ],
       "pass": [
         "Here, keep it moving.",
-        "I am backing you."
+        "I've got your back!"
       ],
       "receive": [
         "Thank you. My turn."
@@ -153,13 +153,13 @@ const PLAYER_2_DATA = {
         "We can still recover."
       ],
       "passFail": [
-        "That should have reached you..."
+        "That should've reached you..."
       ],
       "foul": [
         "All right, that's my foul."
       ],
       "save": [
-        "I am not giving this away."
+        "Not giving this away!"
       ],
       "fouled": [
         "Referee, he stopped me!"
@@ -168,7 +168,7 @@ const PLAYER_2_DATA = {
         "Offside? I went too soon."
       ],
       "criticalGoal": [
-        "That is what I came to do!"
+        "That's what I came here to do!"
       ]
     }
   }

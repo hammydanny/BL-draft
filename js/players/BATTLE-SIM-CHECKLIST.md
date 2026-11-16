@@ -43,11 +43,11 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Ryusei Shido (31) | [ ] | [ ] | [ ] |
 | Nijiro Nanase (32) | [ ] | [ ] | [ ] |
 | Jin Kiyora (33) | [ ] | [ ] | [ ] |
-| Leonardo Luna (34) | [ ] | [ ] | [ ] |
-| Pablo Cavasoz (35) | [ ] | [ ] | [ ] |
-| Adam Blake (36) | [ ] | [ ] | [ ] |
-| Dada Silva (37) | [ ] | [ ] | [ ] |
-| Julien Loki (38) | [ ] | [ ] | [ ] |
+| Leonardo Luna (34) | [x] | [x] | [x] |
+| Pablo Cavasoz (35) | [x] | [x] | [x] |
+| Adam Blake (36) | [x] | [x] | [x] |
+| Dada Silva (37) | [x] | [x] | [x] |
+| Julien Loki (38) | [x] | [x] | [x] |
 | Gen Fukaku (39) | [ ] | [ ] | [ ] |
 | Oliver Aiku (40) | [ ] | [ ] | [ ] |
 | Kazuma Nio (41) | [ ] | [ ] | [ ] |
@@ -91,6 +91,7 @@ v0.8.9.1: Kira, Noa, Bachira, Igarashi and Kunigami are checked because each kit
 | Aiki Himizu (79) | [ ] | [ ] | [ ] |
 | John Paccini (80) | [ ] | [ ] | [ ] |
 | Zaruchi (81) | [ ] | [ ] | [ ] |
+| Yukio Ishikari (92) | [x] | [x] | [x] |
 
 ## Isagi implementation reference
 
@@ -121,3 +122,11 @@ Sae (14), Barou (15), Nagi (21), Rin (23), and Kurona (26) have physical, fallib
 ## 0.8.9.8.11 character identity batch
 
 Thirteen completed public characters gain effect-keyed, once-per-Flow ultimates with dedicated engine handlers (never the legacy `activateBattleSimUltimate` path): Barou (Devour: Villain's Shadow, Predator Eye: Blindside Execution), Rin (Puppeteer's Endgame, Destroyer: Collision Course, Spin Gear Shot), Sae (Beautiful Destruction: Perfect Thread, Counter-Dribble: Deadly Release), Reo (Chameleon: Evolution), Bachira (Monster's Dance), Chigiri (Red Panther: 44° Breakthrough), Noa (Ambidextrous Checkmate), Kunigami (Wild Card: Power Finish), Gagamaru (Beast Reflex), Niko (Watchtower Checkmate), Raichi (Relentless Lockdown), Zantetsu (Lightning Start) and Aryu (Glamorous Last Reach). Nagi's Five-Shot Revolver is refined, not duplicated. Kurona gains the Orbital Recovery special and shares Ace Neutralization with Raichi (one definition in Raichi's kit, listed in both dossiers). Tokimitsu, Kira, Igarashi, Naruhaya, Iemon, Kuon, Imamura, Okawa, the Wanima twins and Nishioka intentionally receive no ultimate. Every ultimate is offered to tactical selection or a physical trigger, resolves through the shared pass/dribble/shot/race models, can fail, records attempts/successes, saves/loads and has localized dialogue. See `docs/release-v0.8.9.8.11.md` and `docs/character-identity-metrics.json`; `scripts/battle-v89811-tests.js` covers triggers, failures, allowances, saves and determinism.
+
+## 0.8.9.8.12 ability activation, World Five and Ishikari
+
+Leonardo Luna, Pablo Cavasoz, Adam Blake, Dada Silva, Julien Loki and Yukio Ishikari now have complete kits with engine handlers, fallible effects, Flow entries and keyed dialogue in all 11 languages (ratings unchanged). Each World Five strength comes from the repository's canon dossier (Dribbling, Kicking Accuracy, Physical Strength, Aerial Power, Godspeed); every ability name and number is a fan-game interpretation and is marked `interpretation: true`. Loki's Godspeed combines acceleration and top speed (distinct from Zantetsu's explosive start and Chigiri's sustained speed); Dada wins headers through power rather than Aryu's reach; Pablo's precision is in the kick itself (Bending Distribution changes the ball's flight). Ishikari's Aerial Reach is canon (Third Selection); his kit has no ultimate. The World Five coordinate through the shared systems only: no pairwise reactions and no invented chemistry.
+
+Sae × Shidou "Reflex × Reflex" is one reaction in Sae's kit, listed in both dossiers. Shidou's own kit stays unchecked: only the reaction's run and acrobatic finish exist for him.
+
+Engine fixes for existing kits: Planet Hotline makes real forward progress in both directions and is never started into a blocked pitch; Perfect Trapping is a visible first touch; Chameleon observes moves at the moment they are performed (a wider, still non-physical whitelist; copy labels localized); Devour reads a teammate taking a defender on; generic and repetitive dialogue is replaced with natural, context-checked lines under a deterministic speech budget. See `docs/release-v0.8.9.8.12.md` and `scripts/battle-v89812-tests.js`.

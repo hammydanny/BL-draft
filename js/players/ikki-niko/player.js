@@ -202,7 +202,7 @@ const PLAYER_16_DATA = {
         "Okawa, there is room ahead."
       ],
       "kickoff": [
-        "I will watch how you move."
+        "Show me how you move."
       ],
       "pass": [
         "There is space on that side.",
