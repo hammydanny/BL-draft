@@ -60,7 +60,7 @@ const PLAYER_92_DATA = {
         "Yukio Ishikari",
         "Ikki Niko",
         "Yo Hiori",
-        "Jyubei Aryu"
+        "Hajime Nishioka"
       ],
       "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
     },
@@ -70,8 +70,7 @@ const PLAYER_92_DATA = {
         "Yukio Ishikari",
         "Rin Itoshi",
         "Ryusei Shido",
-        "Jyubei Aryu",
-        "Reiji Hiiragi"
+        "Jyubei Aryu"
       ],
       "description": "Recorded team memberships and shared match groups; inclusion does not mean a current club affiliation."
     },

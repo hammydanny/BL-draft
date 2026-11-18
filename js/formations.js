@@ -757,6 +757,44 @@ async function autoBestXI(){
     }
 }
 
+// RANDOMISE TEAM: a varied but playable lineup from the players already in this squad. It never adds or
+// removes players (everyone not deployed stays on the bench), keeps the football format (an 11-a-side squad
+// stays 11-a-side), keeps a keeper in goal, and prefers natural, secondary and adapted positions without
+// simply reproducing Auto Best. Blue Lock Man always stays in goal.
+function randomLineupForTeam(n,random=Math.random){
+    const team=teamByNumber(n);if(!team?.players?.length)return null;
+    const current=formationByTeam[n]||"4-3-3",sameFormat=name=>!!DAILY_FORMATIONS[current]===!!DAILY_FORMATIONS[name]&&(!DAILY_FORMATIONS[current]||DAILY_FORMATIONS[name].length===DAILY_FORMATIONS[current].length);
+    const names=availableFormationNames(n).filter(name=>formationShape(name)&&sameFormat(name));if(!names.length)return null;
+    const formation=names[Math.floor(random()*names.length)]||current,shape=formationShape(formation);
+    const slots=preferredActiveSlotIndicesForFormation(n,formation),pool=team.players.slice(),assignment={};
+    const fitWeight={primary:6,secondary:4,adapted:2,poor:.35,incompatible:.02};
+    const take=p=>pool.splice(pool.indexOf(p),1);
+    const pick=(candidates,label)=>{const weights=candidates.map(p=>fitWeight[playerPositionProfile(p,label).fit]||.02),total=weights.reduce((a,b)=>a+b,0);let r=random()*total;for(let i=0;i<candidates.length;i++){r-=weights[i];if(r<=0)return candidates[i];}return candidates.at(-1);};
+    const keeperSlot=slots.find(i=>shape[i].label==="GK");
+    if(keeperSlot!=null){
+        const blm=pool.find(isBlueLockMan),keepers=pool.filter(p=>["primary","secondary"].includes(playerPositionProfile(p,"GK").fit));
+        const gk=blm||(keepers.length?pick(keepers,"GK"):pool.slice().sort((a,b)=>playerStats(b).gk-playerStats(a).gk)[0]);
+        if(gk){assignment[keeperSlot]=gk.id;take(gk);}
+    }
+    const outfield=slots.filter(i=>i!==keeperSlot);
+    for(let i=outfield.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[outfield[i],outfield[j]]=[outfield[j],outfield[i]];}
+    for(const slot of outfield){
+        // A specialist keeper is only used outfield when nobody else is left.
+        const outfielders=pool.filter(p=>!isBlueLockMan(p)&&primaryPosition(p)!=="GK"),candidates=outfielders.length?outfielders:pool.filter(p=>!isBlueLockMan(p));
+        if(!candidates.length)break;const p=pick(candidates,shape[slot].label);assignment[slot]=p.id;take(p);
+    }
+    return {formation,assignment};
+}
+function randomiseTeam(){
+    const n=formationTeamNumber,standalone=n===0;
+    if(standalone&&typeof standaloneBuilderSyncTeam==="function")standaloneBuilderSyncTeam();
+    const lineup=randomLineupForTeam(n);
+    if(!lineup){showSiteError("Select players first. Randomise Team only uses players already in this squad.","RANDOMISE TEAM");return;}
+    formationByTeam[n]=lineup.formation;formationAssignments[n]=lineup.assignment;activeFormation=lineup.formation;
+    ensureFormationCaptain(n,true);selectedFormationPlayerId=null;playSfx("confirm");
+    if(standalone&&typeof saveStandaloneBuilderState==="function")saveStandaloneBuilderState();else saveGame();
+    renderFormationBuilder();
+}
 function resetCurrentFormation(){
     formationAssignments[formationTeamNumber]={};
     enforceBlueLockManKeeper(formationTeamNumber);

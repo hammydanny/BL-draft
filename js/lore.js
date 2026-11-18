@@ -123,6 +123,15 @@ function battleSimReactionsFor(player){
     }
     return out;
 }
+// The one categorisation of a Battle Sim kit, shared by the Database dossier and the Team Builder player panel:
+// passives, specials (weapons and older "specials" fields), ultimates and Flow, then chemical reactions with
+// their partner. Duplicate entries (same id offered through two fields) appear once.
+function battleSimKitKind(group,entry){return group==="reactions"?"CHEMICAL REACTION":[entry.effect,...(Array.isArray(entry.effects)?entry.effects:[])].includes("flow-state")?"FLOW":group==="passives"?"PASSIVE":group==="ultimates"?"ULTIMATE":"SPECIAL";}
+function battleSimKitList(player){
+    const kit=player?.battleSim||{},kindOrder={"PASSIVE":0,"SPECIAL":1,"ULTIMATE":2,"FLOW":3},seen=new Set();
+    const own=["passives","specials","weapons","ultimates"].flatMap(group=>(Array.isArray(kit[group])?kit[group]:[]).map(entry=>({group,entry}))).filter(({entry})=>{if(!entry||!entry.name||!entry.description)return false;const key=entry.id||entry.name;if(seen.has(key))return false;seen.add(key);return true;});
+    return own.map(item=>({...item,kind:battleSimKitKind(item.group,item.entry)})).sort((a,b)=>kindOrder[a.kind]-kindOrder[b.kind]).concat(battleSimReactionsFor(player).map(({entry,partner})=>({group:"reactions",entry,partner,kind:"CHEMICAL REACTION"})));
+}
 // Read the same data fields used by the engine; do not infer cooldowns from prose.
 function battleSimUsageMarkup(player,entry,group){
  const limits=battleSimAbilityLimits(entry,group==="reactions",player),lines=[];
@@ -179,18 +188,13 @@ function characterLoreProfileMarkup(player){
     const positions=`<div class="character-position-analysis"><div><span class="reference-classification">GAMEPLAY INTERPRETATION</span><h4>PROJECT POSITIONS</h4>${projectPositionDetails}</div><div><span class="reference-classification">CANON ROLE REFERENCE</span><h4>DEMONSTRATED POSITIONS</h4>${canon.length?`<ul>${canon.map(role=>`<li><b data-i18n-ignore>${esc(role.position)}</b><span><span>${esc(role.context)}</span>${role.club?`<small data-i18n-ignore>${esc(role.club)}</small>`:""}${role.sourceUrl?`<a class="canon-position-source" href="${esc(role.sourceUrl)}" target="_blank" rel="noopener noreferrer">${role.chapter?`CH. ${role.chapter}`:"POSITION SOURCE"}</a>`:""}</span></li>`).join("")}</ul><p>${esc("Verified deployments through chapter {chapter}. Gameplay eligibility is unchanged.".replace("{chapter}",record.profile.positionAudit?.throughChapter||APP_SUPPORTED_CHAPTER))}</p>`:(player.secretCharacter?`<p>Project character; no canon deployment.</p>`:`<p>${esc("No specific deployment was sufficiently verified through chapter {chapter}. Gameplay badges are not canon evidence.".replace("{chapter}",record.profile.positionAudit?.throughChapter||APP_SUPPORTED_CHAPTER))}</p>`)}</div></div>`;
     // Football weapons show their canon description; a weapon that is part of the Battle Sim kit links to its
     // kit card (type colour + name) instead of repeating the description, so every dossier reads the same way.
-    const kitData=player.battleSim||{};
-    const kitKind=(group,entry)=>group==="reactions"?"CHEMICAL REACTION":[entry.effect,...(Array.isArray(entry.effects)?entry.effects:[])].includes("flow-state")?"FLOW":group==="passives"?"PASSIVE":group==="ultimates"?"ULTIMATE":"SPECIAL";
     const kindClass={"PASSIVE":"passive","SPECIAL":"special","ULTIMATE":"ultimate","FLOW":"flow","CHEMICAL REACTION":"reaction"};
-    const kitEntries=["passives","specials","weapons","ultimates"].flatMap(group=>(Array.isArray(kitData[group])?kitData[group]:[]).map(entry=>({group,entry}))).filter(({entry})=>entry&&entry.name&&entry.description);
     const weaponCards=weapons.length?`<div class="character-profile-weapons-grid">${weapons.map(weapon=>`<article class="character-profile-weapon-card"><div class="character-profile-weapon-heading"><h4>${esc(weapon.name)}</h4><span class="character-profile-weapon-kind" data-weapon-category="${weapon.category}">${weapon.category.toUpperCase()}</span></div><p class="character-profile-weapon-description">${esc(footballWeaponDescription(player,weapon))}</p></article>`).join("")}</div>`:`<p class="character-profile-weapons-empty">No registered football weapons.</p>`;
     // Battle Sim kit: every ability the player uses in Battle Sim, in a fixed order (passives, signature
-    // moves, ultimate, Flow, then chemical reactions), each with its plain "when / what / limit" description.
-    const kindOrder={"PASSIVE":0,"SPECIAL":1,"ULTIMATE":2,"FLOW":3};
-    // Chemical reactions: one shared definition (declared in either partner's kit), shown in both dossiers.
-    const reactions=battleSimReactionsFor(player).map(({entry,partner})=>({group:"reactions",entry,partner}));
-    const kitCard=({group,entry,partner})=>{const kind=kitKind(group,entry);return `<article class="character-profile-weapon-card character-profile-kit-card" data-kit-kind="${kindClass[kind]}"><div class="character-profile-weapon-heading"><h4 class="character-profile-kit-name">${esc(entry.name)}</h4><span class="character-profile-weapon-kind character-profile-kit-kind" data-weapon-category="battle-sim">${kind}</span></div>${partner?`<p class="character-profile-kit-partner"><span>WITH:</span> ${characterPersonLink(partner.id)}</p>`:""}<p class="character-profile-weapon-description">${esc(entry.description)}</p>${battleSimUsageMarkup(player,entry,group)}</article>`;};
-    const kitAll=kitEntries.slice().sort((a,b)=>kindOrder[kitKind(a.group,a.entry)]-kindOrder[kitKind(b.group,b.entry)]).concat(reactions);
+    // moves, ultimate, Flow, then chemical reactions shared from either partner's kit), each with its plain
+    // "when / what / limit" description.
+    const kitCard=({group,entry,partner,kind})=>{return `<article class="character-profile-weapon-card character-profile-kit-card" data-kit-kind="${kindClass[kind]}"><div class="character-profile-weapon-heading"><h4 class="character-profile-kit-name">${esc(entry.name)}</h4><span class="character-profile-weapon-kind character-profile-kit-kind" data-weapon-category="battle-sim">${kind}</span></div>${partner?`<p class="character-profile-kit-partner"><span>WITH:</span> ${characterPersonLink(partner.id)}</p>`:""}<p class="character-profile-weapon-description">${esc(entry.description)}</p>${battleSimUsageMarkup(player,entry,group)}</article>`;};
+    const kitAll=battleSimKitList(player);
     const kitCards=kitAll.length?`<h4 class="character-profile-kit-heading">BATTLE SIM KIT</h4><div class="character-profile-weapons-grid character-profile-kit-grid">${kitAll.map(kitCard).join("")}</div>`:"";
     const pairCards=links.map(link=>{
         const names=Array.isArray(link.playerNames)

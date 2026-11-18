@@ -60,8 +60,8 @@ function matchFormat(roster,count){
 }
 function normalizeTeam(input,number){input=input&&typeof input==="object"?input:{};const roster=[],seen=new Set();(Array.isArray(input.roster)?input.roster:Array.isArray(input.players)?input.players:[]).forEach((raw,i)=>{let p=resolveSharedPlayer(raw,i);if(p&&isSpecialKeeper(p)){if(roster.some(isSpecialKeeper))return;p=cleanPlayer(blueLockManFor(number===2?2:1),i);}if(p&&!seen.has(p.id)){seen.add(p.id);roster.push(p);}});const formation=typeof FORMATIONS!=="undefined"&&FORMATIONS[input.formation]?String(input.formation):"4-3-3",slots=formationSlots(formation);const requested=Number(input.starterCount),formatCount=Math.min(roster.length,[1,2,3,5,7,9,11].includes(requested)?requested:11),format=formatCount<11?matchFormat(roster,formatCount):null;if(format)slots.splice(0,slots.length,...format.slots);const valid=new Set(roster.map(p=>p.id)),assignment={};const sourceAssignment=input.assignment||input.assignments||{};Object.keys(sourceAssignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const sourceId=idOf(sourceAssignment[k]),id=isSpecialKeeper({id:sourceId})?idOf(blueLockManFor(number===2?2:1).id):sourceId;if(Number.isInteger(Number(k))&&Number(k)>=0&&Number(k)<(format?formatCount:slots.length)&&valid.has(id)&&!Object.values(assignment).includes(id))assignment[String(k)]=id;});const count=formatCount;if(!Object.keys(assignment).length)Object.assign(assignment,defaultAssignment(roster,slots,count));else{const used=new Set(Object.values(assignment));const rest=roster.slice().sort((a,b)=>b.stats.ovr-a.stats.ovr).filter(p=>!used.has(p.id));for(let i=0;i<slots.length&&Object.keys(assignment).length<count;i++){if(assignment[String(i)]==null&&rest.length)assignment[String(i)]=rest.shift().id;}}while(Object.keys(assignment).length>count)delete assignment[Object.keys(assignment).sort((a,b)=>Number(b)-Number(a))[0]];const special=roster.find(p=>isSpecialKeeper(p));
 if(special){const goal=String(slots.findIndex(s=>s.label==="GK"));const previous=assignment[goal];Object.keys(assignment).forEach(k=>{if(assignment[k]===special.id)delete assignment[k];});assignment[goal]=special.id;if(previous&&previous!==special.id){const free=slots.findIndex((s,i)=>assignment[String(i)]==null);if(free>=0&&Object.keys(assignment).length<count)assignment[String(free)]=previous;}}
-const strategy={};STRATEGIES.forEach(d=>{const v=Number(input.strategy&&input.strategy[d.key]!=null?input.strategy[d.key]:DEFAULT_STRATEGY[d.key]);strategy[d.key]=Number.isFinite(v)?clamp(v,0,100):DEFAULT_STRATEGY[d.key];});return{number:number,starterCount:count,keeperMode:format?format.keeperMode:roster.some(p=>isSpecialKeeper(p)||p.primaryPosition==="GK")?"dedicated":"open-goal",name:String(input.name||"TEAM "+number).slice(0,32),color:validColor(input.color)?input.color:(number===1?BLUE:RED),roster:roster,formation:formation,slots:slots,assignment:assignment,strategy:strategy,source:String(input.source||"random"),savedId:input.savedId||""};}
-function serializeTeam(team){return{starterCount:team.starterCount,name:team.name,color:team.color,formation:team.formation,slots:team.slots.map(s=>Object.assign({},s)),assignment:Object.assign({},team.assignment),strategy:Object.assign({},team.strategy),source:team.source,roster:team.roster.map(p=>({id:p.id,name:p.name,image:p.image,primaryPosition:p.primaryPosition,positions:p.positions.slice(),stats:Object.assign({},p.stats)}))};}
+const strategy={};STRATEGIES.forEach(d=>{const v=Number(input.strategy&&input.strategy[d.key]!=null?input.strategy[d.key]:DEFAULT_STRATEGY[d.key]);strategy[d.key]=Number.isFinite(v)?clamp(v,0,100):DEFAULT_STRATEGY[d.key];});return{number:number,starterCount:count,keeperMode:format?format.keeperMode:roster.some(p=>isSpecialKeeper(p)||p.primaryPosition==="GK")?"dedicated":"open-goal",name:String(input.name||"TEAM "+number).slice(0,32),color:validColor(input.color)?input.color:(number===1?BLUE:RED),roster:roster,formation:formation,slots:slots,assignment:assignment,strategy:strategy,source:String(input.source||"random"),savedId:input.savedId||"",captainId:input.captainId!=null&&Object.values(assignment).includes(idOf(input.captainId))?idOf(input.captainId):null};}
+function serializeTeam(team){return{starterCount:team.starterCount,name:team.name,color:team.color,formation:team.formation,captainId:team.captainId??null,slots:team.slots.map(s=>Object.assign({},s)),assignment:Object.assign({},team.assignment),strategy:Object.assign({},team.strategy),source:team.source,roster:team.roster.map(p=>({id:p.id,name:p.name,image:p.image,primaryPosition:p.primaryPosition,positions:p.positions.slice(),stats:Object.assign({},p.stats)}))};}
 function readSharedStorage(key){try{return JSON.parse(localStorage.getItem(key)||"null");}catch(e){return null;}}
 function isSpecialKeeper(p){return p&&(idOf(p.id)==="9101"||idOf(p.id)==="9102");}
 function resolveSharedPlayer(ref,index){
@@ -95,7 +95,7 @@ function loadSavedTeams(){
    const assignment=auction.formationAssignments&&auction.formationAssignments[key]||{};
    const team=normalizeTeam({name:raw.name,color:raw.color,roster:roster,formation:formation,slots:formationSlots(formation),assignment:assignment,source:"saved",savedId:"auction-team-"+number},number);
    team.source="saved";team.savedId="auction-team-"+number;
-   out.push({id:team.savedId,name:team.name+" · AUCTION TEAM "+number,createdAt:"",team:team});
+   out.push({id:team.savedId,name:team.name+" · AUCTION TEAM "+number,kind:"AUCTION TEAM "+number,createdAt:"",team:team});
   });
  }
  let standalone=readSharedStorage(STANDALONE_STORAGE_KEY);
@@ -106,56 +106,58 @@ function loadSavedTeams(){
    const formation=typeof FORMATIONS!=="undefined"&&FORMATIONS[standalone.formation]?standalone.formation:"4-3-3";
    const team=normalizeTeam({name:standalone.name||"GLOBAL XI",color:standalone.color,roster:roster,formation:formation,slots:formationSlots(formation),assignment:standalone.assignment||{},source:"saved",savedId:"standalone-global-xi"},3);
    team.source="saved";team.savedId="standalone-global-xi";
-   out.push({id:team.savedId,name:team.name+" · STANDALONE BUILDER",createdAt:"",team:team});
+   out.push({id:team.savedId,name:team.name+" · STANDALONE BUILDER",kind:"STANDALONE BUILDER",createdAt:"",team:team});
   }
  }
- const library=readSharedStorage(BATTLE_TEAM_LIBRARY_KEY);
- if(Array.isArray(library))library.slice(-20).forEach(item=>{
+ // The shared squad library: squads saved from the Team Builder, auctions, imported codes and Battle Sim.
+ let library=null;try{library=typeof readSquadLibrary==="function"?readSquadLibrary():null;}catch(e){library=null;}
+ (library&&Array.isArray(library.items)?library.items:[]).forEach(item=>{
+  const squad=item.squad,roster=resolveSharedRoster(squad.playerIds);
+  // A squad is offered whole or not at all (a locked secret player or a missing record hides it).
+  if(roster.length!==squad.playerIds.length)return;
+  const savedId="library-"+item.id,team=normalizeTeam({name:squad.name,color:squad.color,formation:squad.formation,roster,assignment:squad.assignment,captainId:squad.captainId,strategy:squad.strategy,starterCount:squad.starterCount,source:"saved",savedId},3);
+  team.source="saved";team.savedId=savedId;out.push({id:savedId,name:team.name+" · SAVED SQUAD",kind:"SAVED SQUAD",createdAt:"",team});
+ });
+ // Compatibility: squads saved by Battle Sim before 0.8.9.8.13 (read-only; new saves go to the library).
+ const legacy=readSharedStorage(BATTLE_TEAM_LIBRARY_KEY);
+ if(Array.isArray(legacy))legacy.slice(-20).forEach(item=>{
   if(!item||typeof item!=="object"||!Array.isArray(item.playerIds))return;
-  const roster=resolveSharedRoster(item.playerIds);if(!roster.length)return;
+  const roster=resolveSharedRoster(item.playerIds);if(!roster.length||roster.length!==item.playerIds.length)return;
   const team=normalizeTeam({name:item.name,color:item.color,formation:item.formation,roster,
     assignment:item.assignment,strategy:item.strategy,source:"saved",savedId:idOf(item.id)},3);
-  if(team.roster.length!==roster.length)return;
   team.source="saved";team.savedId=idOf(item.id);
-  out.push({id:team.savedId,name:team.name+" · SAVED SQUAD",createdAt:item.createdAt||"",team});
+  out.push({id:team.savedId,name:team.name+" · SAVED SQUAD",kind:"SAVED SQUAD",createdAt:item.createdAt||"",team});
  });
- return out;
+ // The same squad reached through two storages (e.g. a library copy of the current auction team) is listed once.
+ const seen=new Set();return out.filter(item=>{const t=item.team,key=[t.name,t.formation,t.roster.map(p=>idOf(p.id)).sort().join(","),JSON.stringify(Object.keys(t.assignment).sort().map(k=>[k,t.assignment[k]]))].join("|");if(seen.has(key))return false;seen.add(key);return true;});
 }
-function saveTeamToSharedStandalone(team,name){
- try{
-  const pool=typeof players!=="undefined"&&Array.isArray(players)?players:[];
-  const availableIds=new Set(pool.concat(typeof BLUE_LOCK_MAN_KEEPERS!=="undefined"?BLUE_LOCK_MAN_KEEPERS:[]).filter(p=>p&&(!p.secretCharacter||(typeof secretPlayerAvailable==="function"&&secretPlayerAvailable(p)))).map(p=>Number(p.id)).filter(Number.isInteger));
-  const rosterIds=Array.from(new Set(team.roster.map(p=>Number(p.id))));
-  if(!rosterIds.length||rosterIds.some(id=>!Number.isInteger(id)||!availableIds.has(id)))return false;
-  const valid=new Set(rosterIds),assignment={};
-  Object.entries(team.assignment||{}).forEach(([slot,id])=>{const slotNumber=Number(slot),playerId=Number(id);if(Number.isInteger(slotNumber)&&slotNumber>=0&&slotNumber<=10&&Number.isInteger(playerId)&&valid.has(playerId))assignment[String(slotNumber)]=playerId;});
-  const previous=readSharedStorage(STANDALONE_STORAGE_KEY)||{};
-  const previousCaptain=previous.captainId==null?null:Number(previous.captainId);
-  const saved={
-   schemaVersion:typeof STANDALONE_SAVE_SCHEMA_VERSION!=="undefined"?STANDALONE_SAVE_SCHEMA_VERSION:1,
-   name:String(name||team.name||"GLOBAL XI").slice(0,32),
-   color:validColor(team.color)?team.color:BLUE,
-   playerIds:rosterIds,
-   formation:typeof FORMATIONS!=="undefined"&&FORMATIONS[team.formation]?team.formation:"4-3-3",
-   assignment:assignment,
-   captainId:previousCaptain!==null&&Number.isInteger(previousCaptain)&&valid.has(previousCaptain)?previousCaptain:null,
-   role:["ALL","ATTACK","MIDFIELD","DEFENCE","GK"].includes(previous.role)?previous.role:"ALL",
-   sort:["id","ovr","name"].includes(previous.sort)?previous.sort:"id",
-   poolHidden:!!previous.poolHidden
-  };
-  localStorage.setItem(STANDALONE_STORAGE_KEY,JSON.stringify(saved));
-  try{
-   const library=readSharedStorage(BATTLE_TEAM_LIBRARY_KEY),list=Array.isArray(library)?library.filter(x=>x&&Array.isArray(x.playerIds)).slice(-19):[];
-   list.push({id:"battle-squad-"+Date.now(),name:saved.name,color:saved.color,playerIds:saved.playerIds,
-    formation:saved.formation,assignment:saved.assignment,strategy:{...team.strategy},createdAt:new Date().toISOString()});
-   localStorage.setItem(BATTLE_TEAM_LIBRARY_KEY,JSON.stringify(list));
-  }catch(e){}
-  return true;
- }catch(e){return false;}
+// Battle Sim saves into the shared squad library (js/replayability.js), the same authoritative format the
+// Team Builder, auctions and squad codes use. It never overwrites the user's current Team Builder squad.
+function saveTeamToSquadLibrary(team,name){
+ if(typeof saveReplaySquad!=="function")return{ok:false,error:"Unable to save this squad. Check browser storage and player availability."};
+ const playerIds=Array.from(new Set(team.roster.map(p=>Number(p.id)))),assignment={};
+ Object.entries(team.assignment||{}).forEach(([slot,id])=>{if(/^(?:[0-9]|10)$/.test(slot)&&playerIds.includes(Number(id)))assignment[slot]=Number(id);});
+ const captain=team.captainId!=null&&Object.values(assignment).includes(Number(team.captainId))?Number(team.captainId):null;
+ try{saveReplaySquad({v:1,name:String(name||team.name||"GLOBAL XI").trim().slice(0,32),color:validColor(team.color)?team.color:BLUE,playerIds,formation:FORMATIONS[team.formation]?team.formation:"4-3-3",assignment,captainId:captain,strategy:{...team.strategy},starterCount:team.starterCount});return{ok:true};}
+ catch(e){return{ok:false,error:e&&e.message||"Unable to save this squad. Check browser storage and player availability."};}
 }
 function playerPool(){if(typeof players==="undefined"||!Array.isArray(players))return[];return players.filter(p=>p&&p.id!=null&&!p.secretCharacter);}
 function randomTeam(number,old){const all=playerPool().slice();for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}const roster=all.slice(0,Math.min(15,all.length)).map(cleanPlayer);if(!roster.length){for(let i=0;i<15;i++)roster.push(cleanPlayer({id:"sample-"+number+"-"+i,name:"Player "+(i+1),primaryPosition:i===0?"GK":i<5?"DF":i<10?"MF":"FW",stats:{ovr:60+Math.floor(Math.random()*30),off:65,sho:65,dri:65,pas:65,def:65,gk:i===0?82:25,spd:65}},i));}const team=normalizeTeam({name:old&&old.name|| (number===1?"RANDOM XI A":"RANDOM XI B"),color:old&&old.color,roster:roster,formation:"4-3-3",strategy:old&&old.strategy},number);team.source="random";return team;}
-function snapshotTeam(raw,number,snapshot){const formation=snapshot&&snapshot.formations&&snapshot.formations[number]||"4-3-3";const assignments=snapshot&&snapshot.assignments&&snapshot.assignments[number]||{};const t=normalizeTeam({name:raw&&raw.name,color:raw&&raw.color,players:raw&&raw.players||[],formation:formation,slots:formationSlots(formation),assignment:assignments,strategy:DEFAULT_STRATEGY,source:"auction"},number);t.source="auction";return t;}
+function snapshotTeam(raw,number,snapshot){const formation=snapshot&&snapshot.formations&&snapshot.formations[number]||"4-3-3";const assignments=snapshot&&snapshot.assignments&&snapshot.assignments[number]||{};const t=normalizeTeam({name:raw&&raw.name,color:raw&&raw.color,players:raw&&raw.players||[],formation:formation,slots:formationSlots(formation),assignment:assignments,captainId:snapshot&&snapshot.captains&&snapshot.captains[number],strategy:DEFAULT_STRATEGY,source:"auction"},number);t.source="auction";return t;}
+// Which setup Battle Sim opens with: a setup the user returned from is kept unless a newer auction hand-off
+// arrived after it (a stale return never hides a fresh transfer).
+function setupSource(launchSnapshot,returned){
+ const usable=returned&&Array.isArray(returned.teams)&&returned.teams.length===2;
+ if(usable&&!(launchSnapshot&&(Number(launchSnapshot.timestamp)||0)>(Number(returned.timestamp)||0)))return"returned";
+ return launchSnapshot?"launch":"random";
+}
+// An auction hand-off is loaded exactly or reported: never silently replaced with unrelated teams.
+function launchTeams(snapshot){
+ if(!snapshot||!snapshot.team1||!snapshot.team2)return{teams:null,missing:0};
+ const teams=[snapshotTeam(snapshot.team1,1,snapshot),snapshotTeam(snapshot.team2,2,snapshot)];
+ const wanted=[snapshot.team1,snapshot.team2].map(t=>Array.isArray(t.players)?t.players.length:0),missing=teams.reduce((sum,t,i)=>sum+Math.max(0,wanted[i]-t.roster.length),0);
+ return{teams:teams.every(t=>t.roster.length)?teams:null,missing};
+}
 function randSeed(){if(window.crypto&&window.crypto.getRandomValues){const a=new Uint32Array(1);window.crypto.getRandomValues(a);return a[0]||0x91e10da5;}return(Date.now()^Math.floor(Math.random()*0xffffffff))>>>0;}
 function seeded(seed,restoreState){
  let v=(restoreState==null?seed:restoreState)>>>0;
@@ -548,6 +550,10 @@ function basicActionDialogue(type,actors,state,options={},roleIndex=0){
  const voiceKey=key==="interception"&&!p.battleSim?.dialogue?.interception?"defend":key==="fouled"&&!p.battleSim?.dialogue?.fouled&&idOf(p.id)==="18"?"foul":key==="offside"&&idOf(p.id)==="18"?"passFail":key;
  if(p.battleSim?.dialogue?.[voiceKey]){const line=kitLine(state,p,voiceKey,["goal","kickoff","flow-activation"].includes(type));return line?[line]:[];}const pool=phrases[Math.min(i,phrases.length-1)]||[];if(!pool.length)return [];return [{playerId:idOf(p.id),text:p.name+": "+String.fromCharCode(34)+pool[lineIndex(state,p,"generic:"+type,pool.length)]+String.fromCharCode(34)}];});
 }
+// Developer match statistics (scripts/ability-usage-report.js): only when a harness installs
+// globalThis.__bsStats, so normal play and saves never carry these fields.
+function statsOn(){return typeof globalThis!=="undefined"&&!!globalThis.__bsStats;}
+function passCategory(state,option){if(statsOn())state.__passCat=option.style==="cross"?"cross":option.through?"through":option.kind==="long"?"long":"short";}
 function addEvent(state,options){observeTechnique(state,options);const type=options.type||"play",actionTypes=new Set(["pass","dribble","shot-attempt"]),important=new Set(["kickoff","goal","half-time","full-time","foul","offside","yellow-card","red-card","set-piece","substitution","flow-activation","pass","dribble","shot-attempt"]);let notable=!!options.notable||actionTypes.has(type);if(notable){const now=Number(state.timeSeconds)||0;if(!important.has(type)&&Number.isFinite(state.nextNotableAt)&&now<state.nextNotableAt)notable=false;else state.nextNotableAt=now+600+Math.floor((typeof state.random==="function"?state.random():Math.random())*1201);}const event={id:state.events.length+1,tick:state.tick,timeSeconds:state.timeSeconds,time:timeLabel(state.timeSeconds),type:type,description:String(options.description||"Play continues."),teamNumber:options.teamNumber||null,possessionTeamNumber:state.possession||null,zone:options.zone==null?state.ballZone:options.zone,notable:notable,actors:(options.actors||[]).filter(Boolean).map(p=>({id:idOf(p.id),name:p.name,image:p.image||"",teamNumber:p.teamNumber||null,flow:clamp(Number.isFinite(Number(p.flow))?Number(p.flow):0,0,100)})),comparison:options.comparison?Object.assign({},options.comparison):null,probability:options.probability==null?null:clamp(Number(options.probability),0,1),probabilityLabel:options.probabilityLabel||"SUCCESS CHANCE",dialogue:((options.dialogue&&options.dialogue.length)?options.dialogue:basicActionDialogue(type,options.actors||[],state,options)).filter(Boolean).map(d=>d.key?{playerId:idOf(d.playerId),text:String(d.text||""),key:String(d.key)}:{playerId:idOf(d.playerId),text:String(d.text||"")})};if(options.passRoute){
   const r=options.passRoute;
   event.passRoute={kind:r.kind==="long"?"long":"short",from:point(r.from),to:point(r.to),chemistry:clamp(Number(r.chemistry)||65,0,100)};
@@ -564,7 +570,7 @@ function addEvent(state,options){observeTechnique(state,options);const type=opti
  if(type==="interception"&&!event.ability){const d=(options.actors||[])[1],read=d&&kitAbility(d,"anticipatory-interception");if(read){const trap=d.battleSimState?.trapUntil>=state.tick?kitAbility(d,"defensive-trap"):null;event.ability=abilityBadge(trap||read,trap?"weapon":"passive");}}
  if(type==="goal"){const gk=keeper(state.teams[options.teamNumber===1?2:1]),line=gk&&kitLine(state,gk,"concede",false);if(line)event.dialogue.push(line);}
  event.dialogue=speechBudget(state,event,options).filter(d=>dialogueAllowed(state,d));
- if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);state.events.push(event);return event;}
+ if(options.presentationOnly)event.presentationOnly=true;if(!fastForwarding)event.presentation=capturePresentation(state);if(statsOn()&&event.passRoute&&state.__passCat){event.__cat=state.__passCat;if(state.__aerial)event.__aerial=state.__aerial;}state.events.push(event);return event;}
 
 // Speech budget: big moments and a player's own special moves are voiced; routine touches are mostly quiet,
 // and nobody repeats themselves every few seconds. Deterministic (seed, tick and player only).
@@ -1369,18 +1375,43 @@ function defensivePlan(state,team,players,carrier,shape,targets,fixed,plans){
  const kept=d=>d.markTarget&&state.tick-d.markTarget.tick<=4?d.markTarget.id:null;
  free.forEach(d=>attackers.forEach(a=>{const cost=distance(shape.get(d.id),read(d,a))-(kept(d)===idOf(a.id)?5:0);if(cost<20)pairs.push({d,a,cost});}));
  pairs.sort((x,y)=>x.cost-y.cost||idOf(x.d.id).localeCompare(idOf(y.d.id))||idOf(x.a.id).localeCompare(idOf(y.a.id)));
- const usedD=new Set(),usedA=new Set();
+ const usedD=new Set(),usedA=new Set(),marked=[];
  // Physical man-marking: the marker takes his target first and stays goal-side and tight.
  free.forEach(d=>{const a=manMarkTarget(state,d,attackers,shape);if(!a||usedA.has(a.id))return;usedD.add(d.id);usedA.add(a.id);
   if(!(d.markTarget&&d.markTarget.id===idOf(a.id)))d.markTarget={id:idOf(a.id),tick:state.tick};else d.markTarget.tick=state.tick;
   const at=read(d,a);targets.set(d.id,{...lerpPoint(offsetM(at,goal,1.1),ball,.05),sprint:1.2});fixed.add(d.id);});
  pairs.forEach(({d,a})=>{if(usedD.has(d.id)||usedA.has(a.id))return;usedD.add(d.id);usedA.add(a.id);
   if(kept(d)!==idOf(a.id))d.markTarget={id:idOf(a.id),tick:state.tick};
-  const at=read(d,a),danger=aheadM(n,at)<35,live=distance(at,ball)<28,mark=lerpPoint(offsetM(at,goal,danger?1.5:2.2),ball,.1);
-  targets.set(d.id,lerpPoint(shape.get(d.id),mark,danger?.9:live?.8:.5));});
+  const at=read(d,a),danger=aheadM(n,at)<35,live=distance(at,ball)<28,mark=lerpPoint(offsetM(at,goal,danger?1.5:2.2),ball,danger?.06:.1);
+  targets.set(d.id,lerpPoint(shape.get(d.id),mark,danger?.9:live?.8:.5));marked.push({d,a,at});});
+ coverAndScreen(state,team,free,usedD,marked,carrier,targets,goal,ball);
  players.forEach(d=>{const at=watchtowerTarget(state,d,carrier);if(at){targets.set(d.id,at);fixed.add(d.id);}});
  defensiveUltimates(state,team,players,carrier,targets,fixed);
  free.forEach(p=>{if(!targets.has(p.id))targets.set(p.id,shape.get(p.id));});
+}
+// Cover and screen: the defender left over behind the most dangerous duel drops a few metres deeper and
+// inside it (so a striker who beats one man meets another), and a free holding midfielder protects the space
+// in front of the defence between the ball and that striker. Nobody doubles up on the same man.
+function coverAndScreen(state,team,free,usedD,marked,carrier,targets,goal,ball){
+ const n=team.number;
+ // Once the ball is in our half, nobody may leave a striker free inside 40 m: if no marker reached him (the
+ // nearest defender went to press or cut a lane), the closest free centre-back (or full-back) picks him up goal-side.
+ if(carrier&&aheadM(n,carrier)<50){
+  const runners=active(state.teams[carrier.teamNumber]).filter(o=>o.role!=="GK"&&o.id!==carrier.id&&["ST","W","AM"].includes(roleGroup(o.role))&&aheadM(n,o)<40).sort((a,b)=>aheadM(n,a)-aheadM(n,b));
+  const held=free.find(p=>p.pickUp&&state.tick-p.pickUp.tick<=6&&runners.some(o=>idOf(o.id)===p.pickUp.id)),runner=held?runners.find(o=>idOf(o.id)===held.pickUp.id):runners[0];
+  // The pick-up is kept for a few ticks so the defender does not alternate between the man and his shape.
+  const keep=runner&&free.find(p=>!usedD.has(p.id)&&p.pickUp&&p.pickUp.id===idOf(runner.id)&&state.tick-p.pickUp.tick<=6);
+  const covered=runner&&!keep&&[...targets.values()].some(q=>distance(q,runner)<8&&aheadM(n,q)<=aheadM(n,runner)+.5);
+  if(runner&&!covered){const pick=g=>free.filter(p=>!usedD.has(p.id)&&roleGroup(p.role)===g).sort((a,b)=>distance(a,runner)-distance(b,runner))[0],d=keep||pick("CB")||pick("FB");
+   if(d){const at=point(runner);if(!(d.pickUp&&d.pickUp.id===idOf(runner.id)))d.pickUp={id:idOf(runner.id),tick:state.tick};targets.set(d.id,{...lerpPoint(offsetM(at,goal,1.8),ball,.03),sprint:1.15});usedD.add(d.id);marked.push({d,a:runner,at});}}
+ }
+ const threats=marked.filter(m=>["ST","W","AM"].includes(roleGroup(m.a.role))).sort((x,y)=>aheadM(n,x.at)-aheadM(n,y.at));
+ const main=threats[0];if(!main)return;
+ const spare=g=>free.filter(p=>!usedD.has(p.id)&&roleGroup(p.role)===g).sort((a,b)=>distance(a,main.at)-distance(b,main.at))[0];
+ const cover=spare("CB")||(aheadM(n,main.at)<45?spare("FB"):null);
+ if(cover){const base=offsetM(main.at,goal,Math.min(7.5,Math.max(2,aheadM(n,main.at)-4))),inside=clampPitch({x:base.x,y:base.y+(50-base.y)*.25});targets.set(cover.id,{...lerpPoint(inside,ball,.04),sprint:1.1});usedD.add(cover.id);}
+ const screen=spare("DM")||spare("CM");
+ if(screen&&carrier&&distance(carrier,main.at)>12){targets.set(screen.id,lerpPoint(carrier,main.at,.68));usedD.add(screen.id);}
 }
 // Context-dependent spacing: support players keep passing distance; pressers,
 // cover and markers may legitimately stand close to opponents and each other.
@@ -1540,7 +1571,7 @@ function passModel(state,carrier,receiver,to,kind,opts={}){
   let access=1-dd/radius;
   // Defenders react a beat late to a ball played into space (keepers come straight off their line).
   if(opts.through){const race=sigmoid((distance(receiver,dest)/runSpeed(receiver,state)-dd/spd-(keeperOpp?0:.35))/.6);access=clamp(access*race*1.6,0,1);}
-  const duel=keeperOpp?sigmoid((def-70)/12):sigmoid(((def*.65+attr.spd*.35)-receiverSkill-(chem-65)*.25)/12);
+  const duel=keeperOpp?sigmoid((def-70)/12):lofted&&!opts.through?sigmoid((aerialSkill(state,o,false)-aerialSkill(state,receiver,true))/10+(aheadM(n,o)>aheadM(n,dest)?.65:-.2)-Math.max(0,dd-distance(receiver,dest))*.12):sigmoid(((def*.65+attr.spd*.35)-receiverSkill-(chem-65)*.25)/12);
   const chance=clamp(Math.pow(access,1.25)*duel*(lofted?.95:.8)+(rb?rb.read*access:0),0,.85);
   if(chance>.005)model.contests.push({p:o,chance});
  });
@@ -1550,14 +1581,19 @@ function passModel(state,carrier,receiver,to,kind,opts={}){
  [...model.lanes,...model.contests].forEach(x=>{if(!model.involved.includes(x.p)&&x.p.role!=="GK")model.involved.push(x.p);});
  return model;
 }
+// What simply keeping the ball is worth: losing it hands the opponent an attack wherever it happens.
+const POSSESSION_VALUE=.04,BUILD_UP_VALUE=.012;
 function passValue(state,carrier,option){
  const team=state.teams[carrier.teamNumber],n=team.number,m=option.model,t=team.strategy,direction=(t.directness-50)/50;
  const at=m.valueAt||m.to,forward=aheadM(n,at)-aheadM(n,m.from),directionFactor=forward>0?1+direction*.45:1-direction*.13;
  const throughFactor=option.through?1+Math.max(0,direction)*.12:1,longFactor=m.kind==="long"&&forward>0?1+Math.max(0,direction)*.10:1;
  const gain=positionValue(state,option.receiver,at,option.opponents)*directionFactor*throughFactor*longFactor;
  const open=Math.min(10,nearestOpponentM(state,n,at,option.opponents))/10,lossAt=m.lanes.length?lerpPoint(m.from,m.to,.5):at;
- const riskCost=lossCost(n,lossAt)*(1-Math.max(0,direction)*.16);
- const ok=m.onsideSuccess==null?m.success:m.onsideSuccess,value=ok*.85*(gain+open*.012+(m.chem-65)*.0002)-(1-ok)*riskCost;
+ const riskCost=lossCost(n,lossAt)*(1-Math.max(0,direction)*.16)+POSSESSION_VALUE*(1-direction*.45);
+ // Build-up through midfield: before the final third, a free midfielder facing the game is worth finding
+ // (he can turn, switch or play forward), so the team does not have to go around or over the middle.
+ const rg=roleGroup(option.receiver.role),build=(rg==="CM"||rg==="DM"||rg==="AM")&&!option.through&&m.kind!=="long"&&aheadM(n,m.from)<68?BUILD_UP_VALUE*clamp((nearestOpponentM(state,n,at,option.opponents)-2)/5,0,1)*(1-Math.max(0,direction)*.6):0;
+ const ok=m.onsideSuccess==null?m.success:m.onsideSuccess,value=ok*.85*(gain+open*.012+(m.chem-65)*.0002+build)-(1-ok)*riskCost;
  if(!(m.offsideMargin>-4))return value;
  // The passer reads the line with an error that shrinks with vision: tight calls are misread
  // both ways (a runner wrongly held back, or a pass played to a runner who is just off).
@@ -1832,6 +1868,7 @@ function resolvePass(state,carrier,opts={}){
   if(options.length)option=options.sort((a,b)=>b.value-a.value)[0];
  }
  if(!option){const start=point(carrier);moveToward(carrier,targetGoal(team.number),movementMeters(carrier)*.6);drain(carrier,true,"dribble",clamp(distance(start,carrier)*.008+.04,.04,.2));setBall(state,carrier);addEvent(state,{type:"carry",teamNumber:team.number,description:carrier.name+" carries the ball.",actors:[carrier]});return;}
+ if(statsOn()){passCategory(state,option);delete state.__aerial;}
  if(option.through){resolveThroughBall(state,carrier,option,opts);return;}
  const receiver=option.receiver,kind=option.kind;let model=option.model;
  // A hidden defensive read (Checkmate, Ace Neutralization) changes only the live resolution of this pass.
@@ -2089,7 +2126,7 @@ function resolveThroughBall(state,carrier,option,opts={}){
  // Everyone involved runs for the time the ball took to be decided, within their own physical limits.
  const decided=race.winner?race.winner.meet.t:(race.flight.exit||race.flight.stop||{t:2}).t;
  const chase=(r,target)=>{const covered=distanceCovered(decided-r.prof.reaction,r.prof.vmax,r.prof.acc,r.prof.v0);if(covered>0)moveToward(r.p,target,covered);};
- let outcome=race.outcome,winner=race.winner;const contested=outcome==="contested";
+ let outcome=race.outcome,winner=race.winner;const contested=outcome==="contested";if(statsOn())state.__aerial=winner&&winner.meet&&winner.meet.airborne?(contested?"contested":"clean"):null;
  const duelChance=()=>{const rec=race.racers[0],def=race.rival&&race.rival.side==="defend"?race.rival:race.winner.side==="defend"?race.winner:null;if(!def)return 1;
   if(option.style==="cross"&&def.role!=="keeper")return aerialDuel(state,receiver,def.p,(def.meet?def.meet.t:9)-(rec.meet?rec.meet.t:9),race.run);
   const skill=effective(receiver,"off",state)*.45+effective(receiver,"dri",state)*.35+effective(receiver,"spd",state)*.2+touchControl(state,receiver),guard=effective(def.p,"def",state)*.65+effective(def.p,"spd",state)*.35;
@@ -2097,7 +2134,8 @@ function resolveThroughBall(state,carrier,option,opts={}){
  if(outcome==="contested"){const att=race.racers[0];const won=state.random()<duelChance();
   winner=won?att:(race.winner.side==="defend"?race.winner:race.rival);outcome=won?"receiver":winner.role==="keeper"?"keeper":"tackled";}
  (race.lightning||[]).forEach(({p,a})=>{spendUltimate(state,p,a);const won=!!winner&&winner.p===p;ultimateResult(state,p,a,won);ultimateEvent(state,p,a,won?"ultimate":"ultimate-countered",p.name+(won?" explodes off the mark and gets there first.":" explodes off the mark but is beaten to the ball."),{lineKey:won?"lightning":"lightningFail",notable:won});});
- const route={kind,from:model.from,to:winner?{x:winner.meet.x,y:winner.meet.y}:race.flight.exit?{x:clamp(race.flight.exit.x,0,100),y:clamp(race.flight.exit.y,0,100)}:{x:race.flight.stop.x,y:race.flight.stop.y},chemistry:model.chem};
+ // A ball met right on the touchline is met on the pitch (a meet point is never off the field).
+ const route={kind,from:model.from,to:winner?{x:clamp(winner.meet.x,0,100),y:clamp(winner.meet.y,0,100)}:race.flight.exit?{x:clamp(race.flight.exit.x,0,100),y:clamp(race.flight.exit.y,0,100)}:{x:race.flight.stop.x,y:race.flight.stop.y},chemistry:model.chem};
  const ballAt=route.to;
  race.racers.forEach(r=>{if(r!==winner)chase(r,r.meet?{x:r.meet.x,y:r.meet.y}:ballAt);});
  const start=point(receiver),ballName=option.style==="cross"?"cross":option.behind?"through ball":"pass into space";
@@ -2520,31 +2558,51 @@ function arrangeGoalKick(state,pending,team,opposition,taker,restart,rand){
  const ownKeeper=keeper(team);if(ownKeeper&&ownKeeper.id!==taker.id)setPosition(ownKeeper,pitchAt(n,9,62));
  const own=active(team).filter(p=>p.id!==taker.id&&p.role!=="GK"),cbs=own.filter(p=>roleGroup(p.role)==="CB").sort((a,b)=>teamSlotOf(team,a).x-teamSlotOf(team,b).x);
  const targets=new Map();
- // Without a holding midfielder, the most central midfielder drops in as the "6" for a short build-up.
+ // Tactical variety, seeded per stoppage: which flank the build-up leans to, how wide the centre-backs
+ // split, how high the full-backs stand, whether a midfielder drops in, and for a long kick where the
+ // target man stands and how close the midfield gathers for the second ball. Always within football ranges.
+ const side=rand()<.5?-1:1,v=long?{targetY:50+side*(4+rand()*14),targetDepth:-5+rand()*9,second:5+rand()*7}:{split:19+rand()*9,fbHigh:rand()*9,drop:rand()<.6,lean:side*(2+rand()*5)};
+ // Without a holding midfielder, the most central midfielder drops in as the "6" for a short build-up
+ // (deep beside the centre-backs, or a few metres higher, by seed).
  const anchor=!long&&!own.some(p=>roleGroup(p.role)==="DM")?own.filter(p=>roleGroup(p.role)==="CM").sort((a,b)=>Math.abs(teamSlotOf(team,a).x-50)-Math.abs(teamSlotOf(team,b).x-50))[0]:null;
+ const strikers=own.filter(p=>roleGroup(p.role)==="ST").sort((a,b)=>teamSlotOf(team,a).index-teamSlotOf(team,b).index),target=long?(strikers[0]||own.filter(p=>["W","AM"].includes(roleGroup(p.role)))[0]):null;
  own.forEach(p=>{
   const group=anchor&&p.id===anchor.id?"DM":roleGroup(p.role),slot=teamSlotOf(team,p);
   let m=(long?GOAL_KICK_LONG_DEPTH:GOAL_KICK_SHORT_DEPTH)[group]||40,y=50+(slot.x-50)*(long?1:1.18)*(.9+s.width/500);
-  if(group==="CB"&&!long){const i=cbs.indexOf(p),count=cbs.length;if(count===3&&i===1){m+=5;y=50;}else y=50+(i<count/2?-1:1)*24;}
-  if(group==="ST"&&long)y=50+(slot.x-50)*.55;
+  if(group==="CB"&&!long){const i=cbs.indexOf(p),count=cbs.length;if(count===3&&i===1){m+=5;y=50;}else y=50+(i<count/2?-1:1)*v.split;}
+  if(anchor&&p.id===anchor.id&&!v.drop)m+=6;
+  if(!long){if(group==="FB")m+=v.fbHigh;if(group==="CM"||group==="WM"||group==="AM")y+=v.lean;}
+  if(long){
+   if(p===target){m+=v.targetDepth;y=v.targetY;}
+   else if(group==="ST")y=50+(slot.x-50)*.55-side*6;
+   // Second balls: central midfielders gather a few metres short of the target's landing zone.
+   else if(target&&(group==="CM"||group==="AM")){m=GOAL_KICK_LONG_DEPTH.ST+v.targetDepth-v.second-(group==="CM"?3:0);y=v.targetY+(slot.x-50)*.45;}
+  }
   m+=(s.directness-50)*.06+jitter();y+=jitter();
   const q=pitchAt(n,m,clamp(y,5,95));targets.set(p.id,inGoalArea(n,q)?pitchAt(n,7.5,q.y):q);
  });
  separateTargets(targets,new Set(),7);
  own.forEach(p=>{const q=targets.get(p.id);setPosition(p,inGoalArea(n,q)?pitchAt(n,7.5,q.y):q);});
- // Opposition: a pressing shape outside the area, marking the likely first receivers.
+ // Opposition: a pressing shape outside the area. Against a long kick the back line stays goal-side of
+ // every advanced attacker (they can see the shape, not the chosen receiver), a spare centre-back covers
+ // behind the main target's marker and the midfield screens the second-ball zone.
  const press=opposition.strategy.pressing>=62?"high":opposition.strategy.pressing>=35?"mid":"low",depths=GOAL_KICK_PRESS_DEPTH[press];
- const rivals=active(opposition).filter(p=>p.role!=="GK"),marks=new Map(),taken=new Set();
+ const rivals=active(opposition).filter(p=>p.role!=="GK"),marks=new Map(),taken=new Set(),marker=new Map();
  const markOrder=rivals.slice().sort((a,b)=>(depths[roleGroup(a.role)]||45)-(depths[roleGroup(b.role)]||45)||idOf(a.id).localeCompare(idOf(b.id)));
  markOrder.forEach(p=>{
   const group=roleGroup(p.role),slot=teamSlotOf(opposition,p),depth=depths[group]||45,defender=group==="CB"||group==="FB";
   let q=pitchAt(n,depth,clamp(50+(slot.x-50)*.9,6,94));
   // Pressers step onto build-up options; defenders stay goal-side of the targets of a long kick.
-  const pool=own.filter(o=>!taken.has(o.id)&&(defender?long&&["ST","W","AM"].includes(roleGroup(o.role)):press!=="low"&&Math.abs(aheadM(n,o)-depth)<14));
-  const target=pool.sort((a,b)=>distance(a,q)-distance(b,q))[0];
-  if(target&&distance(target,q)<20){taken.add(target.id);q=pitchAt(n,Math.max(aheadM(n,target)+(defender?3:2.5),defender?depth-8:0),target.y+(defender?0:(50-target.y)*.08));}
+  const pool=own.filter(o=>!taken.has(o.id)&&(defender?long&&(group==="CB"?["ST","AM"]:["ST","W","AM"]).includes(roleGroup(o.role)):press!=="low"&&Math.abs(aheadM(n,o)-depth)<14));
+  const tgt=pool.sort((a,b)=>distance(a,q)-distance(b,q))[0];
+  if(tgt&&distance(tgt,q)<(defender&&long?30:20)){taken.add(tgt.id);marker.set(tgt.id,p);q=pitchAt(n,Math.max(aheadM(n,tgt)+(defender?3:2.5),defender?depth-8:0),tgt.y+(defender?(50-tgt.y)*.06:(50-tgt.y)*.08));}
   marks.set(p.id,pitchAt(n,Math.max(PENALTY_AREA_CLEARANCE_M,aheadM(n,q)),q.y));
  });
+ if(long){
+  const main=target||own.slice().sort((a,b)=>aheadM(n,b)-aheadM(n,a))[0],cover=main&&rivals.filter(p=>roleGroup(p.role)==="CB"&&![...marker.values()].includes(p)).sort((a,b)=>distance(a,main)-distance(b,main))[0];
+  if(main&&cover)marks.set(cover.id,pitchAt(n,Math.min(PITCH_LENGTH-14,aheadM(n,main)+9),50+(main.y-50)*.45));
+  if(main)rivals.filter(p=>["CM","DM"].includes(roleGroup(p.role))&&![...marker.values()].includes(p)).sort((a,b)=>distance(a,main)-distance(b,main)).slice(0,2).forEach((p,i)=>marks.set(p.id,pitchAt(n,aheadM(n,main)-4+i*3,clamp(main.y+(i?9:-9)+(rand()-.5)*4,8,92))));
+ }
  separateTargets(marks,new Set(),6);
  rivals.forEach(p=>{const q=marks.get(p.id);setPosition(p,pitchAt(n,Math.max(PENALTY_AREA_CLEARANCE_M,aheadM(n,q)),q.y));});
  const opponentKeeper=keeper(opposition);if(opponentKeeper)setPosition(opponentKeeper,ownGoal(opposition.number));
@@ -3396,14 +3454,14 @@ function renderTeamCard(number){const t=setupTeams[number-1],card=make("section"
 sourceSelect.setAttribute("data-team-source",number);
 option(sourceSelect,"random","Generate random squad");
 if(launchSnapshot)option(sourceSelect,"auction","Use current auction team");
-savedTeams.forEach(item=>option(sourceSelect,"saved:"+idOf(item.id),"LOAD SAVED: "+item.name));
+const tr=k=>window.SiteI18n?.text(k)||k;savedTeams.forEach(item=>option(sourceSelect,"saved:"+idOf(item.id),item.kind?tr("LOAD SAVED:")+" "+item.team.name+" · "+tr(item.kind):"LOAD SAVED: "+item.name));
 sourceSelect.value=t.source==="auction"&&launchSnapshot?"auction":t.source==="saved"&&savedTeams.some(item=>idOf(item.id)===idOf(t.savedId))?"saved:"+idOf(t.savedId):"random";
 labelField(source,"CHOOSE SQUAD",sourceSelect);
 const refresh=make("button","bs-mini-button","REFRESH SAVES");refresh.type="button";refresh.setAttribute("data-refresh-saved-teams","");put(source,refresh);
 const formationSelect=make("select","bs-select");formationSelect.setAttribute("data-team-formation",number);Object.keys(FORMATIONS).forEach(f=>option(formationSelect,f,f));formationSelect.value=t.formation;labelField(source,"FORMATION",t.starterCount<11||t.keeperMode==="open-goal"?make("span","bs-field-label",formationLabel(t)):formationSelect);put(card,source);put(card,renderSetupFormation(t));put(card,renderSetupChemistry(t));
 const lineupHead=make("div","bs-roster-section-heading");put(lineupHead,make("h3","","STARTING LINE-UP"));put(lineupHead,make("span","",Object.keys(t.assignment).length+" STARTERS"));put(card,lineupHead);const starters=make("div","bs-starter-list");Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const p=playerIn(t,t.assignment[k]),slot=t.slots[Number(k)];if(!p||!slot)return;const row=make("div","bs-player-row");portrait(row,p,38);const copy=make("div","bs-player-copy"),line=make("div","bs-player-name-line");put(line,make("strong","",p.name));put(line,make("span","bs-role-badge",slot.label));put(copy,line);put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)+" · SPD "+Math.round(p.stats.spd)));put(row,copy);put(starters,row);});put(card,starters);
 const reservePlayers=t.roster.filter(p=>!Object.values(t.assignment).map(idOf).includes(idOf(p.id))),reserveHead=make("div","bs-roster-section-heading");put(reserveHead,make("h3","","RESERVES"));put(reserveHead,make("span","",reservePlayers.length+" AVAILABLE"));put(card,reserveHead);const reserveList=make("div","bs-reserve-list");if(!reservePlayers.length)put(reserveList,make("p","bs-empty-note","No reserves on this roster."));reservePlayers.forEach(p=>{const row=make("div","bs-reserve-row");portrait(row,p,32);const copy=make("div","bs-player-copy");put(copy,make("strong","",p.name));put(copy,make("span","bs-player-subline","OVR "+Math.round(p.stats.ovr)));put(row,copy);const select=make("select","bs-select bs-swap-select");select.setAttribute("aria-label","Replace starter…");select.setAttribute("data-reserve-slot",number);select.setAttribute("data-reserve-player",p.id);option(select,"","Swap for…",false);Object.keys(t.assignment).sort((a,b)=>Number(a)-Number(b)).forEach(k=>{const starter=playerIn(t,t.assignment[k]);option(select,k,(t.slots[Number(k)]?t.slots[Number(k)].label:"Slot")+" · "+(starter?starter.name:"Empty"));});put(row,select);button(row,"SWAP","bs-mini-button",{"data-swap-player":p.id,"data-swap-team":number});put(reserveList,row);});put(card,reserveList);const size=make("select","bs-select");size.setAttribute("data-team-size",number);size.setAttribute("aria-label","Players on pitch");[...new Set([1,2,3,5,7,9,11,t.starterCount])].sort((a,b)=>a-b).forEach(n=>option(size,n,n+" PLAYERS",n>t.roster.length));size.value=String(t.starterCount);labelField(card,"MATCH FORMAT",size);put(card,make("p","bs-empty-note",t.keeperMode==="open-goal"?"OPEN GOALS · No dedicated goalkeeper":String(t.starterCount)+" starters · Dedicated goalkeeper"));
-const tactic=make("div","bs-roster-section-heading");put(tactic,make("h3","","TEAM STRATEGY"));put(tactic,make("span","","0–100"));put(card,tactic);put(card,stratControls(number,t,false));const save=make("div","bs-save-team-row"),saveName=make("input","bs-name-input");saveName.type="text";saveName.maxLength=32;saveName.value=t.name;saveName.setAttribute("data-save-name",number);saveName.placeholder="Name this saved team";saveName.setAttribute("aria-label","Name this saved team");put(save,saveName);button(save,"SAVE TO BUILDER","bs-button bs-button--secondary",{"data-save-team":number});put(card,save);return card;}
+const tactic=make("div","bs-roster-section-heading");put(tactic,make("h3","","TEAM STRATEGY"));put(tactic,make("span","","0–100"));put(card,tactic);put(card,stratControls(number,t,false));const save=make("div","bs-save-team-row"),saveName=make("input","bs-name-input");saveName.type="text";saveName.maxLength=32;saveName.value=t.name;saveName.setAttribute("data-save-name",number);saveName.placeholder="Name this saved team";saveName.setAttribute("aria-label","Name this saved team");put(save,saveName);button(save,"SAVE SQUAD","bs-button bs-button--secondary",{"data-save-team":number});put(card,save);return card;}
 function renderInit(){
  savedTeams=loadSavedTeams();
  document.body.classList.remove("bs-game-route");clearFeedQueue();
@@ -3411,7 +3469,7 @@ function renderInit(){
  const setup=byId("bs-setup-view");setup.querySelector(".bs-auto-controls")?.remove();autoControls(setup);const root=byId("bs-team-grid");root.replaceChildren();setupTeams.forEach((t,i)=>put(root,renderTeamCard(i+1)));
  const labels={auction:"AUCTION DRAFT",saved:"SAVED TEAM",random:"RANDOM TEAM"};
  byId("bs-source-status").textContent=setupTeams.map((t,i)=>"TEAM "+(i+1)+" · "+(labels[t.source]||"SAVED TEAM")).join(" // ");
- byId("bs-setup-help").textContent="Choose a team directly from CHOOSE SQUAD, including Team Builder, Auction, and saved squads. REFRESH SAVES finds newly saved teams. SAVE TO BUILDER also keeps a named copy for Battle Sim.";window.SiteI18n?.apply(byId("bs-setup-view"));
+ byId("bs-setup-help").textContent="Choose a team directly from CHOOSE SQUAD, including Team Builder, Auction, and saved squads. REFRESH SAVES finds newly saved teams. SAVE SQUAD adds this team to your squad library.";window.SiteI18n?.apply(byId("bs-setup-view"));
 }
 // Reuse Builder contribution/chemistry with canonical players. Cache only the
 // stable lineup component; stamina always comes from the revealed player view.
@@ -3461,6 +3519,9 @@ function reactionDefsFor(player){
  return out;
 }
 function battleSimProfileWeapons(player){
+ // The shared kit categorisation (js/lore.js) when available, so the match profile, Team Builder and Database
+ // list the same entries in the same order; the local grouping below stays as a fallback for isolated tests.
+ if(typeof battleSimKitList==="function"&&player&&typeof playerById==="function"){const canonical=playerById(player.id);if(canonical)return battleSimKitList({...canonical,battleSim:player.battleSim||canonical.battleSim}).map(({entry,partner,kind})=>({...(partner?{partnerName:String(partner.name)}:{}),id:String(entry.id||""),type:kind,name:String(entry.name||entry.id||"Unnamed Battle Sim Weapon"),description:String(entry.description||"No description registered.")}));}
  const data=player&&player.battleSim&&typeof player.battleSim==="object"?player.battleSim:{};
  return[
   {type:"PASSIVE",items:Array.isArray(data.passives)?data.passives:[]},
@@ -3603,8 +3664,9 @@ function openMatchPlayerProfile(panel,player,trigger){
  put(overlay,statsSection);
 
  const weaponSection=make("section","bs-player-profile-weapons");
- put(weaponSection,make("h3","bs-player-profile-section-title","BATTLE SIM WEAPONS"));
- const weaponList=make("div","bs-player-profile-weapon-list");
+ const weaponTitle=make("h3","bs-player-profile-section-title","BATTLE SIM WEAPONS");weaponTitle.id="bs-profile-weapons-"+panel.id+"-"+idOf(player.id);put(weaponSection,weaponTitle);
+ // The list scrolls when a kit is long: reachable by keyboard and labelled by its heading.
+ const weaponList=make("div","bs-player-profile-weapon-list");weaponList.tabIndex=0;weaponList.setAttribute("role","region");weaponList.setAttribute("aria-labelledby",weaponTitle.id);
  const weapons=battleSimProfileWeapons(player);
  weaponList.style.setProperty("--bs-profile-weapon-count",String(Math.max(1,weapons.length)));
  if(!weapons.length){
@@ -4157,12 +4219,12 @@ function handleClick(event){
  if(b.hasAttribute("data-refresh-saved-teams")){savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=savedTeams.length?"Saved teams refreshed. Select a squad from CHOOSE SQUAD.":"No saved squads found yet. Save one in Team Builder first.";}else if(b.id==="bs-start-match")startMatch();else if(b.id==="bs-skip-intro")finishMatchIntro();else if(b.id==="bs-proceed-match")continueMatch();else if(b.id==="bs-pause-match")toggleManualPause();else if(b.id==="bs-fast-forward")fastForwardMatch();
   else if(b.id==="bs-back-home"){if(typeof updateRoute==="function")updateRoute("menu");else window.location.href="../";}
  else if(b.id==="bs-return-setup"||b.id==="bs-return-setup-results"){
-  if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({teams:setupTeams.map(serializeTeam)}));}catch(e){}}
+  if(match){setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");try{sessionStorage.setItem(SETUP_RETURN_KEY,JSON.stringify({timestamp:Date.now(),teams:setupTeams.map(serializeTeam)}));}catch(e){}}
   if(typeof updateRoute==="function")updateRoute("battleSimInitializer");else{renderInit();window.scrollTo({top:0,behavior:"instant"});}
  }else if(b.id==="bs-rematch")startMatch();
  else if(b.hasAttribute("data-required-substitute")){const n=Number(b.getAttribute("data-required-substitute")),req=match&&match.requiredSub,sel=byId("bs-required-sub-player"),team=match&&match.teams[n];if(!req||!team||req.teamNumber!==n||!sel||!sel.value){byId("bs-stoppage-description").textContent="Choose an available reserve to complete the mandatory substitution.";return;}if(substitute(team,req.slot,sel.value))renderMatch();}
  else if(b.hasAttribute("data-swap-player")){const n=Number(b.getAttribute("data-swap-team")),card=b.closest("[data-team-card]"),sel=card&&card.querySelector('[data-reserve-player="'+b.getAttribute("data-swap-player")+'"]');if(!sel||sel.value===""){byId("bs-setup-help").textContent="Choose which starter this reserve should replace, then press SWAP.";return;}if(replaceSetupStarter(setupTeams[n-1],sel.value,b.getAttribute("data-swap-player")))renderInit();}
- else if(b.hasAttribute("data-save-team")){const n=Number(b.getAttribute("data-save-team")),card=b.closest("[data-team-card]"),input=card&&card.querySelector('[data-save-name="'+n+'"]'),t=setupTeams[n-1],oldName=t.name,name=String(input&&input.value||t.name).trim().slice(0,32);if(!name){byId("bs-setup-help").textContent="Enter a name before saving this team.";return;}t.name=name;if(!saveTeamToSharedStandalone(t,name)){t.name=oldName;byId("bs-setup-help").textContent="Unable to save this squad. Check browser storage and player availability.";return;}t.savedId="standalone-global-xi";t.source="saved";savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent="Squad saved to Team Builder."; }else if(b.hasAttribute("data-sub-in")){const n=Number(b.getAttribute("data-sub-team")),rid=b.getAttribute("data-sub-in"),team=match&&match.teams[n],row=b.closest(".bs-bench-player"),sel=row&&row.querySelector("[data-sub-target-for]");if(!team||match.status!=="paused")return;let slot=sel&&sel.value;if(slot==="")slot=Object.keys(team.assignment).find(k=>{const p=playerIn(team,team.assignment[k]);return p&&p.role!=="GK";});if(slot!=null&&substitute(team,slot,rid))renderMatch();}
+ else if(b.hasAttribute("data-save-team")){const n=Number(b.getAttribute("data-save-team")),card=b.closest("[data-team-card]"),input=card&&card.querySelector('[data-save-name="'+n+'"]'),t=setupTeams[n-1],oldName=t.name,name=String(input&&input.value||t.name).trim().slice(0,32);if(!name){byId("bs-setup-help").textContent="Enter a name before saving this team.";return;}t.name=name;const saved=saveTeamToSquadLibrary(t,name);if(!saved.ok){t.name=oldName;byId("bs-setup-help").textContent=window.SiteI18n?.text(saved.error)||saved.error;return;}t.source="saved";savedTeams=loadSavedTeams();renderInit();byId("bs-setup-help").textContent=window.SiteI18n?.text("Squad saved to your squad library.")||"Squad saved to your squad library."; }else if(b.hasAttribute("data-sub-in")){const n=Number(b.getAttribute("data-sub-team")),rid=b.getAttribute("data-sub-in"),team=match&&match.teams[n],row=b.closest(".bs-bench-player"),sel=row&&row.querySelector("[data-sub-target-for]");if(!team||match.status!=="paused")return;let slot=sel&&sel.value;if(slot==="")slot=Object.keys(team.assignment).find(k=>{const p=playerIn(team,team.assignment[k]);return p&&p.role!=="GK";});if(slot!=null&&substitute(team,slot,rid))renderMatch();}
 }
 function handleChange(event){const t=event.target;if(t.matches("[data-team-size]")){const n=Number(t.getAttribute("data-team-size"));setupTeams[n-1]=normalizeTeam({...serializeTeam(setupTeams[n-1]),starterCount:Number(t.value),assignment:{}},n);renderInit();return;}if(t.id==="bs-required-sub-player"&&match?.requiredSub){match.requiredSub.reserveId=t.value;storeActiveMatch();return;}if(match?.pending&&["bs-set-piece-taker","bs-set-piece-routine","bs-goal-kick-taker-mode"].includes(t.id)){
  const pending=match.pending;
@@ -4183,9 +4245,9 @@ function handleChange(event){const t=event.target;if(t.matches("[data-team-size]
 function handleInput(event){const t=event.target;if(t&&t.id==="bs-feed-delay"){const oldDelay=feedDelayMs;suspendFeed();feedDelayMs=clamp(Number(t.value)||1,.1,5)*1000;if(feedRemaining!==null)feedRemaining=feedRemaining/oldDelay*feedDelayMs;const out=byId("bs-feed-delay-value");if(out)out.textContent=feedDelayLabel(feedDelayMs);scheduleFeedEvent();return;}if(t.matches("[data-team-name]")){const n=Number(t.getAttribute("data-team-name"));setupTeams[n-1].name=String(t.value||"TEAM "+n).slice(0,32);const h=t.closest("[data-team-card]").querySelector(".bs-team-card-heading h2");if(h)h.textContent=setupTeams[n-1].name;}else if(t.matches("[data-team-color]")){const n=Number(t.getAttribute("data-team-color"));if(validColor(t.value)){setupTeams[n-1].color=t.value;t.closest("[data-team-card]").style.setProperty("--bs-team-color",t.value);}}else if(t.matches("[data-team-strategy]")){const n=Number(t.getAttribute("data-team-strategy")),k=t.getAttribute("data-strategy-key"),v=clamp(Number(t.value),0,100);if(setupTeams[n-1])setupTeams[n-1].strategy[k]=v;if(match&&match.teams[n])match.teams[n].strategy[k]=v;const out=t.closest(".bs-strategy-control").querySelector(".bs-strategy-value");if(out)out.textContent=v;}}
 function init(){
  if(initialized||!byId("battle-sim-screen"))return;initialized=true;savedTeams=loadSavedTeams();
- const bsEarlyAccessStatus=byId("battle-sim-screen")?.querySelector(".page-context-status");
- if(bsEarlyAccessStatus){bsEarlyAccessStatus.innerHTML="<i></i> <span>EARLY ACCESS</span> // TEXT-BASED MATCH ENGINE";window.SiteI18n?.apply(bsEarlyAccessStatus);}
- document.title="Blue Lock Draft — Battle Sim Early Access";
+ const bsStatus=byId("battle-sim-screen")?.querySelector(".page-context-status");
+ if(bsStatus){bsStatus.innerHTML="<i></i> <span>TEXT-BASED MATCH ENGINE</span>";window.SiteI18n?.apply(bsStatus);}
+ document.title="Blue Lock Draft — Battle Sim";
  try{launchSnapshot=JSON.parse(sessionStorage.getItem(LAUNCH_KEY)||"null");}catch(e){launchSnapshot=null;}
  let returned=null;try{returned=JSON.parse(sessionStorage.getItem(SETUP_RETURN_KEY)||"null");}catch(e){}
  const route=typeof getRouteFromLocation==="function"?getRouteFromLocation():"battleSim";
@@ -4200,9 +4262,12 @@ function init(){
   setupTeams=[normalizeTeam(serializeTeam(match.teams[1]),1),normalizeTeam(serializeTeam(match.teams[2]),2)];setupTeams.forEach(t=>t.source="random");
   const root=byId("battle-sim-screen");root.addEventListener("click",handleClick);root.addEventListener("change",handleChange);root.addEventListener("input",handleInput);showResults();return;
  }
- if(returned&&Array.isArray(returned.teams)&&returned.teams.length===2){setupTeams=returned.teams.map((t,i)=>normalizeTeam(t,i+1));try{sessionStorage.removeItem(SETUP_RETURN_KEY);}catch(e){}}
- else if(launchSnapshot&&launchSnapshot.team1&&launchSnapshot.team2)setupTeams=[snapshotTeam(launchSnapshot.team1,1,launchSnapshot),snapshotTeam(launchSnapshot.team2,2,launchSnapshot)];
- else setupTeams=[randomTeam(1),randomTeam(2)];
+ // The newest hand-off wins: a fresh auction transfer replaces a setup left over from an earlier visit.
+ const launch=launchTeams(launchSnapshot),source=setupSource(launchSnapshot,returned);let notice="";
+ if(source==="returned"){setupTeams=returned.teams.map((t,i)=>normalizeTeam(t,i+1));try{sessionStorage.removeItem(SETUP_RETURN_KEY);}catch(e){}}
+ else if(launch.teams){setupTeams=launch.teams;try{sessionStorage.removeItem(SETUP_RETURN_KEY);}catch(e){}if(launch.missing)notice=(window.SiteI18n?.text("{count} drafted player(s) could not be loaded in Battle Sim.")||"{count} drafted player(s) could not be loaded in Battle Sim.").replace("{count}",launch.missing);}
+ else{setupTeams=[randomTeam(1),randomTeam(2)];if(launchSnapshot)notice=window.SiteI18n?.text("The drafted squads could not be loaded, so Battle Sim opened new random teams.")||"The drafted squads could not be loaded, so Battle Sim opened new random teams.";}
  const root=byId("battle-sim-screen");root.addEventListener("click",handleClick);root.addEventListener("change",handleChange);root.addEventListener("input",handleInput);renderInit();
+ if(notice){const help=byId("bs-setup-help");if(help){help.textContent=notice;help.setAttribute("role","alert");}}
 }
 document.addEventListener("DOMContentLoaded",function(){let route="";try{route=typeof getRouteFromLocation==="function"?getRouteFromLocation():"";}catch(e){}if(["battleSim","battleSimInitializer","battleSimGame","battleSimResults"].includes(route)||(byId("battle-sim-screen")&&!byId("battle-sim-screen").classList.contains("hidden")))init();});})();

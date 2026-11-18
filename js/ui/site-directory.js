@@ -129,10 +129,6 @@ function initSiteDirectory(){
     const builderNav=directory.querySelector('[data-directory-action="builder"]'),battleNav=directory.querySelector('[data-directory-action="battle-sim"]');
     if(builderNav&&battleNav)directory.insertBefore(battleNav,builderNav);
     const toggle=document.getElementById("directoryMenuToggle"),groups=[...directory.querySelectorAll("details")];
-    const battleModeTitle=document.querySelector("#menuBattleSim .home-mode-title");
-    if(battleModeTitle&&!battleModeTitle.querySelector(".home-mode-access")){
-        const access=document.createElement("small");access.className="home-mode-access";access.textContent="EARLY ACCESS";battleModeTitle.append(" ",access);window.SiteI18n?.apply(access);
-    }
     const settings=document.getElementById("siteSettings"),settingsToggle=document.getElementById("siteSettingsToggle");
     const settingsUtilities=settingsToggle.closest(".site-utilities"),soundToggle=document.getElementById("soundToggle");
     // Keep the desktop directory; mobile shares its actions in a flat touch layout.

@@ -24,7 +24,11 @@ function normalizeReplaySquad(value,{allowLocked=false}={}){
         assignment[slot]=id;used.add(id);
     }
     if(value.captainId!==null&&(!Number.isInteger(value.captainId)||!used.has(value.captainId)))replayFail("Invalid squad captain.");
-    return {v:1,name:value.name.trim(),color:value.color,playerIds:[...ids],formation:value.formation,assignment,captainId:value.captainId};
+    // Optional Battle Sim extras (match strategy and small-sided starter count); absent in older saves and codes.
+    const extra={};
+    if(replayRecord(value.strategy)){const strategy={};for(const [key,n]of Object.entries(value.strategy))if(/^[a-z]{1,16}$/.test(key)&&Number.isFinite(n)&&n>=0&&n<=100)strategy[key]=Math.round(n);if(Object.keys(strategy).length&&Object.keys(strategy).length<=12)extra.strategy=strategy;}
+    if([1,2,3,5,7,9,11].includes(value.starterCount)&&value.starterCount<11)extra.starterCount=value.starterCount;
+    return {v:1,name:value.name.trim(),color:value.color,playerIds:[...ids],formation:value.formation,assignment,captainId:value.captainId,...extra};
 }
 function replaySquadFromTeam(n){
     const team=teamByNumber(n);if(!team?.players.length)replayFail("Choose players before saving a squad.");

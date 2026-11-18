@@ -1,16 +1,11 @@
+// Team Builder player panel: the same kit categorisation as the Database dossier (battleSimKitList in
+// js/lore.js), so weapons, Flow and chemical reactions from newer kits are never missing or mislabelled.
 function playerBattleAbilitiesMarkup(player){
-    const profile=player?.battleSim||{};
-    const renderBox=(kind,title,abilities)=>{
-        const content=abilities.length
-            ?abilities.map(ability=>`<div class="player-battle-ability"><strong>${esc(ability.name||title)}</strong><p>${esc(ability.description||"No description available.")}</p></div>`).join("")
-            :`<p class="player-battle-empty">NO ${title} AVAILABLE</p>`;
-        return `<section class="player-battle-ability-box player-battle-${kind}"><h3>${title}</h3>${content}</section>`;
-    };
-    const passives=Array.isArray(profile.passives)?profile.passives:[];
-    const specials=Array.isArray(profile.specials)?profile.specials:[];
-    const ultimates=Array.isArray(profile.ultimates)?profile.ultimates:[];
-    const ultimateBox=ultimates.length?renderBox("ultimate","ULTIMATE",ultimates):"";
-    return `<div class="player-battle-ability-grid">${renderBox("passive","PASSIVE",passives)}${renderBox("special","SPECIAL MOVE",specials)}${ultimateBox}</div>`;
+    const list=typeof battleSimKitList==="function"?battleSimKitList(player):[];
+    if(!list.length)return `<div class="player-battle-ability-grid"><p class="player-battle-empty">NO BATTLE SIM KIT YET</p></div>`;
+    const boxes=[["PASSIVE","passive","PASSIVE"],["SPECIAL","special","SPECIAL"],["ULTIMATE","ultimate","ULTIMATE"],["FLOW","flow","FLOW"],["CHEMICAL REACTION","reaction","CHEMICAL REACTION"]];
+    return `<div class="player-battle-ability-grid">${boxes.map(([kind,cls,title])=>{const items=list.filter(item=>item.kind===kind);if(!items.length)return "";
+        return `<section class="player-battle-ability-box player-battle-${cls}"><h3>${title}</h3>${items.map(({entry,partner})=>`<div class="player-battle-ability"><strong>${esc(entry.name)}</strong>${partner&&secretPlayerAvailable(partner)?`<span class="player-battle-partner">WITH: <b data-i18n-ignore>${esc(partner.name)}</b></span>`:""}<p>${esc(entry.description||"No description available.")}</p></div>`).join("")}</section>`;}).join("")}</div>`;
 }
 // BLUE LOCK DRAFT // FORMATION UI
 // Split from the former root script.js. Classic scripts share the same global scope.
@@ -232,6 +227,7 @@ function renderFormationBuilder({preserveScroll=true}={}){
           </div>
           <div class="formation-actions">
             <button class="formation-auto" onclick="${standalone&&typeof autoBestStandaloneTeam==='function'?'autoBestStandaloneTeam()':'autoBestXI()'}">⚡ AUTO BEST ${deploymentLimit===11?"XI":"TEAM"}</button>
+            <button type="button" class="formation-randomise" onclick="randomiseTeam()" title="New formation and lineup from this squad's own players">🎲 RANDOMISE TEAM</button>
             <button type="button" data-replay-save="${formationTeamNumber}">SAVE SQUAD</button><button type="button" data-replay-import>IMPORT SQUAD</button><button type="button" data-saved-squads>SAVED SQUADS</button>
             <details class="builder-more"><summary aria-controls="builderMoreActions">MORE ACTIONS <span aria-hidden="true">⋯</span></summary><div id="builderMoreActions" class="builder-more-actions">
             ${standalone?`<button class="formation-share" onclick="openStandaloneShareScreen()">↗ TEAM REPORT</button>`:""}

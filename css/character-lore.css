@@ -359,3 +359,5 @@
 .character-profile-kit-limit{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--text-secondary);overflow-wrap:anywhere}
 
 .character-profile-back{text-decoration:none;display:inline-flex;align-items:center}
+/* 0.8.9.8.13: the Character Dossiers / Chemistry route cards read as cards, not underlined links. */
+a.lore-action,a.lore-action:hover,a.lore-action:focus-visible,a.lore-action *{text-decoration:none}

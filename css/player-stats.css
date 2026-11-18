@@ -128,3 +128,5 @@
 .player-battle-ability>strong{display:block;color:var(--text-primary);font:900 14px/1.15 "Barlow Condensed",sans-serif;overflow-wrap:anywhere}
 .player-battle-ability>p{margin:4px 0 0;color:var(--text-secondary);font-size:12px;line-height:1.45;overflow-wrap:anywhere}
 .player-battle-ability-box .player-battle-empty{margin:0}
+.player-battle-partner{display:block;margin-top:3px;color:var(--text-muted,var(--text-secondary));font:800 11px/1.2 "Rajdhani",sans-serif;letter-spacing:.4px;text-transform:uppercase;overflow-wrap:anywhere}
+.player-battle-partner b{color:var(--text-primary);font-weight:900}

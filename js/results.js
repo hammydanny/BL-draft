@@ -175,9 +175,11 @@ function openBattleSimFromResults(){
         };})},
         formations:{1:formationByTeam[1]||"4-3-3",2:formationByTeam[2]||"4-3-3"},
         // Preserve the exact drafted XI, including each team’s canonical special keeper.
-        assignments:Object.fromEntries([1,2].map(n=>[n,Object.fromEntries(Object.entries(formationAssignments[n]||{}))]))
+        assignments:Object.fromEntries([1,2].map(n=>[n,Object.fromEntries(Object.entries(formationAssignments[n]||{}))])),
+        captains:Object.fromEntries([1,2].map(n=>[n,formationCaptainByTeam[n]&&Object.values(formationAssignments[n]||{}).includes(formationCaptainByTeam[n])?formationCaptainByTeam[n]:null]))
     };
-    try{sessionStorage.setItem("blBattleSimLaunchV1",JSON.stringify(snapshot));}
+    // A new auction hand-off always wins over a Battle Sim setup left over from an earlier visit.
+    try{sessionStorage.removeItem("blBattleSimSetupReturnV1");sessionStorage.setItem("blBattleSimLaunchV1",JSON.stringify(snapshot));}
     catch(error){showSiteError("This browser could not transfer the drafted squads. Battle Sim will open with new teams.","BATTLE SIM HANDOFF");}
     openBattleSimPage();
 }

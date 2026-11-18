@@ -1,0 +1,263 @@
+{
+ "seeds": "48 ordinary seeded matches, scripts/football-metrics-report.js",
+ "base-short": {
+  "matches": 48,
+  "goalsPerMatch": 6.58,
+  "shotsPerMatch": 23.88,
+  "msPerTick": 6.35,
+  "passes": {
+   "short": {
+    "perMatch": 163.23,
+    "completion": 0.831
+   },
+   "long": {
+    "perMatch": 54.25,
+    "completion": 0.743
+   },
+   "through": {
+    "perMatch": 37.17,
+    "completion": 0.797
+   },
+   "cross": {
+    "perMatch": 10.4,
+    "completion": 0.719
+   }
+  },
+  "longShare": 0.205,
+  "shotsStraightOffLongThroughOrCross": 0.245,
+  "goalsStraightOffLongThroughOrCross": 0.288,
+  "interceptionsPerMatch": 13.42,
+  "aerialPerMatch": {
+   "contested": 13.52,
+   "clean": 4.5
+  },
+  "secondBalls": {
+   "attack": 570,
+   "defence": 0
+  },
+  "goalKicks": {
+   "short": 207,
+   "long": 0,
+   "through": 0,
+   "cross": 0,
+   "none": 10
+  },
+  "quickShotsAfterGoalKick": {
+   "short": 0,
+   "long": 0,
+   "through": 0,
+   "cross": 0
+  },
+  "quickGoalsAfterGoalKick": 0,
+  "involvementShare": {
+   "FWD": 0.166,
+   "WING": 0.349,
+   "MID": 0.25,
+   "DEF": 0.225,
+   "GK": 0.01
+  },
+  "touchesPerPlayerPerMatch": {
+   "FWD": 41.8,
+   "WING": 43.8,
+   "MID": 21,
+   "DEF": 14.1,
+   "GK": 2.5
+  },
+  "abilityChipsPerMatch": 78.83
+ },
+ "base-direct": {
+  "matches": 48,
+  "goalsPerMatch": 7.77,
+  "shotsPerMatch": 27.58,
+  "msPerTick": 6.2,
+  "passes": {
+   "short": {
+    "perMatch": 150.13,
+    "completion": 0.881
+   },
+   "long": {
+    "perMatch": 59.83,
+    "completion": 0.615
+   },
+   "through": {
+    "perMatch": 40.27,
+    "completion": 0.81
+   },
+   "cross": {
+    "perMatch": 9.77,
+    "completion": 0.684
+   }
+  },
+  "longShare": 0.23,
+  "shotsStraightOffLongThroughOrCross": 0.211,
+  "goalsStraightOffLongThroughOrCross": 0.228,
+  "interceptionsPerMatch": 13.85,
+  "aerialPerMatch": {
+   "contested": 14.23,
+   "clean": 5.21
+  },
+  "secondBalls": {
+   "attack": 659,
+   "defence": 0
+  },
+  "goalKicks": {
+   "short": 0,
+   "long": 169,
+   "through": 0,
+   "cross": 0,
+   "none": 64
+  },
+  "quickShotsAfterGoalKick": {
+   "short": 0,
+   "long": 29,
+   "through": 0,
+   "cross": 0
+  },
+  "quickGoalsAfterGoalKick": 9,
+  "involvementShare": {
+   "FWD": 0.179,
+   "WING": 0.359,
+   "MID": 0.255,
+   "DEF": 0.195,
+   "GK": 0.012
+  },
+  "touchesPerPlayerPerMatch": {
+   "FWD": 44.6,
+   "WING": 44.6,
+   "MID": 21.2,
+   "DEF": 12.2,
+   "GK": 3
+  },
+  "abilityChipsPerMatch": 85.17
+ },
+ "cur-short": {
+  "matches": 48,
+  "goalsPerMatch": 5.48,
+  "shotsPerMatch": 21.15,
+  "msPerTick": 6.46,
+  "passes": {
+   "short": {
+    "perMatch": 175.92,
+    "completion": 0.861
+   },
+   "long": {
+    "perMatch": 40.69,
+    "completion": 0.757
+   },
+   "through": {
+    "perMatch": 32.77,
+    "completion": 0.812
+   },
+   "cross": {
+    "perMatch": 7.04,
+    "completion": 0.672
+   }
+  },
+  "longShare": 0.159,
+  "shotsStraightOffLongThroughOrCross": 0.211,
+  "goalsStraightOffLongThroughOrCross": 0.243,
+  "interceptionsPerMatch": 9.9,
+  "aerialPerMatch": {
+   "contested": 10,
+   "clean": 4.04
+  },
+  "secondBalls": {
+   "attack": 585,
+   "defence": 0
+  },
+  "goalKicks": {
+   "short": 196,
+   "long": 0,
+   "through": 0,
+   "cross": 0,
+   "none": 5
+  },
+  "quickShotsAfterGoalKick": {
+   "short": 0,
+   "long": 0,
+   "through": 0,
+   "cross": 0
+  },
+  "quickGoalsAfterGoalKick": 0,
+  "involvementShare": {
+   "FWD": 0.118,
+   "MID": 0.363,
+   "WING": 0.277,
+   "DEF": 0.232,
+   "GK": 0.01
+  },
+  "touchesPerPlayerPerMatch": {
+   "FWD": 30.1,
+   "MID": 30.7,
+   "WING": 35.2,
+   "DEF": 14.8,
+   "GK": 2.5
+  },
+  "abilityChipsPerMatch": 78.75
+ },
+ "cur-direct": {
+  "matches": 48,
+  "goalsPerMatch": 6.52,
+  "shotsPerMatch": 23.52,
+  "msPerTick": 6.42,
+  "passes": {
+   "short": {
+    "perMatch": 163.85,
+    "completion": 0.892
+   },
+   "long": {
+    "perMatch": 47.94,
+    "completion": 0.618
+   },
+   "through": {
+    "perMatch": 36.06,
+    "completion": 0.82
+   },
+   "cross": {
+    "perMatch": 6.92,
+    "completion": 0.672
+   }
+  },
+  "longShare": 0.188,
+  "shotsStraightOffLongThroughOrCross": 0.198,
+  "goalsStraightOffLongThroughOrCross": 0.22,
+  "interceptionsPerMatch": 11.06,
+  "aerialPerMatch": {
+   "contested": 10.94,
+   "clean": 3.92
+  },
+  "secondBalls": {
+   "attack": 596,
+   "defence": 0
+  },
+  "goalKicks": {
+   "short": 0,
+   "long": 188,
+   "through": 0,
+   "cross": 0,
+   "none": 32
+  },
+  "quickShotsAfterGoalKick": {
+   "short": 0,
+   "long": 32,
+   "through": 0,
+   "cross": 0
+  },
+  "quickGoalsAfterGoalKick": 8,
+  "involvementShare": {
+   "FWD": 0.132,
+   "MID": 0.378,
+   "WING": 0.289,
+   "DEF": 0.191,
+   "GK": 0.01
+  },
+  "touchesPerPlayerPerMatch": {
+   "FWD": 33.3,
+   "MID": 31.7,
+   "WING": 36.4,
+   "DEF": 12,
+   "GK": 2.6
+  },
+  "abilityChipsPerMatch": 83.75
+ }
+}

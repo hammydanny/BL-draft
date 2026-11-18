@@ -629,3 +629,11 @@ html:has(.phase4-sheet[open]){overflow:hidden}
   }
 }
 :lang(ar) .phase4-sheet{direction:ltr}
+/* 0.8.9.8.13: phones get Auto Best + Randomise on one row, the squad-library actions on the next and
+   More Actions full width, instead of six squeezed columns. */
+@media(max-width:767px){
+  #formation-screen .formation-actions{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;align-items:stretch}
+  #formation-screen .formation-actions>button{grid-column:span 2;width:auto!important;min-width:0;min-height:44px;padding:8px 6px;overflow-wrap:normal;word-break:normal}
+  #formation-screen .formation-actions>.formation-auto,#formation-screen .formation-actions>.formation-randomise{grid-column:span 3}
+  #formation-screen .formation-actions>.builder-more{grid-column:1/-1}
+}
